@@ -1,7 +1,8 @@
-import Link from "next/link";
+import { readDirs } from "@/lib/content/content";
 
-export default function Home() {
+export default async function Home() {
+  const dirs = await readDirs();
   return <main>
-    <Link href="/test">Test</Link>
+    {dirs.map(dir => <div>{dir}</div>)}
   </main>;
 }
