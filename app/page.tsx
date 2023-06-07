@@ -42,7 +42,7 @@ const Part = ({ session: item }: Props) => {
 
   return (
     <div className="py-3 border-t-2 border-dashed relative last-of-type:border-b-2 first-of-type:mt-1">
-      <h4 className="text-stone-500 mb-2 text-sm absolute top-1">{name}</h4>
+      <h4 className="text-stone-500 mb-2 text-sm font-light absolute top-1 mt-0">{name}</h4>
       <Rows />
     </div>
   );
