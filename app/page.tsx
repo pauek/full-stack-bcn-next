@@ -1,40 +1,60 @@
-import { ContentDir, readTree } from "@/lib/content/content";
+import { ContentDir, loadContent } from "@/lib/content/content";
 import Link from "next/link";
+import { range } from "@/lib/content/utils";
 
 type Props = {
-  item: ContentDir;
+  session: ContentDir;
 };
 
-const Session = ({ item, partSlug }: Props & { partSlug: string }) => {
-  const { slug } = item.metadata;
+const Session = ({ session, partSlug }: Props & { partSlug: string }) => {
+  const { slug } = session.metadata;
   return (
-    <Link href={`/${partSlug}/${slug}`}>
-      <div className="text-sm hover:bg-stone-100">{item.name}</div>
+    <Link href={`/${partSlug}/${slug}`} className="w-1/5">
+      <div className="text-sm hover:bg-yellow-50 bg-white px-3 py-1.5 border rounded shadow m-1">
+        {session.name}
+      </div>
     </Link>
   );
 };
 
-const Part = ({ item }: Props) => {
+const Part = ({ session: item }: Props) => {
   const { name, children } = item;
   const { slug } = item.metadata;
+
+  const childrenInRow = (n: number) =>
+    children?.filter((ch) => ch.metadata.row === n);
+
+  const Row = ({ n }: { n: number }) => (
+    <div key={n} className="flex flex-row justify-center">
+      {childrenInRow(n)?.map((session) => (
+        <Session key={session.path} partSlug={slug} session={session} />
+      ))}
+    </div>
+  );
+
+  const Rows = () => (
+    <>
+      {range(0, 10).map((n) => (
+        <Row key={n} n={n} />
+      ))}
+    </>
+  );
+
   return (
-    <div className="border p-2 pt-1 mb-2">
-      <h4 className="text-stone-500 font-bold mb-2">{name}</h4>
-      <div className="pl-3">
-        {children &&
-          children.map((child) => (
-            <Session key={child.path} partSlug={slug} item={child} />
-          ))}
-      </div>
+    <div className="py-3 border-t-2 border-dashed relative last-of-type:border-b-2 first-of-type:mt-1">
+      <h4 className="text-stone-500 mb-2 text-sm absolute top-1">{name}</h4>
+      <Rows />
     </div>
   );
 };
 
 export default async function Home() {
-  const parts = await readTree();
+  const [root] = await loadContent();
+  const { children } = root;
   return (
-    <main className="p-4">
-      {parts && parts.map((item) => <Part key={item.path} item={item} />)}
-    </main>
+    <div className="max-w-4xl m-auto py-3">
+      {children &&
+        children.map((item) => <Part key={item.path} session={item} />)}
+    </div>
   );
 }

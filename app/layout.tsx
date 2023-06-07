@@ -18,7 +18,9 @@ export default function RootLayout({ children }: Props) {
       <head></head>
       <body className={inter.className}>
         <Header />
+        <main className="bg-stone-50 min-h-screen">
         {children}
+        </main>
       </body>
     </html>
   );

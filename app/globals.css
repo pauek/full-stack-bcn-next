@@ -2,3 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: white;
+}
+
+@layer base {
+  p {
+    @apply my-2 leading-5;
+  }
+  h3 + p {
+    @apply mt-1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply mt-8 mb-0 font-semibold;
+  }
+  h1 {
+    @apply text-6xl font-bold;
+  }
+  h2 {
+    @apply text-xl border-t-2 pt-3;
+  }
+  h3 {
+    @apply text-lg;
+  }
+  h4 {
+    @apply text-base;
+  }
+
+  ol {
+    @apply list-disc;
+  }
+  ul {
+    @apply list-decimal;
+  }
+  ul, ol {
+    @apply pl-6;
+  }
+  li {
+    @apply my-1 pl-1;
+  }
+
+  pre {
+    @apply bg-stone-200 py-1 px-2 rounded text-white;
+  }
+  strong {
+    @apply font-semibold;
+  }
+  code {
+    @apply text-stone-700;
+    font-family: "Iosevka";
+  }
+  pre code {
+    @apply text-black;
+  }
+}

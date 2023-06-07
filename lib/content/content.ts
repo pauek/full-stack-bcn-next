@@ -5,11 +5,14 @@ const CONTENT_DIR = process.env.CONTENT;
 if (!CONTENT_DIR) {
   throw new Error("CONTENT_DIR not set!");
 }
-console.log(CONTENT_DIR);
 
-const levelToType = (n: number) => ["part", "session", "chapter"][n];
+const levelToType = (n: number) => ["root", "part", "session", "chapter"][n];
 
-type ContentType = "part" | "session" | "chapter";
+const readDirWithFileTypes = (path: string) => {
+  return readdir(path, { withFileTypes: true });
+};
+
+type ContentType = "root" | "part" | "session" | "chapter";
 export type ContentDir = {
   type: ContentType;
   name: string;
@@ -17,6 +20,7 @@ export type ContentDir = {
   level: number;
   children: null | Array<ContentDir>;
   metadata: Record<string, any>;
+  doc?: string;
 };
 
 const dirNameToTitle = (dirName: string) => {
@@ -37,39 +41,93 @@ const readMetadata = async (path: string) => {
 type Options = {
   recursive: boolean;
 };
-const _readContentDir = async (
-  path: string,
-  level: number,
-  { recursive }: Options = { recursive: false }
-): Promise<Array<ContentDir> | null> => {
-  const result: Array<ContentDir> = [];
-  const entities = await readdir(path, { withFileTypes: true });
 
-  // Sort by name
-  entities.sort((a, b) => a.name.localeCompare(b.name));
+class ContentReader {
+  recursive: boolean;
+  currentSlug: Array<string>;
+  sessionMap: Map<string, ContentDir>;
+  sessionIndex: number = 0;
 
-  // Assemble array of ContentDirs
-  for (const ent of entities) {
-    if (ent.isDirectory()) {
-      const dirPath = join(path, ent.name);
-      const dir: ContentDir = {
-        type: levelToType(level) as ContentType,
-        name: dirNameToTitle(ent.name),
-        path: dirPath,
-        level: level,
-        children: null,
-        metadata: await readMetadata(dirPath),
-      };
-      if (recursive && level < 2) {
-        dir.children = await _readContentDir(join(path, ent.name), level + 1, {
-          recursive,
-        });
+  constructor(options: Options = { recursive: false }) {
+    this.recursive = options.recursive;
+    this.currentSlug = [];
+    this.sessionMap = new Map();
+  }
+
+  async readChildren(path: string, level: number) {
+    const entities = await readDirWithFileTypes(path);
+    entities.sort((a, b) => a.name.localeCompare(b.name));
+    const children: Array<ContentDir> = [];
+    for (const ent of entities) {
+      if (ent.isDirectory() && !ent.name.startsWith("_")) {
+        const dir = await this.readContentDir(path, ent.name, level + 1);
+        children.push(dir);
       }
-      result.push(dir);
+    }
+    return children.length > 0 ? children : null;
+  }
+
+  pushSlug(slug: string) {
+    if (slug) {
+      this.currentSlug.push(slug);
     }
   }
-  return result.length > 0 ? result : null;
-};
 
-export const readTree = () =>
-  _readContentDir(CONTENT_DIR, 0, { recursive: true });
+  popSlug(slug: string) {
+    if (slug) {
+      this.currentSlug.pop();
+    }
+  }
+
+  async readDoc(path: string) {
+    try {
+      const buf = await readFile(join(path, "doc.svx"));
+      return buf.toString();
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  async readContentDir(basePath: string, name: string = "", level: number = 0) {
+    const path = join(basePath, name);
+
+    const result: ContentDir = {
+      type: levelToType(level) as ContentType,
+      name: dirNameToTitle(name),
+      path,
+      level,
+      metadata: await readMetadata(path),
+      children: null,
+    };
+
+    this.pushSlug(result.metadata.slug);
+
+    if (result.type !== "chapter") {
+      result.children = await this.readChildren(path, level);
+    }
+
+    switch (result.type) {
+      case "session": {
+        result.children = await this.readChildren(path, level);
+        this.sessionMap.set(this.currentSlug.join("/"), result);
+        result.metadata.index = ++this.sessionIndex;
+        break;
+      }
+      case "chapter": {
+        result.doc = await this.readDoc(path);
+      }
+    }
+
+    this.popSlug(result.metadata.slug);
+    return result;
+  }
+}
+
+type Content = [ContentDir, Map<string, ContentDir>];
+
+export const loadContent = async (): Promise<Content> => {
+  const reader = new ContentReader({ recursive: true });
+  const root = await reader.readContentDir(CONTENT_DIR);
+
+  return [root, reader.sessionMap];
+};
