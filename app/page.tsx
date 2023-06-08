@@ -1,6 +1,6 @@
 import { ContentDir, loadContent } from "@/lib/content/content";
-import Link from "next/link";
 import { range } from "@/lib/content/utils";
+import Link from "next/link";
 
 type Props = {
   session: ContentDir;
@@ -10,7 +10,7 @@ const Session = ({ session, partSlug }: Props & { partSlug: string }) => {
   const { slug } = session.metadata;
   return (
     <Link href={`/${partSlug}/${slug}`} className="w-1/5">
-      <div className="text-sm hover:bg-yellow-50 bg-white px-3 py-1.5 border rounded shadow m-1">
+      <div className="text-sm hover:bg-stone-50 hover:border-stone-400 bg-white px-3 py-1.5 border rounded shadow m-1">
         {session.name}
       </div>
     </Link>
@@ -41,8 +41,10 @@ const Part = ({ session: item }: Props) => {
   );
 
   return (
-    <div className="py-3 border-t-2 border-dashed relative last-of-type:border-b-2 first-of-type:mt-1">
-      <h4 className="text-stone-500 mb-2 text-sm font-light absolute top-1 mt-0">{name}</h4>
+    <div className="py-3 border-t relative last-of-type:border-b first-of-type:mt-1">
+      <h4 className="text-stone-500 mb-2 text-sm font-light absolute top-1 mt-0">
+        {name}
+      </h4>
       <Rows />
     </div>
   );

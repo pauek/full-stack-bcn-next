@@ -1,8 +1,6 @@
-import { ContentDir, loadContent } from "@/lib/content/content";
+import Chapter from "@/components/Chapter";
+import { loadContent } from "@/lib/content/content";
 import { notFound } from "next/navigation";
-import { MDXRemote } from "next-mdx-remote/rsc";
-import { Suspense } from "react";
-import Link from "next/link";
 
 type Props = {
   params: {
@@ -10,16 +8,6 @@ type Props = {
     session: string;
   };
 };
-
-const Chapter = ({ chapter }: { chapter: ContentDir }) => (
-  <div className="py-2">
-    <Suspense>
-      <h2>{chapter.name}</h2>
-      {/* @ts-expect-error Server Component */}
-      <MDXRemote source={chapter.doc} />
-    </Suspense>
-  </div>
-);
 
 export default async function Page({ params }: Props) {
   const { part, session } = params;
@@ -29,23 +17,49 @@ export default async function Page({ params }: Props) {
     notFound();
   }
   return (
-    <div className="relative flex flex-rowm-auto">
-      <aside className="flex-1 flex flex-row justify-end items-start">
-        <div className="flex flex-col p-6 sticky top-0">
-          <Link href="#">First thing in the menu</Link>
-          <Link href="#">Second thing</Link>
-          <Link href="#">Third</Link>
-        </div>
-      </aside>
-      <div className="p-10 max-w-2xl bg-white border-l-2 border-r-2 pb-20">
-        <h1>{dir.name}</h1>
-        <div className="text-sm">
-          {dir.children?.map((ch) => (
-            <Chapter key={ch.path} chapter={ch} />
-          ))}
-        </div>
+    <div>
+      <div id="top" className="absolute top-0" />
+      <div className="border-b bg-white">
+        <h1 className="max-w-6xl m-auto mt-0 py-6 font-bold text-4xl">
+          {dir.name}
+        </h1>
       </div>
-      <div className="flex-1" />
+      <div className="relative flex flex-row m-auto max-w-6xl">
+        <aside className="flex-1 flex flex-row items-start">
+          <div className="flex flex-col pt-4 pr-10 sticky top-0 text-stone-400 transition-opacity">
+            <a href="#top" className="mb-4 text-sm">
+              {dir.name.toUpperCase()}
+            </a>
+            {dir.children?.map((ch) => (
+              <a
+                key={ch.path}
+                href={`#${ch.metadata.slug}`}
+                className="mb-2 text-sm hover:text-stone-500"
+              >
+                {ch.name}
+              </a>
+            ))}
+          </div>
+        </aside>
+        <div className="px-10 pt-6 max-w-2xl bg-white pb-20">
+          <div className="text-sm">
+            {dir.children?.map((ch) => (
+              <Chapter key={ch.path} chapter={ch} />
+            ))}
+          </div>
+        </div>
+        <div className="flex-1" />
+      </div>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  const [_, sessionMap] = await loadContent();
+  const result = [];
+  for (const key in sessionMap.keys()) {
+    const [part, session] = key.split("/");
+    result.push({ params: { part, session } });
+  }
+  return result;
 }

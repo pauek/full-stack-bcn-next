@@ -59,7 +59,7 @@ class ContentReader {
     entities.sort((a, b) => a.name.localeCompare(b.name));
     const children: Array<ContentDir> = [];
     for (const ent of entities) {
-      if (ent.isDirectory() && !ent.name.startsWith("_")) {
+      if (ent.isDirectory() && !ent.name.startsWith("_") && ent.name !== "slides") {
         const dir = await this.readContentDir(path, ent.name, level + 1);
         children.push(dir);
       }
