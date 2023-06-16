@@ -1,3 +1,4 @@
+import { Dirent } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { join } from "path";
 
@@ -26,6 +27,15 @@ export type ContentDir = {
 const dirNameToTitle = (dirName: string) => {
   const firstSpace = dirName.indexOf(" ");
   return firstSpace !== -1 ? dirName.slice(firstSpace + 1) : dirName;
+};
+
+const isContentEntity = (ent: Dirent) => {
+  return (
+    ent.isDirectory() &&
+    !ent.name.startsWith("_") &&
+    !ent.name.startsWith(".") &&
+    ent.name !== "slides"
+  );
 };
 
 const readMetadata = async (path: string) => {
@@ -59,7 +69,7 @@ class ContentReader {
     entities.sort((a, b) => a.name.localeCompare(b.name));
     const children: Array<ContentDir> = [];
     for (const ent of entities) {
-      if (ent.isDirectory() && !ent.name.startsWith("_") && ent.name !== "slides") {
+      if (isContentEntity(ent)) {
         const dir = await this.readContentDir(path, ent.name, level + 1);
         children.push(dir);
       }
