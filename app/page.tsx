@@ -1,62 +1,65 @@
-import { ContentDir, loadContent } from "@/lib/content/content";
+import type { Session } from "@/lib/content/content-server";
+import { getCourse, getPart, getSession } from "@/lib/content/content-server";
 import { range } from "@/lib/content/utils";
 import Link from "next/link";
 
-type Props = {
-  session: ContentDir;
+type SessionProps = {
+  id: string[];
 };
-
-const Session = ({ session, partSlug }: Props & { partSlug: string }) => {
-  const { slug } = session.metadata;
+const Session = async ({ id }: SessionProps) => {
+  const session = await getSession(id);
   return (
-    <Link href={`/${partSlug}/${slug}`} className="w-1/5">
-      <div className="text-sm hover:bg-stone-50 hover:border-stone-400 bg-white px-3 py-1.5 border rounded shadow m-1">
+    <Link href={`/${id.slice(1).join("/")}`} className="w-1/5">
+      <div
+        className={
+          "text-sm hover:bg-stone-50 hover:border-stone-400" +
+          " bg-white px-3 py-1.5 border rounded shadow m-1"
+        }
+      >
         {session.name}
       </div>
     </Link>
   );
 };
 
-const Part = ({ session: item }: Props) => {
-  const { name, children } = item;
-  const { slug } = item.metadata;
+type PartProps = {
+  id: string[];
+};
+const Part = async ({ id }: PartProps) => {
+  const part = await getPart(id);
 
-  const childrenInRow = (n: number) =>
-    children?.filter((ch) => ch.metadata.row === n);
+  const sessionsInRow = (n: number) =>
+    part.sessions.filter((s: any) => s.row === n);
 
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center">
-      {childrenInRow(n)?.map((session) => (
-        <Session key={session.path} partSlug={slug} session={session} />
+      {sessionsInRow(n)?.map((session: any) => (
+        <Session key={session.path} id={["fullstack", part.id, session.id]} />
       ))}
     </div>
-  );
-
-  const Rows = () => (
-    <>
-      {range(0, 10).map((n) => (
-        <Row key={n} n={n} />
-      ))}
-    </>
   );
 
   return (
     <div className="py-3 border-t relative last-of-type:border-b first-of-type:mt-1">
       <h4 className="text-stone-500 mb-2 text-sm font-light absolute top-1 mt-0">
-        {name}
+        {part.name}
       </h4>
-      <Rows />
+      {range(0, 10).map((n) => (
+        <Row key={n} n={n} />
+      ))}
     </div>
   );
 };
 
 export default async function Home() {
-  const [root] = await loadContent();
-  const { children } = root;
+  const course = await getCourse(["fullstack"]);
+  const { parts } = course;
   return (
     <div className="max-w-4xl m-auto py-3">
-      {children &&
-        children.map((item) => <Part key={item.path} session={item} />)}
+      {parts &&
+        parts.map((part: any) => (
+          <Part key={part.path} id={[course.id, part.id]} />
+        ))}
     </div>
   );
 }
