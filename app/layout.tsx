@@ -1,8 +1,7 @@
 import Header from "@/components/Header";
 import "./globals.css";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+import "@highlightjs/cdn-assets/styles/a11y-light.min.css";
+import { inter } from "@/lib/fonts";
 
 export const metadata = {
   title: "Full-stack Web Technologies",
@@ -18,9 +17,7 @@ export default function RootLayout({ children }: Props) {
       <head></head>
       <body className={inter.className}>
         <Header />
-        <main className="bg-stone-50 min-h-screen">
-        {children}
-        </main>
+        <main className="bg-stone-50 min-h-screen">{children}</main>
       </body>
     </html>
   );

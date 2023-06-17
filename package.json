@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@highlightjs/cdn-assets": "^11.8.0",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
     "@next/mdx": "^13.4.4",
@@ -16,6 +17,7 @@
     "@types/node": "20.2.5",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
+    "@types/react-syntax-highlighter": "^15.5.7",
     "autoprefixer": "10.4.14",
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.4",
@@ -25,6 +27,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-error-boundary": "^4.0.9",
+    "rehype-highlight": "^6.0.0",
+    "remark-gfm": "^3.0.1",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.3"
   }
