@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Hago este endpoint para que Next cachee las imágenes
 // y no las sirva desde el content-server.
@@ -12,7 +12,14 @@ type Context = {
 };
 export async function GET(req: NextRequest, context: Context) {
   const { path } = context.params;
-  return fetch(`${CONTENT_SERVER}/${path.join("/")}`);
+  const response = await fetch(`${CONTENT_SERVER}/${path.join("/")}`);
+  const bytes = await response.blob();
+  return new NextResponse(bytes, {
+    status: 200,
+    headers: {
+      "Content-Type": response.headers.get("Content-Type")!,
+    }
+  })
 }
 
 export async function generateStaticParams() {
