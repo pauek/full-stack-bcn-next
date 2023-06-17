@@ -8,9 +8,11 @@ import mdxComponents from "./mdx/mdx-components";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 
-import bash from "highlight.js/lib/languages/bash";
-import js from "highlight.js/lib/languages/javascript";
-import ts from "highlight.js/lib/languages/typescript";
+// import bash from "highlight.js/lib/languages/bash";
+// import js from "highlight.js/lib/languages/javascript";
+// import ts from "highlight.js/lib/languages/typescript";
+
+const { CONTENT_SERVER } = process.env;
 
 type ErrorProps = {
   chapter: Chapter;
@@ -39,22 +41,22 @@ export default async function Chapter({ id }: ChapterProps) {
           <h2 id={chapter.id}>{chapter.name}</h2>
           <MDXRemote
             source={doc}
-            components={mdxComponents}
+            components={{
+              ...mdxComponents,
+              Image: (props: React.ComponentProps<"img">) => (
+                // Hay que insertar el id del Chapter para que el documento
+                // pueda referirse a la imagen con un path relativo
+                <img
+                  className="py-3 border"
+                  src={`${CONTENT_SERVER}/${id.join("/")}/images/${props.src}`}
+                  alt={props.alt}
+                />
+              ),
+            }}
             options={{
               mdxOptions: {
                 remarkPlugins: [remarkGfm],
-                rehypePlugins: [
-                  // Los ítems de esta lista son un array con el plugin y 
-                  // sus opciones
-                  [
-                    // Tela lo que ha costado encontrar esto:
-                    // https://mdxjs.com/packages/mdx/#optionsrehypeplugins
-                    rehypeHighlight,
-                    {
-                      languages: { js, ts, bash },
-                    },
-                  ],
-                ],
+                rehypePlugins: [rehypeHighlight],
               },
             }}
           />
