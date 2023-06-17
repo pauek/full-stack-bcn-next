@@ -49,8 +49,10 @@ export default async function Chapter({ id }: ChapterProps) {
                 // pueda referirse a la imagen con un path relativo
                 <NextImage
                   className="py-3 border"
-                  src={`${CONTENT_SERVER}/${id.join("/")}/images/${props.src}`}
+                  src={`/api/images/${id.join("/")}/images/${props.src}`}
                   alt={props.alt || "image"}
+                  width={Number(props.width)}
+                  height={Number(props.height)}
                 />
               ),
             }}
