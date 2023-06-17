@@ -40,7 +40,7 @@ export const Th = (props: React.ComponentProps<"th">) => (
   </th>
 );
 
-export default {
+const components = {
   h1: H1,
   h2: H2,
   h3: H3,
@@ -50,3 +50,6 @@ export default {
   td: Td,
   th: Th,
 };
+
+
+export default components;

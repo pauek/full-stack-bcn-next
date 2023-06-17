@@ -3,6 +3,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getChapterDoc, getChapter } from "@/lib/content/content-server";
 import type { Chapter } from "@/lib/content/content-server";
+import NextImage from 'next/image';
 
 import mdxComponents from "./mdx/mdx-components";
 import rehypeHighlight from "rehype-highlight";
@@ -46,10 +47,10 @@ export default async function Chapter({ id }: ChapterProps) {
               Image: (props: React.ComponentProps<"img">) => (
                 // Hay que insertar el id del Chapter para que el documento
                 // pueda referirse a la imagen con un path relativo
-                <img
+                <NextImage
                   className="py-3 border"
                   src={`${CONTENT_SERVER}/${id.join("/")}/images/${props.src}`}
-                  alt={props.alt}
+                  alt={props.alt || "image"}
                 />
               ),
             }}
