@@ -30,6 +30,32 @@ export const Table = (props: React.ComponentProps<"table">) => (
   </div>
 );
 
+type RowProps = {
+  href: string;
+  keyword: string;
+  children: any;
+};
+export const Row = ({ href, keyword, children }: RowProps) => (
+  <tr>
+    <td>
+      {href ? (
+        <a href={href}>
+          <strong>
+            <code>{keyword}</code>
+          </strong>
+        </a>
+      ) : (
+        <strong>
+          <code>{keyword}</code>
+        </strong>
+      )}
+    </td>
+    <td>
+      {children}
+    </td>
+  </tr>
+);
+
 export const Td = (props: React.ComponentProps<"td">) => (
   <td className="px-3 py-1 border-y">{props.children}</td>
 );
@@ -47,9 +73,10 @@ const components = {
   a: A,
   code: Code,
   table: Table,
+  Table: Table,
+  Row: Row,
   td: Td,
   th: Th,
 };
-
 
 export default components;

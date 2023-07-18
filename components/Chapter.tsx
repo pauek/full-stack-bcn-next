@@ -1,33 +1,16 @@
-import { Suspense } from "react";
-import { ErrorBoundary } from "react-error-boundary";
+import { getChapter, getChapterDoc } from "@/lib/content/content-server";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getChapterDoc, getChapter } from "@/lib/content/content-server";
-import type { Chapter } from "@/lib/content/content-server";
-import NextImage from 'next/image';
+import NextImage from "next/image";
+import { Suspense } from "react";
 
-import mdxComponents from "./mdx/mdx-components";
+import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import mdxComponents from "./mdx/mdx-components";
 
 // import bash from "highlight.js/lib/languages/bash";
 // import js from "highlight.js/lib/languages/javascript";
 // import ts from "highlight.js/lib/languages/typescript";
-
-const { CONTENT_SERVER } = process.env;
-
-type ErrorProps = {
-  chapter: Chapter;
-};
-const Error = ({ chapter }: ErrorProps) => {
-  return (
-    <div
-      id={chapter.id}
-      className="bg-red-600 text-white text-xl px-3 py-2 rounded"
-    >
-      Error in &quot;{chapter.name}&quot;
-    </div>
-  );
-};
 
 type ChapterProps = {
   id: string[];
@@ -35,9 +18,23 @@ type ChapterProps = {
 export default async function Chapter({ id }: ChapterProps) {
   const chapter = await getChapter(id);
   const doc = await getChapterDoc(id);
+
+  const RenderError = () => {
+    return (
+      <div
+        id={chapter?.id}
+        className="bg-red-600 text-white text-xl px-3 py-2 rounded"
+      >
+        Error in &quot;{chapter?.name}&quot;
+      </div>
+    );
+  };
+
   return (
     <div className="py-2">
-      <ErrorBoundary fallback={<Error chapter={chapter} />}>
+      <ErrorBoundary
+        fallback={<RenderError />}
+      >
         <Suspense>
           <h2 id={chapter.id}>{chapter.name}</h2>
           <MDXRemote
@@ -59,7 +56,9 @@ export default async function Chapter({ id }: ChapterProps) {
             options={{
               mdxOptions: {
                 remarkPlugins: [remarkGfm],
-                rehypePlugins: [rehypeHighlight],
+                rehypePlugins: [[rehypeHighlight, {
+                  ignoreMissing: true
+                }]],
               },
             }}
           />
