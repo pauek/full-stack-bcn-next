@@ -9,7 +9,7 @@ type SessionProps = {
 const Session = async ({ id }: SessionProps) => {
   const session = await getSession(id);
   return (
-    <Link href={`/${id.slice(1).join("/")}`} className="w-1/5">
+    <Link href={`/content/${id.slice(1).join("/")}`} className="w-1/5">
       <div
         className={
           "text-sm hover:bg-stone-50 hover:border-stone-400" +

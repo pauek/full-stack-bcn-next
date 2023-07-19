@@ -27,7 +27,7 @@ const SessionMenu = ({
         {session.chapters.map((ch: any) => (
           <Link
             key={ch.path}
-            href={`/${path.join("/")}/${ch.id}`}
+            href={`/content/${path.join("/")}/${ch.id}`}
             className="mb-2 text-sm hover:text-stone-500"
           >
             {ch.name}

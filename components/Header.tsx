@@ -16,7 +16,9 @@ type CrumbData = {
 };
 
 export const useBreadcrumbs = (): CrumbData[] => {
-  const segments = useSelectedLayoutSegments();
+  // NOTE: Get rid of "content" which is first
+  const [_, ...segments] = useSelectedLayoutSegments();
+  console.log("useBreadcrumbs", { segments });
   const [crumbs, setCrumbs] = useState<CrumbData[]>([]);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const Crumb = ({ crumb, part }: { crumb: CrumbData; part: boolean }) => {
       {part ? (
         <div>{crumb.name}</div>
       ) : (
-        <Link href={`/${crumb.path.join("/")}`}>{crumb.name}</Link>
+        <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>
       )}
     </>
   );
@@ -48,7 +50,10 @@ export default function Header() {
       <Link href="/" className="font-bold">
         Full-stack Web Technologies
       </Link>
-      {crumbs && crumbs.map((cr, i) => <Crumb crumb={cr} part={i == 0} />)}
+      {crumbs.length > 0 &&
+        crumbs.map((cr, i) => (
+          <Crumb key={cr.path.join("/")} crumb={cr} part={i == 0} />
+        ))}
     </header>
   );
 }
