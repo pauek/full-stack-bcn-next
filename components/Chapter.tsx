@@ -1,4 +1,4 @@
-import { getChapter, getChapterDoc } from "@/lib/content/content-server";
+import { getChapter, getChapterDoc } from "@/lib/content-server";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import NextImage from "next/image";
 import { Suspense } from "react";

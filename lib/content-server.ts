@@ -10,15 +10,15 @@ export type Session = Base & { chapters: Chapter[] };
 export type Part = Base & { sessions: Session[] };
 export type Course = Base & { parts: Part[] };
 
-async function get<T>(id: string[]): Promise<T> {
+export async function getContentItem<T = Base>(id: string[]): Promise<T> {
   const response = await fetch(`${CONTENT_SERVER}/${id.join("/")}`);
   return await response.json();
 }
 
-export const getCourse = get<Course>;
-export const getPart = get<Part>;
-export const getSession = get<Session>;
-export const getChapter = get<Chapter>;
+export const getCourse = getContentItem<Course>;
+export const getPart = getContentItem<Part>;
+export const getSession = getContentItem<Session>;
+export const getChapter = getContentItem<Chapter>;
 
 export const getChapterDoc = async (id: string[]) => {
   const response = await fetch(`${CONTENT_SERVER}/${id.join("/")}/doc`);

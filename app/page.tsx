@@ -1,6 +1,6 @@
-import type { Session } from "@/lib/content/content-server";
-import { getCourse, getPart, getSession } from "@/lib/content/content-server";
-import { range } from "@/lib/content/utils";
+import type { Session } from "@/lib/content-server";
+import { getCourse, getPart, getSession } from "@/lib/content-server";
+import { range } from "@/lib/utils";
 import Link from "next/link";
 
 type SessionProps = {

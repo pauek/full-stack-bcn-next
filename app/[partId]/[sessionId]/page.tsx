@@ -4,7 +4,7 @@ import {
   getCourseList,
   getPart,
   getSession,
-} from "@/lib/content/content-server";
+} from "@/lib/content-server";
 
 type Props = {
   params: {
