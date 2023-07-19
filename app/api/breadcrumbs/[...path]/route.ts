@@ -11,9 +11,11 @@ export async function GET(req: NextRequest, context: Context) {
   const crumbs = [];
   console.log("Path =", path);
   for (let i = 1; i <= path.length; i++) {
-    const item = await getContentItem(["fullstack", ...path.slice(0, i)]);
+    const partialPath = path.slice(0, i);
+    const fullpath = ["fullstack", ...partialPath];
+    const item = await getContentItem(fullpath);
     console.log(item);
-    crumbs.push(item.name);
+    crumbs.push({ name: item.name, path: partialPath });
   }
   return NextResponse.json(crumbs);
 }
