@@ -18,12 +18,12 @@ type CrumbData = {
 export const useBreadcrumbs = (): CrumbData[] => {
   // NOTE: Get rid of "content" which is first
   const [_, ...segments] = useSelectedLayoutSegments();
-  console.log("useBreadcrumbs", { segments });
   const [crumbs, setCrumbs] = useState<CrumbData[]>([]);
+  const joinedSegments = segments.join("/");
 
   useEffect(() => {
     getBreadcrumbs(segments).then(setCrumbs);
-  }, [segments.join("/")]);
+  }, [joinedSegments]);
 
   return crumbs;
 };

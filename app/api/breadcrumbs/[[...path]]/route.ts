@@ -7,10 +7,10 @@ type Context = {
   };
 };
 export async function GET(req: NextRequest, context: Context) {
-  const { path } = context.params;
+  const { path: fullpath } = context.params;
   const crumbs = [];
-  console.log("Path =", path);
-  if (path) {
+  if (fullpath) {
+    const path = fullpath.slice(0, 3);
     for (let i = 1; i <= path.length; i++) {
       const partialPath = path.slice(0, i);
       const fullpath = ["fullstack", ...partialPath];

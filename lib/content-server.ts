@@ -28,4 +28,4 @@ export const getChapterDoc = async (id: string[]) => {
 export const getCourseList = async () => {
   const response = await fetch(`${CONTENT_SERVER}/`);
   return await response.json();
-}
+};
