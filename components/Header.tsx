@@ -35,7 +35,7 @@ const Crumb = ({ crumb, part }: { crumb: CrumbData; part: boolean }) => {
         <BreadCrumbsSlash />
       </div>
       {part ? (
-        <div>{crumb.name}</div>
+        <Link href={`/#${crumb.path[0]}`}>{crumb.name}</Link>
       ) : (
         <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>
       )}
