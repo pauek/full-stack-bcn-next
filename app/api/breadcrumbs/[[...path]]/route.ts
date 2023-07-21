@@ -13,8 +13,7 @@ export async function GET(req: NextRequest, context: Context) {
     const path = fullpath.slice(0, 3);
     for (let i = 1; i <= path.length; i++) {
       const partialPath = path.slice(0, i);
-      const fullpath = ["fullstack", ...partialPath];
-      const item = await getContentItem(fullpath);
+      const item = await getContentItem(partialPath);
       crumbs.push({ name: item.name, path: partialPath });
     }
   }

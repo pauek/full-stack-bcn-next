@@ -10,7 +10,7 @@ export type Session = Base & { chapters: Chapter[] };
 export type Part = Base & { sessions: Session[] };
 export type Course = Base & { parts: Part[] };
 
-export async function getContentItem<T = Base>(id: string[]): Promise<T> {
+export async function getContentItem<T = Base>(id: string[] = []): Promise<T> {
   const response = await fetch(`${CONTENT_SERVER}/${id.join("/")}`);
   return await response.json();
 }

@@ -16,7 +16,7 @@ export default async function CoursePart({ id }: CoursePartProps) {
       {sessionsInRow(n)?.map((session: any) => (
         <SessionButton
           key={session.path}
-          id={["fullstack", part.id, session.id]}
+          id={[part.id, session.id]}
         />
       ))}
     </div>

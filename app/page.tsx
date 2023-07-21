@@ -2,7 +2,7 @@ import CoursePart from "@/components/CoursePart";
 import { getCourse } from "@/lib/content-server";
 
 export default async function Home() {
-  const course = await getCourse(["fullstack"]);
+  const course = await getCourse();
   const { parts } = course;
   return (
     <div className="max-w-4xl m-auto py-3">

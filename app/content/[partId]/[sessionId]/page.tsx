@@ -9,15 +9,12 @@ import {
 import Link from "next/link";
 
 export async function generateStaticParams() {
-  const courseList = await getCourseList();
+  const { parts } = await getCourse();
   const result = [];
-  for (const course of courseList) {
-    const { parts } = await getCourse([course.id]);
-    for (const part of parts) {
-      const { sessions } = await getPart([course.id, part.id]);
-      for (const session of sessions) {
-        result.push({ params: { partId: part.id, sessionId: session.id } });
-      }
+  for (const part of parts) {
+    const { sessions } = await getPart([part.id]);
+    for (const session of sessions) {
+      result.push({ params: { partId: part.id, sessionId: session.id } });
     }
   }
   return result;
@@ -62,7 +59,7 @@ type PageProps = {
 };
 export default async function Page({ params }: PageProps) {
   const { partId, sessionId } = params;
-  const session = await getSession(["fullstack", partId, sessionId]);
+  const session = await getSession([partId, sessionId]);
   return (
     <div className="p-5">
       <div id="top" className="absolute top-0" />

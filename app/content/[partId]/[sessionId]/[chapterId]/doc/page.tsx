@@ -15,7 +15,7 @@ export default async function Page({ params }: ChapterPageProps) {
   return (
     <>
       <ChapterMenu path={path} active="doc" />
-      <ChapterDocument key={path.join("/")} id={["fullstack", ...path]} />
+      <ChapterDocument key={path.join("/")} id={[...path]} />
     </>
   );
 }
