@@ -19,7 +19,7 @@ body {
   h4,
   h5,
   h6 {
-    @apply mt-8 mb-0 font-semibold;
+    @apply mb-0 font-semibold;
   }
   h2,
   h3,

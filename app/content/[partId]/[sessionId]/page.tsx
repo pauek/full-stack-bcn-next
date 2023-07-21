@@ -1,4 +1,5 @@
 import {
+  Chapter,
   Session,
   getCourse,
   getCourseList,
@@ -6,52 +7,6 @@ import {
   getSession,
 } from "@/lib/content-server";
 import Link from "next/link";
-
-type Props = {
-  params: {
-    partId: string;
-    sessionId: string;
-  };
-};
-
-const SessionMenu = ({
-  path,
-  session,
-}: {
-  path: string[];
-  session: Session;
-}) => {
-  return (
-    <aside className="flex-1 flex flex-row items-start">
-      <div className="flex flex-col pt-4 pr-10 sticky top-0 text-stone-400 transition-opacity">
-        {session.chapters.map((ch: any) => (
-          <Link
-            key={ch.path}
-            href={`/content/${path.join("/")}/${ch.id}`}
-            className="mb-2 text-sm hover:text-stone-500"
-          >
-            {ch.name}
-          </Link>
-        ))}
-      </div>
-    </aside>
-  );
-};
-
-export default async function Page({ params }: Props) {
-  const { partId, sessionId } = params;
-  const session = await getSession(["fullstack", partId, sessionId]);
-
-  return (
-    <div>
-      <div id="top" className="absolute top-0" />
-      <div className="relative flex flex-row m-auto max-w-6xl">
-        <SessionMenu path={[partId, sessionId]} session={session} />
-        <div className="flex-1" />
-      </div>
-    </div>
-  );
-}
 
 export async function generateStaticParams() {
   const courseList = await getCourseList();
@@ -66,4 +21,55 @@ export async function generateStaticParams() {
     }
   }
   return result;
+}
+
+type ChapterCardProps = {
+  path: string[];
+  chapter: Chapter;
+};
+const ChapterCard = ({ path, chapter }: ChapterCardProps) => {
+  return (
+    <div className="border p-3 rounded shadow-sm bg-white hover:border-black">
+      <Link href={`/content/${path!.join("/")}/${chapter.id}`}>
+        <div className="font-bold">{chapter.name}</div>
+      </Link>
+    </div>
+  );
+};
+
+type SessionMenuProps = {
+  path: string[];
+  session: Session;
+};
+const SessionMenu = ({ path, session }: SessionMenuProps) => {
+  if (!session) {
+    return <></>;
+  }
+  return (
+    <div className="p-4 gap-2 grid grid-cols-2 w-[40em]">
+      {session.chapters.map((chapter) => (
+        <ChapterCard key={chapter.id} path={path} chapter={chapter} />
+      ))}
+    </div>
+  );
+};
+
+type PageProps = {
+  params: {
+    partId: string;
+    sessionId: string;
+  };
+};
+export default async function Page({ params }: PageProps) {
+  const { partId, sessionId } = params;
+  const session = await getSession(["fullstack", partId, sessionId]);
+  return (
+    <div className="p-5">
+      <div id="top" className="absolute top-0" />
+      <h2 className="pt-0">{session.name}</h2>
+      <div className="flex flex-row justify-center">
+        <SessionMenu path={[partId, sessionId]} session={session} />
+      </div>
+    </div>
+  );
 }
