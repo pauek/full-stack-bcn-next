@@ -1,11 +1,5 @@
-import {
-  Chapter,
-  Session,
-  getCourse,
-  getPart,
-  getSession,
-} from "@/lib/content-server";
-import Link from "next/link";
+import SessionMenu from "@/components/SessionMenu";
+import { getCourse, getPart, getSession } from "@/lib/content-server";
 
 export async function generateStaticParams() {
   const { parts } = await getCourse();
@@ -18,37 +12,6 @@ export async function generateStaticParams() {
   }
   return result;
 }
-
-type ChapterCardProps = {
-  path: string[];
-  chapter: Chapter;
-};
-const ChapterCard = ({ path, chapter }: ChapterCardProps) => {
-  return (
-    <Link href={`/content/${path!.join("/")}/${chapter.id}`}>
-      <div className="border p-3 rounded shadow-sm bg-white hover:border-black">
-        <div className="font-bold">{chapter.name}</div>
-      </div>
-    </Link>
-  );
-};
-
-type SessionMenuProps = {
-  path: string[];
-  session: Session;
-};
-const SessionMenu = ({ path, session }: SessionMenuProps) => {
-  if (!session) {
-    return <></>;
-  }
-  return (
-    <div className="gap-2 grid lg:grid-cols-2 max-md:grid-cols-1">
-      {session.chapters.map((chapter) => (
-        <ChapterCard key={chapter.id} path={path} chapter={chapter} />
-      ))}
-    </div>
-  );
-};
 
 type PageProps = {
   params: {
