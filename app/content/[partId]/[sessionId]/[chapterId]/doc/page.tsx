@@ -1,5 +1,10 @@
 import ChapterDocument from "@/components/ChapterDocument";
 import ChapterMenu from "@/components/ChapterMenu";
+import { generateAllChapterParams } from "@/lib/content-server";
+
+export async function generateStaticParams() {
+  return generateAllChapterParams();
+}
 
 export type ChapterPageProps = {
   params: {

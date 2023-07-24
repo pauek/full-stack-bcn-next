@@ -18,19 +18,3 @@ export async function GET(_: NextRequest, context: Context) {
     headers: { "Content-Type": response.headers.get("Content-Type")! },
   });
 }
-
-/*
-export async function generateStaticParams() {
-  const _get = async (what: string) => {
-    const response = await fetch(`${process.env.CONTENT_SERVER}/${what}`);
-    return (await response.json()) as string[];
-  };
-
-  const allImagesPaths: string[] = await _get("images");
-  const allSlidesPaths: string[] = await _get("slides");
-
-  return [...allImagesPaths, ...allSlidesPaths].map((path) => ({
-    path: path.split("/"),
-  }));
-}
-*/

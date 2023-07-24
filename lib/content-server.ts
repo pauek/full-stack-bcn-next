@@ -13,7 +13,6 @@ const _url = (path: string[]) =>
 
 const _getJson = async (path: string[] = []) => {
   const url = _url(path);
-  console.log("_getJson", url);
   const response = await fetch(url);
   return await response.json();
 };
@@ -38,3 +37,38 @@ export const getChapterDoc = async (path: string[]) =>
 
 export const getSlidesList = async (path: string[]) =>
   _getJson([...path, "slides"]);
+
+export const generateAllSessionParams = async () => {
+  const result = [];
+  const { parts } = await getCourse();
+  for (const part of parts) {
+    const { sessions } = await getPart([part.id]);
+    for (const session of sessions) {
+      result.push({ params: { partId: part.id, sessionId: session.id } });
+    }
+  }
+  return result;
+}
+
+export const generateAllChapterParams = async () => {
+  const result = [];
+  const { parts } = await getCourse();
+  for (const part of parts) {
+    const { sessions } = await getPart([part.id]);
+    for (const session of sessions) {
+      const { chapters } = await getSession([part.id, session.id]);
+      if (chapters) {
+        for (const chapter of chapters) {
+          result.push({
+            params: {
+              partId: part.id,
+              sessionId: session.id,
+              chapterId: chapter.id,
+            },
+          });
+        }
+      }
+    }
+  }
+  return result;
+};

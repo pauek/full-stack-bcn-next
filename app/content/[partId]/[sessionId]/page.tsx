@@ -1,16 +1,8 @@
 import SessionMenu from "@/components/SessionMenu";
-import { getCourse, getPart, getSession } from "@/lib/content-server";
+import { generateAllSessionParams, getSession } from "@/lib/content-server";
 
 export async function generateStaticParams() {
-  const { parts } = await getCourse();
-  const result = [];
-  for (const part of parts) {
-    const { sessions } = await getPart([part.id]);
-    for (const session of sessions) {
-      result.push({ params: { partId: part.id, sessionId: session.id } });
-    }
-  }
-  return result;
+  return generateAllSessionParams();
 }
 
 type PageProps = {

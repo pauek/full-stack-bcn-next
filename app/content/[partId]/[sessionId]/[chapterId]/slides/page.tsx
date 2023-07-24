@@ -1,7 +1,10 @@
 import ChapterMenu from "@/components/ChapterMenu";
 import SlideGrid from "@/components/SlideGrid";
-import { getSlidesList } from "@/lib/content-server";
-import Image from "next/image";
+import { generateAllChapterParams, getSlidesList } from "@/lib/content-server";
+
+export async function generateStaticParams() {
+  return generateAllChapterParams();
+}
 
 export type ChapterPageProps = {
   params: {
@@ -10,7 +13,6 @@ export type ChapterPageProps = {
     chapterId: string;
   };
 };
-
 
 export default async function Page({ params }: ChapterPageProps) {
   const { partId, sessionId, chapterId } = params;
