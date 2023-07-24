@@ -22,7 +22,7 @@ export default function ChapterMenu({ path, active }: ChapterMenuProps) {
   );
 
   return (
-    <div className="bg-white border-b text-sm flex flex-row gap-5 pl-5">
+    <div className="fixed z-20 top-12 left-0 right-0 bg-white border-b text-sm flex flex-row gap-5 pl-5 shadow-sm">
       <_Link text="Document" where="doc" />
       <_Link text="Slides" where="slides" />
     </div>

@@ -10,22 +10,29 @@ type Context = {
     path: string[];
   };
 };
-export async function GET(req: NextRequest, context: Context) {
+export async function GET(_: NextRequest, context: Context) {
   const { path } = context.params;
-  const response = await fetch(`${CONTENT_SERVER}/${path.join("/")}`);
-  const bytes = await response.blob();
-  return new NextResponse(bytes, {
+  const url = new URL(`${CONTENT_SERVER}/${path.join("/")}`);
+  const response = await fetch(url);
+  const blob = await response.blob();
+  return new NextResponse(blob, {
     status: 200,
-    headers: {
-      "Content-Type": response.headers.get("Content-Type")!,
-    }
-  })
+    headers: { "Content-Type": response.headers.get("Content-Type")! },
+  });
 }
 
+/*
 export async function generateStaticParams() {
-  const response = await fetch(`${CONTENT_SERVER}/images`);
-  const allImagePaths: string[] = await response.json();
-  return allImagePaths.map(path => ({
-    path: path.split("/")
-  }))
+  const _get = async (what: string) => {
+    const response = await fetch(`${CONTENT_SERVER}/${what}`);
+    return (await response.json()) as string[];
+  };
+
+  const allImagesPaths: string[] = await _get("images");
+  const allSlidesPaths: string[] = await _get("slides");
+
+  return [...allImagesPaths, ...allSlidesPaths].map((path) => ({
+    path: path.split("/"),
+  }));
 }
+*/

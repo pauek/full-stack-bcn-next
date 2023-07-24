@@ -12,6 +12,8 @@ import mdxComponents from "./mdx/mdx-components";
 // import js from "highlight.js/lib/languages/javascript";
 // import ts from "highlight.js/lib/languages/typescript";
 
+const { CONTENT_SERVER } = process.env;
+
 type ChapterProps = {
   id: string[];
 };
@@ -33,7 +35,7 @@ export default async function ChapterDocument({ id }: ChapterProps) {
   return (
     <div className="flex flex-row justify-center">
       <div className="relative m-auto w-[40em]">
-        <div className="px-8 pt-4 max-w-2xl min-h-screen bg-white pb-20 text-sm">
+        <div className="px-8 pt-4 max-w-2xl bg-white pb-20 text-sm">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>
               <h2 id={chapter.id}>{chapter.name}</h2>
@@ -46,7 +48,9 @@ export default async function ChapterDocument({ id }: ChapterProps) {
                     // pueda referirse a la imagen con un path relativo
                     <NextImage
                       className="py-3 border"
-                      src={`/api/images/${id.join("/")}/images/${props.src}`}
+                      src={`${CONTENT_SERVER}/${id.join("/")}/images/${
+                        props.src
+                      }`}
                       alt={props.alt || "image"}
                       width={Number(props.width)}
                       height={Number(props.height)}
@@ -70,7 +74,6 @@ export default async function ChapterDocument({ id }: ChapterProps) {
             </Suspense>
           </ErrorBoundary>
         </div>
-        <div className="flex-1" />
       </div>
     </div>
   );

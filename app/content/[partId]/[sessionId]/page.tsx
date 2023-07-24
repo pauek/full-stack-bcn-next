@@ -2,7 +2,6 @@ import {
   Chapter,
   Session,
   getCourse,
-  getCourseList,
   getPart,
   getSession,
 } from "@/lib/content-server";
@@ -26,11 +25,11 @@ type ChapterCardProps = {
 };
 const ChapterCard = ({ path, chapter }: ChapterCardProps) => {
   return (
-    <div className="border p-3 rounded shadow-sm bg-white hover:border-black">
-      <Link href={`/content/${path!.join("/")}/${chapter.id}`}>
+    <Link href={`/content/${path!.join("/")}/${chapter.id}`}>
+      <div className="border p-3 rounded shadow-sm bg-white hover:border-black">
         <div className="font-bold">{chapter.name}</div>
-      </Link>
-    </div>
+      </div>
+    </Link>
   );
 };
 
@@ -43,7 +42,7 @@ const SessionMenu = ({ path, session }: SessionMenuProps) => {
     return <></>;
   }
   return (
-    <div className="p-4 gap-2 grid grid-cols-2 w-[40em]">
+    <div className="gap-2 grid lg:grid-cols-2 max-md:grid-cols-1">
       {session.chapters.map((chapter) => (
         <ChapterCard key={chapter.id} path={path} chapter={chapter} />
       ))}
@@ -61,12 +60,10 @@ export default async function Page({ params }: PageProps) {
   const { partId, sessionId } = params;
   const session = await getSession([partId, sessionId]);
   return (
-    <div className="p-5">
+    <div className="p-5 max-w-4xl m-auto">
       <div id="top" className="absolute top-0" />
-      <h2 className="pt-0">{session.name}</h2>
-      <div className="flex flex-row justify-center">
-        <SessionMenu path={[partId, sessionId]} session={session} />
-      </div>
+      <h2 className="pt-6 pb-6">{session.name}</h2>
+      <SessionMenu path={[partId, sessionId]} session={session} />
     </div>
   );
 }

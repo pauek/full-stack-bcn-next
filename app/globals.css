@@ -32,7 +32,7 @@ body {
     @apply text-5xl font-bold;
   }
   h2 {
-    @apply text-3xl pt-8 pb-4 first:pt-4;
+    @apply text-4xl pt-8 pb-4 first:pt-4 font-normal;
   }
   h2 + h3 {
     @apply mt-3;

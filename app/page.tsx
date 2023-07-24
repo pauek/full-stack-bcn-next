@@ -5,10 +5,10 @@ export default async function Home() {
   const course = await getCourse();
   const { parts } = course;
   return (
-    <div className="max-w-4xl m-auto py-3">
+    <div className="w-[54em] m-auto py-3">
       {parts &&
         parts.map((part: any) => (
-          <CoursePart key={part.path} id={[course.id, part.id]} />
+          <CoursePart key={part.path} id={[part.id]} />
         ))}
     </div>
   );

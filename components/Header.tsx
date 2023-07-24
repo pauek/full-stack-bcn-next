@@ -46,7 +46,12 @@ const Crumb = ({ crumb, part }: { crumb: CrumbData; part: boolean }) => {
 export default function Header() {
   const crumbs = useBreadcrumbs();
   return (
-    <header className="h-12 flex flex-row items-center px-5 border-b">
+    <header
+      className={
+        "fixed top-0 left-0 right-0 bg-white h-12 flex " +
+        "flex-row items-center px-5 border-b z-10 shadow-sm"
+      }
+    >
       <Link href="/" className="font-bold">
         Full-stack Web Technologies
       </Link>

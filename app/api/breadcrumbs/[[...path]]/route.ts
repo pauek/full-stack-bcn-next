@@ -6,14 +6,14 @@ type Context = {
     path?: string[];
   };
 };
-export async function GET(req: NextRequest, context: Context) {
+export async function GET(_: NextRequest, context: Context) {
   const { path: fullpath } = context.params;
   const crumbs = [];
   if (fullpath) {
     const path = fullpath.slice(0, 3);
     for (let i = 1; i <= path.length; i++) {
       const partialPath = path.slice(0, i);
-      const item = await getContentItem(partialPath);
+      const item = await getContentItem<any>(partialPath);
       crumbs.push({ name: item.name, path: partialPath });
     }
   }

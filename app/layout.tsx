@@ -15,9 +15,12 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
       <head></head>
-      <body className={inter.className}>
+      <body className={inter.className + ` bg-stone-50 h-screen flex flex-col`}>
         <Header />
-        <main className="bg-stone-50 min-h-screen">{children}</main>
+        <main className="pt-12 min-h-full">
+          {children}
+          <div className="flex-1 bg-red-50"></div>
+        </main>
       </body>
     </html>
   );
