@@ -12,8 +12,6 @@ import mdxComponents from "./mdx/mdx-components";
 // import js from "highlight.js/lib/languages/javascript";
 // import ts from "highlight.js/lib/languages/typescript";
 
-const { CONTENT_SERVER } = process.env;
-
 type ChapterProps = {
   id: string[];
 };
@@ -48,7 +46,7 @@ export default async function ChapterDocument({ id }: ChapterProps) {
                     // pueda referirse a la imagen con un path relativo
                     <NextImage
                       className="py-3 border"
-                      src={`${CONTENT_SERVER}/${id.join("/")}/images/${
+                      src={`${process.env.CONTENT_SERVER}/${id.join("/")}/images/${
                         props.src
                       }`}
                       alt={props.alt || "image"}

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,15 +13,8 @@
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
     "@next/mdx": "^13.4.4",
-    "@types/mdx": "^2.0.5",
-    "@types/node": "20.2.5",
-    "@types/react": "18.2.8",
-    "@types/react-dom": "18.2.4",
-    "@types/react-syntax-highlighter": "^15.5.7",
     "autoprefixer": "10.4.14",
-    "eslint": "8.42.0",
-    "eslint-config-next": "13.4.4",
-    "next": "^13.4.10",
+    "next": "latest",
     "next-mdx-remote": "^4.4.1",
     "postcss": "8.4.24",
     "react": "18.2.0",
@@ -29,7 +22,16 @@
     "react-error-boundary": "^4.0.9",
     "rehype-highlight": "^6.0.0",
     "remark-gfm": "^3.0.1",
-    "tailwindcss": "3.3.2",
+    "tailwindcss": "3.3.2"
+  },
+  "devDependencies": {
+    "@types/mdx": "^2.0.5",
+    "@types/node": "20.2.5",
+    "@types/react": "18.2.8",
+    "@types/react-dom": "18.2.4",
+    "@types/react-syntax-highlighter": "^15.5.7",
+    "eslint": "8.42.0",
+    "eslint-config-next": "13.4.4",
     "typescript": "5.1.3"
   }
 }

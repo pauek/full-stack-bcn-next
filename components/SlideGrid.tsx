@@ -4,10 +4,8 @@ import Image from "next/image";
 import SlideViewer from "./SlideViewer";
 import { useState } from "react";
 
-const CONTENT_SERVER = process.env.NEXT_PUBLIC_CONTENT_SERVER;
-
 function slideUrl(path: string[], slide: string) {
-  return `${CONTENT_SERVER}/${path.join("/")}/slides/${slide}`;
+  return `${process.env.NEXT_PUBLIC_CONTENT_SERVER}/${path.join("/")}/slides/${slide}`;
 }
 
 type Props = {

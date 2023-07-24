@@ -17,7 +17,7 @@ export default async function Page({ params }: ChapterPageProps) {
   const path = [partId, sessionId, chapterId];
   const slides = await getSlidesList(path);
 
-  // src={`${CONTENT_SERVER}/${path.join("/")}/slides/${s}`}
+  // src={`${process.env.CONTENT_SERVER}/${path.join("/")}/slides/${s}`}
   // src={`/api/images/${path.join("/")}/slides/${s}`}
 
   return (
