@@ -32,7 +32,7 @@ export default function ChapterMenu({ options }: Props) {
     <>
       <div
         className={
-          "fixed z-20 top-12 left-0 right-0 bg-white cursor-pointer " +
+          "fixed z-10 top-12 left-0 right-0 bg-white cursor-pointer " +
           "border-b text-sm flex flex-row gap-5 pl-5 shadow-sm"
         }
       >
