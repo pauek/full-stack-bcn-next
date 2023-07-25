@@ -28,17 +28,26 @@ export const useBreadcrumbs = (): CrumbData[] => {
   return crumbs;
 };
 
-const Crumb = ({ crumb, part }: { crumb: CrumbData; part: boolean }) => {
+type CrumbProps = {
+  crumb: CrumbData;
+  position: number;
+  isLast: boolean;
+};
+const Crumb = ({ crumb, position, isLast }: CrumbProps) => {
+  let link;
+  if (position === 0) {
+    link = <Link href={`/#${crumb.path[0]}`}>{crumb.name}</Link>;
+  } else if (isLast) {
+    link = <div className="select-none">{crumb.name}</div>;
+  } else {
+    link = <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>;
+  }
   return (
     <>
       <div className="mx-2 text-stone-300">
         <BreadCrumbsSlash />
       </div>
-      {part ? (
-        <Link href={`/#${crumb.path[0]}`}>{crumb.name}</Link>
-      ) : (
-        <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>
-      )}
+      {link}
     </>
   );
 };
@@ -57,7 +66,12 @@ export default function Header() {
       </Link>
       {crumbs.length > 0 &&
         crumbs.map((cr, i) => (
-          <Crumb key={cr.path.join("/")} crumb={cr} part={i == 0} />
+          <Crumb
+            key={cr.path.join("/")}
+            crumb={cr}
+            position={i}
+            isLast={i === crumbs.length - 1}
+          />
         ))}
     </header>
   );
