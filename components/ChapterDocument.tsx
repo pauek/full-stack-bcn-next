@@ -13,11 +13,11 @@ import mdxComponents from "./mdx/mdx-components";
 // import ts from "highlight.js/lib/languages/typescript";
 
 type ChapterProps = {
-  id: string[];
+  path: string[];
 };
-export default async function ChapterDocument({ id }: ChapterProps) {
-  const chapter = await getChapter(id);
-  const doc = await getChapterDoc(id);
+export default async function ChapterDocument({ path }: ChapterProps) {
+  const chapter = await getChapter(path);
+  const doc = await getChapterDoc(path);
 
   const RenderError = () => {
     return (
@@ -46,7 +46,7 @@ export default async function ChapterDocument({ id }: ChapterProps) {
                     // pueda referirse a la imagen con un path relativo
                     <NextImage
                       className="py-3 border"
-                      src={`${process.env.CONTENT_SERVER}/${id.join("/")}/images/${
+                      src={`${process.env.CONTENT_SERVER}/${path.join("/")}/images/${
                         props.src
                       }`}
                       alt={props.alt || "image"}

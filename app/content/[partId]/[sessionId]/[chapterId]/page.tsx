@@ -1,6 +1,11 @@
-import { generateAllChapterParams, getCourse, getPart, getSession } from "@/lib/content-server";
-import { RedirectType } from "next/dist/client/components/redirect";
-import { redirect } from "next/navigation";
+import ChapterDocument from "@/components/ChapterDocument";
+import ChapterMenuNEW from "@/components/ChapterMenuNEW";
+import SlideGrid from "@/components/SlideGrid";
+import {
+  generateAllChapterParams,
+  getChapter,
+  getSlidesList,
+} from "@/lib/content-server";
 
 export async function generateStaticParams() {
   return generateAllChapterParams();
@@ -8,6 +13,28 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: any) {
   const { partId, sessionId, chapterId } = params;
-  const url = ["", "content", partId, sessionId, chapterId, "doc"];
-  redirect(url.join("/"), RedirectType.replace);
+  const path = [partId, sessionId, chapterId];
+
+  const chapter = await getChapter(path);
+  const slides = await getSlidesList(path);
+
+  let options = [];
+  if (chapter.hasDoc) {
+    options.push({
+      name: "Document",
+      component: <ChapterDocument path={path} />,
+    });
+  }
+  if (chapter.hasSlides) {
+    options.push({
+      name: "Slides",
+      component: <SlideGrid path={path} slides={slides} />,
+    });
+  }
+
+  return (
+    <>
+      <ChapterMenuNEW options={options} />
+    </>
+  );
 }
