@@ -1,4 +1,4 @@
-[ ] Si no hay slides o no hay documento no debería salir la sección
+[X] Si no hay slides o no hay documento no debería salir la sección
     que toca.
 
 [ ] Sistema para subir las imágenes a un sistema de Storage...

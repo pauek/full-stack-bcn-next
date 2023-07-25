@@ -1,32 +1,6 @@
-"use client";
-
+import { CrumbData, getBreadcrumbs } from "@/lib/content-server";
 import Link from "next/link";
-import { useSelectedLayoutSegments } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
-
-const getBreadcrumbs = async (segments: string[]): Promise<CrumbData[]> => {
-  const response = await fetch(`/api/breadcrumbs/${segments.join("/")}`);
-  return (await response.json()) as CrumbData[];
-};
-
-type CrumbData = {
-  name: string;
-  path: string[];
-};
-
-export const useBreadcrumbs = (): CrumbData[] => {
-  // NOTE: Get rid of "content" which is first
-  const [_, ...segments] = useSelectedLayoutSegments();
-  const [crumbs, setCrumbs] = useState<CrumbData[]>([]);
-  const joinedSegments = segments.join("/");
-
-  useEffect(() => {
-    getBreadcrumbs(segments).then(setCrumbs);
-  }, [joinedSegments]);
-
-  return crumbs;
-};
 
 type CrumbProps = {
   crumb: CrumbData;
@@ -52,8 +26,8 @@ const Crumb = ({ crumb, position, isLast }: CrumbProps) => {
   );
 };
 
-export default function Header() {
-  const crumbs = useBreadcrumbs();
+export default async function Header({ path }: { path: string[] }) {
+  const crumbs = await getBreadcrumbs(path);
   return (
     <header
       className={

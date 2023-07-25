@@ -31,9 +31,8 @@ export default async function ChapterDocument({ path }: ChapterProps) {
   };
 
   return (
-    <div className="flex flex-row justify-center">
-      <div className="relative m-auto w-[40em]">
-        <div className="px-8 pt-4 max-w-2xl bg-white pb-20 text-sm">
+      <div className="relative m-auto max-w-[40em]">
+        <div className="px-4 pt-4 bg-white mb-2 pb-10 text-sm">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>
               <h2 id={chapter.id}>{chapter.name}</h2>
@@ -73,6 +72,5 @@ export default async function ChapterDocument({ path }: ChapterProps) {
           </ErrorBoundary>
         </div>
       </div>
-    </div>
   );
 }

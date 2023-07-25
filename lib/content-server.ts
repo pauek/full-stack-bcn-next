@@ -72,3 +72,19 @@ export const generateAllChapterParams = async () => {
   }
   return result;
 };
+
+export type CrumbData = {
+  name: string;
+  path: string[];
+};
+
+export const getBreadcrumbs = async (path: string[]): Promise<CrumbData[]> => {
+  const crumbs: CrumbData[] = [];
+  for (let i = 1; i <= path.length; i++) {
+    const partialPath = path.slice(0, i);
+    const item = await getContentItem<any>(partialPath);
+    crumbs.push({ name: item.name, path: partialPath });
+  }
+  return crumbs;
+};
+
