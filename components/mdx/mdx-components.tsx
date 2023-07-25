@@ -5,12 +5,17 @@ export const H1 = ({ children }: any) => (
 );
 
 export const H2 = ({ children }: any) => (
-  <h2 className="font-bold text-lg">{children}</h2>
+  <h2 className="font-bold text-lg mt-6">{children}</h2>
 );
 
 export const H3 = ({ children }: any) => (
-  <h3 className="font-semibold text-md text-stone-800">{children}</h3>
+  <h3 className="font-semibold text-md text-stone-800 mt-8 mb-2">{children}</h3>
 );
+
+export const H4 = ({ children }: any) => (
+  <h3 className="mt-6 mb-1">{children}</h3>
+);
+
 
 export const A = (props: React.ComponentProps<"a">) => (
   <a {...props} className={`text-blue-600 ${props.className}`}>
@@ -70,6 +75,7 @@ const components = {
   h1: H1,
   h2: H2,
   h3: H3,
+  h4: H4,
   a: A,
   code: Code,
   table: Table,
