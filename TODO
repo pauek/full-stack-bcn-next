@@ -1,0 +1,9 @@
+[ ] Si no hay slides o no hay documento no debería salir la sección
+    que toca.
+
+[ ] Sistema para subir las imágenes a un sistema de Storage...
+    - El repo de content debe saber qué imágenes hay en el storage.
+    - Usar CloudFlare R2?
+    - Debe tener un script para subir las imágenes nuevas.
+    - Debe relacionar la carpeta de la imagen con su URL.
+
