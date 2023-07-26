@@ -31,11 +31,11 @@ export default async function ChapterDocument({ path }: ChapterProps) {
   };
 
   return (
-      <div className="relative m-auto max-w-[40em]">
-        <div className="px-4 pt-4 bg-white mb-2 pb-10 text-sm">
+    <div className="relative m-auto max-w-[54em] mt-3 mb-3">
+      <div className="mx-4 px-4 pt-4 bg-white pb-10 text-sm">
+        <div className="max-w-[40em]">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>
-              <h2 id={chapter.id}>{chapter.name}</h2>
               <MDXRemote
                 source={doc}
                 components={{
@@ -45,9 +45,9 @@ export default async function ChapterDocument({ path }: ChapterProps) {
                     // pueda referirse a la imagen con un path relativo
                     <NextImage
                       className="py-3 border"
-                      src={`${process.env.CONTENT_SERVER}/${path.join("/")}/images/${
-                        props.src
-                      }`}
+                      src={`${process.env.CONTENT_SERVER}/${path.join(
+                        "/"
+                      )}/images/${props.src}`}
                       alt={props.alt || "image"}
                       width={Number(props.width)}
                       height={Number(props.height)}
@@ -72,5 +72,6 @@ export default async function ChapterDocument({ path }: ChapterProps) {
           </ErrorBoundary>
         </div>
       </div>
+    </div>
   );
 }

@@ -1,14 +1,16 @@
 "use client";
 
+import { Chapter } from "@/lib/content-server";
 import { useState } from "react";
 
 type Props = {
+  chapter: Chapter;
   options: {
     name: string;
     component: React.ReactNode;
   }[];
 };
-export default function ChapterMenu({ options }: Props) {
+export default function ChapterContent({ chapter, options }: Props) {
   const [selected, setSelected] = useState(0);
 
   type OptProps = {
@@ -30,22 +32,24 @@ export default function ChapterMenu({ options }: Props) {
 
   return (
     <>
-      <div
-        className={
-          "fixed z-10 top-12 left-0 right-0 bg-white cursor-pointer " +
-          "border-b text-sm flex flex-row gap-5 pl-5 shadow-sm"
-        }
-      >
-        {options.map((option, i) => (
-          <Option
-            pos={i}
-            key={option.name}
-            text={option.name}
-            isActive={i == selected}
-          />
-        ))}
+      <div className="bg-white border-b">
+        <div className="max-w-[54em] pt-8 m-auto">
+          <div className="mx-4">
+            <h1 className="font-light mb-2 text-4xl">{chapter.name}</h1>
+            <div className="flex flex-row gap-5 cursor-pointer">
+              {options.map((option, i) => (
+                <Option
+                  pos={i}
+                  key={option.name}
+                  text={option.name}
+                  isActive={i == selected}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="pt-12">
+      <div className="pb-2">
         {options.map((option, i) => (
           <div key={option.name} className={i == selected ? `block` : `hidden`}>
             {option.component}

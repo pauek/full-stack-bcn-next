@@ -7,8 +7,12 @@ export default async function Home() {
   const { parts } = course;
   return (
     <StaticLayout path={[]}>
-      {parts &&
-        parts.map((part: any) => <CoursePart key={part.path} id={[part.id]} />)}
+      <div className="max-w-[54em] m-auto">
+        {parts &&
+          parts.map((part: any) => (
+            <CoursePart key={part.path} id={[part.id]} />
+          ))}
+      </div>
     </StaticLayout>
   );
 }

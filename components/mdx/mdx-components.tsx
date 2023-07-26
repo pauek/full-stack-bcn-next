@@ -18,6 +18,10 @@ export const H4 = ({ children }: any) => (
   <h3 className="mt-6 mb-1">{children}</h3>
 );
 
+export const P = ({ children }: any) => (
+  <p className="mb-4">{children}</p>
+)
+
 
 export const A = (props: React.ComponentProps<"a">) => (
   <a {...props} className={`text-blue-600 ${props.className}`}>
@@ -79,6 +83,7 @@ const components = {
   h3: H3,
   h4: H4,
   a: A,
+  p: P,
   CopyableCode,
   code: Code,
   table: Table,

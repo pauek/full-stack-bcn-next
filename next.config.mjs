@@ -7,6 +7,12 @@ const nextConfig = {
   experimental: {
     mdxRs: true,
   },
+  images: {
+    domains: [
+      "localhost",
+      "content.full-stack-bcn.dev",
+    ]
+  }
 };
 
 export default withMDX(nextConfig);

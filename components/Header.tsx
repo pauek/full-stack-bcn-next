@@ -13,7 +13,7 @@ const CrumbLink = ({ crumb, position, isLast }: CrumbProps) => {
   if (position === 0) {
     return <Link href={`/#${crumb.path[0]}`}>{crumb.name}</Link>;
   } else if (isLast) {
-    return <div className="select-none">{crumb.name}</div>;
+    return <div className="select-none text-stone-400">{crumb.name}</div>;
   } else {
     return <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>;
   }

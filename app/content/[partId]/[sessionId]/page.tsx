@@ -17,10 +17,12 @@ export default async function Page({ params }: PageProps) {
   const session = await getSession([partId, sessionId]);
   return (
     <StaticLayout path={[partId, sessionId]}>
-      <div className="p-5 max-w-4xl m-auto">
-        <div id="top" className="absolute top-0" />
-        <h2 className="pt-6 pb-6">{session.name}</h2>
-        <SessionMenu path={[partId, sessionId]} session={session} />
+      <div className="max-w-[54em] m-auto">
+        <div className="mx-4">
+          <div id="top" className="absolute top-0" />
+          <h2 className="pt-8 pb-6">{session.name}</h2>
+          <SessionMenu path={[partId, sessionId]} session={session} />
+        </div>
       </div>
     </StaticLayout>
   );

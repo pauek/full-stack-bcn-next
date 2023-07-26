@@ -1,6 +1,6 @@
 import ChapterDocument from "@/components/ChapterDocument";
-import ChapterMenu from "@/components/ChapterMenu";
-import SlideGrid from "@/components/SlideGrid";
+import ChapterContent from "@/components/ChapterContent";
+import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
 import {
   generateAllChapterParams,
@@ -35,7 +35,7 @@ export default async function Page({ params }: any) {
 
   return (
     <StaticLayout path={path}>
-      <ChapterMenu options={options} />
+      <ChapterContent chapter={chapter} options={options} />
     </StaticLayout>
   );
 }

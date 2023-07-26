@@ -10,7 +10,7 @@ export default function SessionMenu({ path, session }: SessionMenuProps) {
     return <></>;
   }
   return (
-    <div className="gap-2 grid lg:grid-cols-2 max-md:grid-cols-1">
+    <div className="gap-4 grid lg:grid-cols-2 max-md:grid-cols-1">
       {session.chapters.map((chapter) => (
         <ChapterCard key={chapter.id} path={path} chapter={chapter} />
       ))}
