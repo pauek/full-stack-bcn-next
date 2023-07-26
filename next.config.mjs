@@ -8,11 +8,22 @@ const nextConfig = {
     mdxRs: true,
   },
   images: {
-    domains: [
-      "localhost",
-      "content.full-stack-bcn.dev",
-    ]
-  }
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.full-stack-bcn.dev",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3333",
+      },
+    ],
+  },
+  poweredByHeader: false,
 };
 
 export default withMDX(nextConfig);
