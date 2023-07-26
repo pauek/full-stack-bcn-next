@@ -1,4 +1,4 @@
-import { CrumbData, getBreadcrumbs } from "@/lib/content-server";
+import { CrumbData, getBreadcrumbs, getCourse } from "@/lib/content-server";
 import Link from "next/link";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 import MobileMenu from "./MobileMenu";
@@ -31,6 +31,7 @@ const Crumb = ({ crumb, position, isLast }: CrumbProps) => {
 };
 
 export default async function Header({ path }: { path: string[] }) {
+  const course = await getCourse();
   const crumbs = await getBreadcrumbs(path);
   return (
     <header
@@ -40,7 +41,7 @@ export default async function Header({ path }: { path: string[] }) {
       }
     >
       <Link href="/" className="font-bold">
-        Full-stack Web Technologies
+        {course.name}
       </Link>
       <div className="hidden sm:flex flex-row items-center">
         {crumbs.length > 0 &&
