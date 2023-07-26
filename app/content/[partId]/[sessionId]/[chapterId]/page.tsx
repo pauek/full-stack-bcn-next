@@ -26,7 +26,7 @@ export default async function Page({ params }: any) {
       component: <ChapterDocument path={path} />,
     });
   }
-  if (chapter.hasSlides) {
+  if (chapter.numSlides > 0) {
     options.push({
       name: "Slides",
       component: <SlideGrid path={path} slides={slides} />,

@@ -3,7 +3,7 @@ type Base = {
   name: string;
 };
 
-export type Chapter = Base & { hasDoc: boolean; hasSlides: boolean };
+export type Chapter = Base & { hasDoc: boolean; numSlides: number };
 export type Session = Base & { chapters: Chapter[] };
 export type Part = Base & { sessions: Session[] };
 export type Course = Base & { parts: Part[] };
