@@ -5,5 +5,5 @@ type Props = {
   path: string;
 }
 export default function Ref({ children, path }: Props) {
-  return <Link href={`/content/${path}`}>{children}</Link>;
+  return <Link className="text-blue-600" href={`/content/${path}`}>{children}</Link>;
 }
