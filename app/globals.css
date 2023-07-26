@@ -80,5 +80,5 @@ pre code.hljs {
   padding: 0.3rem !important;
 }
 pre {
-  overflow-x: scroll;
+  overflow-x: auto;
 }
