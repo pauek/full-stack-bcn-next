@@ -1,5 +1,6 @@
 import { iosevka } from "@/lib/fonts";
 import CopyableCode from "./CopyableCode";
+import Ref from "./Ref";
 
 export const H1 = ({ children }: any) => (
   <h1 className="font-bold text-2xl">{children}</h1>
@@ -83,6 +84,7 @@ const components = {
   table: Table,
   Table: Table,
   Row: Row,
+  Ref,
   td: Td,
   th: Th,
 };
