@@ -20,5 +20,5 @@
 
 [ ] Eliminar el Part, convertirlo en un "tema", pero
     no en una "carpeta".
-    - No debería salir en el Breadcrumbs (confunde a sako).
-    - 
+    - Que salga un menú vertical para poder escoger el capítulo
+      y quizás las sesiones dentro del mismo "part".
