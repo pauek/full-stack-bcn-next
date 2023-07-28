@@ -1,20 +1,29 @@
 import { CrumbData, getBreadcrumbs } from "@/lib/content-server";
-import MobileMenu from "./MobileMenu";
 import Link from "next/link";
+import MobileMenu from "./MobileMenu";
+import SiblingsDropdown from "./SiblingsDropdown";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 
 type CrumbProps = {
   crumb: CrumbData;
-  position: number;
-  isLast: boolean;
 };
 
-const CrumbLink = ({ crumb, position, isLast }: CrumbProps) => {
-  if (isLast) {
-    return <div className="select-none text-stone-400">{crumb.name}</div>;
-  } else {
-    return <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>;
-  }
+const CrumbLink = ({ crumb }: CrumbProps) => {
+  const showDropdown = crumb.siblings.length > 1;
+  return (
+    <div
+      className={
+        "flex flex-row gap-2 items-end relative " + (showDropdown ? "pr-8" : "")
+      }
+    >
+      <Link href={`/content/${crumb.path.join("/")}`}>{crumb.name}</Link>
+      {showDropdown && (
+        <div className="absolute top-0 right-0">
+          <SiblingsDropdown siblings={crumb.siblings} />
+        </div>
+      )}
+    </div>
+  );
 };
 
 type Props = {
@@ -24,31 +33,22 @@ export default async function Breadcrumbs({ path }: Props) {
   const [__part, ...crumbs] = await getBreadcrumbs(path);
   return (
     <>
-      <div className="hidden sm:flex flex-row items-center">
-        {crumbs.length > 1 &&
+      <div className="hidden md:flex flex-row items-center">
+        {crumbs.length > 0 &&
           crumbs.map((cr, i) => (
             <>
               <div className={"mx-2 text-stone-300 "}>
                 <BreadCrumbsSlash />
               </div>
-              <CrumbLink
-                crumb={cr}
-                position={i}
-                isLast={i === crumbs.length - 1}
-              />
+              <CrumbLink crumb={cr} />
             </>
           ))}
       </div>
       {crumbs.length > 0 && (
-        <div className="sm:hidden flex-1 flex flex-row justify-end">
+        <div className="md:hidden flex-1 flex flex-row justify-end">
           <MobileMenu>
             {crumbs.slice(0, crumbs.length - 1).map((cr, i) => (
-              <CrumbLink
-                key={cr.path.join("/")}
-                crumb={cr}
-                position={i}
-                isLast={i === crumbs.length - 1}
-              />
+              <CrumbLink key={cr.path.join("/")} crumb={cr} />
             ))}
           </MobileMenu>
         </div>

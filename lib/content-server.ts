@@ -48,7 +48,7 @@ export const generateAllSessionParams = async () => {
     }
   }
   return result;
-}
+};
 
 export const generateAllChapterParams = async () => {
   const result = [];
@@ -76,15 +76,31 @@ export const generateAllChapterParams = async () => {
 export type CrumbData = {
   name: string;
   path: string[];
+  siblings: Array<any>;
 };
 
 export const getBreadcrumbs = async (path: string[]): Promise<CrumbData[]> => {
   const crumbs: CrumbData[] = [];
+  let siblings: Array<any> = [];
   for (let i = 1; i <= path.length; i++) {
-    const partialPath = path.slice(0, i);
-    const item = await getContentItem<any>(partialPath);
-    crumbs.push({ name: item.name, path: partialPath });
+    const currPath = path.slice(0, i);
+    const item = await getContentItem<any>(currPath);
+    crumbs.push({
+      name: item.name,
+      path: currPath,
+      siblings: siblings.map((s) => ({
+        name: s.name,
+        path: [...currPath.slice(0, i - 1), s.id],
+      })),
+    });
+    switch (i) {
+      case 1:
+        siblings = item.sessions;
+        break;
+      case 2:
+        siblings = item.chapters;
+        break;
+    }
   }
   return crumbs;
 };
-
