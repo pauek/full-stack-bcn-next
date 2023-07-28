@@ -92,13 +92,6 @@
   h6 {
     @apply mb-0 font-semibold;
   }
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply first:mt-2;
-  }
   h1 {
     @apply text-5xl font-bold;
   }
@@ -109,7 +102,7 @@
     @apply mt-3;
   }
   h3 {
-    @apply text-lg;
+    @apply text-base;
   }
   h4 {
     @apply text-base;
@@ -129,7 +122,7 @@
     @apply my-1 pl-1;
   }
   pre {
-    @apply bg-stone-100 py-1 px-2 my-4 rounded text-white border border-stone-200;
+    @apply bg-stone-100 py-1 px-2 my-4 rounded text-white border border-stone-200 overflow-x-auto;
   }
   strong {
     @apply font-semibold;
@@ -137,8 +130,5 @@
   code {
     @apply text-stone-700;
     font-family: "Iosevka";
-  }
-  pre code {
-    /* @apply text-black; */
   }
 }

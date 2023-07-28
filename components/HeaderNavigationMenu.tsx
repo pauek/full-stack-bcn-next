@@ -31,7 +31,13 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
               {crumb.siblings.length === 1 && (
                 <Link
                   href={`/content/${crumb.path.join("/")}`}
-                  className="block text-sm select-none space-y-1 rounded-md p-3 px-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground font-medium mx-1"
+                  className={
+                    "block text-sm select-none space-y-1 rounded-md " +
+                    "p-3 px-4 leading-none no-underline outline-none " +
+                    "transition-colors hover:bg-accent " +
+                    "hover:text-accent-foreground focus:bg-accent " +
+                    "focus:text-accent-foreground font-medium mx-1"
+                  }
                 >
                   {crumb.name}
                 </Link>
@@ -42,7 +48,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                     {crumb.name}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="flex flex-col w-[20em] list-none p-1 pr-2 m-0">
+                    <ul className="flex flex-col gap-0 w-[20em] list-none p-1 py-2 pr-3 m-0">
                       {crumb.siblings.map((sib, i) => {
                         const isCurrent =
                           sib.path.join("/") === crumb.path.join("/");
@@ -52,16 +58,18 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                               <Link
                                 href={`/content/${sib.path.join("/")}`}
                                 className={cn(
-                                  "flex flex-row items-center text-sm select-none space-y-1 rounded-md " +
-                                    "p-3 leading-none no-underline outline-none " +
-                                    "transition-colors hover:bg-accent " +
-                                    "hover:text-accent-foreground focus:bg-accent " +
-                                    "focus:text-accent-foreground",
+                                  "flex flex-row items-center text-sm select-none " +
+                                    "space-y-1 rounded-md p-3 leading-none " +
+                                    "no-underline outline-none transition-colors " +
+                                    "hover:bg-accent hover:text-accent-foreground " +
+                                    "focus:bg-accent focus:text-accent-foreground",
                                   isCurrent ? "bg-accent" : ""
                                 )}
                               >
                                 {sib.name}
-                                {isCurrent && <CheckMark className="ml-2" size={20} />}
+                                {isCurrent && (
+                                  <CheckMark className="ml-2" size={20} />
+                                )}
                               </Link>
                             </li>
                           </NavigationMenuLink>

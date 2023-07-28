@@ -19,7 +19,7 @@ export const H4 = ({ children }: any) => (
 );
 
 export const P = ({ children }: any) => (
-  <p className="mb-4">{children}</p>
+  <p className="mb-4 first:mt-0">{children}</p>
 )
 
 

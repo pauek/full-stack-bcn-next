@@ -2,6 +2,14 @@ import { Chapter, getChapter } from "@/lib/content-server";
 import Link from "next/link";
 import SlideShow from "./icons/SlideShow";
 import BookIcon from "./icons/BookIcon";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 type ChapterCardProps = {
   path: string[];
@@ -12,6 +20,28 @@ export default async function ChapterCard({ path, chapter }: ChapterCardProps) {
   const chapterUrl = `/content/${path!.join("/")}/${chapter.id}`;
   return (
     <Link href={chapterUrl}>
+      <Card>
+        <CardHeader className="p-5">
+          <CardTitle>{chapter.name}</CardTitle>
+          <CardDescription>
+            <div className="flex flex-row items-center text-stone-400 min-h-[20px]">
+              {_chap.hasDoc && <BookIcon size={18} />}
+              <div className="border-l mr-3"></div>
+              {_chap.numSlides > 0 && (
+                <>
+                  <SlideShow size={16} className="mr-1" />
+                  {_chap.numSlides}
+                </>
+              )}
+            </div>
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </Link>
+  );
+
+  /*
+
       <div className="border rounded shadow-sm bg-white hover:border-stone-400 flex flex-col">
         <div className="font-bold p-3 pl-4 pb-2">{chapter.name}</div>
         <div className="border-b"></div>
@@ -30,6 +60,7 @@ export default async function ChapterCard({ path, chapter }: ChapterCardProps) {
           )}
         </div>
       </div>
-    </Link>
-  );
+
+
+  */
 }

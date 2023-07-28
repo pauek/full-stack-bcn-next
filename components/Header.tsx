@@ -19,7 +19,9 @@ export default async function Header({ path }: { path: string[] }) {
       {part && (
         <>
           <BreadCrumbsSlash className="ml-5 mr-5" />
-          <div className="font-medium text-sm text-stone-400 mx-1">{part.name}</div>
+          <div className="font-medium text-sm text-stone-400 mx-1">
+            {part.name}
+          </div>
         </>
       )}
       <HeaderNavigationMenu crumbs={crumbs} />

@@ -1,4 +1,4 @@
-import SessionMenu from "@/components/SessionMenu";
+import ChapterCard from "@/components/ChapterCard";
 import StaticLayout from "@/components/StaticLayout";
 import { generateAllSessionParams, getSession } from "@/lib/content-server";
 
@@ -21,7 +21,15 @@ export default async function Page({ params }: PageProps) {
         <div className="mx-4">
           <div id="top" className="absolute top-0" />
           <h2 className="pt-8 pb-6">{session.name}</h2>
-          <SessionMenu path={[partId, sessionId]} session={session} />
+          <div className="gap-4 grid lg:grid-cols-2 max-md:grid-cols-1">
+            {session.chapters.map((chapter) => (
+              <ChapterCard
+                key={chapter.id}
+                path={[partId, sessionId]}
+                chapter={chapter}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </StaticLayout>
