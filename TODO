@@ -1,6 +1,3 @@
-[X] Si no hay slides o no hay documento no debería salir la sección
-    que toca.
-
 [ ] Sistema para subir las imágenes a un sistema de Storage...
     [ ] - Catalogar todas las imágenes y hacer una lista con su hash.
     [ ] - Usar el hash para cargarlas (desde el content server igualmente).
@@ -17,8 +14,3 @@
 [ ] Trabajar en el tipo de elementos 
 
 [ ] Versión de móviles de la página principal
-
-[ ] Eliminar el Part, convertirlo en un "tema", pero
-    no en una "carpeta".
-    - Que salga un menú vertical para poder escoger el capítulo
-      y quizás las sesiones dentro del mismo "part".
