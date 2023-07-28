@@ -10,9 +10,15 @@
     - Debe relacionar la carpeta de la imagen con su URL.
 
 [ ] Login
+    [ ] Estudiar Lucia
     [ ] Escoger proveedor para los datos (pagando...).
     [ ] Implementar login.
 
 [ ] Trabajar en el tipo de elementos 
 
 [ ] Versión de móviles de la página principal
+
+[ ] Eliminar el Part, convertirlo en un "tema", pero
+    no en una "carpeta".
+    - No debería salir en el Breadcrumbs (confunde a sako).
+    - 
