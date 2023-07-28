@@ -2,6 +2,7 @@ import { getBreadcrumbs, getCourse } from "@/lib/content-server";
 import Link from "next/link";
 import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
+import MobileMenu from "./MobileMenu";
 
 export default async function Header({ path }: { path: string[] }) {
   const course = await getCourse();
@@ -17,14 +18,29 @@ export default async function Header({ path }: { path: string[] }) {
         {course.name}
       </Link>
       {part && (
-        <>
+        <div className="md:flex flex-row items-center hidden">
           <BreadCrumbsSlash className="ml-5 mr-5" />
           <div className="font-medium text-sm text-stone-400 mx-1">
             {part.name}
           </div>
-        </>
+        </div>
       )}
-      <HeaderNavigationMenu crumbs={crumbs} />
+      <div className="md:flex flex-row items-center hidden">
+        <HeaderNavigationMenu crumbs={crumbs} />
+      </div>
+      <div className="md:hidden block">
+        <MobileMenu>
+          {crumbs.length > 0 && crumbs.slice(-1)[0].siblings.map((sib) => (
+            <Link
+              href={`/content/${sib.path.join("/")}`}
+              className="text-sm"
+              key={sib.path.join(":")}
+            >
+              {sib.name}
+            </Link>
+          ))}
+        </MobileMenu>
+      </div>
     </header>
   );
 }

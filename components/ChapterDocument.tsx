@@ -32,7 +32,7 @@ export default async function ChapterDocument({ path }: ChapterProps) {
 
   return (
     <div className="relative m-auto max-w-[54em] mt-2 mb-2">
-      <div className="mx-2 px-6 pt-6 bg-white pb-10 text-sm">
+      <div className="mx-2 px-6 pt-6 bg-white pb-10 text-sm rounded-md">
         <div className="max-w-[40em]">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>

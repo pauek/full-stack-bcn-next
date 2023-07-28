@@ -1,14 +1,12 @@
 import { Chapter, getChapter } from "@/lib/content-server";
 import Link from "next/link";
-import SlideShow from "./icons/SlideShow";
 import BookIcon from "./icons/BookIcon";
+import SlideShow from "./icons/SlideShow";
 import {
   Card,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "./ui/card";
 
 type ChapterCardProps = {

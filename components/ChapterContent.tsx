@@ -21,12 +21,14 @@ export default function ChapterContent({ chapter, options }: Props) {
   const Option = ({ pos, isActive, text }: OptProps) => (
     <div
       className={
-        "py-2 " +
+        "p-0 " +
         (isActive ? "border-b-2 border-black text-black" : "text-stone-500")
       }
       onClick={() => setSelected(pos)}
     >
-      {text}
+      <div className="m-1 p-1 px-2 hover:bg-stone-100 rounded transition-color text-sm">
+        {text}
+      </div>
     </div>
   );
 
@@ -36,7 +38,7 @@ export default function ChapterContent({ chapter, options }: Props) {
         <div className="max-w-[54em] pt-8 m-auto">
           <div className="mx-4">
             <h1 className="font-light mb-2 text-4xl">{chapter.name}</h1>
-            <div className="flex flex-row gap-5 cursor-pointer">
+            <div className="flex flex-row cursor-pointer">
               {options.map((option, i) => (
                 <Option
                   pos={i}
