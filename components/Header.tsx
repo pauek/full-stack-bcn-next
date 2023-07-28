@@ -1,9 +1,11 @@
-import { getCourse } from "@/lib/content-server";
+import { getBreadcrumbs, getCourse } from "@/lib/content-server";
 import Link from "next/link";
-import Breadcrumbs from "./Breadcrumbs";
+import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
+import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 
 export default async function Header({ path }: { path: string[] }) {
   const course = await getCourse();
+  const [part, ...crumbs] = await getBreadcrumbs(path);
   return (
     <header
       className={
@@ -14,7 +16,13 @@ export default async function Header({ path }: { path: string[] }) {
       <Link href="/" className="font-bold">
         {course.name}
       </Link>
-      <Breadcrumbs path={path} />
+      {part && (
+        <>
+          <BreadCrumbsSlash className="ml-5 mr-5" />
+          <div className="font-medium text-sm text-stone-400 mx-1">{part.name}</div>
+        </>
+      )}
+      <HeaderNavigationMenu crumbs={crumbs} />
     </header>
   );
 }
