@@ -17,7 +17,7 @@ export default async function Page({ params }: PageProps) {
   const session = await getSession([partId, sessionId]);
   return (
     <StaticLayout path={[partId, sessionId]}>
-      <div className="max-w-[54em] m-auto">
+      <div className="max-w-[54em] m-auto pb-6">
         <div className="mx-4">
           <div id="top" className="absolute top-0" />
           <h2 className="pt-8 pb-6">{session.name}</h2>
