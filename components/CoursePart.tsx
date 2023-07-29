@@ -14,17 +14,14 @@ export default async function CoursePart({ id }: CoursePartProps) {
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center">
       {sessionsInRow(n)?.map((session: any) => (
-        <SessionButton
-          key={session.path}
-          id={[part.id, session.id]}
-        />
+        <SessionButton key={session.path} id={[part.id, session.id]} />
       ))}
     </div>
   );
 
   return (
-    <div id={part.id} className="py-3 border-t relative last-of-type:border-b first-of-type:mt-1">
-      <h4 className="text-stone-500 mb-2 text-sm font-light absolute top-1 mt-0">
+    <div id={part.id} className="pt-2 pb-4 max-w-[52em]">
+      <h4 className={"text-stone-400 mb-2 text-center uppercase font-semibold"}>
         {part.name}
       </h4>
       {range(0, 10).map((n) => (
@@ -32,4 +29,4 @@ export default async function CoursePart({ id }: CoursePartProps) {
       ))}
     </div>
   );
-};
+}

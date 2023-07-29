@@ -20,6 +20,9 @@ type Props = {
 };
 export default function MobileMenu({ crumbs }: Props) {
   const router = useRouter();
+  if (crumbs.length === 0) {
+    return <></>;
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
