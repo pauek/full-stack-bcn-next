@@ -1,27 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { CrumbData } from "@/lib/content-server";
 import MobileMenuIcon from "./icons/MobileMenuIcon";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
+import { cn } from "@/lib/utils";
+import CheckMark from "./icons/CheckMark";
 
 type Props = {
-  children: React.ReactNode;
+  crumbs: CrumbData[];
 };
-export default function MobileMenu({ children }: Props) {
-  const [open, setOpen] = useState(false);
-  if (open) {
-    return (
-      <div className="fixed top-0.5 right-0.5 px-6 py-4 border z-11 shadow-md bg-white rounded flex flex-col items-start pr-16 w-[16em]">
-        <div className="flex flex-col gap-4">{children}</div>
-        <div className="text-right" onClick={() => setOpen(false)}>
-          <MobileMenuIcon size={20} />
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div onClick={() => setOpen(true)}>
+export default function MobileMenu({ crumbs }: Props) {
+  const router = useRouter();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
         <MobileMenuIcon size={20} />
-      </div>
-    );
-  }
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80">
+        {crumbs.map((crumb) => (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup key={crumb.path.join(":")}>
+              {crumb.siblings.map((sib) => {
+                const isCurrent = sib.path.join("/") === crumb.path.join("/");
+                return (
+                  <DropdownMenuItem
+                    key={sib.path.join(":")}
+                    className={cn("py-4 text-md", isCurrent ? "bg-accent" : "")}
+                    onSelect={() =>
+                      router.push(`/content/${sib.path.join("/")}`)
+                    }
+                  >
+                    {sib.name}
+                    {isCurrent && <CheckMark className="ml-2" size={20} />}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuGroup>
+          </>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
