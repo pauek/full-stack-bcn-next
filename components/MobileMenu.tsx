@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
 import CheckMark from "./icons/CheckMark";
+import { ScrollArea } from "./ui/scroll-area";
 
 type Props = {
   crumbs: CrumbData[];
@@ -24,17 +25,17 @@ export default function MobileMenu({ crumbs }: Props) {
       <DropdownMenuTrigger>
         <MobileMenuIcon size={20} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80">
-        {crumbs.map((crumb) => (
+      <DropdownMenuContent className="w-80 max-h-fit">
+        {crumbs.map((crumb, i) => (
           <>
-            <DropdownMenuSeparator />
+            {i > 0 && <DropdownMenuSeparator />}
             <DropdownMenuGroup key={crumb.path.join(":")}>
               {crumb.siblings.map((sib) => {
                 const isCurrent = sib.path.join("/") === crumb.path.join("/");
                 return (
                   <DropdownMenuItem
                     key={sib.path.join(":")}
-                    className={cn("py-4 text-md", isCurrent ? "bg-accent" : "")}
+                    className={cn("py-3 text-md", isCurrent ? "bg-accent" : "")}
                     onSelect={() =>
                       router.push(`/content/${sib.path.join("/")}`)
                     }
