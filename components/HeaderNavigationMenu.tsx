@@ -28,7 +28,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
           {crumbs.map((crumb, i) => (
             <>
               {i > 0 && <BreadCrumbsSlash className="ml-10 mr-10" />}
-              {crumb.siblings.length === 1 && (
+              {crumb.siblings && crumb.siblings.length === 1 && (
                 <Link
                   href={`/content/${crumb.path.join("/")}`}
                   className={
@@ -42,7 +42,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                   {crumb.name}
                 </Link>
               )}
-              {crumb.siblings.length > 1 && (
+              {crumb.siblings && crumb.siblings.length > 1 && (
                 <NavigationMenuItem key={crumb.path.join(":")}>
                   <NavigationMenuTrigger className="px-2 py-1 mx-1">
                     {crumb.name}

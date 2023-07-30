@@ -32,8 +32,7 @@ export const getPart = getContentItem<Part>;
 export const getSession = getContentItem<Session>;
 export const getChapter = getContentItem<Chapter>;
 
-export const getChapterDoc = async (path: string[]) =>
-  _getText(...path, "doc");
+export const getChapterDoc = async (path: string[]) => _getText(...path, "doc");
 
 export const getSlidesList = async (path: string[]) =>
   _getJson(...path, "slides");
@@ -76,10 +75,12 @@ export const generateAllChapterParams = async () => {
 export type CrumbData = {
   name: string;
   path: string[];
-  siblings: Array<any>;
+  siblings?: Array<CrumbData>;
 };
 
-export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> => {
+export const getBreadcrumbs = async (
+  ...path: string[]
+): Promise<CrumbData[]> => {
   const crumbs: CrumbData[] = [];
   let siblings: Array<any> = [];
   for (let i = 1; i <= path.length; i++) {
@@ -88,10 +89,12 @@ export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> =>
     crumbs.push({
       name: item.name,
       path: currPath,
-      siblings: siblings.map((s) => ({
-        name: s.name,
-        path: [...currPath.slice(0, i - 1), s.id],
-      })),
+      siblings: siblings.map(
+        (s): CrumbData => ({
+          name: s.name,
+          path: [...currPath.slice(0, i - 1), s.id],
+        })
+      ),
     });
     switch (i) {
       case 1:

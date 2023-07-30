@@ -32,23 +32,28 @@ export default function MobileMenu({ crumbs }: Props) {
         {crumbs.map((crumb, i) => (
           <>
             {i > 0 && <DropdownMenuSeparator />}
-            <DropdownMenuGroup key={crumb.path.join(":")}>
-              {crumb.siblings.map((sib) => {
-                const isCurrent = sib.path.join("/") === crumb.path.join("/");
-                return (
-                  <DropdownMenuItem
-                    key={sib.path.join(":")}
-                    className={cn("py-3 text-md", isCurrent ? "bg-accent" : "")}
-                    onSelect={() =>
-                      router.push(`/content/${sib.path.join("/")}`)
-                    }
-                  >
-                    {sib.name}
-                    {isCurrent && <CheckMark className="ml-2" size={20} />}
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuGroup>
+            {crumb.siblings && (
+              <DropdownMenuGroup key={crumb.path.join(":")}>
+                {crumb.siblings.map((sib) => {
+                  const isCurrent = sib.path.join("/") === crumb.path.join("/");
+                  return (
+                    <DropdownMenuItem
+                      key={sib.path.join(":")}
+                      className={cn(
+                        "py-3 text-md",
+                        isCurrent ? "bg-accent" : ""
+                      )}
+                      onSelect={() =>
+                        router.push(`/content/${sib.path.join("/")}`)
+                      }
+                    >
+                      {sib.name}
+                      {isCurrent && <CheckMark className="ml-2" size={20} />}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuGroup>
+            )}
           </>
         ))}
       </DropdownMenuContent>
