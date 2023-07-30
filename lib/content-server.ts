@@ -53,36 +53,16 @@ export const generateAllSessionParams = async () => {
   return result;
 };
 
-export const generateAllChapterParams = async () => {
-  const result = [];
-  const { parts } = await getCourse();
-  for (const part of parts) {
-    const { sessions } = await getPart(part.id);
-    for (const session of sessions) {
-      const { chapters } = await getSession(part.id, session.id);
-      if (chapters) {
-        for (const chapter of chapters) {
-          result.push({
-            params: {
-              partId: part.id,
-              sessionId: session.id,
-              chapterId: chapter.id,
-            },
-          });
-        }
-      }
-    }
-  }
-  return result;
-};
+export const allChapterPaths = async () => _getJson("all-chapter-paths");
 
 export type CrumbData = {
   name: string;
   path: string[];
   siblings?: Array<CrumbData>;
 };
-
-export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> => {
-  const json = await _getJson("breadcrumbs", ...path);
-  return json || [];
-}
+export const getBreadcrumbs = async (
+  ...path: string[]
+): Promise<CrumbData[]> => {
+  const breadcrumbs = await _getJson("breadcrumbs", ...path);
+  return breadcrumbs || [];
+};

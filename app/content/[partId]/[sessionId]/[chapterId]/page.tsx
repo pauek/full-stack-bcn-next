@@ -3,13 +3,13 @@ import ChapterContent from "@/components/ChapterContent";
 import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
 import {
-  generateAllChapterParams,
+  allChapterPaths,
   getChapter,
   getSlidesList,
 } from "@/lib/content-server";
 
 export async function generateStaticParams() {
-  return generateAllChapterParams();
+  return allChapterPaths();
 }
 
 export default async function Page({ params }: any) {
