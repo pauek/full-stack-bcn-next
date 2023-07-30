@@ -14,7 +14,7 @@ type ChapterCardProps = {
   chapter: Chapter;
 };
 export default async function ChapterCard({ path, chapter }: ChapterCardProps) {
-  const _chap = await getChapter([...path, chapter.id]);
+  const _chap = await getChapter(...path, chapter.id);
   const chapterUrl = `/content/${path!.join("/")}/${chapter.id}`;
   return (
     <Link href={chapterUrl}>

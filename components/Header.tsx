@@ -1,18 +1,12 @@
 import { getBreadcrumbs, getCourse } from "@/lib/content-server";
 import Link from "next/link";
 import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
-import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 import MobileMenu from "./MobileMenu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import MobileMenuIcon from "./icons/MobileMenuIcon";
+import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 
 export default async function Header({ path }: { path: string[] }) {
   const course = await getCourse();
-  const [part, ...crumbs] = await getBreadcrumbs(path);
+  const [part, ...crumbs] = await getBreadcrumbs(...path);
   return (
     <header
       className={

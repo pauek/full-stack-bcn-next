@@ -16,7 +16,7 @@ type ChapterProps = {
   path: string[];
 };
 export default async function ChapterDocument({ path }: ChapterProps) {
-  const chapter = await getChapter(path);
+  const chapter = await getChapter(...path);
   const doc = await getChapterDoc(path);
 
   const RenderError = () => {

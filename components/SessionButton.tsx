@@ -2,12 +2,12 @@ import { getSession } from "@/lib/content-server";
 import Link from "next/link";
 
 type SessionButtonProps = {
-  id: string[];
+  path: string[];
 };
-const SessionButton = async ({ id }: SessionButtonProps) => {
-  const session = await getSession(id);
+const SessionButton = async ({ path }: SessionButtonProps) => {
+  const session = await getSession(...path);
   return (
-    <Link href={`/content/${id.join("/")}`} className="w-1/3">
+    <Link href={`/content/${path.join("/")}`} className="w-1/3">
       <div
         className={
           "text-sm flex flex-wrap justify-center items-center text-center hover:bg-stone-50 hover:border-stone-400" +

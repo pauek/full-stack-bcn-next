@@ -10,7 +10,7 @@ export default async function Home() {
       <div className="max-w-[54em] m-auto">
         {parts &&
           parts.map((part: any) => (
-            <CoursePart key={part.path} id={[part.id]} />
+            <CoursePart key={part.path} path={[part.id]} />
           ))}
       </div>
     </StaticLayout>

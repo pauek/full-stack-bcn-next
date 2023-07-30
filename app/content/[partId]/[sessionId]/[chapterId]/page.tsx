@@ -16,7 +16,7 @@ export default async function Page({ params }: any) {
   const { partId, sessionId, chapterId } = params;
   const path = [partId, sessionId, chapterId];
 
-  const chapter = await getChapter(path);
+  const chapter = await getChapter(...path);
   const slides = await getSlidesList(path);
 
   let options = [];

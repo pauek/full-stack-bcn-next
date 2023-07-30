@@ -3,10 +3,10 @@ import SessionButton from "./SessionButton";
 import { range } from "@/lib/utils";
 
 type CoursePartProps = {
-  id: string[];
+  path: string[];
 };
-export default async function CoursePart({ id }: CoursePartProps) {
-  const part = await getPart(id);
+export default async function CoursePart({ path }: CoursePartProps) {
+  const part = await getPart(...path);
 
   const sessionsInRow = (n: number) =>
     part.sessions.filter((s: any) => s.row === n);
@@ -14,7 +14,7 @@ export default async function CoursePart({ id }: CoursePartProps) {
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center">
       {sessionsInRow(n)?.map((session: any) => (
-        <SessionButton key={session.path} id={[part.id, session.id]} />
+        <SessionButton key={session.path} path={[part.id, session.id]} />
       ))}
     </div>
   );
