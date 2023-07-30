@@ -1,9 +1,10 @@
 import ChapterCard from "@/components/ChapterCard";
 import StaticLayout from "@/components/StaticLayout";
-import { generateAllSessionParams, getSession } from "@/lib/content-server";
+import { allSessionPaths, getSession } from "@/lib/content-server";
 
 export async function generateStaticParams() {
-  return generateAllSessionParams();
+  const sessionPaths = (await allSessionPaths()) as Array<any>;
+  return sessionPaths.map((path) => ({ params: path }));
 }
 
 type PageProps = {

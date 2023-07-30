@@ -9,7 +9,8 @@ import {
 } from "@/lib/content-server";
 
 export async function generateStaticParams() {
-  return allChapterPaths();
+  const chapterPaths = (await allChapterPaths() as Array<any>);
+  return chapterPaths.map((p) => ({ params: p }));
 }
 
 export default async function Page({ params }: any) {

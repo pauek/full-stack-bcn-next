@@ -54,6 +54,7 @@ export const generateAllSessionParams = async () => {
 };
 
 export const allChapterPaths = async () => _getJson("all-chapter-paths");
+export const allSessionPaths = async () => _getJson("all-session-paths");
 
 export type CrumbData = {
   name: string;
