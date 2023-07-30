@@ -41,18 +41,6 @@ export const getChapterDoc = async (path: string[]) => _getText(...path, "doc");
 export const getSlidesList = async (path: string[]) =>
   _getJson(...path, "slides");
 
-export const generateAllSessionParams = async () => {
-  const result = [];
-  const { parts } = await getCourse();
-  for (const part of parts) {
-    const { sessions } = await getPart(part.id);
-    for (const session of sessions) {
-      result.push({ params: { partId: part.id, sessionId: session.id } });
-    }
-  }
-  return result;
-};
-
 export const allChapterPaths = async () => _getJson("all-chapter-paths");
 export const allSessionPaths = async () => _getJson("all-session-paths");
 
