@@ -14,7 +14,11 @@ const _url = (...path: string[]) =>
 const _getJson = async (...path: string[]) => {
   const url = _url(...path);
   const response = await fetch(url);
-  return await response.json();
+  try {
+    return await response.json();
+  } catch (e) {
+    return null;
+  }
 };
 const _getText = async (...path: string[]) => {
   const response = await fetch(_url(...path));
@@ -78,32 +82,7 @@ export type CrumbData = {
   siblings?: Array<CrumbData>;
 };
 
-export const getBreadcrumbs = async (
-  ...path: string[]
-): Promise<CrumbData[]> => {
-  const crumbs: CrumbData[] = [];
-  let siblings: Array<any> = [];
-  for (let i = 1; i <= path.length; i++) {
-    const currPath = path.slice(0, i);
-    const item = await getContentItem<any>(...currPath);
-    crumbs.push({
-      name: item.name,
-      path: currPath,
-      siblings: siblings.map(
-        (s): CrumbData => ({
-          name: s.name,
-          path: [...currPath.slice(0, i - 1), s.id],
-        })
-      ),
-    });
-    switch (i) {
-      case 1:
-        siblings = item.sessions;
-        break;
-      case 2:
-        siblings = item.chapters;
-        break;
-    }
-  }
-  return crumbs;
-};
+export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> => {
+  const json = await _getJson("breadcrumbs", ...path);
+  return json || [];
+}
