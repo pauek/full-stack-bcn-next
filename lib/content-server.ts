@@ -41,8 +41,8 @@ export const getChapterDoc = async (path: string[]) => _getText(...path, "doc");
 export const getSlidesList = async (path: string[]) =>
   _getJson(...path, "slides");
 
-export const allChapterPaths = async () => _getJson("all-chapter-paths");
-export const allSessionPaths = async () => _getJson("all-session-paths");
+export const allChapterPaths = async () => _getJson("paths", "chapters");
+export const allSessionPaths = async () => _getJson("paths", "sessions");
 
 export type CrumbData = {
   name: string;
