@@ -1,3 +1,5 @@
+[X] Versión de móviles de la página principal
+
 [ ] Sistema para subir las imágenes a un sistema de Storage...
     [ ] - Catalogar todas las imágenes y hacer una lista con su hash.
     [ ] - Usar el hash para cargarlas (desde el content server igualmente).
@@ -13,4 +15,3 @@
 
 [ ] Trabajar en el tipo de elementos 
 
-[ ] Versión de móviles de la página principal
