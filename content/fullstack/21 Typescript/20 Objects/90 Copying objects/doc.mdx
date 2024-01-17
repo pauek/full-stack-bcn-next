@@ -1,0 +1,96 @@
+### Copying Values
+
+In Javascript one can think that objects are separate from variables. A
+variable `groucho` doesn't directly "contain" the object, it just references it, so the object is stored somewhere else:
+
+```javascript
+let groucho = { about: "I am a Marx", funny: true };
+```
+
+<Image
+  src="variable-and-value.svg"
+  width={1587}
+  height={242}
+  alt={
+    "An image showing a variable pointing to the value" +
+    " it contains, which are separated things"
+  }
+/>
+
+When we assign one variable to another, the object that is referenced is not copied, only the reference is (the pointer or memory address). So this initialization
+
+```javascript
+let chicco = groucho;
+```
+
+produces this result
+
+<Image
+  src="copying-values.svg"
+  alt="An image showing two variables pointing to the same object"
+  width={1587}
+  height={384}
+/>
+
+### Copying objects by hand
+
+To copy an `object` by hand, we can write a loop (a `for-in`) to copy all properties:
+
+```javascript
+let copy = {};
+for (const field in object) {
+  copy[field] = object[field];
+}
+```
+
+This is called a _shallow copy_ since the fields of `object` are not copied, only their references are copied.
+
+A special function `Object.assign` makes this process easier. It receives an object as a first argument (this is the target) and assigns to it all fields of the second argument:
+
+```javascript
+let copy = Object.assign({}, object);
+```
+
+### Merging objects
+
+If we want to merge two objects (take all fields of all of them), we can call `Object.assign` with more than 2 arguments:
+
+```javascript
+let model = { brand: "Tesla", model: "X" };
+let config = { color: "red", battery: "90kWh" };
+Object.assign({}, model, config);
+// -> { brand: "Tesla", model: "X", color: "red", battery: "90kWh" }
+```
+
+### Copying with spread
+
+The same can be accomplished with the spread operator **`...`**, which inserts all fields of an object into a new one:
+
+```javascript
+let chicco = { ...groucho };
+```
+
+To copy many objects, we can also use spread many times:
+
+```javascript
+let car = { ...model, ...config };
+```
+
+If any field is explicitly initialized, it will overwrite any fields coming from the spread:
+
+```javascript
+let car = { ...model, ...config, model: "Y" };
+// -> { brand: "Tesla", model: "Y", color: "red", battery: "90kWh" }
+```
+
+### Deep Copy
+
+Whenever we need a deep copy, a function called [**`structuredClone`**](https://developer.mozilla.org/en-US/docs/Web/API/structuredClone) will do it for us. This function clones the top object and any object inside it (the whole tree):
+
+```javascript
+const obj = { a: 1, b: true, c: { d: null, f: "hi", e: [1, 2, 3] } };
+const clone = structuredClone(obj);
+console.log(obj === clone); // false (different objects)
+console.log(clone);
+// { a: 1, b: true, c: { d: null, f: 'hi', e: [ 1, 2, 3 ] } }
+```

@@ -1,0 +1,308 @@
+
+Prisma Client is a generated library specific for your database schema. With this client library, you can do all possible operations to your database with the comfort of autocompletion by Typescript.
+
+### Installation
+
+The common part of Prisma Client is a library that you install with:
+
+```bash
+npm install @prisma/client
+```
+
+The installation process also execute **`prisma generate`**, a command that will generate the custom part of the library and copies it into `node_modules/.prisma/client`.
+
+#### Usage
+
+Import `PrismaClient` and instantiate a global object:
+
+```typescript
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient();
+```
+
+Every entity defined in the schema appears as a field of the client, so if a model called `User` exists, the `prisma.user` field will represent the table/collection of entities.
+
+### CRUD
+
+Every field of `prisma` representing a collection has the following methods:
+
+<Table>
+  <Row keyword="findFirst" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#findfirst">
+    First entity satisfying a condition
+  </Row>
+  <Row keyword="findFirstOrThrow" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#findfirstorthrow">
+    Throwing version of <code>findFirst</code>
+  </Row>
+  <Row keyword="findUnique" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#findunique">
+    Single entity (only if <code>@id</code> or <code>@unique</code>)
+  </Row>
+  <Row keyword="findUniqueOrThrow" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#finduniqueorthrow">
+    Throwing version of `findUnique`          
+  </Row>
+  <Row keyword="findMany" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#findmany">
+    All entities satisfying a condition        
+  </Row>
+  <Row keyword="create" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#create">
+    Create an entity                           
+  </Row>
+  <Row keyword="createMany" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#createmany">
+    Create many entities                       
+  </Row>
+  <Row keyword="update" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#update">
+    Update an entity
+  </Row>
+  <Row keyword="updateMany" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#updatemany">
+    Update many entites satisfying a condition
+  </Row>
+  <Row keyword="upsert" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#upsert">
+    Update or insert if it doesn't exist
+  </Row>
+  <Row keyword="delete" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#delete">
+    Delete an entity
+  </Row>
+  <Row keyword="deleteMany" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#deletemany">
+    Delete many entities satisfying a condition
+  </Row>
+</Table>
+
+### Options object
+
+CRUD methods all receive an options method of a certain type (depending on the operation).
+
+|            |                                                      |
+| ---------- | ---------------------------------------------------- |
+| `where`    | The *filter*, a condition that entities must satisfy |
+| `select`   | Which fields that should be included in the result   |
+| `take`     | How many entities should be returned                 |
+| `skip`     | How many entities to skip in the result              |
+| `include`  | Which relationships should be eagerly loaded         |
+| `orderBy`  | The order of the result                              |
+| `distinct` | Filter out duplicate rows by field                   |
+
+### Filter operators
+
+|              |                                                    |
+| ------------ | -------------------------------------------------- |
+| `equals`     | `{ name: { equals: 'Jose' } }`                     |
+|              | `{ name: 'Jose' }`                                 |
+| `not`        | `{ name: { not: 'Jose' } }`                        |
+| `in`         | `{ name: { in: ['Groucho', 'Chicco', 'Harpo'] } }` |
+| `notIn`      | `{ id: { notIn: [22, 91, 14, 2, 5] } }`            |
+| `lt`         | `{ likes: { lt: 9 } }`                             |
+| `lte`        | `{ likes: { lte: 9 } }`                            |
+| `gt`         | `{ likes: { gt: 9 } }`                             |
+| `gte`        | `{ likes: { gte: 9 } }`                            |
+| `contains`   | `{ text: { contains: 'fullstack' } }`              |
+| `search`     | `{ title: { search: 'frontend & backend' } }`      |
+| `startsWith` | `{ title: { startsWith: 'The' } }`                 |
+| `endsWith`   | `{ email: { endsWith: '@proton.me' } }`            |
+| `AND`        | `{ AND: [{ name: 'Jose' }, { age: 35 }] }`         |
+| `OR`         | `{ OR:  [{ name: 'Jose' }, { name: 'Pau' }] }`     |
+| `NOT`        | `{ NOT: { name: 'Jose' } }`                        |
+
+### Examples
+
+#### Example Schema
+
+The following schema is assumed in all the examples given afterwards:
+
+```prisma
+model User {
+  id           Int              @id @default(autoincrement())
+  name         String?
+  email        String           @unique
+  profileViews Int              @default(0)
+  role         Role             @default(USER)
+  coinflips    Boolean[]
+  posts        Post[]
+  city         String
+  country      String
+  profile      ExtendedProfile?
+  pets         Json
+}
+
+model ExtendedProfile {
+  id     Int     @id @default(autoincrement())
+  userId Int?    @unique
+  bio    String?
+  User   User?   @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  published Boolean @default(true)
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  Int
+  comments  Json
+  views     Int     @default(0)
+  likes     Int     @default(0)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+```
+
+#### Find
+
+Find the user with `email` of `alice@prisma.io`:
+```typescript
+await prisma.user.findUnique({ 
+  where: { email: { equals: "alice@prisma.io" } } 
+});
+```
+
+Find the user with `id` 42 (`equals` not necessary):
+```typescript
+await prisma.user.findUnique({ where: { id: 42 } });
+```
+
+Find all users with `name` Alice:
+```typescript
+await prisma.user.findMany({ where: { name: "Alice" } });
+```
+
+Find a post with `title` starting with "A test":
+```typescript
+await prisma.post.create({ data: { title: "A test 1" } });
+await prisma.post.create({ data: { title: "A test 2" } });
+await prisma.post.findFirst({
+  where:   { title: { startsWith: 'A test' } },
+  orderBy: { title: 'asc' },
+  take: -1, // Start from the end and take 1
+});
+```
+
+#### Create
+
+Create a new user:
+```typescript
+const user = await prisma.user.create({
+  data: { email: "alice@prisma.io" }
+});
+```
+
+Create many users:
+```typescript
+const user = await prisma.user.createMany({
+  data: [
+    { email: "alice@prisma.io" },
+    { email: "bob@prisma.io" },
+  ]
+});
+```
+
+#### Update
+
+Update a user:
+```typescript
+const user = await prisma.user.update({
+  where: { id: 1 },
+  data: { email: "bob@prisma.io" },
+});
+```
+
+#### Upsert
+
+Upsert an admin user with `email` `alice@prisma.io` or create if it doesn't exist:
+```typescript
+const user = await prisma.user.upsert({
+  where: { email: 'alice@prisma.io' },
+  update: { role: 'ADMIN' },
+  create: { 
+    role: 'ADMIN',
+    email: 'alice@prisma.io'
+  },
+})
+```
+
+### Relations
+
+The [**`include`**](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#include) option specifies which related entities should be populated:
+```typescript
+const users = await prisma.user.findMany({
+  include: {
+    posts: true,
+    profile: true,
+  }
+})
+```
+
+Filters also can affect relations:
+
+|         |                                                      |
+| ------- | ---------------------------------------------------- |
+| `some`  | Some related entities satisfy condition              |
+| `every` | Every related entity satisfies condition             |
+| `none`  | No related entities satisfy condition                |
+| `is`    | Populate with related entities satisfying filter     |
+| `isNot` | Populate with related entities NOT satisfying filter |
+
+
+### Aggregation
+
+Some methods of a table/collection can compute aggregate results, count or group by certain fields:
+
+<Table>
+  <Row keyword="count" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#count">
+    Count entities satisfying a condition
+  </Row>
+  <Row keyword="aggregate" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#aggregate">
+    Count entities satisfying a condition
+  </Row>
+  <Row keyword="groupBy" href="https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#groupby">
+    Count entities satisfying a condition
+  </Row>
+</Table>
+
+#### Count
+
+The [**`count`**](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#count) method can compute counts of entites satisfying a certain condition:
+
+```typescript
+// Count all users
+const nusers = await prisma.user.count();
+
+// Count users with a post published
+const onePub = await prisma.user.count({
+  where: {
+    post: {
+      some: { published: true }
+    }
+  }
+})
+```
+
+#### Aggregate
+
+The [**`aggregate`**](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#aggregate) method can compute many aggregation statistics at once:
+
+```typescript
+const minMaxAge = await prisma.user.aggregate({
+  _count: {
+    _all: true,
+  },
+  _max: {
+    profileViews: true,
+  },
+  _min: {
+    profileViews: true,
+  },
+})
+```
+
+#### GroupBy
+
+The [**`groupBy`**](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#groupby) method can group entities by some fields, and then do aggregations on them:
+
+```typescript
+const groupUsers = await prisma.user.groupBy({
+  by: ['country', 'city'],
+  _count:  { _all: true, city: true },
+  _sum:    { profileViews: true },
+  orderBy: { country: 'desc' },
+  having:  { profileViews: { _avg: { gt: 200 } } },
+})
+```

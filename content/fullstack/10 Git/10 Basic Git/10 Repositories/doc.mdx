@@ -1,0 +1,86 @@
+
+A **repository** is a folder which contains _all versions_ of a project stored together, along with the relationships between them. A clever algorithm can store all versions in much less space than it would take to make a copy of each version.
+
+When we say "versions", we mean different project folders which differ very slightly, maybe even just one word in one file, so it is easy to confuse with the usual versions of software, with numbers on them. Typically, these incremental versions with little modifications are called **commits**: "snapshots" of the project folder at a particular time where the project is stable, compiling, but a little different than the last one. The word commit is a good choice since a developer "commits" to a particular version being correct.
+
+Commits also have a ancestors and a time aspect. That is, since commits are just versions, any version is just a little modification of a previous version. Therefore, a commit has a timestamp and a **parent** (or more than one), and one can draw a graph showing which commits come from which other commits, and therefore trace the project's evolution.
+
+Working with tiny incremental versions is a different philosophy and if you are not used to it you will have to adjust. It forces you to plan in advance, to be more focused on the next step, and to execute it more precisely. It also helps visualize more complex changes which will require to keep the project working but reorganize it bit by bit.
+
+### Creating new repositories
+
+Given that you have a folder with a project, you can start a repository for it with
+
+<CopyableCode>
+```bash
+git init .
+```
+</CopyableCode>
+
+You can check if a folder is a repository by looking for a directory called `.git`, which is typically hidden.
+
+### What is GitHub
+
+[GitHub](https://github.com) is a web service which hosts copies of your repositories and provides a web interface to manage them. It also provides tools for collaborating with other people.
+
+If you don't have a GitHub account, **create one now**, you will need it!
+
+It is important _not to confuse_ [Git](https://git-scm.com) (which is a software package) with [GitHub](https://github.com) (which is a web service). Since GitHub provides programs to interact with it (GitHub Desktop or the `gh` command line tool), sometimes this distinction is not clear from the start.
+
+### Cloning repositories from GitHub
+
+You can clone any GitHub repository by noting the address of its GitHub page (like `https://github.com/paulmillr/chokidar`), and invoking:
+
+<CopyableCode>
+```bash
+git clone https://github.com/paulmillr/chokidar
+```
+</CopyableCode>
+
+This will create a folder named exactly like the project (in this case, `chokidar`), but if you want to clone in a folder with another name append it to the command:
+
+<CopyableCode>
+```bash
+git clone https://github.com/paulmillr/chokidar my-chokidar
+```
+</CopyableCode>
+
+### The `.git` folder
+
+On disk, every repo has a hidden folder named `.git` that contains the whole data for the repository. Along with it you have the current snapshot of the project, that is, the particular files and folders for the last version, typically.
+
+<div class="note">
+  You can learn more about this folder in <a href="https://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain">Git Internals</a>
+</div>
+
+1. What happens if I remove `.git`?
+
+   The repository is erased, meaning that if you had the files for the last version, that is the only version you will have, and all the history is gone.
+
+2. What happens if I remove all files _except_ `.git`?
+
+   Since the repository contains all versions, you can recover all files. This means that having a repo is, independently of the other features, a good backup system to recover from accidents.
+
+3. What happens if I download a ZIP file from a repo on GitHub?
+
+### The log
+
+Since a repository contains all commits (or incremental versions), we can query them in many ways. The easiest is:
+
+<CopyableCode>
+```bash
+git log
+```
+</CopyableCode>
+
+This will show all commits ordered by timestamp.
+
+To move the project in time, you can "checkout" a particular version using its identifier, which you can see on the log. To move it is important to have a "clean repository", meaning that there are no uncommited changes, and therefore we cannot loose data. Moving is accomplished by:
+
+<CopyableCode>
+```bash
+git checkout 577dd9a
+```
+</CopyableCode>
+
+In general the id of a commit will be much longer but it is enough to put a few characters of this id to just dicriminate it from the others.

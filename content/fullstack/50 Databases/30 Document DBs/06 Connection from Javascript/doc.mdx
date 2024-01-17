@@ -1,0 +1,42 @@
+
+### The mongodb package
+
+The [`mongodb`](https://github.com/mongodb/node-mongodb-native) package implements connection with the MongoDB database and functionality very similar to that offered by `mongosh`. 
+
+To start, just install the package:
+```bash
+npm install mongodb
+```
+
+To use the library, the first step is importing it and create a client, using a MongoDB connection URL.
+
+```typescript
+import mongodb from 'mongodb';
+
+const url = "mongodb://admin:fullstack@localhost:27017?authSource=admin"
+const client = new mongodb.MongoClient(url);
+```
+
+Once the client is created, we have to tell it to connect:
+```typescript
+await client.connect();
+console.log("connected");
+```
+
+At this point, we have something akin to the `db` object in `mongosh`, with almost the same methods and signatures. We can obtain databases and collections and keep references to them:
+```typescript
+const db = client.db("russian");
+const tweets = db.collection("tweets");
+```
+
+Make queries:
+```typescript
+const result = await tweets.find().limit(3).toArray();
+console.log(result);
+```
+
+And in the end close the connection:
+```typescript
+client.close();
+```
+

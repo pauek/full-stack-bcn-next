@@ -1,0 +1,43 @@
+
+[NextJS](https://nextjs.org) is a _meta-framework_. Latest frameworks are a layer on top of old frameworks and provide more tools for the developer to make web apps. Here are some examples of this trend:
+
+| Framework | Meta-framework |
+| --------- | -------------- |
+| React     | NextJS         |
+| Vue       | NuxtJS         |
+| Svelte    | SvelteKit      |
+| Solid     | SolidStart     |
+| Qwik      | QwikCity       |
+
+### Meta-frameworks features
+
+Whereas frameworks have been historically about frontend rendering, meta-frameworks assume that you write **_both frontend and backend_** in the same project.
+
+- They all use **Javascript**, so frontend and backend use the same language and can share code.
+- They usually map **folder structure** to URL structure.
+- They let us choose where to render things (build time, server, client).
+- They optimize things under the hood, without us having to worry about it.
+- They have adapters to deploy our project either to Node.js on a server, or to many serverless platforms, by directly pushing to a branch.
+
+### NextJS 13
+
+NextJS 13 is a big step forward for NextJS:
+- It is the first meta-framework to start using **React Server Components** (introduced in React 18).
+- It has changed the folder structure from the Pages Router (the old version), to the [**App Router**](https://nextjs.org/docs/app) (the new version). We will be using the App Router exclusively.
+
+### Creating a NextJS project
+
+To create a new NextJS project, just type:
+
+```bash
+npx create-next-app@latest
+``````
+
+The initial options to choose for the project are:
+- Name of the folder (as you wish).
+- If Typescript should be used (**`yes`**).
+- If ESLint should be used (**`yes`**).
+- If [TailwindCSS](https://tailwindcss.com/) should be used (as you wish).
+- If you want to use a separate `src/` directory (as you wish).
+- If the **App Router** is used (**`yes`**).
+- Customize default import alias (`no`).

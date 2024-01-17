@@ -1,0 +1,26 @@
+
+Workflow on a project in a serverless provider (such as Vercel) involves using a main branch (usually called `main`) which represents the production version of the application.
+
+To be able to develop and test new features, it is necessary to work on different branches, which Vercel will automatically detect and deploy for us so that we can preview them easily.
+
+### Making a new branch
+
+To make a new branch on the terminal for a new feature we would do
+
+```bash
+git checkout -b new-feature
+```
+
+This will both create the branch and change to it, so that we can start working. (VSCode has equivalent functionality through the UI.) 
+
+Working on the new branch is just making commits to it. 
+
+### Seeing the preview
+
+Eventually, we will want to preview how those changes look on the real application so we only need to push the branch to GitHub and wait for Vercel to detect it. Pushing a branch to a remote and setting the tracking is done with
+
+```bash
+git push -u origin new-feature
+```
+
+This will push the `new-feature` branch to GitHub and also set the copy in GitHub as "upstream" (the "source of truth" or "master copy" of the branch).

@@ -1,0 +1,126 @@
+Arrays are groups of values, either of the same or different types, organized in a sequence (that is, having an _index_).
+
+Declaring arrays in Javascript is done using the brackets **`[]`**. These instructions declare several arrays:
+
+```typescript
+let a1 = []; // empty array
+let a2 = [1, 2, 3]; // array of numbers
+let a3 = ['oh', null, 0.5]; // array of values
+let a4 = ['', '*', '**', '***']; // array of strings
+```
+
+A constructor exists which is useful if you want to prealocate memory for an array:
+
+```typescript
+let a = new Array(100); // preallocate 100 cells
+for (let i = 0; i < 100; i++) {
+  a[i] = `Item ${i + 1}`;
+}
+```
+
+Arrays are dynamic in nature so their total number of elements can change. To find out the number of items in an array, use the field `length`:
+
+```typescript
+let A = new Array(555);
+console.log(A.length); // -> 555
+```
+
+### Push and pop
+
+1. **`push`**: Add an element _at the end_ (length increases by one).
+
+   ```typescript
+   let a = [];
+   a.push(1);
+   a.push(2);
+   console.log(a.length);
+   ```
+
+2. **`pop`**: Remove an element _from the end_ and return it (length decreases by one).
+
+   ```typescript
+   let a = ['x', 'y', 'z'];
+   let last = a.pop();
+   console.log(a.length); // -> 2
+   console.log(last); // -> z
+   ```
+
+3. **`unshift`**: Add an element _at the beginning_ (length increases by one).
+
+   ```typescript
+   let a = [3, 4];
+   a.unshift(2);
+   a.unshift(1);
+   console.log(a); // -> [1, 2, 3, 4]
+   ```
+
+4. **`shift`**: Remove an element _from the beginning_ (length decrease by one).
+
+   ```typescript
+   let a = [false, true, true];
+   let x = a.shift();
+   console.log(a); // -> [true, true]
+   console.log(x); // -> false
+   ```
+
+### Array.isArray
+
+The `typeof` operator returns `"object"` for arrays (!!):
+
+```typescript
+console.log(typeof [1, 2, 3]); // 'object'
+```
+
+How can we distinguish between them?
+
+The special function **`Array.isArray`** really checks if a value is an array or not.
+
+```typescript
+Array.isArray('[]'); // -> false
+Array.isArray(null); // -> false
+Array.isArray({}); // -> false
+Array.isArray([1, 2, 3]); // -> true  <-
+```
+
+### For-of
+
+When we don't need indices, we can iterate an array with a special **`for of`** which is much easier to write than the normal for with an `number` variable `i`:
+
+```typescript
+let sum: number = 0;
+for (const value of [1, 2, 3, 4, 5]) {
+  sum += value;
+}
+console.log('Total:', sum);
+```
+
+It is easy to confuse this loop with the `for-in` one (since many other programming languages use `for-in` for arrays, even), so be careful! Luckily, Typescript usually catches this error.
+
+### Array methods
+
+1. **`slice(begin, end)`**: obtain a new array which is a copy of a section of the original.
+
+   ```typescript
+   let words = ['To', 'be', 'or', 'not', 'to', 'be'];
+   console.log(words.slice(2, 4)); // ['or', 'not']
+   ```
+
+   `slice(begin)` sets the end at the end of the array and `slice()` returns the whole array (good for copying!).
+
+2. **`splice(start, num, ...elems)`**: remove `num` elements from `start` and add `elems`.
+
+   ```typescript
+   let numbers = [1, 2, 777, 888, 5, 6];
+   numbers.splice(2, 2, 3, 4); // remove 2 from pos 2, and insert there 5 and 6
+   numbers.splice(0, 0, 0); // remove 0 at 0, and insert a 0
+   console.log(numbers);
+   ```
+
+3. **`indexOf(value)`**: find the position of an element with `value`. If it is not present, returns -1.
+   ```typescript
+   let values = [0.1, 7.2, 6.1, 4.9, -4.2, 0.5];
+   let p1 = values.indexOf(6.1); // -> 2
+   let p2 = values.indexOf(0.5); // -> 5
+   let p3 = values.indexOf(9.9); // -> -1
+   ```
+

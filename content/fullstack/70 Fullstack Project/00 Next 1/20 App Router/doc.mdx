@@ -1,0 +1,115 @@
+The **`app`** directory has a particular structure which will determine what routes our app will have. By default, components in `app` are Server Components, and to use Client Components you have to opt in explicitly.
+
+### Special files
+
+Each folder in **`app`** is used to create a route (or a path). Within each folder we can put files with a _specific name_ to develop each aspect of the route:
+
+- **`page.tsx`**: Components that is rendered on the route.
+
+- **`layout.tsx`**: Shared UI for this path and its children.
+
+- **`template.tsx`**: Equivalent to layouts but the do not preserve state.
+
+- **`error.tsx`**: Component to show if there is an error.
+
+- **`loading.tsx`**: Component to show while loading.
+
+- **`not-found.tsx`**: Component to show if a subpath is not found.
+
+These files are assembled by NextJS, for each route, into the following structure:
+
+<Image 
+  src="next-file-nesting-structure.svg" 
+  alt="Next File Nesting Structure"
+  width={2200}
+  height={1080} />
+
+#### Colocation
+
+The special names of the files for each route make it possible to colocate other components needed inside those files in the same directory. Any file that doesn't have a special name is simply ignored with respect to routing.
+
+#### Partial Rendering
+
+When navigating between routes such as `/profile/setting` and `/profile/stats`, the common parts of that route (`layout`s, `template`s, etc.) will not be rendered again.
+
+### Pages
+
+A `page` is just a normal Server Component as the `export default` of the `page.tsx` file in a route:
+
+```tsx
+export default function Page() {
+  return <h1>Hello, this is a NextJS Page!</h1>;
+}
+```
+
+Fetching data in pages (as Server Side Components) is very easy. Just use `fetch` and `await` it before rendering:
+
+```tsx
+const loadUser = async () => {
+  const response = await await fetch(`https://randomuser.me/api`);
+  const { results } = await response.json();
+  const [user] = results;
+};
+
+export default function Page() {
+  const { title, first, last } = await loadUser();
+  return (
+    <div className="user">
+      <span className="name">
+        {title} {first} {last}
+      </span>
+      ...
+    </div>
+  );
+}
+```
+
+### Layouts
+
+A `layout` is part of the UI which is shared between multiple pages (headers, footers, lateral menus). On navigation, layouts preserve state. They can also be nested. Layouts are normal components which use the `children` prop.
+
+```tsx
+export default function Layout({ children }) {
+  return (
+    <header>
+      The common header
+      <nav>...</nav>
+    </header>
+    <main>
+      {children}
+    </main>
+    <footer>
+      &copy; The Author
+    </footer>
+  )
+}
+```
+
+The top-most layout is the **Root Layout** (its file is **`app/layout.tsx`**), which is required, and must contain `<html>` and `<body>`:
+
+```tsx
+export default function Layout({ children }) {
+  return (
+    <html>
+      <head>...</head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### Links and navigation
+
+To allow NextJS to capture navigation and do it as an SPA, we need to use `<Link>` instead of `<a>`. The `Link` component is the default export of the `next/link` package:
+
+```tsx
+import Link from `next/link`;
+```
+
+To use if just specify the `href` attribute, just as with `<a>`:
+
+```tsx
+<Link href="/user/settings">Settings</Link>
+```
+
+As with `<a>`, the `href` attribute can point to an ID.

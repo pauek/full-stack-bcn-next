@@ -1,0 +1,28 @@
+### Hash Tables
+
+A **hash function** transforms any input into an integer in a finite range (0, N). These functions are generally fast to compute and they are mathematically shown to be almost equivalent to assign random values to inputs _but in a predictable way_.
+
+To make a hash table, first we reserve an array of buckets from 0 to N (precisely the range of the hash function). Then, the function is used to determine which bucket (the function output as an index) a given piece of data should go to. Since by design the assignment produced by the function is random, the probability that many elements share a bucket is very low. This implies that finding elements in the hash table is a very fast operation, since the lookup time does not depend on the size of the data.
+
+### Sharding
+
+To scale databases, you need to partition them and store different parts in different computers. Given the key of the items stored in the database, we can particion the set of keys into disjoint sets. The make every computer store a different _shard_ (the part of the database with a particular set of keys). A **coordinador** receives traffic and routes it to the appropriate computer based of the key.
+
+### Key-Value Databases
+
+Key-Value Databases work like a hash table in memory, but then store all the data in files for persistence. The values associated with keys can be strings, lists of strings, sets of strings, numbers, etc. But they typically only store a handful of data for each key.
+
+|             |        |                                   |
+| ----------- | ------ | --------------------------------- |
+| Performance | _high_ | Work as in-memory hash tables     |
+| Scalability | _high_ | They can be sharded using the key |
+| Flexibility | _high_ | No schema, data is super-simple   |
+| Complexity  | _low_  | They only do very few things      |
+| Recursivity | _N/A_  |                                   |
+
+Applications for key-value databases can be:
+- **Session Storage**: The key is the cookie, the associated data is the data for a particular user.
+- **Full-page cache**: The key is the URL of a page, the associated data is a pre-rendered page content.
+- **Leaderboards**: The keys are the users, the value is the score of each user, and the database can return a score list sorted by score.
+- **Stats and Analytics**: keys are clients (IPs or more) and stats can be traffic (rate limiting), page views, etc.
+

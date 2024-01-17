@@ -1,0 +1,18 @@
+[CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) let us assign values to names and reuse them throughout our whole application. Variables are defined as properties that start with two hyphens (`--`).
+
+```css
+:root {
+  --primary-color: blue;
+  --secondary-color: grey;
+}
+```
+
+They are defined at a certain element and can be used on any descendant of that element, so you can scope variables to a part of your web app.
+
+To use a variable invoke its value with `var()`:
+
+```css
+h1 {
+  color: var(--primary-color);
+}
+```

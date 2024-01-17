@@ -1,0 +1,39 @@
+
+### Features of Relational Databases
+
+- Use [`SQL`](https://en.wikipedia.org/wiki/SQL) as the query language.
+- Have a **schema** that declares tables, with column types and constraints.
+- Use **tables** to store relations (lists of entities).
+- Implement relationships using **foreign keys** ("pointers").
+
+A table is a way to represent a relation. It uses a bidimensional representation with *columns* (attributes) and *rows* (entities):
+
+| Year | Title                            | Rating | Duration |
+| ---- | -------------------------------- | ------ | -------- |
+| 1994 | The Shawshank Redemption         | 9.3    | 142      |
+| 2008 | The Dark Knight                  | 9.0    | 152      |
+| 1999 | Ghostdog: The Way of The Samuray | 7.5    | 116      |
+| 1992 | Aladdin                          | 8.0    | 91       |
+| 1978 | Superman                         | 7.3    | 143      |
+
+### Launching Postgres with Docker Compose
+
+A simple way to launch a Postgres server is the following:
+
+1. Create a new folder and enter it.
+2. Download [`docker-compose.yml`](https://raw.githubusercontent.com/full-stack-bcn/samples/master/databases/postgres-pgadmin4/docker-compose.yml) and save it in the directory.
+3. Issue the command:
+   ```bash
+   docker-compose up
+   ```
+
+Alternatively, you can use [degit](https://github.com/Rich-Harris/degit), which will snapshot a repository (that is, without the `.git` folder), and can even just copy a subfolder:
+
+1. Install `degit` with:
+   ```bash
+   npm install -g degit
+   ```
+2. Extract a folder from the [Fullstack samples repository](https://github.com/full-stack-bcn/samples) into the `postgres` folder:
+   ```bash
+   degit full-stack-bcn/samples/databases/postgres-pgadmin4 postgres
+   ```

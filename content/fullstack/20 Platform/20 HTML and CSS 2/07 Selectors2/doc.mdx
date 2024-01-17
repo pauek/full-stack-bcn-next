@@ -1,0 +1,15 @@
+More interesting selectors:
+
+| Selector         | Meaning                                   |
+| ---------------- | ----------------------------------------- |
+| `*`              | Universal, matches elements of any type   |
+| `#id`            | A single element with identifier `id`     |
+| `.class`         | Elements with class `class`               |
+| `tag.class`      | `tag`s with a certain `class`             |
+| `tag.c1.c2`      | `tag`s with class `c1` and `c2`           |
+| `tag[attr]`      | `tag`s with attribute `attr`              |
+| `tag[attr=val]`  | `tag`s with `attr` set to `val`           |
+| `tag[attr^=val]` | `tag`s with `attr` starting with `val`    |
+| `tag[attr$=val]` | `tag`s with `attr` ending with `val`      |
+| `b + a`          | `a`s which comes right after `b`s         |
+| `b > a`          | `a`s which have `b`s as _direct_ ancestor |

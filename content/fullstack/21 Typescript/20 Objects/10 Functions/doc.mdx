@@ -1,0 +1,155 @@
+In Javascript functions can be defined in two ways:
+
+- Using the **`function`** keyword, with a notation similar to other languages.
+- Using the "arrow function" notation, **`() => ...`**.
+
+They are subtly different (we will see about it later).
+
+### Defining functions
+
+A function is declared with the following syntax:
+
+```typescript
+function max2(a, b) {
+  let m = a;
+  if (b > m) {
+    m = b;
+  }
+  return m;
+}
+```
+
+It starts with the `function` keyword, then a name, parameters and body. (We will see type annotations later.)
+
+Variables defined inside a function are called **local variables** (they disappear when the function returns).
+
+Parameters `a` and `b` are like local variables but are initialized at the calling instruction.
+
+### Function calls
+
+To call a function just use its name and put parenthesis, including the arguments inside:
+
+```typescript
+max2(100, 101);
+```
+
+We usually identify as **arguments** the values passed inside the parenthesis (as opposed to the parameters, the corresponding variables in the function definition).
+
+#### Parameters and arguments
+
+In a function call, arguments are _copied_ to the parameters in order of appearance. The copy works exactly like assignment (is doesn't do a "deep copy"), so the two typical ways of passing parameters _depend on the type_:
+
+- **By value**: passing `string`s, `number`s and `boolean`s is done by value, since the original value can't be modified and is only read by the function.
+
+- **By reference**: passing any kind of object will pass it by reference, since what is copied is the "pointer" to the unique object, not a copy of it. So the function can modify the object and the caller will see the effects.
+
+#### Parameter matching in Javascript
+
+In Javascript, parameters and arguments do not need to match. A function can be called with any number of arguments regardless of how many parameters it has.
+(In Typescript, this depends on type annotations.)
+
+```javascript
+function showParams(a, b, c) {
+  console.log(`${a} ${b} ${c}`);
+}
+
+showParams(); // -> undefined undefined undefined
+showParams(1); // -> 1 undefined undefined
+showParams(1, 2); // -> 1 2 undefined
+showParams(1, 2, 3); // -> 1 2 3
+showParams(1, 2, 3, 4); // -> 1 2 3
+showParams(1, 2, 3, 4, 5); // -> 1 2 3
+```
+
+Giving more parameters to a function just discards them.
+
+#### Default values
+
+If some parameter is given almost always the same value, that value can be defined as the default:
+
+```typescript
+function exclamate(text, howMany = 1) {
+  console.log(text + '!'.repeat(howMany));
+}
+```
+
+We can then call the function without it and it will be initialized to the default value, while still permitting to pass it if needed:
+
+```typescript
+exclamate('OMG'); // -> OMG!
+exclamate('Watch out', 3); // -> Watch out!!!
+```
+
+### Returning results
+
+The **`return`** keyword is used to return results, as in many other languages. `return` also interrupts the control flow
+
+```javascript
+function nonsensical(a) {
+  return 42;
+  a++; // This statement will never execute!
+}
+```
+
+Functions do not need to have a `return` statement, but they _always return a value_.
+
+```typescript
+function useless() {
+  let a = 'Zzzz...';
+  a = a;
+}
+
+let x = useless(); // Value of x??
+```
+
+In case no explicit `return` statement exists, a function will return `undefined`.
+
+#### Early exit
+
+If a function doesn't return useful values but you want it to **exit early**, `return` also does that:
+
+```javascript
+function sayHi(person) {
+  if (person === 'Adolf Hitler') {
+    return;
+  }
+  console.log('Oh hi ${person}!');
+}
+```
+
+### Parameter type annotations
+
+All annotations have a `name : type` form, so in parameters this turns into:
+
+```typescript
+function sum2(a: number, b: number) {
+  return a + b;
+}
+```
+
+### Return type annotations
+
+To annotate the return type of a function, the colon goes after the parameters:
+
+```typescript
+function isInside(a: number): boolean {
+  return a > 0 && a < 10;
+}
+```
+
+### Function types
+
+The type of a function is specified with an arrow notation (we will see arrow functions in the next session). A function like this:
+
+```typescript
+function exclamate(s: string, numexcl: number): string {
+  return s + "!".repeat(numexcl);
+}
+```
+
+Has as type of:
+```typescript
+type ExclamateFunction = (s: string, numexcl: number) => string;
+```
+
+The `ExclamateFunction` is just a type alias to store the type, which comes after the `=`. Notice the arrow **`=>`** as a way of representing the function itself.

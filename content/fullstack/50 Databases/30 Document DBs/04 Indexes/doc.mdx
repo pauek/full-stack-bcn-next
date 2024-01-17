@@ -1,0 +1,60 @@
+### A million documents
+
+Let's insert a million documents into a collections:
+
+```js
+> db.todos.insertMany([...Array(1000000)].map((_, index) => ({
+  text: "todo" + i,
+  done: Math.random() > .5
+})))
+```
+
+We can make mongo explain how the engine is going to find a todo by its text with:
+
+```js
+> db.todos.find({ text: "todo786231" }).explain("executionStats")
+{
+  ...
+  "executionStats": {
+    ...
+    "executionTimeMillis": 604,
+    "executionStages": {
+      ...
+      "stage": "COLLSCAN",
+    },
+    "totalDocsExamined": 1625292,
+  }
+}
+```
+
+The `COLLSCAN` way of searching is basically a _linear search_, so that is very slow in comparison with what could be. To fix this we have to create an **index**.
+
+### Working with indexes
+
+With **indexes** (or indices), MongoDB will find things much faster. MongoDB uses **B-Tree**s to store indexes. Indexes can be `unique` or not, depending if they allow repeated keys or not.
+
+MongoDB already uses a `unique` index for the `_id` field, which is always present.
+
+To create an index in `mongosh` you have to call the `createIndex` method in the collection and indicate what fields are involved:
+
+```js
+> db.todos.createIndex({ text: 1 })
+```
+
+The number associated with a field indicates if the ordering is _ascending_ or _descending_. To create a **compound index**, just mention the involved fields:
+
+```js
+> db.users.createIndex({ userid: 1, score: -1 })
+```
+
+The methods of a collection involved in indexes are:
+
+|                        |                                            |
+| ---------------------- | ------------------------------------------ |
+| `getIndexes()`         | List all indexes (with names)              |
+| `createIndex({ ... })` | Create an index (listing fields and order) |
+| `dropIndex(name)`      | Remove an index                            |
+| `hideIndex(name)`      | Hide an index                              |
+| `unhideIndex(name)`    | Unhide an index                            |
+
+**Hidden indexes** are invisible to the query planner and therefore are not used in queries. This helps evaluate the impact of adding an index to a particular query, without actually dropping the index.

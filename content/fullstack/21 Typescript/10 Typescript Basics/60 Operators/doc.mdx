@@ -1,0 +1,97 @@
+### String concatenation
+
+You can add (`+`) two strings this produces a new string with both inputs concatenated:
+
+```typescript
+const a = 'full';
+const b = 'stack';
+console.log(a + b); // --> fullstack
+```
+
+One problem with `+` for strings is that it will auto-convert arguments into strings if it needs to, which can be confusing:
+
+```typescript
+1 + '2'; // --> "12" (not 3!)
+'5' + 5; // --> "55" (not 10!)
+2 + 3 + '4'; // --> ???
+```
+
+### Typical Operators
+
+The operators which come from C, C++, Java, etc. are all supported and mean the same:
+
+|                           |                         |
+| ------------------------- | ----------------------- |
+| `+`, `-`, `*`, `/`, `%`   | Arithmetic              |
+| `&&`, `&#124;&#124;`, `!` | Logical                 |
+| `>`, `<`, `>=`, `<=`      | Relational              |
+| `**`                      | Exponentiation          |
+| `++`, `--`                | Increment and Decrement |
+
+### Modify in place
+
+Other operators from C include the assignment operators:
+
+|          |                       |
+| -------- | --------------------- |
+| `v += x` | Add `x` to `v`        |
+| `v -= x` | Subtract `x` from `v` |
+| `v *= x` | Multiply `v` by `x`   |
+| `v /= x` | Divide `v` by `x`     |
+| ...      | ...                   |
+
+### Javascript is weird
+
+The problem mentioned in string concatenation is in fact widespread. To be "nice" to users and not produce any errors, the original Javascript would make any malformed expression valid by *auto-converting its arguments* to other types implicitly:
+
+```javascript
+true + false          // --> ??
+[1, 2, 3] + [4, 5, 6] // --> ??
+10,2                  // --> ??
+!!""                  // --> ??
++!![]                 // --> ??
+```
+
+This [Javascript weirdness](https://jsisweird.com/) is frowned upon by many programmers. The trick is to avoid the worst of these expressions.
+
+### Triple equality
+
+The most affected operator is `==`, [equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness) (and `!=`, inequality). Since auto-conversion will kick in before comparison, in Javascript all these expressions give weird values:
+
+```javascript
+0 == "0"          // --> true
+0 == null         // --> true
+NaN != NaN        // --> true
+null == undefined // --> true
+{} == {}          // --> false (this one is a trap)
+```
+
+Since Javascript could not change the comparison operators, what they did in ES5 was to introduce two new operators: `===` and `!==`. These fix the old operators and therefore **you should always use them**. These operators always check the type first, so obviously `false` comparisons are always easy to reason about.
+
+### Not a Number equality
+
+There is one missing case, though:
+
+```javascript
+NaN === NaN      // --> false
+```
+
+To check if a number is "not a number", then, you cannot write:
+```typescript
+if (a === NaN) {
+  console.log(`${a} is NaN!`);
+}
+```
+
+A special function `Number.isNaN` does the checking right:
+```typescript
+if (!Number.isNaN(a)) {
+  console.log(`${a} is NaN!`);
+}
+```
+
+
+
+
+
+

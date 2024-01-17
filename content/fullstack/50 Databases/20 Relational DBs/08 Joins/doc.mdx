@@ -1,0 +1,230 @@
+
+
+Joins produce one table as output, but the input comes from multiple tables, which have been combined using keys.
+
+### Cartesian Product
+
+By default, a `SELECT` from multiple tables just produces the cartesian product of all tuples.
+
+This is `r1`:
+
+| `uid` | `name`  |
+| ----- | ------- |
+| 0     | Groucho |
+| 1     | Chicco  |
+| 2     | Harpo   |
+
+and this is `r2`:
+
+| `cid` | `uid` | `maturity`  |
+| ----- | ----- | ----------- |
+| 0     | 0     | old         |
+| 1     | 1     | middle-aged |
+| 2     | 2     | young       |
+
+
+
+
+
+
+```SQL
+SELECT * from r1, r2;
+```
+
+| `uid` | `name`  | `cid` | `uid` | `maturity`  |
+| ----- | ------- | ----- | ----- | ----------- |
+| 0     | Groucho | 0     | 0     | old         |
+| 1     | Chicco  | 0     | 0     | old         |
+| 2     | Harpo   | 0     | 0     | old         |
+| 0     | Groucho | 1     | 1     | middle-aged |
+| 1     | Chicco  | 1     | 1     | middle-aged |
+| 2     | Harpo   | 1     | 1     | middle-aged |
+| 0     | Groucho | 2     | 2     | young       |
+| 1     | Chicco  | 2     | 2     | young       |
+| 2     | Harpo   | 2     | 2     | young       |
+
+
+
+Any join, therefore, is a particular *filtering of the cartesian product*. In particular, joins using keys just discard tuples in the cartesian product where keys representing the same thing do not coincide:
+
+
+
+
+
+
+
+
+```SQL
+SELECT * from r1, r2 WHERE r1.user_id = r2.user_id;
+```
+
+| `uid` | `name`  | `cid` | `uid` | `maturity`  |
+| ----- | ------- | ----- | ----- | ----------- |
+| 0     | Groucho | 0     | 0     | old         |
+| 1     | Chicco  | 1     | 1     | middle-aged |
+| 2     | Harpo   | 2     | 2     | young       |
+
+
+
+To refer to columns in different tables, you can prefix each column with the table name:
+
+
+
+```SQL
+SELECT address.address, city.city FROM address, city
+  WHERE address.city_id = city.city_id;
+
+SELECT city.city, country.country
+  FROM city, country
+  WHERE city.country_id = country.country_id;
+```
+
+
+
+#### Abbreviation
+
+To make prefixes shorter, adding an **`AS`** clause after a table name creates a useful alias. 
+
+
+
+```SQL
+SELECT a.address, c.city
+  FROM address AS a, city AS c       
+  WHERE a.city_id = c.city_id;
+```
+
+
+
+In fact, the `AS` clause is even optional:
+
+
+
+```SQL
+SELECT a.address, c.city FROM address a, city c
+   WHERE a.city_id = c.city_id;
+```
+
+
+
+#### Natural Joins
+
+The **`NATURAL JOIN`** is a way of assuming which columns are equal without having to specify them. If a `FOREIGN KEY` column has **the same name** as the `PRIMARY KEY` column, then a join can be expressed as:
+
+
+
+```SQL
+SELECT a.city, b.country 
+  FROM city a NATURAL JOIN country b;
+```
+
+
+
+If necessary, you can rename columns with `ALTER TABLE`:
+
+
+
+```SQL
+ALTER TABLE users RENAME COLUMN id TO user_id;
+```
+
+
+
+Often, the `NATURAL JOIN` is not possible because other columns have matching names that do not participate in a relationship.
+
+#### `JOIN ... ON`
+
+If primary and foreign key columns do not have matching names, we can use **`ON`**:
+
+
+
+```SQL
+SELECT ci.city, co.country
+  FROM city ci JOIN country co ON ci.country_id = co.id;
+
+SELECT c.first_name, c.last_name, s.store_id
+  FROM customer c JOIN store s ON c.store_id = s.id;
+```
+
+
+
+Note that we start with `city` and join `country` to it, so there is a starting table and we move towards another (this will be useful later).
+
+#### `JOIN ... USING`
+
+If primary and foreign key columns agree in name, then `USING` can be useful to specify the name of the shared column. This makes joins with multiple tables much easier:
+
+
+
+```SQL
+/* What cities do customers live in? */
+SELECT c.first_name, c.last_name ci.city
+  FROM customer c
+    JOIN address a USING(address_id)
+    JOIN city ci USING(city_id)
+    ORDER BY ci.city;
+```
+
+
+
+
+```SQL
+/* Show each film with category */
+SELECT f.title, f.release_year, c.name as category
+  FROM film f
+    JOIN film_category USING(film_id)
+    JOIN category c USING(category_id)
+    ORDER BY f.title;
+```
+
+
+
+
+```SQL
+/* What movies did all customers rent */
+SELECT c.first_name, c.last_name, f.title, r.rental_date
+  FROM customer c
+    JOIN rental r USING(customer_id)
+    JOIN inventory USING(inventory_id)
+    JOIN film f USING(film_id);
+```
+
+
+
+
+```SQL
+/* 
+  THIS IS IMPRACTICAL... 
+  ...what movies of the 'Family' category did all customers rent? 
+*/
+SELECT c.first_name, c.last_name, r.rental_date, f.title
+  FROM customer c
+    JOIN rental r USING(customer_id)
+    JOIN inventory USING(inventory_id)
+    JOIN film f USING(film_id)
+    JOIN film_category USING(film_id)
+    JOIN category USING(category_id)
+    WHERE category.name = 'Family'
+    ORDER BY r.rental_date;
+```
+
+
+### Inner and outer joins 
+
+A normal join (called an `INNER JOIN`) will show only tuples in the cartesian product that are related (i.e., that have equal values in their relationship column). But what about tuples in both tables that are not related to anyone? 
+
+
+In a `SELECT` like:
+
+
+
+```SQL
+SELECT * FROM ta NATURAL JOIN tb;
+```
+
+
+There could be:
+- Tuples in `ta` with no related tuples in `tb`.
+- Tuples in `tb` with no related tuples in `ta`.
+
+[**`OUTER JOIN`**](https://www.postgresql.org/docs/15/sql-select.html#SQL-FROM)s just list the unpaired tuples in many ways.
+

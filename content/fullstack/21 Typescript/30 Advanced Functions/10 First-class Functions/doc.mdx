@@ -1,0 +1,161 @@
+<script lang="ts">
+  import CodeComparison from '../../../../lib/components/CodeComparison.svelte';
+</script>
+
+That functions are "first-class" means that you can do to functions everything that you can do with other values like `number`s, `string`s, objects or arrays.
+
+### Functions don't have a name!
+
+Since functions are values, in reality they don't have a name. This definition:
+
+```javascript
+function max2(a, b) {
+  return a > b ? a : b;
+}
+```
+
+is turned into:
+
+```javascript
+let max2 = function (a, b) {
+  return a > b ? a : b;
+};
+```
+
+In particular, this means that you could in principle overwrite a function since it is stored in a variable. That is why many people define functions with `const`:
+
+```javascript
+const max2 = function (a, b) {
+  return a > b ? a : b;
+};
+```
+
+### What can you do with functions?
+
+1. Assign them to variables:
+
+```javascript
+let inc1 = function (x) {
+  return x + 1;
+};
+```
+
+2. Copy them (by reference):
+
+```javascript
+let sum1 = inc1;
+```
+
+3.  Pass them as parameters:
+
+    ```javascript
+    function repeat(times, fn) {
+      for (let i = 0; i < times; i++) {
+        fn(i);
+      }
+    }
+    repeat(10, function (i) {
+      console.log(`Iteration ${i}`);
+    });
+    ```
+
+4.  Store them as elements in arrays:
+
+    ```javascript
+    const funcs = [
+      function (a, b) {
+        return a + b;
+      },
+      function (a, b) {
+        return a - b;
+      },
+      function (a, b) {
+        return a * b;
+      },
+      // ...
+    ];
+    ```
+
+5.  Put them as fields in objects:
+    ```javascript
+    const person = {
+      name: 'Olaf',
+      sayHi: function () {
+        console.log("Hi, I'm Olaf");
+      },
+    };
+    ```
+
+### Methods
+
+The particular case about a `function` being a field in an object is one of the most important, since that is what we usually call a **method**.
+
+Functions defined with `function` in Javascript can behave as methods if stored as fields of objects.
+
+```javascript
+let cat = {
+  name: 'Garfield',
+  meow() {
+    console.log(`${this.name}: Meow!`);
+  },
+};
+```
+
+### This
+
+Here is there `this` becomes important. The `this` variable is _always present_. But we need to know that:
+
+- In the global context (outside a `function`), `this` returns:
+
+  1. the global object, or
+  2. `undefined`, when in "strict mode" (with `"use strict"`).
+
+- Inside a `function`, it will return the **`left object`**.
+
+A call to a method has a "left object" (the object used to make the call, the one before the dot). Normal function calls do not have a "left object".
+
+```javascript
+'use strict'; // global -> undefined
+
+let foo = function () {
+  console.log(`Called foo with ${this}`);
+};
+
+let obj = {
+  foo, // also store 'foo' inside 'obj'
+};
+
+foo();     // -> Called foo with undefined
+obj.foo(); // -> Called foo with [object Object]
+```
+
+### Unbinding
+
+But what happens if we do the opposite. What if we take a method and store it as a function?
+
+```javascript
+let person = {
+  name: "Amelia",
+  sayHi() {
+    console.log(`Hi, I'm ${this.name}`);
+  }
+};
+
+person.sayHi(); // Hi, I'm Amelia
+
+let sayHi = person.sayHi; // Take the function out
+sayHi(); // Hi, I'm undefined
+```
+
+The rule still stands, no left object means `this` is `undefined`.
+
+#### Re-binding
+
+To avoid the problem, we can force the binding with:
+```javascript
+let sayHi = person.sayHi.bind(obj);
+sayHi(); // Hi, I'm Amelia.
+```
+
+The `bind` method is defined for `function` objects and produces *a new function* with an unbreakable binding between `obj` and `sayHi`.
+

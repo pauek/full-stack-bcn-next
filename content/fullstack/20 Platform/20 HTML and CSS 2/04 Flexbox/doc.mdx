@@ -1,0 +1,55 @@
+[Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) is a modern layout algorithm that substitutes old ones. With it you can do almost everything.
+
+### Display property
+
+To activate this algorithm, change the `display` property of any element with CSS:
+
+```css
+article {
+  display: flex;
+}
+```
+
+Elements with `display: flex` can be a **column** (children laid out vertically) or a **row** (children laid out horizontally). To control this, use `flex-direction`:
+
+```css
+article {
+  display: flex;
+  flex-direction: row;
+}
+```
+
+### Axes
+
+The **main axis** refers to the axis on which children are positioned, and has the property **`justify-content`**. The **cross axis** is the orthogonal one, property **`align-items`**.
+
+The associated properties are:
+
+| Axis  | Property          |
+| ----- | ----------------- |
+| main  | `justify-content` |
+| cross | `align-items`     |
+
+So the axes in both cases are:
+
+| `flex-direction` | `justify-content` | `align-items` |
+| ---------------- | ----------------- | ------------- |
+| `column`         | vertical          | horizontal    |
+| `row`            | horizontal        | vertical      |
+
+### Expanded elements
+
+By default all elements have minimum dimensions, but some of them can have a **`flex`** number. If this number is different than 0 (the default), they expand in sharing the available space in proportion to their number.
+
+```css
+.parent {
+  display: flex;
+  flex-direction: row;
+}
+.parent .child1 {
+  flex: 1; /* will get half as big as child2, ratio 1:2 */
+}
+.parent .child2 {
+  flex: 2; /* will get twice as big as child1, ratio 2:1 */
+}
+```

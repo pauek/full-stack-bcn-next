@@ -1,0 +1,37 @@
+CSS is a language specifying the style of pages. HTML is just for "abstract content", CSS decides how that content is shown. [Content and style separation](https://csszengarden.com) is a good specialization since designers can be mainly responsible for CSS and programmers or content managers for HTML.
+
+### Styling HTML
+
+1. Using a `<link>`:
+
+   ```html
+   <link rel="stylesheet" href="styles.css" />
+   ```
+
+2. Puting a `<style>` tag the `<head>`.
+
+3. Setting _inline_ styles:
+
+   ```html
+   <div style="background-color: red">I'm so, so hot!</div>
+   ```
+
+4. Importing styles from another CSS file:
+
+   ```css
+   /* in styles.css... */
+   @import url(more-styles.css);
+   ```
+
+### CSS Syntax
+
+A CSS file is just a _list of rules_. Each rule has a **selector**, a **property**, and a **value**. Whitespace is not important, and comments are like C region comments (`/*` and `*/`). It is important to use a formatter such as [Prettier](https://prettier.io).
+
+Rules can be grouped with braces (`{` and `}`) so that they share the selector, but they are independent rules anyway. The following is a piece of CSS showing two rules applying to all paragraphs:
+
+```css
+p {
+  color: #222;
+  margin: 1rem 0;
+}
+```

@@ -1,0 +1,112 @@
+
+We call "higher-order functions" those that receive other functions as inputs  or produce functions as outputs. Javascript has many uses for these and very powerful things can be done with higher-order functions.
+
+The most important use of higher-order functions are the `Array` functional methods (in the next section).
+
+### Partial application
+
+The **`bind`** method we saw for keeping a method bound to an object can also be used to bind part of the parameters in a function call:
+
+```javascript
+function sum(a, b) {
+  return a + b;
+}
+
+const add5 = sum.bind(null, 5);
+const add10 = sum.bind(null, 10);
+
+add5(7);   // 12
+add10(30); // 40
+```
+
+This mechanism, though, can be expressed more clearly with *currying*.
+
+### Currying
+
+In general we call functions and provide all their required arguments. But one can implement a function so that it accepts arguments in stages. The results of the partial stages are functions that have some of the parameters filled in and need to receive the rest to do their calculation:
+
+```javascript
+const sum = (a, b) => a + b;
+const sum_curry = (a) => (b) => a + b;
+
+console.log(sum(5, 7));
+console.log(sum_curry(5)(7));
+```
+
+`sum_curry(5)` returns another function prepared to receive just the last element of the sum, and then calculate the result. So `sum_curry(5)` returns a closure.
+
+### Currying as "pre-configuration"
+
+Whenever we need to provide arguments to functions in different batches because we don't have them right away, currying is useful:
+
+```javascript
+const mult2a = (x) => x * 2;
+const mult5a = (x) => x * 5;
+
+const makeMult = (n) => (x) => x * n;
+const mult2b = makeMult(2); // pre-configure a multiplier with 2
+const mult5b = makeMult(5); // pre-configure a multiplier with 5
+
+console.log(mult2b(10)); // 20
+console.log(mult5b(5));  // 25
+```
+
+Another example is filtering a list to find numbers that are inside an interval. The currying occurs when we provide the limits of the interval beforehand and the resulting pre-configured function is the one passed to `filter`:
+
+```javascript
+const A = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const between = (a, b) => (x) => x >= a && x <= b
+A.filter(between(3, 7)) // [3, 4, 5, 6, 7]
+```
+
+### Wrapping
+
+At times, we need to augment the behavior of several functions in the same way. A wrapping function that calls the original function and does extra things can be implemented as a higher-order function:
+
+```javascript
+const logger = (fn) => (...args) => {
+  console.log(`Entering "${fn.name}"`);
+  const result = fn(...args);
+  console.log(`Exiting "${fn.name}" (result is ${result})`);
+  return result;
+}
+
+const sum = (a, b) => a + b;
+const loggedSum = logger(sum);
+
+loggedSum(4, 7);
+// Entering "sum"
+// Exiting "sum" (result is 11)
+```
+
+### Memoization
+
+A special case of wrapping is a function which caches all results of another. For this the wrapped function has to be pure (always returns the same result for the same inputs).
+
+```javascript
+const memoize = (fn) => {
+  const cache = new Map();
+  return (x) => {
+    if (cache.has(x)) {
+      return cache.get(x);
+    } else {
+      console.log("Cache miss!");
+      const result = fn(x);
+      cache.set(x, result);
+      return result;
+    }
+  }
+}
+
+const isPrime = (n) => {
+  for (let d = 2; d*d <= n; d++) {
+    if (n % d === 0) return false;
+  }
+  return true;
+}
+
+const isPrimeFAST = memoize(isPrime);
+
+isPrimeFAST(13); // Cache miss! -> false
+isPrimeFAST(13); // -> false
+```

@@ -1,0 +1,141 @@
+
+Commits are the incremental versions of a project, and internally they are kept as an exact copy of how the project was at the time of the commit. So they are "snapshots" of the project evolution. Before making commits, however, you have to configure your name and email.
+
+### Configuring your name and email
+
+Since commits are signed by the author, you need to configure the name and email that will appear in commits so that people can know who is the author.
+Typically you will use a public email address, not a personal one, since commits usually end up on GitHub and if repositories are public (which is the default), then that email will be public anyway.
+
+To configure your name and email, do
+
+<CopyableCode>
+```bash
+git config --global user.name "Your Name Here"
+```
+</CopyableCode>
+
+<CopyableCode>
+```bash
+git config --global user.email "your@email.here"
+```
+</CopyableCode>
+
+You could configure these two variables for only one repository but in general it is useful to do it once for all repositories, hence the switch `--global`.
+
+### Workflow with Git
+
+At any point in time, a repository is in a particular commit (a position in the graph of commits, like a "cursor"). If you make changes, `git` can compare the files in your project folder to the files that where commited in the last version and see what has changed.
+
+To show the "status", i.e. where we are and what has changed, do:
+
+<CopyableCode>
+```bash
+git status
+```
+</CopyableCode>
+
+This will typically say that we are in the `main` branch (some time ago `master`), and
+what files have changed.
+
+### The Stage or Index
+
+With some changes (and given that those changes leave the project in good shape), we could make a commit with all of them, but it is convenient to be able to choose which files will go into the "snapshot".
+
+The **stage** (also called index), is a place where we put the files that we want to commit. Stage is not a bad word because it means that some files will be exposed and be "photographed", or "snapshotted", while on stage. Those will end up in the commit. Other modified files can wait.
+
+Usually, you will make several modifications and then make commits for particular subsets of files. However, since commiting subsets of files generates snapshots of the project folder that might not work, you have to be careful with this. In time, when doing important work, there is a tendency towards making planned commits which do snapshots of all files, so sometimes the index would not be necessary.
+
+<div class="note">
+   Other version control programs, such as <a href="https://www.mercurial-scm.org/">Mercurial</a>, do not even have the concept of "stage".
+</div>
+
+### Making commits
+
+Every time we make a commit, an exact snapshot of the repository is taken with
+the current state of files.
+
+1. **Adding files to the stage**
+
+   To make a commit, first we have to add files or folders to the "stage", which is where the "snapshot" will be taken.
+
+   ```bash
+   git add package.json
+   git add server.ts
+   ```
+
+2. **Checking the stage**
+
+   To check that what we've done is correct, use
+
+   ```bash
+   git status
+   ```
+
+   A file can be: 1) unchanged, 2) changed or, 3) changed and on the stage.
+
+3. **Committing**
+
+   Once we are satisfied with the files that will go into the spanshot, we can commit with
+
+   ```bash
+   git commit
+   ```
+
+   This opens an editor to add a message to the commit, but you can type the comment at the command-line
+   with
+
+   ```bash
+   git commit -m "Message"
+   ```
+
+### The `.gitignore` file
+
+Certain files in a repository are generated from the other ones (for example, build folders or installed packages). It is a waste of space to add those because they can be recovered easily, so a special file called `.gitignore` lists files or folders that Git should not consider following.
+
+A possible .gitignore file for a Javascript project would look like this:
+
+```
+.DS_Store
+node_modules
+/build
+.env
+.env.*
+```
+
+### Commit message conventions
+
+When working in a group (or working with yourself across time!), you will read commits to know what someone did. A convention has been established to format commits with a **title** (a first short line), a **separator** (just an empty line), and a **description** (more text describing the commit in more detail).
+
+```
+Fixed humongous bug (#12345)
+
+As Murphy attacked, I found a place in the code which could
+format the hard drive completely, so I removed the code and
+now it is much safer.
+```
+
+### VSCode UI for Version Control
+
+First, [install Visual Studio Code](https://code.visualstudio.com/Download) if you haven't already.
+
+Then, install [Git Lens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens), which is a very popular extension which makes VSCode much more powerful with respect to inspecting repositories and code.
+
+To clone a repository in VSCode click on the version control button (the third in the Activity Bar on the left). There is a "Clone Repository" blue button there. To clone a repo:
+
+1. Click the button.
+2. Provide the URL of the repository you want to clone.
+3. Specify where should it be stored on your computer. (The folder specified will be the parent folder of the repo, which will take its name from the origin.)
+4. Optionally tell VSCode to open its folder right away.
+
+To work on this project, the workflow is this:
+
+- Modify files and check that they are correct (by compiling, executing, or whatever).
+- Go to "Source Control" by clicking the button on the Activity Bar.
+- Explore the changes (look at the diffs!).
+- Click on the &plus; buttons to add individual files (groups, if you select with Shift), or even all (there is a &plus; button on the Changes section).
+- Write a commit message on the text box (or leave it empty and it will be edited like a regular file), and press the "Commit" button.
+
+With Visual Studio Code you can also do two more things very easily:
+
+1. If you are working on a project, you can **publish it to GitHub** from VSCode and it will ask you to provide the information it needs.
+2. You can **clone a project from within VSCode** instead of having to clone it from the command line and then go to VSCode afterwards.

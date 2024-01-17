@@ -1,0 +1,94 @@
+
+### Column Types
+
+- Numeric: `INTEGER`, `REAL`, ... 
+- Time related: `TIME`, `DATE`, ...                 
+- Text: `CHAR`, `TEXT`, `VARCHAR`, ...
+- Other: Arrays, JSON, Geographic, Inet, ...
+
+#### Numeric Types
+
+| Type               | Size  | Description                     |
+| ------------------ | ----- | ------------------------------- |
+| `SMALLINT`         | 2     | Small Integer                   |
+| `INTERGER`         | 4     | Typical Integer                 |
+| `BIGINT`           | 8     | Large Integer                   |
+| `REAL`             | 4     | Like C/C++ `float`              |
+| `DOUBLE PRECISION` | 8     | Like C `double`                 |
+| `DECIMAL`          | _var_ | user-specified precision, exact |
+| `NUMERIC`          | _var_ | Same as `DECIMAL`               |
+| `SMALLSERIAL`      | 2     | Small auto-incremented integer  |
+| `SERIAL`           | 4     | Medium auto-incremented integer |
+| `BIGSERIAL`        | 8     | Large auto-incremented integer  |
+
+#### Text-related types
+
+| Type         | Size     | Description                                    |
+| ------------ | -------- | ---------------------------------------------- |
+| `CHAR`       | 1        | One character                                  |
+| `CHAR(N)`    | _N_      | Fixed size string of length _N_ (with padding) |
+| `TEXT`       | _var_    | Variable-size string (no limit)                |
+| `VARCHAR`    | _var_    | Same as `TEXT`                                 |
+| `VARCHAR(N)` | &leq;_N_ | `VARCHAR` with a limit of _N_ (no padding)     |
+
+#### Time-related types
+
+| Type        | Size | Description           |
+| ----------- | ---- | --------------------- |
+| `TIME`      | 8    | Time of day (no date) |
+| `DATE`      | 4    | Date (no time of day) |
+| `TIMESTAMP` | 8    | Date + Time of Day    |
+| `INTERVAL`  | 16   | Time interval         |
+
+### Creating a new table
+
+The [**`CREATE TABLE`**](https://www.postgresql.org/docs/15/sql-createtable.html) command creates a new table with the specified columns and types:
+
+```SQL
+CREATE TABLE users (
+  id SERIAL,
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  email VARCHAR(255),
+  birthday DATE,
+  age SMALLINT,
+  bio TEXT
+);
+```
+
+Adding **`IF NOT EXISTS`** makes the command succeed even if the table already exists:
+
+```SQL
+CREATE TABLE IF NOT EXISTS users ( /* ... */ );
+```
+
+### Deleting a table
+
+The [**`DROP TABLE`**](https://www.postgresql.org/docs/15/sql-droptable.html) command removes an existing table:
+
+```SQL
+DROP TABLE users;
+```
+
+Adding **`IF EXISTS`** makes the command succeed even if the table wasn't there:
+
+```SQL
+DROP TABLE IF EXISTS users;
+```
+
+### Constraints
+
+Constraints make suer we never store incorrect data.
+
+- `NOT NULL`: an attribute is never empty.
+- `UNIQUE`: there are no repeated values.
+- `CHECK (...)`: the value has to satisfy a certain condition.
+
+
+```SQL
+CREATE TABLE products (
+  id INTEGER UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  price NUMERIC NOT NULL CHECK (price > 0),
+);
+```

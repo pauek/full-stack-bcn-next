@@ -1,0 +1,30 @@
+All the following elements do not draw anything on the screen and only organize things. All of them are block elements (they are boxes and are stacked vertically like paragraphs):
+
+- `<main>`: The main content of the page, the "meat" you wanted to read.
+
+- `<article>`: A long piece of text about some subject. A page can have more than one article.
+
+- `<section>`: A piece of an article.
+
+- `<nav>`: A section of the page which contains navigation. (This tag helps very much scrapers and bots!)
+
+- Headings (`<h1>` to `<h6>`): titles for each level of text.
+
+- `<header>`: The upper part of a page, which describes the context, usually.
+
+- `<footer>`: The lower part of a page, which typically shows extra links and copyright information.
+
+It might seem irrelevant to organize a page, because users don't get to read those tags, but they are important because HTML pages are read by scrapers and bots.
+
+### The `div` tag
+
+A `<div>` is a "divider", a general block element which is mainly used (and a lot) to divide things in ways that are not covered by the typical HTML elements.
+
+For example, a user "widget" in a web page might organize things in the following way to be able to put specific styles and render content nicely:
+
+```html
+<div class="user">
+  <div class="name">James Bond</div>
+  <div class="email">jbond@gmail.com</div>
+</div>
+```

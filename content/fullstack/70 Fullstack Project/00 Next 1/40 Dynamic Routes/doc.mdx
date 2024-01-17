@@ -1,0 +1,85 @@
+Even if we have static data, some types of data will be shown in a consistent way, using the same components. Therefore, NextJS has a mechanism to render page at different paths with the same components. These are called [dynamic routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes).
+
+For instance, suppose we want to render 10 different movies. All of them will come from a database and conform to the same schema, so we only need one page component to render them, but the path for each will be `/movies/<id1>`, `/movies/<id2>`, `/movies/<id3>`, etc.
+
+### Dynamic segments
+
+Within the App Router, if we create a folder with brackets (`[]`), it will be inerpreted as a variable. For instance:
+
+|                              |                                      |
+| ---------------------------- | ------------------------------------ |
+| `/movie/[id]`                | For movies with different IDs        |
+| `/article/[slug]`            | For articles with a different _slug_ |
+| `/news/[year]/[month]/[day]` | For the news at a certain day        |
+| `/post/[postId]/comments`    | For posting a comment on a blog post |
+
+To render a dynamic route, we need to obtain the specific values that were deduced for each variable, so we will use the **`params`** prop in the `Page` component. The params object contains one field for each dynamic variable in the path, named exactly the same. In our case, inside `params` we will find `id`:
+
+```typescript
+// This is file app/movies/[id]/page.tsx
+
+export default function Page({ params }) {
+	const { id } = params;
+	return <div className="movie">Will render movie with ID = {id}</div>;
+}
+```
+
+### Generating Static Params
+
+If the data we are showing on dynamic routes is completely static, we know in advance which `id` each movie will have, so we can tell NextJS in advance so that all movie pages are rendered at build time (SSG).
+
+This is done with a function called [**`generateStaticParams`**](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes#generating-static-params), which should return the params objects to use at a particular route.
+
+In the case of movies:
+
+```typescript
+export async function generateStaticParams() {
+	const movies = await loadMovies();
+	return movies.map((movie) => ({ id: movie.id }));
+}
+```
+
+This is just an optimization, though. If a URL for a movie is requested which was not in this list, the server will switch to SSR and return render the movie just in time.
+
+### Catch all segments
+
+To make dynamic routes more flexible, you can match whole segments with `[...arrayParam]`. For a page implemented in file **`app/shop/[...slug]/page.tsx`**, these are the values that the `slug` variable will have depending on the route:
+
+|                 |                             |
+| --------------- | --------------------------- |
+| `/shop/one`     | `{ slug: ['one'] }`         |
+| `/shop/one/two` | `{ slug: ['one', 'two'] }`  |
+| `/shop/1/2/3`   | `{ slug: ['1', '2', '3'] }` |
+
+### Parameter types
+
+It might be necessary to add types for parameters (NextJS doesn't generate types for this yet):
+
+```ts
+type Params = {
+	slug: Array<string>;
+};
+export default function Page({ param }: Params) {
+	// ...
+}
+```
+
+### Static vs Dynamic Rendering
+
+For Server Components, it is important to distinguish two modes of rendering:
+
+- **Static**: at build time, on the server. The result is cached and reused on new requests.
+- **Dynamic**: at request time, on the server.
+
+The `fetch` function has actually extra functionality both in React and NextJS, and caches results (a `cache` option allows choosing how it does caching).
+
+To determine is rendering is Static or Dynamic, NextJS uses two criteria: 1) how is data fetching done (cached or not cached), and 2) if the function is dynamic or not.
+
+#### Dynamic Functions
+
+A dynamic function uses information that is only available at request time, so it has to be run at request time. A function is dynamic if it uses any of these other features.
+
+- `cookies()` or `headers()` in Server Components will make the whole route dynamic.
+- Using the `searchParams` prop in `page.tsx` will make the page dynamic.
+- `useSearchParams()` in Client Components will skip static rendering.
+

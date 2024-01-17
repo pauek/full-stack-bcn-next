@@ -1,0 +1,59 @@
+### The HTMLElement class
+
+The browser implements a class for elements called `HTMLElement` which internally derives from 3 classes: `Element`, `Node` and `EventTarget`. Therefore, all the inherited methods of these classes are available in `HTMLElement`.
+
+|               |                                                             |
+| ------------- | ----------------------------------------------------------- |
+| `Element`     | A DOM element, having global attributes, style, and content |
+| `Node`        | A traversable node in a tree                                |
+| `EventTarget` | An object which can receive events                          |
+
+### HTMLElement's fields
+
+|               |                                                                          |
+| ------------- | ------------------------------------------------------------------------ |
+| `textContent` | Text content of an element (doesn't use the parser!)                     |
+| `title`       | The tooltip that appears when stopping the mouse pointer over an element |
+| `classList`   | The list of classes of an element                                        |
+| `className`   | The list of classes of an element as a space separated `string`          |
+
+There are [many more fields](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement) in `HTMLElement`.
+
+### The Class List
+
+The `classList` field is a way of altering an elements classes, using one of these methods:
+
+- **`contains(c)`**: to determine if a class is present,
+- **`add(c)`**: To add a class to the list,
+- **`remove(c)`**: to remove one,
+- **`toggle(c)`**: to remove if its present or add it if not,
+- **`replace(c)`**: to replace a class with another.
+
+### Attributes
+
+The attributes of an element (the `src` of an `<img>`, or the `rel` of an `<link>`), are also accessible and changeable:
+
+- **`hasAttribute(attr)`**: determine if an attribute is present,
+- **`getAttribute(attr)`**: get the value of an attribute,
+- **`setAttribute(attr)`**: set the value of an attribute,
+- **`toggleAttribute(attr)`**: alternate between values of a boolean attribute.
+
+### Tree traversal and manipulation
+
+The [`Node`](https://developer.mozilla.org/en-US/docs/Web/API/Node) class provides links between parent and children elements, and between consecutive siblings, so that you can always move towards neighboring elements in the tree.
+
+Several methods let us change the tree in almost all ways possible:
+
+- **`n1.cloneNode()`**: clone a node,
+- **`n1.appendChild(n2)`**: add a child at the end,
+- **`n1.insertBefore(n2, n3)`**: insert into the children nodes before `n3`,
+- **`n1.removeChild(n2)`**: remove `n2` from `n1`,
+- **`n1.replaceWith(n2)`**: replace `n1` with `n2`,
+- **`n1.remove()`**: remove a node from its parent.
+
+### Creation of nodes
+
+|                            |                                       |
+| -------------------------- | ------------------------------------- |
+| **`createElement(tag)`**   | Create an new element of type `tag`   |
+| **`createTextNode(text)`** | Create a new text element with `text` |

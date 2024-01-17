@@ -1,0 +1,28 @@
+The browser performs 4 very important tasks with a document:
+
+1. **fetching** its text,
+2. **parsing** it,
+3. **show** it on the screen, and
+4. **listen** for events.
+
+The Document Object Model (or DOM) is the internal in-memory representation of the document tree. The nodes in this tree are called **elements**. The DOM is what one can inspect using Chrome Developer Tools.
+
+By using Javascript, one can query and manipulate the DOM in many ways. It is possible to:
+
+1. traverse the tree,
+2. search for elements,
+3. change almost all properties of an element (content, styles, etc),
+4. configure event handlers for elements,
+5. delete elements,
+6. create new elements and add them.
+
+### The document object
+
+The `document` global variable exists in browsers and allows a programmer to directly access the live DOM. It has some useful properties:
+
+- **`location`**: the current URL as an object.
+- **`URL`**: the current URL as a string.
+- **`body`**: the body
+- **`head`**: the head
+- **`title`**: the title
+- ...

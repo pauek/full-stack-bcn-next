@@ -1,0 +1,90 @@
+
+### The scope of a variable
+
+The scope of a variable is the pair of braces that contain it, and therefore the piece of code where its lifetime is defined.
+
+```javascript
+{
+  let x = 1; // 'x' is born
+  x++;
+  console.log(x);
+} // 'x' dies
+
+let x = 2; // another 'x' (global)
+// ...
+```
+
+### Outer variables
+
+A function can access variables in outer scopes:
+```javascript
+let x = "I am x";
+
+function f() {
+  console.log(`X says "${x}"`);
+}
+
+```
+
+### Nested functions
+
+Since functions are values, they can be defined anywhere, including inside another function:
+
+```typescript
+function showTime(hour: number, min: number, sec: number) {
+  function _DD(x: number) {
+    return String(x).padStart(2, '0');
+  }
+  console.log(`${_DD(hour)}:${_DD(min)}:${_DD(sec)}`);
+}
+```
+
+### The lexical scope
+
+Any function can access variables from the outer scopes, **lexically**. This means that the accessible variables are determined at the time of definition, not at the time of execution.
+
+```javascript
+/* 0 */
+let a = false;
+function f() { 
+  /* 1 */
+  let b = 1, c = "hi", d;
+  const g = (e) => {
+    /* 2 */
+    return () => {
+      /* 3 */
+      return e ? a : b;
+    }
+  }
+}
+```
+
+This example shows many nested scopes, numbered from `0` to `3`, including parameters, local and global variables and 3 levels of inner functions:
+
+
+### The stack
+
+At the time of execution, functions which are defined in diferent places (lexically) call each other and they place frames on the stack. At any one moment, on the stack, the different variables from all scopes are stored together, but a function can't access them if they come from different lexical scopes.
+
+### Closures
+
+Closures are functions that outlive (typically are returned) the variables from outer scopes that they reference. Javascript detects this and forms a special object called a **`closure`** which stores the function and the values it needs attached to it.
+
+```typescript
+const makeCounter = (initial: number = 0) => {
+  let count: number = initial;
+  return () => {
+    const result = count;
+    count++;
+    return result;
+  };
+}
+
+const c1 = makeCounter();
+const c2 = makeCounter(10);
+c1();
+```
+
+In this example, what `makeCounter` returns is a closure. It is a function that needs to use `count`, which is in its lexical scope, but `count` is a local variable of `makeCounter` and by the time we call the closure, `makeCounter` has finished (and `count` with it). So Javascript creates a function with its `count` attached. Every time we call `makeCounter` a new closure is made, with its own counter.
+
+

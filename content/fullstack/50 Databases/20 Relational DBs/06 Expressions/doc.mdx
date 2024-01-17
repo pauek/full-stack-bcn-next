@@ -1,0 +1,64 @@
+
+
+### Comparison Operators
+
+
+
+|                             |                          |
+| --------------------------- | ------------------------ |
+| `<`                         | Less than                |
+| `>`                         | Greater than             |
+| `<=`                        | Less than or equal to    |
+| `>=`                        | Greater than or equal to |
+| `!=` or `<>`                | Not equal                |
+| `BETWEEN` _x_ `AND` _y_     | *(Self-explanatory.)*    |
+| `NOT BETWEEN` _x_ `AND` _y_ | *(Self-explanatory.)*    |
+| `IS NULL`                   | *(Self-explanatory.)*    |
+| `IS NOT NULL`               | *(Self-explanatory.)*    |
+
+
+
+**`CASE`** transforms certain values into discrete categories:
+
+
+```SQL
+SELECT film_id, title, CASE 
+    WHEN replacement_cost < 15 THEN 'low'
+    WHEN replacement_cost < 25 THEN 'mid'
+    ELSE 'high'
+  END
+  FROM film;
+```
+
+
+
+**`LIKE`** does light pattern matching on strings:
+
+
+```SQL
+SELECT first_name, last_name FROM customer 
+  WHERE last_name LIKE 'A%'; /* begins with 'A' */
+
+SELECT film_id, title FROM film
+  WHERE title LIKE '%al'; /* ends in 'al' */
+
+SELECT film_id, title FROM film
+  WHERE title LIKE '%war%'; /* title has 'war' somewhere */
+```
+
+
+
+**`IN`** checks that a value belongs to a set:
+
+
+```SQL
+SELECT customer_id, rental_id, return_date FROM rental
+  WHERE customer_id IN (1, 2, 3, 4, 5)
+  ORDER BY return_date DESC;
+
+SELECT address_id, district, city_id FROM address
+  WHERE city_id IN (
+    SELECT city_id FROM city WHERE city LIKE 'A%'
+  );
+```
+

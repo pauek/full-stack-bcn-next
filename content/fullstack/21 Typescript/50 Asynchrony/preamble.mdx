@@ -1,0 +1,6 @@
+
+Asynchronous functions are slow because they interact with the Operating System and the latency of operations like reading files, or requesting network resources is very large compared to the speed of the CPU. The usual way to call a function and wait for the result didn't fit these functions, since waiting meant blocking the CPU.
+
+Javascript solved this in the beginning with _callbacks_. Getting results with callbacks freed the CPU to do other stuff when a function was waiting for data, but the technique quickly grew out of control. The ecosystem was at that time in the so-called "Callback Hell". 
+
+The solution was to introduce `Promise`s and `async`/`await`, which allow the programmer to express asynchronous functions in a normal, sequential manner while keeping underneath the callback model, which gave Javascript the power to efficiently use the CPU.

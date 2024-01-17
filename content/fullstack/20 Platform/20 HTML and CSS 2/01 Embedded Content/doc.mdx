@@ -1,0 +1,82 @@
+
+An **`<img>`** ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img)) embeds images in the page. A size can be given with CSS with properties `width` and `height`.
+
+```html
+<img src="https://some.site.com/some-image.png" alt="An internet cat" />
+```
+
+A **`<picture>`** ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture)) is a wrapper around `<img>` which allows control over image resolutions, since devices vary immensely in this respect. (Many frameworks do this automatically since it is very laborious.)
+
+```html
+<picture>
+  <source srcset="logo-big.png" media="(min-width: 1200px)" />
+  <source srcset="logo-medium.png" media="(min-width: 600px)" />
+  <img src="logo.png" alt="Company Logo" />
+</picture>
+```
+
+A **`<video>`** ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video)) embeds a video on the page, and also uses `<source>` for choosing video sizes. Children of `<video>` that are not a `<source>` are displayed whenever the video can't be shown (the browser doesn't support the format).
+
+```html
+<video controls width="250">
+  <source src="/media/cc0-videos/flower.webm" type="video/webm" />
+  <source src="/media/cc0-videos/flower.mp4" type="video/mp4" />
+
+  Download the <a href="/media/cc0-videos/flower.webm">WEBM</a> or
+  <a href="/media/cc0-videos/flower.mp4">MP4</a> video.
+</video>
+```
+
+
+
+An **`<audio>`** tag embeds a piece of audio. Both `<video>` and `<audio>` support the attribute `controls` which shows controls for pause/play/etc. As with the video, children of `<audio>` that are not a `<source>` element are displayed in case the audio cannot be played.
+
+```html
+<audio controls src="/media/cc0-audio/t-rex-roar.mp3">
+  <a href="/media/cc0-audio/t-rex-roar.mp3">Download audio</a>
+</audio>
+```
+
+### Iframes
+
+An **`<iframe>`** is an element through which you can view another website, embedded in your document. It is a browser within a browser. The page shown inside the `<iframe>` can't communicate much with the parent document. But this allows showing maps, code editors, and in general services provided by another web application.
+
+This map:
+
+<iframe title="A Map of UPC School Area" width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=2.193877995014191%2C41.39688187508314%2C2.1980917453765874%2C41.39862026407342&amp;layer=mapnik">
+</iframe>
+
+is produced by this `<iframe>`:
+
+```html
+<iframe
+  title="A Map of UPC School Area"
+  width="100%"
+  height="350"
+  scrolling="no"
+  src="https://www.openstreetmap.org/export/embed.html?bbox=2.193877995014191%2C41.39688187508314%2C2.1980917453765874%2C41.39862026407342&amp;layer=mapnik"
+>
+</iframe>
+```
+
+### SVG
+
+Scalable Vector Graphics (SVG) is a format analogous to HTML (both are XML) which describes vector drawings (not pixels). An example:
+
+```svg
+<svg xmlns="http://www.w3.org/2000/svg"
+     version="1.1" baseProfile="full" width="300" height="200">
+  <rect width="100%" height="100%" fill="red" />
+  <circle cx="150" cy="100" r="80" fill="green" />
+  <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">
+    SVG
+  </text>
+</svg>
+```
+
+SVGs can be:
+
+* Used in the `<img>` tag:
+  ```html
+  <img src="img/logo.svg" alt="Logo" />
+  ```

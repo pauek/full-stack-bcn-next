@@ -1,0 +1,94 @@
+The `<head>` tag contains metadata, which describes things that are not directly shown on the page itself.
+
+### The title
+
+The `<title>` tag gives a title to the page, which usually is displayed in the browser's tab. If that page is saved, the title is also used for the file.
+
+```html
+<title>A simple title</title>
+```
+
+### Links
+
+Links are relationships between the document we are describing and other resources. These links can be of different types depending on the "relationship", abbreviated `rel` as an attribute. The `<link>` is a self-closing tag.
+
+1. **Stylesheets**: `rel="stylesheet"`, to attach a CSS style-sheet to the page (can be used many times).
+
+   ```html
+   <link rel="stylesheet" href="/styles.css" />
+   ```
+
+2. **Stylesheets for specific media**: adding `media="..."` we can choose for what media is the stylesheet.
+
+   ```html
+   <link rel="stylesheet" media="print" href="/print.css" />
+   <link rel="stylesheet" media="screen and (max-width: 600px)" href="/mobile.css" />
+   ```
+
+3. **Favicon**: `rel="icon"`, to describe what the icon of the page should be.
+
+   ```html
+   <link rel="icon" href="favicon.ico" />
+   ```
+
+4. **Preload**: To indicate files to preload, otherwise they are loaded on-demand, and preloading them can speed-up things quite a bit.
+
+   ```html
+   <link rel="preload" href="/fonts/my-font.woff2" as="font" />
+   ```
+
+### Styles
+
+You can write styles inside the `<head>` element with a `<style>` tag,
+using CSS directly embedded in the html.
+
+```html
+<html>
+  <head>
+    <style>
+      body {
+        font-size: 20pt;
+      }
+    </style>
+  </head>
+  <body>
+    This text will be large!
+  </body>
+</html>
+```
+
+### Scripts
+
+You can also include scripts in the `<head>` with the `<script>` tag. Using both `<style>` and `<script>` allows you to send a self-contained web document.
+
+### Metainformation
+
+With the `<meta>` tag you can attach metainformation of various kinds to the document. The `<meta>` tag is an _empty tag_.
+
+Examples:
+
+1. Setting the **encoding**:
+
+   ```html
+   <meta charset="utf-8" />
+   ```
+
+2. **Description** of the website (good for SEO):
+
+   ```html
+   <meta name="description" content="A brief description of my website" />
+   ```
+
+3. Setting some **keywords** for your site (good for SEO):
+
+   ```html
+   <meta name="keywords" content="educational, course, programming" />
+   ```
+
+4. **Redirect** to another site after a certain number of seconds:
+
+   ```html
+   <meta http-equiv="refresh" content="3;https://www.upc.edu" />
+   ```
+
+There are many more, and some people have collected a [somewhat complete list of meta tags](https://gist.github.com/whitingx/3840905).

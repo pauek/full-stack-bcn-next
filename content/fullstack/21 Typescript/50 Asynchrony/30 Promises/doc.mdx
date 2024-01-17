@@ -1,0 +1,81 @@
+
+`Promise`s and `async`/`await` are the two main modern mechanisms to deal with asynchrony. In fact, we can already state an important fact:
+
+> **Asynchronous functions** always return a `Promise`
+
+(And functions returning `Promise`s are asynchronous.)
+
+####  A magic box
+
+Figuratively, a `Promise` is like a magic box. The function gives back the `Promise` immediately, and it *promises* you that it will contain the value in the future, just not now. A `Promise` is the way in which the function (the _producer_) communicates the value to the caller (the _consumer_).
+
+In Typescript, the `Promise<T>` class has a type parameter `T` indicating what type of data does the box contain. A an asynchronous function returning a `number` would actually return `Promise<number>`, for instance.
+
+### Creating Promises
+
+Going back to our `sum` example, we can reimplement it using `Promise`s:
+
+```typescript
+function sum(a: number, b: number): Promise<number> {
+  return new Promise((resolve, reject) => {
+    if (typeof a !== "number" || typeof b !== "number") {
+      reject("Operands must be numbers");
+    }
+    setTimeout(() => resolve(a + b), 1000); // simulate 1s delay (again)
+  });
+}
+```
+
+When creating a `Promise` you provide a function which will do the computation and call `resolve` or `reject` depending on what the outcome is. `resolve` will return a normal result, and `reject` will throw an error.
+
+### Using Promises
+
+At the receiving side, we get an object of type `Promise`, so we need to know what we can do with it. The usual way is to call `then` which registers a callback. The  `Promise` will then call the callback when a result is available or an error has occurred.
+
+```typescript
+sum(5, 7).then((result) => {
+  console.log("Result is", result);
+});
+```
+
+This is similar to the old callbacks, but the callback is not passed to the function but set on the `Promise`, which is a "middle man". 
+
+Another method is `catch` which sets a callback in case of errors, but this method is only useful if chaining promises.
+
+#### Fetching data
+
+A typical example of using `Promise`s is the `fetch` function, which does an HTTP request to some remote server:
+
+```typescript
+fetch(`https://randomuser.me/api`)
+  .then((response) => {
+    console.log(`Status: ${response.status}`)); // Status: 200
+  });
+```
+
+`fetch` returns a `Promise` to the server's response. In Typescript 
+
+### Chaining Promises
+
+The interesting part about the `then` method is that is always returns a new `Promise`, so that we can chain calls to `then`. Let's fetch from the previous API and parse the result to JSON:
+
+```typescript
+fetch(`https://randomuser.me/api`)
+  .then((response) => response.json())
+  .then((json) => console.log("Data:", json));
+```
+
+The `fetch` function returns a `Promise` to a response, but that response also has a method `json` which accumulates the body of the response (itself an asynchronous operation), and returns it parse into JSON. 
+
+The whole process of starting a `fetch` and finally getting the JSON data has two gaps: 1) the time until the HTTP header is received, 2) the time until all the data is accumulated and parsed. In between those moments, the CPU is free to continue doing other tasks (executing other callbacks in the Event Loop).
+
+### Errors in Promise chains
+
+When chaining `Promises` a useful method is `catch` which operates similarly to a `catch` clause. Even if we set the `catch` method in the last `Promise` (at the end of the chain), it will catch errors at any step of the sequence:
+
+```typescript
+fetch(`https://randomuser.me/api`)
+  .then((response) => response.json())
+  .then((json) => console.log("Data:", json))
+  .catch((err) => console.error("Something went wrong:", err));
+```

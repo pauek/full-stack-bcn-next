@@ -1,0 +1,117 @@
+An object is a **table** (or map), associating _properties_ or _fields_ (of type `string`) to values (of type `any`). There is no need to declare any "class" or object template before creating objects:
+
+```typescript
+let emptyObj = {};
+let person = {
+  last: "Bond",
+  first: "James",
+  age: 27,
+};
+```
+
+Access to properties is (almost universally) accomplished with the **`.`** operator:
+
+```typescript
+console.log(`My name is ${person.last}, ${person.first} ${person.last}`);
+```
+
+### Mutating objects
+
+An object is a dynamic structure, so properties can be added
+
+```typescript
+person.weight = 80;
+```
+
+or deleted
+
+```typescript
+delete person.age;
+```
+
+Adding and removing properties to objects confuses the JIT, so in general it is a good idea to keep the structure of objects fixed if one cares about performance.
+
+### Special names
+
+Since internally the object is a table, properties do not need to be named like variable names. If they are they can be accessed normally, if not, they can be accessed with the brackets operator **`[]`**.
+
+```typescript
+let obj1 = {};
+obj["full name"] = "Maximilian Schmitz";
+```
+
+This same notation can be used in initialization:
+
+```typescript
+let obj2 = {
+  ['full name']: "Maximilian Schmitz II";
+}
+```
+
+Since initialization uses the **`:`** separator between properties and values, we can even drop the brackets in that case:
+
+```typescript
+let obj3 = {
+  'full name': "Maximilian Schmitz III";
+}
+```
+
+This is the notation that gives rise to 
+<Ref path="ts/ts-objects/json">JSON</Ref>.
+
+### Checking for existence
+
+Since if you are given an object, in advance you don't know what properties it can have. You can ask if an object has a property with the **`in`** operator:
+
+```typescript
+if ("first" in person) {
+  console.log(`First name: ${person.first}`);
+}
+```
+
+### Iterating properties
+
+If you need to go over all the properties of an object you can use a special loop: **`for in`**. The loop gives, at every iteration the name of one of the properties of the object as a `string`.
+
+```typescript
+let obj = { x: 0.5, b: true, c: "hi" };
+for (const prop in person) {
+  console.log(`obj has property "${prop}" with value: ${obj[prop]});
+}
+```
+
+### Special property functions
+
+Three functions let us query for an objects inner associations:
+
+|                       |                                                |
+| --------------------- | ---------------------------------------------- |
+| `Object.keys(obj)`    | Returns an array of strings with `obj`s fields |
+| `Object.values(obj)`  | Returns an array of values with `obj`s values  |
+| `Object.entries(obj)` | Returns an array of pairs of key and value     |
+
+### Abbreviations
+
+When initializing an object:
+
+```typescript
+let first = "James";
+let last = "Bond";
+let age = 27;
+let person = {
+  first: first,
+  last: last,
+  age: age,
+};
+```
+
+it seems wasteful to repeat the names of variables if they come from independent variables with the same name. So Javascript lets you write this instead:
+
+```typescript
+let first = "James";
+let last = "Bond";
+let age = 27;
+// Take name and value from variable directly
+let person = { first, last, age };
+```
+

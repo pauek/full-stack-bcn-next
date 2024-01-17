@@ -1,0 +1,70 @@
+### Text boxes
+
+A [text box](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text) is the most basic `<input>` element with many variants which alter the keyboard (but always produce a `string` anyway).
+
+```html
+<input type="text" name="title" value="Interstellar" />
+<input type="tel" name="phone" value="123456789" />
+<input type="url" name="url" value="https://bit.ly/k00Lify" />
+<input type="email" name="address" value="" />
+<input type="number" name="length" value="0" />
+```
+
+### Buttons
+
+```html
+<input type="button" value="I don't work" />
+<input type="submit" value="Submit" />
+<input type="reset" value="Clear" />
+```
+
+The tag [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) works like `<input type="submit">` within a `<form>`, but as just a regular button outside.
+
+### Radio buttons
+
+Different [radio buttons](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) are grouped just by using the same `name` attribute. Each radio button represents a possible `value` for that field:
+
+```html
+<label><input type="radio" name="color" value="red" />Red</label>
+<label><input type="radio" name="color" value="blue" />Blue</label>
+<label><input type="radio" name="color" value="yellow" />Yellow</label>
+```
+
+### Checkboxes
+
+A [checkbox](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox) uses the `checked` attribute (with values `"on"` or `"off"`) to set its value:
+
+```html
+<input type="checkbox" name="married" checked="on" />
+```
+
+### Selection of options
+
+A [`<select>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select) displays a drop-down list with options:
+
+```html
+<select name="fruit">
+  <option value="orange">Orange</option>
+  <option value="lemon">Lemon</option>
+  <option value="Strawberry">Strawberry</option>
+  <option value="Kiwi">Kiwi</option>
+  <option value="Peach">Peach</option>
+  <option value="Banana">Banana</option>
+</select>
+```
+
+### Sliders
+
+A [slider](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range) can configure a value in a range:
+
+```html
+<input type="range" id="volume" min="0" max="11" />
+```
+
+### Color pickers
+
+A [color picker](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/color) lets us to pick a color easily:
+
+```html
+<input type="color" value="#e66465" />
+```

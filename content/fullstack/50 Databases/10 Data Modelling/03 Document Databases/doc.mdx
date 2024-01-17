@@ -1,0 +1,27 @@
+### Linear Search vs Binary Search
+
+_Linear search_ is the name we give to the search of a particular element in a sequence, which potentially implies iterating the whole array.
+
+_Binary search_ is the name of an algorithm which can half the number of elements to process at each iteration (for instance, if an array is sorted).
+
+### B-Trees
+
+To search very quickly in a collection of data, one can store the data in a tree which splits data hierarchically using a key. The resulting datastructure is a tree in which you can search very fast, since at every node, you can match the key you are looking for with the potential branches of the tree. At every iterations (just like in binary search) you can eliminate many elements from the search.
+
+### Indices
+
+Indices are data structures to let you find an arbitrary piece of data (the key again), and retrieve some associated value. A book index, for instance, lists concepts (words) and gives the pages where those concepts are explained in the book.
+
+Databases use indices to be able to query data efficiently. An index is usually a B-Tree structured on a particular key of the data. For the same collection, we can store several indices with different keys to speed up searching for different things, but every index occupies, typically, around 20% of the original data, so they are not free.
+
+### Document Databases
+
+Document databases store documents (JSON-like objects store in binary, or BSON). They provide a query language which is more powerful than key-value databases but less so than relational databases. They use indices to speed-up these queries. Document databases put in memory as much as possible of the recently used data but they have good persistence. (MongoDB in particular is very fast at writing.)
+
+|             |        |                                                      |
+| ----------- | ------ | ---------------------------------------------------- |
+| Performance | _high_ | They are fast, use collections with IDs              |
+| Scalability | _high_ | They can be sharded using the key                    |
+| Flexibility | _high_ | No schema, data can be modified freely               |
+| Complexity  | _low_  | They are more powerful than KV, less than relational |
+| Recursivity | _low_  | Recursion is not designed for                        |

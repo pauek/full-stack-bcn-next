@@ -1,0 +1,34 @@
+
+A **variable** is a named box for a value of a certain type.
+
+Variable declaration is accomplished with **`let`**:
+
+```typescript
+let a = 3;
+let b1 = 10, b2 = 100, b3 = 1.01;
+let c : any;
+```
+
+A constant can be declared with **`const`**. A constant needs an initial value and cannot be changed. It is important to mark true constants with `const` since compilers can make use of that information to produce faster code.
+
+```typescript
+const pi = 3.141592;
+const folder = `/data/space-x/content`;
+```
+
+Global constants usually are defined in `ALL_CAPS`:
+
+```typescript
+const DB_USER = "groucho";
+const DB_PORT = 8080;
+```
+
+### Variable names
+
+Variables names in Typescript have [less constraints than in other languages](https://mothereff.in/js-variables). In Typescript variable names can contain `$` and unicode characters (including emojis!). Except for this, they are usually made from letters (both lowercase and uppercase) and digits (not at the beginning). 
+
+
+
+
+
+

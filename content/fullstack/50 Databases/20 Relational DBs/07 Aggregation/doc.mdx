@@ -1,0 +1,59 @@
+Aggregation has to do with queries that compute cumulative values like sums, counts, maximums and related computations.
+
+### Counts and sums
+
+A `SELECT` with a **`count`** wrapping the selected fields will just count the number of tuples:
+
+```SQL
+SELECT count(*) FROM films; /* Count all rows */
+SELECT count(email) FROM customer; /* Count emails that are NOT NULL */
+SELECT count(DISTINCT lastname) FROM customer; /* Count after deduping */
+```
+
+**`sum`** adds together the values of a certain colum:
+
+```SQL
+SELECT sum(amount) FROM payment; /* total income from rents */
+SELECT sum(replacement_cost) FROM film; /* cost of all DVDs */
+```
+
+### Grouping
+
+Instead of doing total calculations, with **`GROUP BY`** aggregations can also be grouped by subsets, giving subtotals for each group.
+
+```SQL
+SELECT film_id, count(inventory_id) FROM inventory
+  GROUP BY film_id 
+  ORDER BY film_id;
+
+SELECT customer_id, count(rental_id)
+  FROM rental
+  GROUP BY customer_id;
+```
+
+If we need to filter aggregated values, you can do so with **`HAVING`**:
+
+```SQL
+SELECT film_id, count(inventory_id)
+  FROM inventory
+  GROUP BY film_id
+  HAVING count(inventory_id) < 10
+  ORDER BY film_id;
+```
+
+#### Aggregate Functions
+
+Many [aggregate functions](https://www.postgresql.org/docs/8.2/functions-aggregate.html) exist to do many types of computations:
+
+|                  |                                                        |
+| ---------------- | ------------------------------------------------------ |
+| `count(*)`       | number of input rows                                   |
+| `count(expr)`    | Number of rows for which the input is not `NULL`       |
+| `suy(expr)`      | Sum of `expr` across all input values                  |
+| `avg(expr)`      | Average (arithmetic mean) of all input values          |
+| `max(expr)`      | Maximum value for `expr` across all inputs             |
+| `min(expr)`      | Minimum value for `expr` across all inputs             |
+| `bool_and(expr)` | True if all input values are `true`, otherwise `false` |
+| `bool_or(expr)`  | True if any input values are `true`, otherwise `false` |
+| `every(expr)`    | Same as `bool_and`                                     |
+

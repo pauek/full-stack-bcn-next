@@ -1,0 +1,143 @@
+
+### Classes versus Prototypes
+
+Un standard OOP, to work with objects you first have to create _classes_. A class is a type, and hence, it is a _set_ of objects, all sharing the same structure.
+
+### The Prototype Property
+
+Looking at any object, you can see that it has a `__proto__` field that we didn't create ourselves, but that Javascript uses to know who is the prototype of any object.
+
+```Javascript
+let animal = {
+  eat() { console.log("nyam nyam"); }
+}
+let rabbit = {
+  jump() { console.log("Boing!"); }
+}
+rabbit.__proto__ = animal;
+rabbit.eat();
+```
+
+The **prototype chain** is the chain of objects that appears when we traverse the `__proto__` property of all of them until it is `null`. This sequence of objects can be considered a _layered object_. Properties of an object can come from anyone of the objects in the prototype chain.
+
+However, when adding fields to an object, always the first object in the prototype chain is changed, never the prototypes (the objects in the chain starting from the second).
+
+```javascript
+let animal = {
+  walk() {
+    if (!this.isSleeping) {
+      console.log("I'm walking");
+    }
+  }
+  sleep() {
+    this.isSleeping = true;
+  }
+};
+
+let rabbit = {
+  name: "Bugs Bunny",
+  __proto__: animal,
+};
+
+rabbit.sleep();
+console.log(rabbit.isSleeping); // true
+console.log(animal.isSleeping); // undefined
+```
+
+### Function Constructors
+
+Functions defined with `function` in Javascript have a third use (apart from being normal functions and methods). They can be **constructors**. When called after a `new` operator, they initialize an empty object:
+
+```javascript
+function Rectangle(x, y, width, height) {
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.height = height;
+}
+
+let r = new Rectangle(0, 0, 50, 100);
+```
+
+In this particular case, the new object created is then bound to the `this` variable so that it can be initialized, and it is also the return value of the function (even if no `return` instruction is issued).
+
+The constructor, being a function but also an object, can have fields. One very important one is **`prototype`**, which determines what gets copied into the `__proto__` field when creating new objects:
+
+```javascript
+let figure = {
+  area() { return this.width * this.height; }
+};
+function Rectangle(x, y, width, height) {
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.height = height;
+}
+Rectangle.prototype = figure; 
+// ... now all Rectangles will have __proto__ === figure
+
+let r = new Rectangle(0, 0, 80, 45);
+console.log(r.area());
+```
+
+If we leave the `prototype` property unset, then it adopts a default value, which is:
+
+```javascript
+Rectangle.prototype = { constructor: Rectangle };
+```
+
+Usually, we don't overwrite this property but we can add fields to it:
+
+```javascript
+Rectangle.prototype.area = function () {
+  return this.width * this.height;
+}
+```
+
+### Native prototypes
+
+The type system of Javascript is based on prototypes, and there is a hierarchy of prototypes already set up in the Javascript runtime.
+
+#### Polyfills
+
+Since objects are dynamic, one can change native prototypes at runtime to "patch" native methods with new implementations. This is in general dangerous but it has been used historically to provide functionality in browsers that didn't implement it, etc. These patches are usually called **polyfills**.
+
+### Inheritance
+
+To implement inheritance using `prototype` on constructors we need to connect the prototypes of the two classes involved. Here we have `Person` and `Superhero` and since a `Superhero` is a `Person` we want all objects constructed with `Superhero` to inherit `Person`'s methods:
+
+```javascript
+function Person(name) {
+  this.name = name;
+}
+Person.prototype.sayHi = function () {
+  console.log(`Hi, I'm ${this.name}`);
+}
+
+function Superhero(name, hero) {
+  this.name = name;
+  this.hero = hero;
+}
+Superhero.prototype.breakThroughWall = function () {
+  console.log(`Look! ${this.hero} broke through a wall!`);
+}
+```
+
+So the magic instruction that does that is:
+
+```javascript
+// Make all superheros be also persons
+Superhero.prototype.__proto__ = Person.prototype;
+```
+
+This connects both prototypes so that the prototype chain works correctly.
+
+Now we can call `Person` methods on super-heros:
+```javascript
+let bob = new Superhero("Bob Parr", "Mr. Incredible");
+bob.sayHi();
+bob.breakThroughWall();
+```
+
+
+

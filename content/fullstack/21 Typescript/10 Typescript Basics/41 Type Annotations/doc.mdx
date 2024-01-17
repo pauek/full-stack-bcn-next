@@ -1,0 +1,23 @@
+Variables in Typescript have a type (not in Javascript), so we need a way to indicate the type of a variable:
+
+```typescript
+let a: number;
+let b = 3; // inferred type: number
+
+function sum(a: number, b: number) {
+  return a + b;
+} // return type inferred: number
+```
+
+Typescript uses very powerful **type inference**, so if it can infer the type from the context, we can omit the annotation and the result is exactly the same.
+
+Type annotations are what distinguishes Typescript from Javascript so when you compile a Typescript file to Javascript, it usually looks as if the Typescript source was stripped of all the type information.
+
+### Any
+
+There is a special type called **`any`** which indicates that a variable can be of any type (the default in Javascript). Whenever you are dumbfounded by Typescript errors, it can be a way to escape the type system temporarily. However, in the long run, this is a bad idea.
+
+```typescript
+let b: any = 1;
+b = 'one and the same';
+```

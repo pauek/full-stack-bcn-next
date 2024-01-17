@@ -1,0 +1,126 @@
+One way of tackling asynchrony is with _callbacks_. A **callback** is a function that the caller passes to an asynchronous function (to "call it back"). When result is ready, the function can "return" the data by calling the callback and passing the result as the first parameter. Since we can pass closures that retain our initial context, we will be able to resume our computation cleanly.
+
+A function `sum` which computes the sum of two numbers:
+
+```typescript
+function sum(a, b) {
+  return a + b;
+}
+```
+
+can be made "artificially asynchonous" by using `setTimeout`, which will call any function we want with a delay. To give the result, we add a `callback` parameter, which will be the function used to communicate the result to the caller at a later time:
+
+```typescript
+function asyncSum(a, b, callback) {
+  const result = a + b;
+  setTimeout(() => callback(result), 1000);
+}
+```
+
+This function will compute the sum, and then wait 1 second before calling `callback`, which delivers the result. We can use the function like this:
+
+```typescript
+console.log("> begin");
+asyncSum(5, 7, (result) => {
+  console.log("Result is: ", result);
+});
+console.log("> end");
+```
+
+What is the output of this program?
+
+It is the following:
+
+```
+> begin
+> end
+Result is: 12
+```
+
+So `asyncSum` just executes almost immediately, and therefore we proceed to the end of the program, and then, 1 second later, we will see the message showing the result. Therefore, the order in which we apparently wrote the instructions is not the same as the order of execution. The callback that we left is the code that continues things after the sum is done, but that happens after the program has finished.
+
+### The Javascript Runtime
+
+It is quite important to know how Javascript operates here. After the program is finished, Javascript knows that there is some pending `setTimeout`, so it waits for it to trigger, and then whenever there is nothing left to wait for, truly ends the program.
+
+The Javascript Runtime is in fact composed of 4 important components:
+
+- The **Call Stack** (where functions in the middle of their code store their frames).
+- The **Node Async APIs** (the API that Node provides which interacts with the Operating System).
+- The **Callback Queue** (the list of callback functions ready to be executed).
+- The **Event Loop** (the loop where Javascript spends its time after executing the main program code).
+
+### The Event Loop
+
+<Image src="event-loop.svg" alt="The Event Loop" width={1920} height={1080} />
+
+Here is a turn of the Event Loop:
+
+- When a function is executed the stack grows and shrinks, and maybe some API functions are called.
+- While this is in progress, some APIs that were called in the past produce results now, and their callbacks are appended to the Callback Queue.
+- The runtime cannot take control until the stack is empty (the current "task" is finished).
+- Once the stack is empty we look for callbacks ready to be executed from the Callback Queue and execute them.
+
+Every time `setTimeout` is called, the runtime API sets a reminder for a certain time in the future and when that expires, it adds the callback to the Callback Queue. So the main program executes every instruction in the body, until the stack is empty. And then the timeout callback is ready to start.
+
+In a way, we can think of a Javascript program as a main module that "sets up" many things by calling asynchronous functions, and when that is done, it starts responding to all the results that keep coming from those events, and maybe producing more, until there are no more callbacks to execute ("delayed tasks", in a way).
+
+### Chaining Callbacks
+
+Callbacks and the Javascript runtime achieve the goal of not having to wait for asynchronous functions and being able to _use the CPU almost to its full potential_.
+
+But there is a catch: writing code with callbacks can get unwieldy. To illustrate this, lets compute a simple expression like:
+
+```typescript
+const result = 5 * (4 + (10 - 7));
+```
+
+using "fake async" functions like our `sum` before for addition, multiplication, subtraction.
+
+Our functions will look like this:
+
+```typescript
+const asum = (a, b, callback) => {
+  setTimeout(() => callback(a + b), 1000);
+};
+const asub = (a, b, callback) => {
+  setTimeout(() => callback(a - b), 1000);
+};
+const amul = (a, b, callback) => {
+  setTimeout(() => callback(a * b), 1000);
+};
+```
+
+If the functions were synchronous (let's pretend they are `sum`, `sub`, and `mul`), the expression could be written as:
+
+```typescript
+const result = mul(5, sum(4, sub(10, 7)));
+console.log("Result:", result);
+```
+
+but now, our async functions `asum`, `asub`, and `amul` can't be called normally because they all receive a callback, so we must write this instead:
+
+```typescript
+asub(10, 7, (p) => {
+  asum(4, p, (q) => {
+    amul(5, q, (result) => {
+      console.log("Result:", result);
+    });
+  });
+});
+```
+
+Clearly, something is much worse now. Our ability to understand what's going on is way lower, and it is difficult to see the order in which things will play out.
+
+### Callback Hell
+
+Historically, once people started using callbacks intensively, code written in the callback style [suffered so much](http://callbackhell.com/) that it quickly became almost impossible to write and understand. Productivity plummeted and it was evident that something had to be done.
+
+<a href="https://reibitto.github.io/hadoukenify/">
+  <Image
+    src="callback-hell-kame.jpg"
+    alt="Callback Hell illustration"
+    width={721}
+    height={420}
+  />
+</a>

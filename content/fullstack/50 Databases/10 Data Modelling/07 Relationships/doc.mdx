@@ -1,0 +1,33 @@
+
+### Relationships
+
+(Not to be confused with _relations_!)
+
+Entites interact in many ways, and relationships between those entities are one of the important aspects of a model.
+
+Examples:
+
+- A `User` makes a `Purchase`, which includes multiple `Products` and an `Invoice` is emitted.
+- An `Author` writes an `Article` to which `Users` add `Comments`.
+- An `Episode` is part of a `Series` and has a `Review` from a `Critic`.
+- A `Hospital` has many `Doctors` holding `Appointments` with `Patients` at certain `Offices`.
+
+### Types of relationships
+
+Relationships in databases are implemented by storing links between entities. But these links can represent different types of relationships in the real world:
+
+- **Hierarchy**: An entity can _contain_ other entities. So A is the context for many entities of type B, and every B can only belong to a single A. A **one-to-many** relationship. One entity in type A is linked to many entities in type B. Examples: `Books`-`Chapters`, `Catalogs`-`Products`, `Countries`-`Provinces`, `Houses`-`Rooms`. 
+
+- **Free Interaction**: Two entites of types A and B coincide in time/space and (at least in principle), any A can interact with any B. A **many-to-many** relationship: any entity in type A can potentially be related to any entity in type B. Examples: `Students`-`Courses`, `Users`-`Cars`, `Spectators`-`Chairs`, `Readers`-`Books`.
+
+- **Equivalence**: One A is associated with one B because either A is a B or B is an A. A **one-to-one** relationship: an entity in type A is related to a single entity in type B. Examples: `Persons`-`Employees`, `Purchases`-`Invoices`.
+
+### Simplified Entity Relationship Diagrams
+
+ERD diagrams are usually difficult to read. Two simplifications help design them:
+- Represent hierarchical connections top-down.
+- Reify many-to-many relationships (convert to entities).
+
+We say that a "pure hierarchy" is a set of hierarchy relationships that form a tree (a big object with parts with parts, etc.). In complete models we usually have "pure hierarchies" crossing with each other by free-interaction or equivalence.
+
+

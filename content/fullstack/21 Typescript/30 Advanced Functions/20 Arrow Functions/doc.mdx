@@ -1,0 +1,57 @@
+Arrow functions are a way to write functions more succintly. They are especially useful when:
+
+- We write _very short_ functions for which the usual syntax is too verbose.
+
+- We need to pass a function as a parameter and we don't want to define it somewhere else, we want to write it in the function call itself. We want related things together. (Besides, we don't want to think about a name for it.)
+
+Arrow functions use the `=>` (the "fat arrow") operator exclusively. If you see one, there is a function in there. 
+
+These are the rules:
+1. No more `function` keyword.
+2. No more `return` if directly writing an expression.
+3. Can use **`{}`** if more than one instruction is needed (then you have to use `return`).
+4. With exactly 1 parameter, you can omit the parentheses ("`x => x + 1`").
+5. With no parameters or more than one, must use the parentheses ("`() => 42`", "`(a, b) => a*b`").
+6. If returning an object you must enclose it in parentheses (otherwise it could be interpreted as a block of code).
+
+```javascript
+// No parameters
+const f1 = function () { console.log('f1!'); };
+const a1 = () => console.log('a1!');
+
+// 1 parameter
+const f2 = function (x) { return x + 1; };
+const a2 = (x) => x + 1;
+
+// 2 parameters
+const f3 = function (a, b) { return a + b; };
+const a3 = (a, b) => a + b;
+
+// more than one instruction
+const f4 = function () {
+  console.log('f4: line 1');
+  console.log('f4: line 2');
+};
+const a4 = () => {
+  console.log('a4: line 1');
+  console.log('a4: line 2');
+};
+
+// Returning an object
+const f5 = function () { return { ok: true }; };
+const a5 = () => ({ ok: true }); // <- See the parentheses?
+```
+
+### Arrow functions can never be methods!
+
+Because they lack the `this` special behavior of `function`. They can access `this` because it is also global, but it doesn't do anything special.
+
+```javascript
+let sam = {
+  name: "Sam",
+  sayHi: () => console.log(`I'm ${this.name}, hi!`),
+}
+sam.sayHi();   // I'm undefined, hi!
+```
+
+

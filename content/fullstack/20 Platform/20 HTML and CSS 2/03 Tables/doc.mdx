@@ -1,0 +1,37 @@
+Tables use many tags:
+
+|           |                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------ |
+| `<table>` | a table ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table))            |
+| `<thead>` | "table header" ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead))     |
+| `<tbody>` | "table body" ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tbody))       |
+| `<th>`    | "table column header" ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th)) |
+| `<tr>`    | "table row" ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr))           |
+| `<td>`    | "table data" ([mdn&UpperRightArrow;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td))          |
+
+A table:
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>Day of the week</th>
+      <th>Mode</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tuesday</td>
+      <td>In person</td>
+    </tr>
+    <tr>
+      <td>Thursday</td>
+      <td>Online</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+An important CSS property of tables is [`border-collapse`](https://developer.mozilla.org/en-US/docs/Web/CSS/border-collapse), which joins together the borders of adjacent cells (otherwise each cell has its own border and there is a separation between them).
+
+To join cells horizontally or vertically (as can be done in spreadsheets), the attributes [`colspan`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td#attr-colspan) and [`rowspan`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td#attr-rowspan) can be used in `<td>` elements.

@@ -1,0 +1,150 @@
+[Javascript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) are the official module system in Javascript, implemented in all browsers since 2018.
+
+They were called ESM (EcmaScript Modules) for some time, to distinguish them from other module systems, but they are part of the Javascript specification now. The module system is based on the **`import`** and **`export`** keywords.
+
+### Why did we need ESM modules?
+
+1. **To able to know exports in advance**: Since CommonJS modules have to _execute_ a module to see what it `require`s and what it exports, it is impossible to do static analysis of dependencies. That is, we don't know the dependency structure of our program until it is executing, making the job of compilers and bundlers much more difficult.
+
+2. **To import only parts of a module**: Since CommonJS uses a `module.exports` object, you cannot ask for a particular function or variable inside a module, you get the whole package. Modern Javascript modules enable something called "tree shaking" in which you only put into the bundle what you need of each module, not every module you use in its entirety.
+
+### Named exports
+
+To export single things from a module, you can just mark them individually with `export`:
+
+```javascript
+export const numbers = [4, 8, 15, 16, 23, 42];
+const something_else = { visible_outside: 'No' };
+```
+
+#### Single export statement
+
+If a file has many `export`s and you wish to indicate exports in a single place, you can also use the following syntax:
+
+```javascript
+const area = (r) => Math.PI * r ** 2;
+const circumference = (r) => 2 * Math.PI * r;
+
+export { area, circumference };
+```
+
+This will export `area` and `circumference` as if we had marked with `export` individually.
+
+### Import
+
+Individual symbols can be imported from a module with `import`-`from`:
+
+```javascript
+import { area } from './circle';
+```
+
+The braces (`{}`) in the `import` are very important, since they indicate that we want to import individual symbols from the circle. Also notice how `circle` has no extension (the extension is not specified for flexibility). In this case, the `circle` module would not be loaded whole, so we avoid loading also `circumference`.
+
+#### Import all named
+
+Sometimes, we _do_ import all individual symbols from a module, and there are so many that it makes no sense to list them individually. For that case, you can use an `import`-all:
+
+```javascript
+import * as circle from 'circle';
+```
+
+The name after the `as` clause is free to choose.
+
+### Default export
+
+Until now, all functionality in the CommonJS can be expressed in modern Javascript, but here is there modern modules differ a little.
+
+ESM modules have **two ways** to export things:
+
+1. Individually (seen until now, with `export`).
+2. As the default export (`export default`), just a single value .
+
+Both ways are not related, and they both can be used at the same time (this was not the case in CommonJS).
+
+The **default export** in a module is a special `export` which represents the whole module (but doesn't necessarily include the individual exports!). It is marked with `export default`, and can be indicated at the declaration point or later.
+
+```javascript
+// file is 'adams.js'
+export default 42;
+```
+
+or also
+
+```javascript
+const value = 42;
+export default value;
+```
+
+The default `export` is special in two ways: it is unique,
+
+#### Importing the default export
+
+To import the default export of a module, just don't use braces (`{}`), and put a name to it:
+
+```javascript
+import React from 'react';
+import adams from 'adams';
+
+console.log(adams);
+```
+
+The name is chosen by the importer, and typically programmers respect some conventions but there is no obligation coming from the language.
+
+### Importing and Exporting Types
+
+When using Typescript, types can also be exported when needed outside your module, the same way we do with values:
+
+```typescript
+export type Person {
+  name: string;
+  age: number;
+}
+type Point2D { x: number, y: number };
+export { Point2D };
+```
+
+To import types, the **`type`** prefix is used:
+
+```typescript
+import { normalValue, type SomeType } from 'lib';
+```
+
+If importing only types, then the prefix can go before the first brace:
+
+```typescript
+import type { Type1, Type2, Type3 } from 'lib';
+```
+
+### Renaming
+
+Since different libraries can use identical names for individual exports, when importing it can be necessary to rename some symbols. This is done with the **`as`** keyword.
+
+```typescript
+import { join as pathJoin } from 'path';
+
+// Now use pathJoin to call 'join' from module 'path'
+const absPath = pathJoin('home', 'pauek');
+```
+
+### ESM Modules in Browsers
+
+In browsers ESM modules are supported [almost universally](https://caniuse.com/es6-module). This fact alone sparked the revolution in development tools like [Snowpack](https://www.snowpack.dev/) and [Vite](https://vitejs.dev/).
+
+To load a Javascript module in a browser use the `type="module"` attribute:
+
+```html
+<script type="module" src="main.js"></script>
+<script type="module">
+  import { area } from './circle';
+  document.body.textContent = area(5.4);
+</script>
+```
+
+### ESM Modules in NodeJS
+
+In NodeJS modern Javascript modules are configured in two ways:
+
+1. **Single files**: Changing the extension to **`.mjs`**. 
+
+2. **Packages**: Adding **`"type": "module"`** to `package.json`.
+

@@ -1,0 +1,63 @@
+### Repository Copies
+
+First, it is important to understand that any copy of a repository is a perfectly valid repository. If many people work together, the only thing they would have to do is to replicate the folder (along with the `.git` folder inside) and each would be ready to work.
+
+### Push and Pull
+
+When two repositories started the same and then they diverged (one or eiter has new commits), these commits can be transferred between them.
+
+A **push** is the operation by which _my_ repo will send new commits to another repo. A **pull** is the reverse: I want the changes from another repo in my repo and therefore I pull them from it. It is a user centric metaphor.
+
+In general, you can choose any repo you want and push and pull to it, but since day to day work entails pushing and pulling from the same repos, it is typical to configure **remotes** so that Git knows about other repos by name.
+
+### Collaboration Model
+
+If you want to collaborate with other people, pushing and pulling from each others repos can be quite cumbersome, since you never know who is ahead or behind and you need to do a lot of management and communication.
+
+The solution is to create an **`origin`** repository, such that everyone considers it to be the "source of truth". Any changes anyone makes will have to be pushed to the origin, and then anyone can get them by pulling from it. It is a star topology of communication.
+
+That is precisely the idea behind the repositories in GitHub, they are considered to be the most recent copies of the projects they host.
+And also, they are usually configured inside the collaborators git repository as remotes with the name `origin`, pointing to the GitHub "master copy".
+
+### Creating a repo on GitHub
+
+Through the web interface, you can create a repository on GitHub to host a project. If the repository is empty, it explains what commands to do next. You can:
+
+- If you start from nothing, just clone the repo and start working. When you  
+  clone, the `origin` is setup for you automatically. This is the easiest way.
+
+  The only command you need is:
+
+  ```bash
+  git clone https://github.com/<user>/<repo>
+  ```
+
+- If you already have a repo in your computer, you will have to configure
+  the `origin` for it and some other, but GitHub provides the commands needed
+  in the repo's main page.
+
+  The gist of the [commands needed](https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github) is:
+
+  ```bash
+  git remote add origin https://github.com/<user>/<repo>.git
+  git branch -M main
+  git push -u origin main
+  ```
+
+### Pushing and pulling
+
+To know if a project is ready for collaborative work using the `origin` remote, just check for it with:
+
+```bash
+git remote -v
+```
+
+This will tell you which remote repositories you have and their names. (You could have more complicated schemes of "communication" of changes between repos.)
+
+Provided that everything is set up, now you can work with your peers like this:
+
+1. Alan makes some changes. He puts what he wants into a commit. The commit is only on Alan's computer now.
+
+2. Alan does a **push**, so that his work is transferred to the `origin` (that is, the GitHub copy of the repo).
+
+3. Now Bertha and Casey both do a **pull** to get the changes made by Alan.

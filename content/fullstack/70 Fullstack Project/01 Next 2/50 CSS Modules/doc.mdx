@@ -1,0 +1,53 @@
+CSS Modules are a way of **scoping** CSS to just one component, instead of realying on unique classes (written by hand) to make CSS rules not conflict with each other.
+
+### CSS module files
+
+A CSS module file is just a CSS file with two little constraints:
+
+1. It has to have an extension `.module.css` instead of `.css`.
+2. It only has rules with classes.
+
+CSS modules are usually put besides React components, and named with the same name (including the uppercase initial).
+
+An example file could have this CSS rules 
+
+```css
+.user {
+  font-size: 120%;
+}
+.email {
+  font-family: monospace;
+}
+```
+
+and be named `User.module.css`.
+
+### Using CSS modules
+
+CSS modules are imported into React components with an `import` statement:
+
+```ts
+import styles from './User.module.css'
+```
+
+The `styles` variable will be, in fact, a Javascript object in which classes from the CSS Modules appear as fields. In the example, there are two classes `user` and `email` in the module, so the `styles` object will be similar to:
+
+```ts
+{
+  user: "user-2d2e567b64",
+  email: "email-1100578e72",
+}
+```
+
+The framework processes CSS modules and collects all classes and renames them adding an ID, so that they cannot possibly conflict with other CSS classes in another part of the program.
+
+In the component, once we have imported `styles` we just set the class from the `styles` object instead:
+
+```jsx
+<div className={styles.user}>
+  <div>{user.name}</div>
+  <span className={styles.email}>{user.email}</span>
+</div>
+```
+
+The values for `styles.user` and `styles.email` which will refer to the rules in the CSS module have the ID in their name, and therefore the whole process is transparent to the developer.

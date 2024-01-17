@@ -1,0 +1,108 @@
+Authoring HTML directly is cumbersome, and people quickly made new formats to be able to write documents more easily. [Markdown](https://daringfireball.net/projects/markdown/syntax) has invented quite early and it catch on quickly. It is the most used format for directly writing documents for the web and there are hundreds of libraries to parse it, process it and render it as HTML. There is also a [nice guide](https://www.markdownguide.org/getting-started/) and a [great editor](https://dillinger.io/) for it.
+
+Markdown files resemble text with very light formatting. The following Markdown "code":
+
+```markdown
+I will **tattoo** myself with the [NextJS](https://nextjs.org) logo
+```
+
+will render as
+
+```html
+<p>
+  I will <strong>tattoo</strong> myself with the
+  <a href="https://nextjs.org">logo</a>
+</p>
+```
+
+### Format
+
+|                        |                                       |
+| ---------------------- | ------------------------------------- |
+| `# Title`              | Header level 1                        |
+| `## Subtitle`          | Header level 2                        |
+| `### Subsubtitle`      | Header level 3                        |
+| ...                    | ...                                   |
+| `**very catchy**`      | Strong font                           |
+| `_somewhat different_` | Emphasized font                       |
+| `> To be or not to be` | Block quote                           |
+| `* some item`          | Unordered list item                   |
+| `- some item`          | Unordered list item                   |
+| `1. other item`        | Ordered list item                     |
+| `2. other item`        | Ordered list item                     |
+| `[text](url)`          | Anchor: `<a href={url}>{text}</a>`    |
+| `![text](url)`         | Image: `<img src={url} alt={text} />` |
+| `` `a = 1;` ``         | Inline code                           |
+| ` ```lang ... ``` `    | Code block                            |
+
+### Inline HTML
+
+Being a format to make HTML authoring easier, in Markdown you can always write embedded HTML, so:
+
+```markdown
+This is a regular paragraph
+
+<table>
+  <tr>
+    <td>Foo</td>
+  </tr>
+</table>
+
+This is another paragraph
+```
+
+### MDX
+
+MDX is **M**ark**D**own E**X**tended, so that we can use components inside Markdown files.
+
+To use MDX in NextJS, first install needed packages:
+
+```bash
+npm install @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
+```
+
+Then create a file `mdx-components.tsx` in the root of the project with:
+
+```ts
+import type { MDXComponents } from "mdx/types";
+
+export function useMDXComponents(components: MDXComponents): MDXComponents {
+  return {
+    ...components,
+  };
+}
+```
+
+Update `next.config.js` to use `withMDX`:
+
+```js
+const withMDX = require("@next/mdx")(); // <-- add this line
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // v-- add this section
+  experimental: {
+    mdxRs: true, // <-- add this option
+  },
+};
+
+module.exports = withMDX(nextConfig); // <-- wrap with withMDX here
+```
+
+Create `.mdx` files (and import any React components in them)
+
+```md
+<!-- test.mdx -->
+
+This is an **MDX file**!!
+```
+
+and use them in pages:
+
+```ts
+import Test from "./test.mdx";
+
+export default function Page() {
+  return <Test />;
+}
+```

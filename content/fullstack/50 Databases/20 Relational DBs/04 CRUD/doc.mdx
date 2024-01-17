@@ -1,0 +1,109 @@
+
+CRUD stands for Create, Read, Update, Delete, the four possible data manipulation operations.
+
+### Insertions
+
+With [**`INSERT`**](https://www.postgresql.org/docs/15/sql-insert.html) we can insert tuples providing all the fields:
+
+```SQL
+INSERT INTO users VALUES (0, 'Paul Garcia');
+INSERT INTO users VALUES (1, 'Joel Spolsky');
+```
+
+If we want to provide only some fields, these can be chosen before `VALUES`:
+
+```SQL
+INSERT INTO users (name) VALUES ('Mark Zuckerberg');
+```
+
+After the `VALUES` clause, we can use commas to provide many tuples to insert:
+
+```SQL
+INSERT INTO emails (user_id, email) VALUES
+   (0, 'paul@gmail.com'),
+   (0, 'pgarcia@hotmail.com'),
+   (1, 'joel@spolsky.com'),
+   (2, 'zuck@gmail.com'),
+   (2, 'mark@facebook.com'),
+   (2, 'm@zuckerberg.com');
+```
+
+### Reads
+
+With [**`SELECT`**](https://www.postgresql.org/docs/15/sql-select.html) we can list all tuples in a relation:
+
+```SQL
+SELECT * FROM users;
+```
+
+We can choose which columns we want to see:
+```SQL
+SELECT name, id FROM users;
+```
+
+To show only certain entities satisfying a condition, we can add a `WHERE` clause:
+```SQL
+SELECT name FROM users WHERE id = 1;
+```
+
+### Deletions
+
+With [**`DELETE`**](https://www.postgresql.org/docs/15/sql-delete.html) we erase *all* elements in a relation:
+```SQL
+DELETE FROM users; /* oops, all tuples gone... :\ */
+```
+
+Using a **`WHERE`** clause, we can choose which elements to delete:
+```SQL
+DELETE FROM users WHERE id = 2; /* Zuck gone... */
+```
+
+### Updates
+
+With [**`UPDATE`**](https://www.postgresql.org/docs/15/sql-update.html) we can update entities:
+
+```SQL
+UPDATE users SET name = 'John Doe'; /* Same name everybody */
+```
+
+A `WHERE` clause determines which entities to update:
+```SQL
+UPDATE users
+  SET name = 'Zuck'
+  WHERE name = 'Mark Zuckerberg';
+```
+
+### `RETURNING`
+
+Many commands will create or change data and it is important to get the changed value to confirm changes or find out IDs:
+
+```SQL
+INSERT INTO users (name) VALUES ('Jose Muñoz');
+/* What is the assigned ID??? */
+SELECT id FROM users WHERE name = 'Jose Muñoz';
+/* -> 13 */
+```
+
+The [**`RETURNING`**](https://www.postgresql.org/docs/current/dml-returning.html) clause (ANSI SQL) allows us to obtain the modified data in `INSERT`, `UPDATE` and `DELETE` commands:
+
+```SQL
+INSERT INTO users (name)
+  VALUES ('Jose Muñoz')
+  RETURNING id;
+
+INSERT INTO users (name)
+  VALUES ('Richard Feynman')
+  RETURNING *;
+
+UPDATE users SET name = upper(name)
+  WHERE id <> 10
+  RETURNING id, name;
+
+DELETE FROM users
+  WHERE name like 'Z%'
+  RETURNING id, name;
+```
+
+This clause also works 
+
+

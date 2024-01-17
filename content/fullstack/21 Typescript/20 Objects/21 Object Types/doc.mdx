@@ -1,0 +1,82 @@
+
+Types in Typescript describe **sets** of objects. A variable can be given a type which means that it can only contain values _from the set_ that the type represents. By declaring the types of variables we can make Typescript permanently check that our program doesn't make inconsistency mistakes.
+
+[Object types](https://www.typescriptlang.org/docs/handbook/2/objects.html) describe sets of objects with a certain shape.
+
+Type annotations for object types resemble the object notation itself, but with types for values:
+
+```typescript
+let obj: { x: number; y: number } = {
+  a: "happy!", // ERROR: fields can be 'x' and 'y' only
+  y: true, // ERROR: fields 'y' should be a number
+};
+```
+
+The type annotation "`{ x: number, y: number }`" describes the set of values in Javascript which:
+
+1. are objects,
+2. have a field `x`,
+3. fields `x` is of type `number`,
+4. have a field `y`, and
+5. field `y` is of type `number`.
+   The object initialization in the example has two errors,
+
+### Optional fields
+
+To mark a field as optional, object types have the **`?`** symbol, after the name of the field:
+
+```typescript
+let person: {
+  first: string;
+  last: string;
+  age?: number; // this field is optional
+} = {
+  first: "James",
+  last: "Bond",
+};
+```
+
+The `age?` field indicates that `age` is optional, so objects without `age` are correct, and also objects with a `number` as `age`.
+
+### Type Aliases
+
+If a type appears recurrently in many places, we can name it and use it by name.
+
+```typescript
+type Person = {
+  first: string;
+  last: string;
+  age?: number;
+};
+```
+
+The symbol `Person` is now a **type alias**. It is not a new type, just an alias, in the sense that any other object type with the same declaration is equivalent to it (Typescript will compare the internals, not the aliases).
+
+### Interfaces
+
+Interfaces are another way of expressing the same concept (an object with fields). They are mostly equivalent to type aliases for the typical uses.
+
+An `interface` can be defined this way:
+
+```typescript
+interface Person {
+  first: string;
+  last: string;
+  age?: number;
+}
+```
+
+Notice the **`;`** in this declaration: in object types, fields are separated by commas because they resemble objects (or JSON), but in interfaces, the analogy could be made with `struct`s or `class`es in other languages, hence the semicolons at the end of line.
+
+#### Read-only properties
+
+In interfaces, fields can be `readonly`, so they can never be written to. The `readonly` keywords has to go before the name:
+
+```typescript
+interface Person {
+  first: string;
+  last: string;
+  age?: number;
+  readonly weight: number;
+}
+```

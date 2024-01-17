@@ -1,0 +1,25 @@
+Route groups are directories whose name is inside parentheses `()`, and they allow routes inside to share layout
+
+### Layouts for some part of the app
+
+With a hierarchy like
+
+<Image
+  src="NextJS-Route-Groups-1.svg"
+  width={1920}
+  height={1080}
+  alt="NextJS Route Groups Diagram"
+/>
+
+the `(shop)` group has a common layout, affecting both `/account` and `/cart`, but `/checkout` only has the root layout.
+
+### Different root layouts
+
+If there are different groups as children or `/app`, then each of these can have a different layout, which will become the root layout for each case:
+
+<Image
+  src="NextJS-Route-Groups-2.svg"
+  width={1920}
+  height={1080}
+  alt="NextJS Route Groups Diagram 2"
+/>

@@ -1,0 +1,45 @@
+
+The `Promise` class has some static methods to help with promises.
+
+### Promise.resolve, Promise.reject
+
+These are methods to produce an already resolved `Promise` and an already rejected `Promise`:
+
+```typescript
+function adams() {
+  return Promise.resolve(42);
+}
+```
+
+```typescript
+function giveMeError(msg: string) {
+  return Promise.reject(msg);
+}
+```
+
+### Promise.allSettled
+
+[**`Promise.allSettled`**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled) is a function that receives an array of `Promise`s and `await`s all of them until all have either resolved or rejected (`Promise.all` is the old version, less convenient).
+
+```typescript
+const apiGet = (url: string) => {
+  const response = await fetch(url);
+  return await response.json();
+}
+
+const [users, beers] = await Promise.allSettled([
+  apiGet('https://randomuser.me/api/'),
+  apiGet('https://api.punkapi.com/v2/beers'),
+]);
+```
+
+The result is also an array (of the same size) with objects like:
+```javascript
+[
+  { status: "fulfilled", value: result },
+  { status: "rejected", reason: error },
+]
+```
+
+
+

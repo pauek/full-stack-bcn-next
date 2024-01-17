@@ -1,0 +1,39 @@
+There are dozens of different things that can happen in the browser: clicks, scrolls, mouse hovering, re-layouts, window resizing, changes of focus, key presses, etc. [All of these events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events) generate messages within the DOM tree and are handled by functions which we can set to process them (and even generate).
+
+Three methods of `EventTarget` deal with these:
+
+- **`addEventListener(ev, fn)`**: add an event handler,
+- **`removeEventListener(ev, fn)`**: remove a previously set handler,
+- **`dispatchEvent(ev)`**: produce a synthetic event.
+
+A single element could have many event handlers even of the same type of event.
+
+[Event handlers](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#the_event_listener_callback) always receive the event as the first parameter:
+
+```javascript
+function eventHandler(event) {
+  switch (event.type) {
+    case 'click': // ...
+    // ...
+  }
+}
+```
+
+### Event bubbling
+
+Since elements are organized into a tree, whenever you click inside one, you usually also click its parents. So a single event could potentially be received by many elements. _This can be a source of great confusion._
+
+The most typically used phase of event dispatching is "bubbling". The element at the deepest node in the tree receives the event, and its handler can decide weather the event will "bubble" upwards to its parents or not. To stop the propagation towards the root of the tree the method **`stopPropagation`** kills the propagation behavior.
+
+### Preventing Default Behavior
+
+Sometimes an event in the browser is handled by itself, and produces "default behavior": an `<a>` element changes the URL, a `<form>` is submitted, etc.
+
+To prevent these events from triggering default behavior you can call **`preventDefault`** on the event itself:
+
+```javascript
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  console.log('Ha ha, **I** disabled the form!!');
+});
+```

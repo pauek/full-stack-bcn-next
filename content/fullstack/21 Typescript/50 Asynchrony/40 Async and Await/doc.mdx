@@ -1,0 +1,81 @@
+
+[Chaining `Promise`s](https://javascript.info/promise-chaining) is ok, but `async` and `await` make our life even easier.
+
+### Async
+
+Marking a function with `async` makes it asynchronous, even if it returns immediately. The return type automatically becomes a `Promise`, even if we can annotate the type by hand. This makes it much easier to implement asynchronous functions since we don't have to explicitly create `Promise` objects.
+
+```typescript
+async function adams() {
+  return 42;
+}
+```
+
+With arrow functions `async` goes first:
+```typescript
+const adams = async () => 42;
+```
+
+### Await 
+
+Now comes the nice bit. Provided we are inside a function marked with `async`, whenever we call another asynchronous function, we _don't need to provide a callback, and it will be created for us automatically_.
+
+This means that we can retain the advantatges of callbacks (full CPU utilization and task granularity) without the callback hell.
+
+Let's see an example:
+
+```typescript
+async function loadUser() {
+  const response = await fetch(`https://randomuser.me`);
+  const json = await response.json();
+  return json;
+}
+```
+
+The `await` keyword is always used **in front** of an asynchronous function and its effect is the same as "removing the `Promise`", that is, "waiting" until the `Promise` is settled (it is resolved or rejected). 
+
+The function will not wait, really, since it will actually yield the flow of control to the Event Loop. In between the call and the response, the Javascript runtime can continue doing things. Every `await` you see is a place where there will be a gap in the execution of that flow, and in between many other things can happen.
+
+Underneath, Javascript will deconstruct our code and create callbacks so that the [`async`/`await`](https://javascript.info/async-await) code will be transformed into something like:
+
+```typescript
+function loadUser() {
+  return new Promise((resolve, reject) => {
+    fetch(`https://randomuser.me`)
+      .then(response => response.json())
+      .then(json => resolve(json))
+      .catch(error => reject(error));
+  }
+}
+```
+
+The behavior is the same as with callbacks, in the sense that this is a function with two "waiting gaps", as mentioned earlier, but the way of writing it is almost exactly like a version in which functions were synchronous. It is the best of both worlds.
+
+The take-home message is this:
+
+> To use `async`/`await`:
+> - If a function returns a `Promise` it is asynchronous.
+> - To use an asynchronous function prefix the call with `await`.
+> - If you need to use `await` mark the function you are in with `async`.
+
+### Errors with async-await
+
+Rejections within asynchronous functions are translated into exceptions, so using `try`-`catch` is enough to deal with errors:
+
+```typescript
+async function makeCoffee() {
+  try {
+    let beans;
+    try {
+      beans = await grindBeans();
+    } catch (err) {
+      beans = usePreGroundBeans();
+    }
+    const water = await boilWater();
+    const coffee = await makePourOver(beans, water);
+    return coffee;
+  } catch (err) {
+    // I don't know, drink tea instead?
+  }
+}
+```

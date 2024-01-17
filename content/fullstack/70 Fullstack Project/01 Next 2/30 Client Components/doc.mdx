@@ -1,0 +1,73 @@
+<script lang="ts">
+  import Zoomable from '$lib/components/Zoomable.svelte';
+</script>
+
+Client Components are the typical React components that we are used to. In NextJS, though, you have to explicitly mark them as such with a special instruction:
+
+```ts
+'use client';
+```
+
+This directive has to be at the top of a file which describes a Client Component.
+
+
+
+```ts
+'use client';
+
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount((x) => x + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+
+
+### Import transitivity
+
+One important fact about `'use client'` is that it sits at the point between the component that does the `import` and the Client Component itself. The `'use client'` mark will affect the Client Component and all files loaded from the Client Component using `import`, so the whole branch of the module graph is affected.
+
+Since Server Components are the default, all components are part of the Server Component module graph unless defined or imported in a module that starts with the `'use client'` directive.
+
+### When to use Client Components
+
+- You need interactivity (`onClick`, `onChange`, etc.)
+- You have state or effects (`useState`, `useEffect`, etc.)
+- You use Browser only APIs (`WebGL`, `Audio Output`, `Keyboard`, etc.)
+- You use React Class components.
+
+### Nesting
+
+We can nest Server Components inside Client Components. The trick is to use `children`, so that the Client Component has as children nodes that he didn't create himself (and therefore doesn't depend on and don't appear in the module graph).
+
+```ts
+'use client';
+
+import { useState } from 'react';
+
+type Props = {
+  children: React.ReactNode;
+};
+export default function Collapsible({ children }) {
+  const [collapsed, setCollapsed] = useState(false);
+  return <div onClick={() => setCollapsed((x) => !x)}>
+    {collapsed || children}
+  </div>;
+}
+```
+
+Then in a Server Component:
+
+```tsx
+<Collapsible>
+  <!-- Any other server components! -->
+</Collapsible>
+```
+

@@ -1,0 +1,3 @@
+- Dada una página con poco contenido, el footer queda muy arriba.
+  Cómo resolverlo? Quizás usando "min-height: 100vh" para el body o 
+  algo parecido.

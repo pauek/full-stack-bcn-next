@@ -1,0 +1,92 @@
+### Collection CRUD Methods
+
+For **one** document only:
+
+- [**`insertOne(doc)`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.insertOne/):
+- [**`updateOne(filter, update)`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.updateOne/)
+- [**`deleteOne(filter)`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.deleteOne/)
+- [**`replaceOne(filter, doc)`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.replaceOne/)
+  (These functions all have an `options` last parameter to affect their behavior.)
+
+For **many** documents:
+
+- [**`insertMany([doc1, doc2, ...])`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.insertMany/)
+- [**`updateMany(filter, update)`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.updateMany/)
+- [**`deleteMany(filter)`**](https://www.mongodb.com/docs/manual/reference/method/db.collection.deleteMany/)
+
+#### insertOne
+```js
+> db.users.insertOne({ username: 'jbond', age: 27 })
+{
+  "acknowledged": true,
+  "insertedId": ObjectId("5ee9f09b6b327281a5213f43")
+}
+```
+
+#### insertMany
+```js
+> db.users.insertMany([
+  { username: 'zipi', age: 9 },
+  { username: 'zape', age: 9 }
+])
+{
+  "acknowledged": true,
+  "insertedIds": [
+    ObjectId("5ee9fa446b327281a5213f44"),
+    ObjectId("5ee9fa446b327281a5213f45")
+  ]
+}
+```
+
+#### updateOne
+
+By ID:
+```js
+> db.users.updateOne({ _id: ObjectId("5ee9fa446b327281a5213f44") }, {
+  $set: { name: 'Zipi' }
+})
+{ "acknowledged": true, "matchedCount": 1, "modifiedCount": 1 }
+```
+
+By filter:
+```js
+> db.users.updateOne({ username: 'zipi' }, {
+  $set: { isBad: true }
+})
+{ "acknowledged": true, "matchedCount": 1, "modifiedCount": 1 }
+```
+
+#### updateMany
+
+```js
+> db.users.updateMany({
+  age: { $lt: 10 },
+}, {
+  $set: { isChild: true }
+})
+{ "acknowledged": true, "matchedCount": 2, "modifiedCount": 2 }
+```
+
+#### deleteOne
+
+```js
+> db.users.deleteOne({ age: { $gt: 10 } })
+{ "acknowledged": true, "deletedCount": 1 }
+```
+
+#### deleteMany
+
+```js
+> db.users.deleteMany({ isChild: true })
+{ "acknowledged": true, "deletedCount": 2 }
+```
+
+#### replaceOne
+
+```js
+> db.users.replaceOne({ _id: ObjectId("5ee9fa446b327281a5213f44") }, {
+  type: "Animal",
+  sound: "Roarrr!"
+})
+{ "acknowledged": true, "matchedCount": 1, "modifiedCount": 1 }
+```

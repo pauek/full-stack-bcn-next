@@ -1,0 +1,109 @@
+
+Destructuring is the practice of declaring variables (either with `let` or `const`) that directly extract fields or cells from compound objects. Destructuring is typical in functional languages and Javascript has adopted several forms of destructuring that simplify coding in many ways.
+
+### Getting an object's fields
+
+Given an object like and some code that uses it, accessing every field through the original variable produces code that is readable but long:
+
+```javascript
+let message = {
+  from: "James Bond",
+  to: "M",
+  text: "Target terminated",
+};
+
+console.log(`
+From: ${message.from}
+To: ${message.to}
+Text: ${message.text}
+`);
+```
+
+To make this shorter and equally readable, we can destructure the `message` first with:
+
+```typescript
+let { from, to, text } = message;
+```
+
+This instruction declares 3 variables which com from the fields of `message` with analogous names. They are initialized with the values found inside `message`, so destructuring is like the inverse of object creation. If the requested fields are not in `message`, then the variables are simply `undefined`.
+
+Once the object is destructured, showing the message is clearer and shorter:
+
+```typescript
+console.log(`From: ${from}\nTo: ${to}\nText: ${text}`);
+```
+
+#### Nested objects
+
+We can also destructure nested objects:
+
+```typescript
+let header = {
+  title: "King Lear",
+  size: { height: 121, height: 62 }
+};
+const { title, size: { width } } = header;
+```
+
+#### Mapping to new names
+
+And map the given fields to new names:
+```typescript
+let person = {
+  firstName: "James",
+  lastName: "Bond"
+};
+// firstName -> first, lastName -> last
+const { firstName: first, lastName: last } = person;
+console.log(`${first} ${last}`);
+```
+
+#### Rest of fields
+
+If we don't know the fields of an object except for two, the spread **`...`** syntax will accumulate the "rest" of the fields:
+
+```typescript
+const { text, ...other } = message;
+```
+
+The `other` variable refers to an object having all fields that are in `message` but which are not named `text`.
+
+### Destructuring parameters
+
+In functions that receive objects, destructuring can be made directly in the header, so this function:
+
+```javascript
+function showMessageText(msg) {
+  const { text } = msg;
+  console.log(`Text: ${text}`);
+}
+```
+
+is exactly the same as this one
+
+```javascript
+function showMessageText({ text }) {
+  console.log(`Text: ${text}`);
+}
+```
+
+### Destructuring Arrays
+
+Arrays can also be destructured using the notation:
+
+```typescript
+let [a, b, c] = someArray;
+```
+
+Here, `a`, `b` and `c` will be 3 variables taking the values of the first 3 cells of the array. If the array doesn't have enough cells, the variables that are outside the range will be `undefined`.
+
+#### Rest of cells
+
+The spread operator **`...`** has the same meaning that it has with objects, except it gets the rest in order:
+
+```typescript
+let A = [1, 2, 3, 4, 5];
+let [head, ...rest] = A;
+// head = 1
+// rest = [2, 3, 4, 5]
+```

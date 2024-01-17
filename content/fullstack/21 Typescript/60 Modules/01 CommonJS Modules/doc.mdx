@@ -1,0 +1,115 @@
+[CommonJS](https://nodejs.org/api/modules.html) is the most successful module system prior to the modern Javascript modules (explained in the next section). There are still many packages using it and it will last for a while even if now the official module system in Javascript is well established.
+
+### The module object
+
+In CommonJS, the simplest module is a file in which we presuppose the existence of a `module` global object. This object cannot be changed (we only have its reference), but we can add things to it. The `exports` field in this object is the place to put everything that we want other modules to access:
+
+```javascript
+// in file 'circle.js'
+const area = (r) => Math.PI * r ** 2;
+const circumference = (r) => 2 * Math.PI * r;
+
+module.exports = { area, circumference };
+```
+
+This `circle.js` module defines `area` and `circumference` and they are exported outside of the module.
+
+When Javascript loads a CommonJS module, it must execute the code in it, and look at `module.exports` to see what is made available from it. (Anything else is not accessible by anyone else.)
+
+#### Module execution
+
+The execution of modules is a key part of CommonJS (and also its _curse_), because it is possible to do things like:
+
+```javascript
+for (let i = 0; i < 100; i++) {
+	module.exports[`add${i}`] = (x) => x + i;
+}
+```
+
+To know what functions this module exports, one has to execute the module, there is no other way in general of determining the exported values.
+
+### require
+
+To use a module in CommonJS, we call [**`require`**](https://nodejs.org/api/modules.html#requireid). This function will:
+
+- **Resolve** a module: find where its code is in the file system.
+- **Load** the module: execute the module in its own context and give the `module.exports` object as a result.
+
+#### Module resolution
+
+- **Local**: The module starts with "`.`" or "`..`"
+
+  ```javascript
+  const circle = require('./circle.js');
+  console.log(circle.area(5.1));
+  ```
+
+
+- **Installed**: Look for the named module in the `node_modules` folder (has to be installed first). It also looks for `node_modules` upwards parent directories.
+
+  ```javascript
+  const colors = require('colors');
+  console.log('red'.red);
+  console.log('green'.green);
+  console.log('blue'.blue);
+  ```
+
+
+- **Internal**: the referenced module might be internal to the Javascript implementation (from the "runtime library"). In NodeJS, there are many packages like this: `os`, `fs`, `child_processes`, `http`, `net`, etc. 
+
+#### Diamond problem
+
+What happens if we have a "diamond" in our dependency graph? The problem is this: a module `main.js` requires `part1.js` and `part2.js`, and then both `part1.js` and `part2.js` require `circle.js`. Do we execute `circle.js` twice, and with different contexts?
+
+In this case, Javascript **reuses** the same `module.exports` (and the context) of the first execution of the module, so both `part1.js` and `part2.js` would get the same object and the context that it refers to (because of the closures returned!). The same happens in general with more dense dependency graphs. There is only one copy of each module, so global variables in that module are unique, and if exported, they are the same for every part of the program.
+
+### The Node Package Manager
+
+The `node_modules` directory is managed by the `npm` command, the [Node Package Manager](https://docs.npmjs.com/about-npm). This command will let you add and remove packages from [`npmjs.com`](https://npmjs.com), a global repository (probably the largest software repository in the world, with [more than 1.3 million packages](https://blog.npmjs.org/post/615388323067854848/so-long-and-thanks-for-all-the-packages)).
+
+But the most important job of `npm` is installing, along with some package, all the packages that it declares as _dependencies_. That is, any package in the repository describes, in a file, what other packages it uses so that they can be installed along with it. The dependencies affect those other packages as well, so by installing one package, you often end up downloading tens or even hundreds of packages.
+
+### package.json
+
+The [**`package.json`**](https://docs.npmjs.com/cli/v9/configuring-npm/package-json) file, when found at some folder, marks that folder as a Javascript package. The file contains metadata about the package: `name`, `version`, `description`, `keywords`, etc. 
+
+The most important section, though, is the `dependencies`, in which all the packages that are `require`d in some file in the project are listed with the version required.
+
+### Installing dependencies
+
+When having a project with a `package.json` at its root, the first step is always installing the dependencies listed in it:
+
+```bash
+npm install
+```
+
+This populates the `node_modules` with the code downloaded from the repository, and also, if not present, creates a file `package-lock.json`. If you want to share your project, or put it into version control, it is a good idea to delete (or `.gitignore`) `node_modules` since those are your "libraries" and you can reinstall them at any time doing "`npm install`". 
+
+#### package-lock.json
+
+It is not possible, just using `package.json` to perfectly reconstruct the same `node_modules` directory that you had, looking only at `package.json`. The reason for this is the way in which Semantic Versioning works, since you can list in your `package.json` a dependency with a version number and maybe `npm` installed a slightly more recent version. 
+
+To have the full information about the package tree and exact versions (along with hashes and many more things), `package-lock.json` is extra metadata that makes it possible to reconstruct, avoid versioning problems, and other features of the `node_modules` directory.
+
+### Adding and removing packages
+
+To add a packages, find its name (for instance, `colors`) and install it with:
+
+```bash
+npm install colors
+```
+
+This will add it to `package.json` and also download it and save it in `node_modules`. (You could also edit the `package.json` by hand and then just do an `npm install`, which reconciles the current directory with what you list in `package.json`).
+
+To remove a dependency
+```bash
+npm uninstall colors
+```
+
+#### devDependencies
+
+Another kind of dependencies are listed in the **`devDependencies`** section of `package.json`, which registers those packages needed to develop your project, but not to run it. Typescript could be a good example: you need it to compile, but since it transpiles to Javascript, you don't need it to run your app.
+
+### Entry Point
+
+A directory with a `package.json` is also considered a module, so using such a module by referring to its directory also works. One important field for this use is `main`, which indicates the entry point for the package (the Javascript file which is considered the "root" module). If a directory module doesn't list a `main` file, then `index.js` is used.

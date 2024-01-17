@@ -1,0 +1,53 @@
+Selectors represents sets of elements, to which certain rules apply.
+
+### By element type (tag)
+
+The most basic selector selects _all elements_ of a certain type (with a certain **tag**), for instance:
+
+```css
+h1 {
+  font-size: 24pt;
+}
+main {
+  margin: 0;
+}
+p {
+  padding: 0;
+}
+```
+
+This CSS has 3 rules which apply to all first-level headers (`<h1>`), the `<main>` element (typically just one), and all paragraphs (`<p>`).
+
+### Union or grouping
+
+A comma between two selectors performs the set union of their sets:
+
+```css
+h1 {
+  font-size: 24pt;
+}
+header {
+  font-size: 24pt;
+}
+```
+
+can be merged into:
+
+```css
+h1,
+header {
+  font-size: 24pt;
+}
+```
+
+### Descendants
+
+A descendant is an element inside another, at any level. Two selectors separated by a **space** represent an element of the second set inside an element of the first set.
+
+```css
+header a {
+  color: green;
+}
+```
+
+This rule sets the font color as green only for the anchors within the header.

@@ -1,0 +1,60 @@
+With so many rules, we might end up having different values for a property being set on a particular element:
+
+```css
+h1 {
+  margin-top: 3rem;
+}
+article h1 {
+  margin-top: 0;
+}
+```
+
+When this happens, we need a system to **prioritize rules**: [the cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade).
+
+### Specificity
+
+A four number vector measures **specificity**: `(0, 0, 0, 0)`. Any rule has a specificity and comparing two we can know what rule to apply. These vectors work as in decimal numbers but with an "infinite base" (i.e., not 10). Higher dimensions have infinetly higher weight.
+
+Examples:
+
+```
+(0,  0,  0,  1) > (0, 0,  0,  0)
+(0,  0,  0, 10) > (0, 0,  0,  9)
+(0,  0,  1,  0) > (0, 0,  0, 45)
+(0,  0, 10,  0) > (0, 0,  9, 98)
+(0,  1,  0,  0) > (0, 0, 99,  3)
+(1,  0,  0,  0) > (0, 7,  0, 11)
+```
+
+Given an element, its vector is computed like this:
+
+| For every       | Add            |
+| --------------- | -------------- |
+| element         | `(0, 0, 0, 1)` |
+| class (or attr) | `(0, 0, 1, 0)` |
+| id              | `(0, 1, 0, 0)` |
+| inline style    | `(1, 0, 0, 0)` |
+
+Examples:
+
+```css
+h1                   /* (0, 0, 0, 1) */
+p em                 /* (0, 0, 0, 2) */
+.grape               /* (0, 0, 1, 0) */
+*.bright             /* (0, 0, 1, 0) */
+p.bright e.dark      /* (0, 0, 2, 2) */
+#id216               /* (0, 1, 0, 0) */
+div#sidebar *[href]  /* (0, 1, 1, 1) */
+nav#menu li#top      /* (0, 2, 0, 2) */
+```
+
+The **`!important`** keyword marks a rule as above all others. This generates a new "world" of "important rules", in which the specificity still applies but all `!important` rules are in a league of their own, above the rest.
+
+### The Cascade
+
+The Cascade [priority table](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade#complete_cascade_order) uses these 4 criteria, in order:
+
+1. **Importance** (the `!important` keyword).
+2. **Origin** (user-agent, user, author) and layers (`@layer`, `@import`).
+3. **Specificity**.
+4. **Order** of appearance.

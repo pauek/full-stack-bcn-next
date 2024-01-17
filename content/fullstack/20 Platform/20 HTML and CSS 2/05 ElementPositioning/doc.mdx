@@ -1,0 +1,41 @@
+In CSS the **`position`** property controls how elements are positioned and if they respect the layout algorithm. The default layout is `static`, so there is no need to set this property explicitly.
+
+```css
+header {
+  position: static; /* no need, this is the default */
+}
+```
+
+### Relative
+
+A position of **`relative`** sets the current element's static position as the new _"reference box"_, for himself _and_ children.
+
+The properties `top`, `bottom`, `left`, and `right` set the distances to the edges of the "reference box". These can all be positive of negative.
+
+```css
+.advert {
+  position: relative;
+  top: -50px; /* move it up 50px */
+}
+```
+
+### Absolute
+
+A position of **`absolute`** removes the element from the layout computation (so it is positioned independently of all others), and it will just follow the `top`, `right`, `bottom` and `left` properties (with respect to the "reference box").
+
+**`fixed`** is the same, but it will stay in place when you scroll.
+
+**`sticky`** keeps the element at its normal position until you scroll, showing it in a fixed position when it would be out of the window.
+
+In this example, the `button.close` will be at the top-right corner of the `.parent`:
+
+```css
+.parent {
+  position: relative; /* .parent is now the reference box */
+}
+.parent button.close {
+  position: absolute;
+  top: 0; /* touch the upper edge */
+  right: 0; /* touch the right edge */
+}
+```

@@ -1,0 +1,100 @@
+
+
+
+### Setting up a MongoDB instance
+
+Get the `databases/mongodb` sample
+
+```bash
+degit full-stack-bcn/samples/databases/mongodb mongodb
+```
+
+Change into the `mongodb/db` directory and launch Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+Connect to the Mongo instance:
+
+```bash
+docker exec -it db-mongo-1 mongosh -u admin -p fullstack
+```
+
+### Collections and Documents
+
+A database in MongoDB is a set of **collections**, each collection being a set of **documents**. Every document is a limited-size JSON-like object, which has a free JSON-like recursive structure.
+
+Every object in MongoDB has an ID, which is always implicit and has the special name **`_id`**.
+
+The Mongo Shell can be invoked with **`mongosh`** and it is a Javascript REPL, just like Node, but with extra commands. A global **`db`** object represents the open database.
+
+
+
+### MongoShell commands
+
+Show general help:
+
+```bash
+help
+```
+
+Show database help (all `db` methods with signatures):
+
+```bash
+db.help()
+```
+
+Show collection help:
+
+```bash
+db.todos.help()
+```
+
+
+
+(Just like with Node, pressing `TAB` shows available methods.)
+
+#### Non-Javascript commands
+
+Some commands are not Javascript, but very convenient:
+
+
+
+Show all databases:
+
+```bash
+show dbs
+```
+
+Switch to a different database:
+
+```bash
+use foo
+```
+
+Show collections in this database:
+
+```bash
+show collections
+```
+
+
+
+### Executing script
+
+To execute a script with Mongo Shell, you can pass it as the first arguments, just like with Node:
+
+```bash
+mongosh script.js
+```
+
+Once inside `mongosh`, you can load a script with:
+
+```bash
+load("script.js")
+```
+
+### Mongo Compass
+
+[Mongo Compass](https://www.mongodb.com/es/products/compass) is a complete UI (probably made with Electron) which makes it easier to interact with MongoDB. You can connect either locally or on remote databases (especially [Mongo Atlas](https://www.mongodb.com/atlas/database)).

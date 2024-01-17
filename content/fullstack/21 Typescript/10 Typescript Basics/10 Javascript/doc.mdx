@@ -1,0 +1,35 @@
+
+Javascript started as a scripting language for the first browsers. It was slow and simple, but as the web took off, more and more money was put into making it fast, and now it is one of the fastest languages, and [the most used in the world](https://octoverse.github.com/2022/top-programming-languages).
+
+Javascript is an interpreted language (it does not have a compilation step), but it is fast because it has a very sophisticated [JIT](https://en.wikipedia.org/wiki/Just-in-time_compilation). It is also [garbage collected](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)), i.e., programmers do not have to worry about allocating memory.
+
+### NodeJS
+
+[NodeJS](https://nodejs.org) is a Javascript runtime which took the Chrome Javascript Engine (called [V8](https://v8.dev/)), and made it standalone. Installing Node implies either:
+1. Downloading an installer which does everything automatically.
+2. Downloading a ZIP file, decompressing and setting the `PATH` variable (`Path` in Windows).
+
+LTS (Long-Term Support) versions are more stable and usually have even numbers (14, 16, 18...). Odd versions are the latest, and they more thoroughly test the features that will be included in the next LTS version.
+
+### Node Version Managers
+
+Sometimes it is necessary to install different versions of NodeJS because of constraints that different projects have (typically coming from the libraries that they need). Installing many versions of Node by hand is cumbersome so many "Node Version Managers" exist ([`n`](https://github.com/tj/n), [`nvm`](https://github.com/nvm-sh/nvm), etc.), which let you download different versions, switch between them easily, etc.
+
+### Volta
+
+One of the best version managers to date is [Volta](https://volta.sh/). It also manages `yarn`, `pnpm` and other tools. The good things about Volta is that is automatic, it will execute the Node version configured for your projects (very good for collaboration). Installing it is easy:
+
+```bash
+curl https://get.volta.sh | bash
+```
+
+If you are using Windows, get the Windows installer or use it within WSL.
+
+Volta commands:
+```bash
+volta list node            # List installed node versions
+volta install node@18      # Install version 18 (latest)
+volta install node@18.2.1  # Install a more precise version
+volta pin                  # Pin current version to a package
+```
+

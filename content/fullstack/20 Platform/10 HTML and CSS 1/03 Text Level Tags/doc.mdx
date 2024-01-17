@@ -1,0 +1,64 @@
+### Paragraphs
+
+A paragraph is a box containing text which occupies the whole width of the page.
+The paragraph object in the browser is block element.
+
+```html
+<p>
+  Lorem ipsum dolor sit amet
+</p>
+```
+
+It is important to know that *white space within paragraphs doesn't count*. Space is only useful to separate words. For example, the following paragraph would be rendered exactly the same as the previous one:
+
+```html
+<p> Lorem
+ipsum        dolor sit
+amet</p>
+```
+
+### Line break
+
+A line break `<br>` (en *empty tag*), breaks a line at a certain point, and it is useful for poetry and text which has specific line breakpoints. It is not a good way to structure paragraphs except in that case. The `<br>` is empty in the sense that it doesn't substitute for any content, just indicates a breaking point.
+
+### Emphasis and Strong
+
+Emphasized words or phrases can be put between `<em>` and `</em>` and they appear, by default, in *italics*. This is an inline element. An analogous thing happens with `<strong>` and **bold**, which attracts the reader's attention.
+
+### Code and Preformatted
+
+The `<code>` tag shows text in a monospaced font to make it easier to read program source code pieces, like variables and expressions. If we want to show a text file which already has some formatting based on spaces then we can use `<pre>`, which takes spaces into account and also uses a monospaced font so as not to break the format.
+
+```html
+<pre>
+#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+  cout &lt;&lt; "Hello" &lt;&lt; endl;
+}
+</pre>
+```
+
+### Anchor
+
+The anchor is what we usually call a **link**, a piece of active text that when clicked instructs the browser to load a different page.
+
+It has one important attribute (which should not be empty): `href`, The address that the browser will open on click. The value of `href` is a [URL](https://en.wikipedia.org/wiki/URL#), either absolute, relative (to the current site), or with different *scheme* (like `tel:` for telephone numbers, `mailto:` for emails, etc.). 
+
+```html
+<a href="http://full-stack-bcn.dev/html-css-1#text-tags">
+  This is a link to the page you are reading now!
+</a>
+```
+
+The anchor tag is an inline element.
+
+### Span
+
+The `<span>` tag marks a generic **inline element**, typically a piece of text that is put in the current line (and maybe broken in the middle) in the current block element (a box like a paragraph).
+
+
+
+
+

@@ -1,0 +1,59 @@
+### If
+
+Evaluates the condition, and if the resulting value is `true`, executes the code inside the braces.
+
+```typescript
+if (password === '123456') {
+  console.log('You are now logged in.');
+}
+```
+
+### If-else
+
+```typescript
+if (password === '123456') {
+  console.log('You are now logged in.');
+} else {
+  console.log('Wrong user/password combination.');
+}
+```
+
+### If-else-if
+
+```typescript
+if (password === '') {
+  console.log('The password is empty.');
+} else if (password === '123456') {
+  console.log('You are now logged in.');
+} else {
+  console.log('Wrong user/password combination.');
+}
+```
+
+### Boolean Conversion
+
+When the `if` condition is not a `boolean`, the value is auto-converted (once again), but this is not so bad:
+
+|          |          |                                   |                                     |
+| -------- | -------- | --------------------------------- | ----------------------------------- |
+| `if (a)` | `number` | `a != 0`                          | if `a` is not _zero_                |
+| `if (s)` | `string` | `s.length > 0` or `s !== ""`      | if `s` is not _empty_               |
+| `if (x)` | `object` | `s !== null` or `s !== undefined` | if `x` is not `null` or `undefined` |
+
+### Switch
+
+```typescript
+switch (value) {
+  case v1: 
+    // ...
+    break;
+  case v2:
+    // ...
+    break;
+
+  // ... more cases ...
+
+  default:
+    // ...
+}
+```

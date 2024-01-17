@@ -1,0 +1,211 @@
+
+Using prototypical inheritance is both cumbersome and very different from other languages. ES6 decided to add syntax to make it easier, and Typescript took that further. However, the mechanism behind this syntax is still based on prototypes, it is just a compiler translation.
+
+In Typescript, classes are defined in this way:
+
+```typescript
+class Person {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  sayHi() {
+    console.log(`Hi, I'm ${this.name}`);
+  }
+}
+```
+
+The `class` keyword is used to define a class, and inside the braces we list the fields, a [`constructor`](https://www.typescriptlang.org/docs/handbook/2/classes.html#constructors) and any methods we need.
+
+Creating instances of the `Person` class is still done with `new`:
+
+```typescript
+let person = new Person("Alice Bebop");
+```
+
+### Getters and Setters
+
+Getters and Setters simulate the existence of fields that in reality end up calling methods. This allows the programmer to catch accesses to old fields and reconvert them to methods instead, allowing for more control over encapsulation.
+
+To define a **getter** prefix it with **`get`**:
+
+```javascript
+class Person {
+  firstName: string;
+  lastName: string;
+
+  constructor(firstName: string, lastName: string) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+The getter `fullName` is used as if it was a normal field, giving the appearance that the field in fact exists:
+
+```javascript
+let p = new Person("Bob", "Parr");
+console.log(p.fullName);
+```
+
+The converse of reading a field is assignining to a field. Assignment also can be turned into a method call defining a **setter**:
+
+```typescript
+class Person {
+  // ...
+  set fullName(fn: string) {
+    const [first, last] = fn.split(' ');
+    if (first) this.firstName = first;
+    if (last) this.lastName = last;
+  }
+}
+```
+
+Now we can even set the `fullName` as if it was a field:
+
+```typescript
+let p = new Person("Bob", "Parr");
+p.fullName = "Robert Parr";
+```
+
+### Inheritance and interfaces
+
+To express [inheritance](https://www.typescriptlang.org/docs/handbook/2/classes.html#class-heritage) (something that prototypes make difficult) now we only have to use **`extends`**:
+
+```typescript
+class Superhero extends Person {
+  hero: string;
+
+  constructor(name: string, hero: string) {
+    super(name);
+    this.hero = hero;
+  }
+
+  breakThroughWall() {
+    console.log(`Look! ${this.hero} broke through a wall!`);
+  }
+}
+```
+
+The call to **`super()`** is required, even if the base class has no parameters, and _it must be the first instruction in the constructor_.
+
+Typescript also allows to use [**`implements`**](https://www.typescriptlang.org/docs/handbook/2/classes.html#implements-clauses) when a `class` matches a more general type. If we have an `interface` that describes a type:
+```typescript
+interface HasName {
+  name: string;
+}
+```
+
+Then a `class` can express that it satisfies that interface with `implements`:
+
+```typescript
+class Person implements HasName {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  //...
+}
+```
+
+### instanceof
+
+To determine if an object is an instance of a class, a special mechanism is needed and Javascript has a new operator called `instanceof` which will check if an object belongs to a class:
+
+```typescript
+class C {}
+let x = new C();
+x instanceof C      // true
+x instanceof Array  // false
+x instanceof Error  // false
+x instanceof Object // true
+
+class D extends C {}
+let y = new D();
+y instanceof C      // true
+y instanceof D      // true
+y instanceof String // false
+y instanceof Object // true
+```
+
+### Private fields
+
+Typescript allows to mark fields [**`private`**](https://www.typescriptlang.org/docs/handbook/2/classes.html#private) (also `protected`):
+
+```javascript
+class Watch {
+  private hour: number;
+  private minute: number;
+  private second: number;
+
+  constructor(hour: number, minute: number, second: number) {
+    this.hour = hour;
+    this.minute = minute;
+    this.second = second;
+  }
+}
+```
+
+Private fields cannot be accessed from code outside of the class itself. This is useful to protect their values from logic mistakes introduced in the rest of the program.
+
+However, this type of privacy is just checked by Typescript, and therefore, if you iterate over the properties of the object dynamically (with `for-in`), then private fields will show up.
+
+#### Hard privacy
+
+Javascript itself has introduced recently [truly private fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields) at the level of the runtime, which really cannot be accessed by outside code.
+
+Private fields start with **`#`** (they have "hash names"), and it is a *compile-time* error to access them outside of the class:
+
+```typescript
+class Watch {
+  #hour: number;
+  #minute: number;
+  #second: number;
+
+  Watch() {
+    this.#hour = 0;
+    this.#minute = 0;
+    this.#second = 0;
+  }
+}
+
+let w = new Watch();
+w.#hour = -17; // Syntax error
+```
+
+### Abstract classes
+
+Abstract classes define a base class which cannot possibly implement certain methods because they are really dependent on the specific derived classes.
+
+Using `abstract` we can both mark classes as abstract whenever they have at least one method which is abstract:
+
+```typescript
+abstract class Fruit {
+  constructor(public weight: number) {}
+
+  eat() {
+    console.log("You ate a fruit");
+  }
+
+  abstract peel(): void;
+}
+
+class Apple extends Fruit {
+  constructor(weight: number) {
+    super(weight);
+  }
+
+  peel() {
+    console.log("You are peeling an apple");
+  }
+}
+```
+

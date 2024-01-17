@@ -1,0 +1,56 @@
+### Markup Languages
+
+A markup language is **not** a programming language. A markup language describes documents in which some marks add information. The [Hyper-Text Markup Language](https://html.spec.whatwg.org/dev) is a standard for documents displayed in a web browser.
+
+HTML uses tags enclosed in angle brackets (`<>`) to mark text. There are 3 types of tags:
+
+- **Open** `<tag>`, and **close** `</tag>`, like `<p>A paragraph</p>`. In between the opening and closing tags we can put anything, including other tags.
+- **Self-closing**, as in `<img src="cat.png" />` (note the slash at the end).
+- **Empty** elements, like `<br>` (no slash at the end).
+
+### Entities 
+
+Since angle brackets are used for marks, a document displaying those symbols will need to represent them in another way. Entities describe all kinds of symbols (including angle brackets), and they start with a `&` and end with `;`.
+There is a [full list of standard entities](https://html.spec.whatwg.org/multipage/named-characters.html) and they are useful in general for showing mathematical operations, arrows, special accented characters, etc. 
+
+So a way to show the text "this is the &lt;body&gt;: 2 &times; 3" in HTML would be:
+
+```html
+<body>This is the &lt;body&gt;: 2 &times; 3</body>
+```
+
+which uses the entities `lt` (less than), `gt` (greater than), and `times`.
+
+### Comments
+
+As in typical programming languages, you can insert comments in an HTML document, which are tags ignored by the parser and therefore only useful for developers which work on the code. They start with `<!--` and end with `-->`.
+
+For example:
+
+```html
+<!-- The next paragraph should be changed to something else soon -->
+<p>Placeholder</p>
+```
+
+### Element Trees
+
+Since tags have "children" and those children tags can have more children, any HTML document is an **tree of elements** (usually represented upside-down), with tags at the top of the hierarchy being the roots. It is important to read HTML documents keeping in mind this tree and making sure not to not loose track of it by indenting the code properly and using a good editor.
+
+### Minimal Document
+
+A sample minimal HTML document is this:
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>Minimal</title>
+  </head>
+  <body>
+    <h1>Minimal Doc</h1>
+    <p>Hello</p>
+  </body>
+</html>
+```
+
+It must contain at least: the `<!doctype html>` tag at the beginning, which acts as a mark for the HTML type of file; an `html` tag enclosing the whole document; and both `<head>` and `<body>` which describe the metadata and the visible document.

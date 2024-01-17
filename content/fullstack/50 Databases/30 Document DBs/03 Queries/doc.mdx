@@ -1,0 +1,52 @@
+
+### Filters
+
+```js
+{ name: "pauek" }                            // name = "pauek"
+{ age: { $gt: 20 } }                         // age > 20
+{ status: { $in: ["A", "B"] } }              // status IN ("A", "B")
+{ $gte: 1, b: "two" }                        // a >= 1 AND b = 'two'
+{ $or: [{ a: { $lt: 1 } }, { b: "two" }]}    // a < 1 OR b = 'two'
+{ $not: { $or: [{ a: 1 }, { b: "two" }] } }  // NOT (a = 1 OR b = 'two')
+{ name: /^z/ }                               // name LIKE 'z%'
+{ "position.coords.x": { $gt: 10 } }         // abbrev for subfields
+```
+
+### Searching for documents
+
+Find the first document matching a filter:
+```js
+> db.users.findOne({ isChild: true })
+{
+  "_id": ObjectId("5ee9fa446b327281a5213f44"),
+  "username": "zipi",
+  "age": 9
+}
+```
+
+Find all documents matching a filter:
+```js
+> db.users.find({ name: { $regex: '^z' } })
+{
+  "_id": ObjectId("5ee9fa446b327281a5213f44"),
+  "username": "zipi",
+  "age": 9
+}
+{
+  "_id": ObjectId("5ee9fa446b327281a5213f45"),
+  "username": "zape",
+  "age": 9
+}
+```
+
+**`find`** and **`findOne`** return a *cursor*, an object which can produce a sequence of the results of a query. Within the Mongo Shell, cursors are iterated automatically and the documents shown on screen. Cursors have methods to alter the result of the search and filter, sort, limit, etc.
+
+To sort by name (ascending):
+```js
+> db.users.find().sort({ name: 1 })
+```
+
+To limit results to 3 documents:
+```js
+> db.users.find().limit(3)
+```

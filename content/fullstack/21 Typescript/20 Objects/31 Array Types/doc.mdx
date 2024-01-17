@@ -1,0 +1,67 @@
+The annotations for arrays have two equivalent forms. Arrays with fixed sizes are treated as tuples in Typescript.
+
+### Bracket form
+
+Arrays of simple values can be specified with:
+```typescript
+let a1 : number[] = [1, 2, 3];       // Array of numbers
+let a2 : string[] = ["x", "y", "z"]; // Array of strings
+let a3 : boolean[][] = [[true], [], [false, false]];
+                                     // Array of arrays of booleans
+```
+
+### Generic form
+
+Arrays can also be declared using the generic type `Array<T>`, which describes an array of cells of type `T`. This form is closer to other languages with generics like C++, Java, etc. The bracket form is actually translated to the generic form.
+
+So the previous example can be written as:
+```typescript
+let a1 : Array<number> = [1, 2, 3];
+let a2 : Array<string> = ["x", "y", "z"];
+let a3 : Array<Array<boolean>> = [[true], [], [false, false]];
+```
+
+### Tuples
+
+Brackets are also used to define [tuples](https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types): types in which arrays have fixed numbers of elements, which can be considered tuples.
+
+A tuple of two elements can be declared like this using a type alias:
+```typescript
+type Position = [number, number];
+let p : Position = [0.5, 1.5];
+```
+
+The type `Position`, then, describes arrays with 2 elements in which both are of type `number`.
+
+Tuples can be **`readonly`** so that Typescript will check that they are never written to:
+
+```typescript
+let dni : readonly [number, string] = [45458989, "X"];
+console.log(dni[0]);
+dni[0] = 0;
+//  | 
+// Cannot assign to '0' because it is a read-only property. ts(2540)
+```
+
+### Read-only arrays
+
+In plain Javascript making variables `const` doesn't make the data they point to constant:
+
+```typescript
+const myArray = [1, 2, 3];
+myArray.push(4);  // this is ok
+myArray = []; // ERROR: cannot change to a different array
+```
+
+In Typescript you can declare a `readonly` array, which makes it impossible to call any mutating methods or changing the values of cells.
+
+There are two ways of achieving this:
+1. With **`readonly`** preceding the bracket notation:
+   ```typescript
+   let arr : readonly number[] = [1, 2, 3];
+   ```
+
+2. With the **`ReadonlyArray<T>`** type:
+   ```typescript
+   let arr : ReadonlyArray<number> = [1, 2, 3];
+   ```

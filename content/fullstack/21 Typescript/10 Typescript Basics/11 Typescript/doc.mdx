@@ -1,0 +1,51 @@
+[Typescript](https://www.typescriptlang.org/) is a layer on top of Javascript which provides a very rich and powerful type system. Typescript is not independent of Javascript. It just augments it with some syntax but its compiler just outputs regular Javascript that can be executed on a browser or with a runtime like NodeJS.
+
+Typescript's type system helps in at least 3 important ways:
+
+- Catches programming errors before execution (by checking that types match).
+- Helps editors show errors while typing.
+- Shows possible completions for fields, methods and parameters.
+
+Productivity increases because less bugs are introduced while programming and it is less costly to ship correct software.
+
+### Bun
+
+[Bun](https://bun.sh) is a Javascript and Typescript runtime which tries to be as fast as possible and includes Typescript inside. This is very convenient for Typescript beginners, since it doesn't need any configuration at all to start writing programs.
+
+To install Bun, issue this command on the terminal:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+If you are on Windows, first install the [Windows Subystem for Linux](https://learn.microsoft.com/es-es/windows/wsl/install) (or WSL), which runs Linux binaries on top of the Windows OS kernel.
+
+### Typescript Configuration
+
+The [**`tsconfig.json`**](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) file resides at the root of a Typescript project (usually alongside `package.json`) and controls the Typescript compiler options.
+
+#### The `compilerOptions` section
+
+|                                                                  |                                                               |
+| ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| [`module`](https://www.typescriptlang.org/tsconfig#module)       | `"CommonJS"`, `"ESNext"`, ...                                 |
+| [`sourceMap`](https://www.typescriptlang.org/tsconfig#sourceMap) | `true` or `false`                                             |
+| [`strict`](https://www.typescriptlang.org/tsconfig#strict)       | `true` or `false`, stronger guarantees of program correctness |
+
+#### Included files
+
+In the [`files`](https://www.typescriptlang.org/tsconfig#files) section you can list the files which are part of the program. It is an error that any of those are missing.
+
+```json
+{
+  "files": ["main.ts", "utils.ts", "load.ts"]
+}
+```
+
+For big programs, it is easier to use glob patterns to match files in the [`include`](https://www.typescriptlang.org/tsconfig#include) section:
+
+```json
+{
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
+}
+```

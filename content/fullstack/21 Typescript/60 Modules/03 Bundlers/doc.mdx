@@ -1,0 +1,35 @@
+Bundlers are the "compilers" of the web. They transform a directory with code into a final product that can be deployed on a server. They are called bundlers because at the beginning, they use to put all code into a single file, called the "bundle".
+
+### Project Compilation
+
+Almost all projects for the web nowadays use a bundler or development tool. Some examples are:
+
+|                                       |                                                 |
+| ------------------------------------- | ----------------------------------------------- |
+| [Webpack](https://webpack.js.org/)    | The most used bundler, used in React projects   |
+| [parcel](https://parceljs.org/)       | Low configuration bundler (second most popular) |
+| [Rollup](https://rollupjs.org/)       | A bundler for the ESM era, with tree-shaking    |
+| [Vite](https://vitejs.dev/)           | Development tool for ESM with Hot-Reloading     |
+| [Snowpack](https://www.snowpack.dev/) | The predecessor to Vite                         |
+| [esbuild](https://esbuild.github.io/) | Bundler written in Go (fast)                    |
+| [SWC](https://swc.rs/)                | Rust-based platform for the Web                 |
+
+### Dependency Graph
+
+All bundlers analyze a project starting at the `"main"` file (declared in `package.json`) and looking at the `import`s. The graph of dependencies between files determines what has to be processed in the first place.
+
+Producing this graph makes explicit what has to be done and which files are included, and also allows for planning. A classic bundler will use all this information to output:
+- Javascript in a single file or multiple "chunks".
+- CSS, maybe pre-processed with PostCSS or SASS, and taken from individual files (like React components).
+- HTML, usually the entry file for SPAs, but with some parts replaced.
+- Images, often transformed to `.webp` or other formats and scaled to different sizes to adapt to different clients.
+
+The output directory where all of this goes is typically `dist`, or `build`, although, but usually this can be configured.
+
+### Hot Module Replacement
+
+The latest bundlers, which use Javascript modules in the browser, are able to swap modules while the page is still open, so that the developer can see the results of changes almost immediately. Here is where new tools like Vite shine.
+
+Old tools made a huge effort to do the same, but they still produce a "bundle", so they take a while to recompute it (even if caching intermediate computations), and then the time needed to do the swapping is larger.
+
+New tools leverage the module system in the browser and achieve swap times of around 50ms for small modules and CSS, which makes the Developer Experience very good.

@@ -1,0 +1,52 @@
+
+[Prisma](https://prisma.io) is an ORM, i.e. an Object Relational Mapper. Prisma makes working with databases much easier because:
+- We can define a [schema](https://www.prisma.io/docs/concepts/components/prisma-schema) in a high-level language that works for multiple databases (Postgres, MySQL, SQLServer, SQLite, CockroachDB, MongoDB).
+- It generates type-safe [client code](https://www.prisma.io/docs/concepts/components/prisma-client) in Typescript so that quering the database is easy and convenient.
+- It synchronizes schema changes to the database, and also to [generates migration files](https://www.prisma.io/docs/concepts/components/prisma-migrate).
+- It provides a [user-interface](https://www.prisma.io/docs/concepts/components/prisma-studio) for your database on top of the generated client so that querying and editing data is easier.
+
+### Project setup
+
+The steps to prepare a new project for working with prisma are:
+
+
+
+1. Create a Javascript package in a directory.
+   ```bash
+   npm init -y
+   ```
+2. Install Typescript as a dev-dependency with:
+   ```bash
+   npm install -D typescript ts-node @types/node
+   ```
+3. Initialize Typescript (create `tsconfig.json`):
+   ```bash
+   npx tsc --init
+   ```
+4. Install Prisma:
+   ```bash
+   npm install -D prisma
+   ```
+5. Set up Prisma with the `init` command:
+   ```bash
+   npx prisma init --datasource-provider sqlite
+   ```
+  
+
+
+### The Prisma directory
+
+The Prisma setup creates a subdirectory in your package called `prisma` which will contain:
+- Your schema (`prisma.schema`).
+- Migrations (empty at the beginning).
+
+You should check this directory into Git.
+
+### Prisma in VSCode
+
+The [official Prisma extension](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) for Visual Studio Code makes it much easier to work with `.prisma` files providing: 
+- syntax highlighting, 
+- formatting, 
+- linting and autocompletion, 
+- suggestions, and 
+- jump-to-definition.

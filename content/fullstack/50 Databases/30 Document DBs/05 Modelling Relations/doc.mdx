@@ -1,0 +1,94 @@
+
+The most sophisticated and accurate model of data is probably the relational model. Starting with an Entity-Relationship Diagram of a domain, designed in terms of tables and relationships, it is important to see ways of translating tables into collections and how to group things so that they are efficiently dealt with by MongoDB.
+
+### One-to-one Embedding
+
+Whenever an object of a certain type is related to another object only, it is advisable to store one object *inside* the other. For instance, if we have `users` and `addresses`, and each user can only have a single address, then it pays to store `addresses` directly inside `users` as a subobject:
+
+```json
+{
+  "_id": ObjectId("f9c3828d-65e8-5894-b8e5-b6017b2e2edc"),
+  "username": "johndoe",
+  "address": {
+    "street": "123 Fake Street",
+    "city": "Fakerton",
+    "state": "FK",
+    "zip": 12345
+  } 
+}
+```
+
+### One-to-Many Embedding
+
+Whenever a relation has an upper limit in the number of related entities, it is also a good idea to store the related entities inside their parent. The upper limit is given by the maximum size of a document, which is **16MB**. If the set of related entities inside some parent entity can be stored within that size, the embedding can be done.
+
+For instance, a single user can have multiple email, or credit cards, but typically a few, so you can store them inside the user object directly:
+
+```json
+{
+  "_id": ObjectId("64049eb6-b014-54d0-a9e3-b25ebe4bc80e"),
+  "name": "John Doe",
+  "emails": [
+    { email: "john@doe.com" },
+    { email: "john.doe@gmail.com" },
+    { email: "jdough@proton.me" }
+  ]
+}
+```
+
+This embedding can be seen as collapsing one level of hierarchy of ER diagrams for close entity types.
+
+### One-to-Many by reference
+
+Instead of embedding data, related collections can be kept separate and objects point to each other (typically, children point to their parent) using indexed fields (similar to foreing keys in relational databases).
+
+```json
+// users
+[
+  { "_id": "jdoe", "name": "John Doe" }
+]
+```
+
+```json
+// emails
+[
+  { "user_id": "jdoe", "email": "john@doe.com" },
+  { "user_id": "jdoe", "email": "john.doe@gmail.com" },
+  { "user_id": "jdoe", "email": "jdough@proton.me" }
+]
+```
+
+To join both `users` and `emails` together you can issue a query to aggregate all "children" of a parent entity.
+
+The [**`$lookup`**](https://www.mongodb.com/docs/manual/reference/operator/aggregation/lookup/) aggregation stage accomplishes just that:
+
+```javascript
+{
+  $lookup: {
+    from: "<collection to join>",
+    localField: "<field from the input documents>",
+    foreignField: "<field from the documents in the from>",
+    as: "<output array field>"
+  }
+}
+```
+
+To obtain the list of `users` with `emails`:
+
+```js
+> db.users.aggregate([
+  { 
+    $lookup: {
+      from: "emails",
+      localField: "_id",
+      foreignField: "user_id",
+      as: "emails"
+    }
+  },
+  { 
+    $project: { name: 1, emails: { email: 1 } } 
+  }
+])
+```
+
+

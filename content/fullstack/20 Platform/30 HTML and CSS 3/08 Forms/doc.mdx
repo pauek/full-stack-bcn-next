@@ -1,0 +1,28 @@
+A form is in fact a **hyperlink** in which you can edit the URL query. The parameters are `<input>` elements with a **`name`** attribute.
+
+```html
+<form action="/addtask" method="get">
+  <p>
+    <label>Task <input type="text" name="task" /></label>
+  </p>
+  <p>
+    <label>Minuts <input type="number" name="minutes" /></label>
+  </p>
+  <input type="submit" value="Add Task" />
+</form>
+```
+
+If the task is "Kill Bill" with 90 minutes, the URL will be:
+
+```
+https://task-manager.com/addtask?task=Kill+Bill&min=90
+```
+
+### Structure
+
+Parts of a form are usually `<p>`s, and every `<input>` element should have an associated `<label>`. The label can be associated with the `<input>` either by:
+
+1. making the `<input>` a **child** of the `<label>` or,
+2. using an `id` on the `<input>` and also the **`for`** attribute in the label.
+
+Associating a `<label>` with every `<input>` improves accessibility and user interaction (clicking the `<label>` will focus the `<input>`).

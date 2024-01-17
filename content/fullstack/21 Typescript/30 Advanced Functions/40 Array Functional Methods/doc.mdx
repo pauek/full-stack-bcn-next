@@ -1,0 +1,97 @@
+Some methods of the `Array` class are higher-order, because they receive functions as parameters:
+
+|                                                                                                         |                                                                    |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [`map(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) | Return an new array with each element transformed by `fn`          |
+| [`filter(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)                                                                                            | Return a new array with only element for which `fn` returns `true` |
+| [`find(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)                                                                                              | Return the first element for which `fn` returns `true`             |
+| [`findIndex(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)                                                                                         | Return the first element _index_ for which `fn` return `true`      |
+| [`reduce(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)                                                                                            | Compute a total value using `fn` to accumulate the result          |
+| [`forEach(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)                                                                                           | Execute `fn` on every element                                      |
+| [`sort(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)                                                                                              | Sort the array in place using `fn` to compare adjacent elements    |
+| [`some(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)                                                                                              | Determine if any element make `fn` return `true` (existential)     |
+| [`every(fn)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)                                                                                             | Determine if all elements make `fn` return `true` (universal)      |
+
+### map
+
+```javascript
+const A = [1, 2, 3, 4, 5];
+A.map(n => 2*n) // [2, 4, 6, 8, 10]
+A.map(String)   // ["1", "2", "3", "4", "5"]
+
+const stars = n => "*".repeat(n);
+A.map(stars) // ["*", "**", "***", "****", "*****"]
+```
+
+### filter
+```javascript
+const A = [1, "hi", null, undefined, "", 10, "ho"];
+A.filter(Boolean)        // [1, "hi", 10, "ho"]
+
+const isNum = x => typeof x === "number";
+const is = (type) => typeof x === type;
+A.filter(isNum)          // [1, 10]
+A.filter(is('string'))   // ["hi, "", "ho"]
+
+A.filter((_, i) => i % 2 === 0) // [1, null, "", "ho"]
+```
+
+### find, findIndex
+
+```javascript
+const A = [0, -1, 2, -3, 4, -5, 6, -7];
+A.find(n => n < 0); // -1
+A.find(n => n > 5); // 6
+A.findIndex(n => n === -7); // 7
+A.findIndex(n => n < 0); // 1
+```
+
+### reduce
+
+```javascript
+const A = [1, 2, 3, 4, 5];
+A.reduce((a, b) => a + b)  // 15
+A.reduce((a, b) => a * b)  // 120
+A.reduce((a, b) => Math.max(a, b)) // 5
+A.reduce((a, b) => Math.min(a, b)) // 1
+
+const B = ["a", "b", "c", "d", "e"];
+B.reduce((a, b) => `${a};${b}`); // a;b;c;d;e
+
+const C = [["a", 1], ["b", true], ["c", "hi"]];
+C.reduce((a, v) => Object.assign(a, { [v[0]]: v[1] }), {})
+// { a: 1, b: true, c: "hi" }
+```
+
+
+### forEach
+
+```javascript
+const A = ["to", "be", "or", "not", "to", "be"];
+A.forEach(word => console.log(word));
+```
+
+### sort
+
+```javascript
+const A = [4, 1, 2, 0, 5, 3];
+A.sort((a, b) => a - b)  // [0, 1, 2, 3, 4, 5]
+A.sort((a, b) => b - a)  // [5, 4, 3, 2, 1, 0]
+
+const B = [
+  { name: "Per", points: 5 },
+  { name: "Ava", points: 9 },
+  { name: "Tom", points: 1 },
+];
+B.sort((a, b) => b.points - a.points).map(x => x.name);
+// ["Ava", "Per", "Tom"]
+```
+
+### some, every
+```javascript
+const A = [-1, -2, 0, 1, -3, 5, -9];
+A.some(x => x < 0)    // true
+A.some(x => x === 0)  // true
+A.every(x => x < 0)   // false
+A.every(x => typeof x === 'number') // true
+```

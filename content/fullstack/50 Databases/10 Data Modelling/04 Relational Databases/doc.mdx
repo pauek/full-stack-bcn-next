@@ -1,0 +1,27 @@
+### Schemas
+
+A schema is a definition for the types stored in a database. It comprises:
+
+- **Tables**: the collections of entities stored
+- **Columns**: the attributes of the entities stored on each table, along with their types.
+- **Integrity Constraints**: the conditions that the data must always fulfill.
+
+The most important part is the presence of a schema allows a database to optimize its performance in advance to work with that schema.
+
+### Joins
+
+A join is an operation in which we ask for data coming from different collections (or tables) and the database engine has to relate entities in one collection to entities of another. All of this is done through keys (object keys in document databases and foreign keys in relational databases).
+
+### Relational Databases
+
+The most rich and powerful of the database types, with the most complex (and mathematically validated) data model. Relational databases use tables, and relationships between them (usually equating columns in different tables). They need a _schema_ in advance and have been optimized for many years. SQL is the most sophisticated query language available.
+
+|             |              |                                                                           |
+| ----------- | ------------ | ------------------------------------------------------------------------- |
+| Performance | _low_/_high_ | Depending on the query, they can be very fast or very slow                |
+| Scalability | _low_        | It is very difficult to scale relational databases                        |
+| Flexibility | _low_        | Since they have a schema, many changes require modifying the schema first |
+| Complexity  | _high_       | They are the most powerful of all databases                               |
+| Recursivity | _low_        | Deep recursion can kneel relational databases                             |
+
+

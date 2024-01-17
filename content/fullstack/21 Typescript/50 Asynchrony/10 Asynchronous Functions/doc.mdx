@@ -1,0 +1,43 @@
+
+
+An asynchronous function is a always a **slow function**. Not slow in the sense of a dense computation, but slow because it is _waiting for data_. It is waiting for data from the Operating System and doing nothing in the meantime, just blocking the process from doing anything else.
+
+If a function has to read a file, send requests through the network or execute another process, it will call the operating system, and then has to wait for the Operating System to give the result back: the file contents, the response from a server, or the output of a process. In the meantime, if the function is synchronous, it will block its thread of execution until it has the result, preventing any other work from being done.
+
+### Synchronous Functions
+
+As we know, when a function `myFunc` is called, the caller has to wait for the function to finish, which in turn produces a result, and the calling function uses this result in some expression (in this case as initialization of variable `result`):
+
+```typescript
+const result = myFunc(arg1, arg2, arg3);
+```
+
+A function like these is called "blocking" or **synchronous**. This is the way in which we usually think of functions and the order in which operations are carried out.
+
+### What does "slow" mean?
+
+Slow is with respect to the speed of the CPU. Modern CPUs can execute 3&ndash;5 _billion_ instructions per second. That's 0.2&ndash;0.3ns per instruction. So, when we block our thread, even if for "only" 150ms, we are wasting our chance of doing 450 million instructions of work.
+
+Here are the latencies of all the levels in the [memory hierarchy](https://en.algorithmica.org/hpc/external-memory/hierarchy/):
+
+| System   | Latency |
+| -------- | ------- |
+| L1 Cache | 1ns     |
+| L2 Cache | 5ns     |
+| L3 Cache | 10ns    |
+| RAM      | 100ns   |
+| SSD      | 100µs   |
+| HDD      | 10ms    |
+| Network  | 150ms   |
+
+In the browser, keeping the page responsive (in the sense that it responds to clicks, keys, scrolling, relayouts, etc.), implies that the browser has to repaint animations and any change on the page in at most 16ms. That's because to produce smooth animations, any movie has to paint 60 times a second (and 1000ms/60 is ~16ms).
+
+So functions that use the disk or the network and are called synchronously can make a page seem dead or stutter when interacted with, and we don't want that.
+
+### Asychronous = don't wait!
+
+What we would like is to put the slow function to work, and then, while the function has to wait for the Operating System to respond, continue with our work until we get the result, at which point we can resume the computation for which we called the function in the first place. That way, the latencies of the many things that a program does are "filled" with work, not empty waiting.
+
+An **asynchronous function** is, then, a function that **does not block** when we call it. We set it going, but then continue with the next instruction. This breaks our mental model quite a bit, since we cannot rely anymore on the classic algorithmic ordering of one instruction after another.
+
+So how do we organize this? Calling a function and not getting the result immediately makes it difficult to write the program, because where do we put the code that will handle the result when it is ready?

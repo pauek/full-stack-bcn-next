@@ -1,0 +1,43 @@
+Javascript notation for objects was thought to be so concise and good that it started to be used outside of the language, just for data, and became called **J**ava**S**cript **O**bject **N**otation (or [JSON](https://json.org)).
+
+The web started with languages close to HTML, like XML and derivatives, but JSON ended up winning because of its simplicity.
+
+This standardized notation uses the object notation in its simplest form. A JSON value can be:
+
+- `string`s (double quoted),
+- `number`s (both integer and real),
+- `boolean`s (`true` and `false`),
+- `null`, and
+- objects: delimited with **`{}`** with **fields** being **double quoted**, always. Values of fields can be any valid JSON value.
+- arrays: delimited with **`[]`** with JSON values inside.
+
+One particular difference with modern notation in Javascript is the comma after the last element in an array or object: it is allowed in modern Javascript but not in JSON. Another annoyance is
+
+```json
+[
+  "first",
+  2,
+  {
+    "x": 0.5,
+    "y": null
+  },
+  [true, true, true]
+]
+```
+
+The comma after the `null` (field `"y"`) is wrong, and so is the comma after the array of 3 `true` values (and there cannot be a comment besides it because JSON doesn't allow comments!).
+
+### Encoding and Decoding
+
+To parse JSON in Javascript the function `JSON.parse` receives a `string` and recreates a Javascript object which contains the same data.
+
+```typescript
+const obj = JSON.parse(`{"first":"James","age":27}`);
+```
+
+To produce JSON from in-memory objects, `JSON.stringify` receives an arbitrary Javascript object and converts it to a `string` encoding that object in JSON:
+
+```typescript
+const obj = { first: 'James', age: 27 };
+console.log(JSON.stringify(obj));
+```

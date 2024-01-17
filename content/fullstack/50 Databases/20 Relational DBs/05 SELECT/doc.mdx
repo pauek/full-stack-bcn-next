@@ -1,0 +1,40 @@
+
+
+This section uses prepared data about an old DVD Rental Business.
+
+**`SELECT`** lists tuples in one or more tables:
+
+
+```SQL
+SELECT * FROM country;                   /* all columns */
+SELECT first_name, last_name FROM actor; /* choose columns */
+```
+
+
+
+**`ORDER BY`** orders results:
+
+
+
+```SQL
+SELECT film_id, title FROM film 
+  ORDER BY title;
+SELECT customer_id, last_name, first_name FROM customer
+  ORDER BY last_name, first_name DESC;
+```
+
+
+
+
+`ASC` is "ascending" and `DESC` "descending" order.
+
+**`DISTINCT`** removes repetitions on results (only shows unique combinations):
+
+
+
+```SQL
+SELECT DISTINCT rental_rate FROM film;
+SELECT DISTINCT district, postal_code FROM address ORDER BY district;
+```
+
+

@@ -1,0 +1,106 @@
+
+Exceptions are a mechanism to signal errors in which an object (the exception) traverses the execution stack. An exception is *thrown* in the top function and it can be *catched* by any prepared function below in the stack. 
+
+Using this mechanism, errors can pass through functions that are not willing (nor care) to handle them without having to explicitly store the error object and return it, and arrive at functions that can do something about them.
+
+### Throwing exceptions
+
+To throw an exception, just call `throw` with an object:
+
+```javascript
+function sum(a, b) {
+  if (typeof a !== 'number' || typeof b !== 'number') {
+    throw { error: "Some parameters is not a number!" };
+  }
+  return a + b;
+}
+```
+
+In general, though, objects thrown are of class [**`Error`**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error):
+
+```javascript
+throw new Error("Ooops! something bad happened");
+```
+
+Errors have two important fields:
+1. **`name`**, which indicates the error class (this is a convention).
+2. **`message`**, which gives a description of what the error is about.
+
+Many more classes are defined in Javascript to signal errors of different types, like: `EvalError`, `InternalError`, `RangeError`, `SyntaxError`, `TypeError`, etc. Classifying errors into a type hierarchy is useful to classify the possible causes of errors and deal with them more effectively.
+
+### Catching errors
+
+To catch any error thrown on any function called from a piece of code, you surround that code with a `try`-`catch` clause:
+
+```typescript
+try {
+  funcWhichMightFail1();
+  funcWhichMightFail2();
+  funcWhichMightFail3();
+} catch (e: any) {
+  console.log(`Error "${e.name}": ${e.message}`);
+}
+```
+
+All the code included in the braces after the `try` is "protected", so that if any errors occur inside (at any height in the stack), they will be catched by the `catch` clause. The `catch` clause declares en error objectg `e`, of type `any` (by definition), which is the error thrown by the function higher in the stack:
+
+```typescript
+function ftop() {
+  throw new Error("top!");
+}
+function fmiddle() {
+  ftop();
+}
+function fbottom() {
+  fmiddle();
+}
+
+try {
+  fbottom();
+} catch (e: any) {
+  console.log(`ERROR ${e.name}: ${e.message}`);
+}
+```
+
+If many functions install `try`-`catch` guards, then the highest one in the stack will intercept the error and continue execution at the `catch` clause. At any point in time, many functions can have `try`-`catch` clauses waiting for possible errors, and the highest in the stack is the one which `catch`es the error.
+
+### Discriminating Errors
+
+Modern Javascript runtimes can determine if an object belongs to a class using `instanceof`, so we can use it to discern which type of error has occurred and deal with each case differently:
+
+```typescript
+try {
+  // code that may throw...
+} catch (e: any) {
+  if (e instanceof TypeError) {
+    // Handle TypeError
+  } else if (e instanceof SyntaxError) {
+    // Handle SyntaxError
+  } else {
+    // Handle the default case
+  }
+}
+```
+
+Using `instanceof` is more powerful than other methods because the error taxonomy is taken into account. If errors extend other errors, catching more general errors will deal with more broad cases.
+
+Another option, if inheritance is not use to categorize errors, is to just use the name, which allows us to use a `switch`:
+
+```typescript
+try {
+  // code that may throw...
+} catch (e) {
+  switch (e.name) {
+    case 'TypeError':
+      // handle...
+      break;
+    case 'SyntaxError':
+      // handle...
+      break;
+    default:
+      // default case
+  }
+}
+```
+
+The advantage of a `switch` is that it goes directly to the relevant case instead of evaluating each type like in the `instanceof` example.

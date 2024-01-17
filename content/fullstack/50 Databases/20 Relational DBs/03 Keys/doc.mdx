@@ -1,0 +1,83 @@
+
+
+How do we **uniquely identify** entities? How do we recognize things in the real world (people, objects, animals, twins...)? Because of a "fingerprint": a particular combination of attributes. Is a particular set of columns enough to *discriminate all the real entities you will have to deal with*?
+
+### Primary Keys
+
+A primary key is a set of columns which can discern all tuples. Columns in the primary key are usually shown <u>underlined</u>.
+
+Examples:
+- Classrooms(<u>building</u>, <u>room_number</u>, capacity)
+- CarTypes(<u>manufacturer</u>, <u>model</u>, tank_size, num_doors)
+- Movies(<u>title</u>, <u>year</u>, duration, genre)
+- MovieStars(<u>name</u>, birthdate, gender)
+
+In SQL, if a primary key is a single column (like an ID), it can be specified as a constraint:
+
+
+
+```SQL
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  first_name VARCHAR(50),
+  last_name VARCHAR(100)
+);
+```
+
+
+
+If the primary key includes a set of columns these can be listed at the end of the attribute list:
+
+
+
+```SQL
+CREATE TABLE emails (
+  username VARCHAR(255),
+  hostname VARCHAR(255),
+  PRIMARY KEY (username, hostname)
+)
+```
+
+
+
+The `PRIMARY KEY` constraint entails `UNIQUE` and `NOT NULL`, for obvious reasons.
+
+#### IDs
+
+Frequently, auto-generated IDs are used as primary keys (sometimes called *surrogate keys*).
+
+Having IDs has some advantages:
+- IDs never have to change. Changing primary keys is possible, but costly.
+- It is easier for the database to ensure uniqueness.
+- The primary key is more compact (even though it adds a column).
+- It is easier to reference from another table (as a *foreign key*).
+
+
+### Foreign Keys
+
+[Foreign keys](https://www.postgresql.org/docs/15/ddl-constraints.html#DDL-CONSTRAINTS-FK) are columns in one table referring to primary keys in another table:
+
+
+
+```SQL
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255)
+);
+
+CREATE TABLE emails (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id), /* <-- Foreign key */
+  email VARCHAR(255)
+);
+```
+
+
+
+**`FOREIGN KEY`** constraints:
+
+- Do not allow insertion of entities not having "parents".
+- Do not allow removal of parents with "child" entities.
+
+(The **`ON DELETE`** policy can configure that.)
+

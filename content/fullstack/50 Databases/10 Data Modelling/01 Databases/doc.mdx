@@ -1,0 +1,32 @@
+
+### Why do we need a database?
+
+- **Persistence**: The data must be there even if the app crashes or stops.
+- **Size**: Because data for most (real, useful) applications is much bigger than memory.
+- **Concurrency**: We have multiple clients using the data at the same time.
+- **Integrity**: We want to make sure that data is always consistent.
+- **Selectivity**: We sometimes want to query very particular subsets of the data.
+
+### Four database types
+
+There are more, but the most used database types are:
+- **Key-Value**: Big, associative tables.
+- **Document**: Collections of documents.
+- **Relational**: Sets of Tables (or relations) with relationships.
+- **Graph**: Graphs with nodes as entities and edges as properties (most general).
+
+### SQL vs NoSQL
+
+**SQL** (Structured Query Language) is the dominant language for querying databases since the majority of databases are relational. 
+
+Since the 2000s, the inflexibility of relational databases gave rise to a **NoSQL** movement, which encourages the use of alternative databases with different trade-offs. **NoSQL** represents almost all databases that are not relational.
+
+### Database Features
+
+We will study the 4 types of databases under the following 5 criteria:
+- **Performance**: How fast can we write and query the database?
+- **Scalability**: How easy it is to make the database 10x or 100x.
+- **Flexibility**: How easy it is to adapt to new problems (modify its schema)?
+- **Complexity**: How powerful and expressive is the engine and query language?
+- **Recursivity**: How well does it handle recursive queries?
+

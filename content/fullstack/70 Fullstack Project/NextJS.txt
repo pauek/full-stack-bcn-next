@@ -1,0 +1,28 @@
+[X] SSG, SSR, CSR, historia de la web. Comentario sobre la práctica de Typescript.
+[X] NextJS 13 + React
+[X] npx create-next-app@latest
+[X] Cómo hacer páginas, poniendo "page.tsx" en directorios.
+[~] Cómo cargar datos en Server Components (fetch tal cual).
+E: Mostrar datos de TMDB
+[X] Deploy en Vercel
+[X] Cómo saltar entre páginas, con <Link />.
+[X] Cómo cambiar el layout de una sección de la web.
+[X] Rutas con parámetros /movie/[id]. Obtener los parámetros.
+[X] SSG para rutas con parámetros: generateStaticParams()
+
+[X] Cómo usar Markdown (+ MDX).
+[X] Client Components "use client". Sub-árbol "use client".
+    Poner estado en el Layout, mostrar como persiste.
+[X] Cómo poner estilos: CSS modules + TailwindCSS.
+[X] Grupos (carpetas con "()"). Layouts distintos para distintas partes de la app.
+[X] Deploy en la rama 'dev'.
+[ ] Rutas de API (route.tsx). Cuándo las necesito?
+[ ] Navegar con useRouter().
+
+[ ] Imágenes (<Image />)
+[ ] Fuentes (Font).
+[ ] Variables de entorno (.env)
+[ ] Middleware.
+[ ] Revaldation!
+[ ] Actions (--alpha).
+ 

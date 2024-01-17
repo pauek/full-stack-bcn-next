@@ -1,0 +1,20 @@
+[Pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements) and [pseudo-classes](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes) refer to elements and classes that we don't have to mark ourselves but that the browser provides by itself, and which reveal nodes that are created automatically or contain information about the state of some element:
+
+| Pseudo-element   | Description                                 |
+| ---------------- | ------------------------------------------- |
+| `::before`       | Empty element just before some element      |
+| `::after`        | Empty element just after some other element |
+| `::first-letter` | The first letter in a paragraph             |
+| `::first-line`   | First line in a paragraph                   |
+
+| Pseudo-class    | Description                      |
+| --------------- | -------------------------------- |
+| `:root`         | The root of the document tree    |
+| `:empty`        | Has no children (like `<p></p>`) |
+| `:first-child`  | First child of its parent        |
+| `:last-child`   | Last child of its parent         |
+| `:nth-child(n)` | Is the child at position `n`     |
+| `:visited`      | If a link was visited            |
+| `:focus`        | If an element is in focus        |
+| `:hover`        | If the mouse is over an element  |
+| `:active`       | If an element is being clicked   |

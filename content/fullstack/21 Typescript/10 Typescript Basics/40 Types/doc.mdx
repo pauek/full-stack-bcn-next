@@ -1,0 +1,84 @@
+The [**primitive types**](https://developer.mozilla.org/en-US/docs/Glossary/Primitive) in Typescript are **`boolean`**, **`number`** and **`string`**. All of them are immutable and they are very optimized internally. `number` includes both integers and floating point numbers and the internal format is the [IEEE 754 64-bit double precision real number](https://es.wikipedia.org/wiki/Formato_en_coma_flotante_de_doble_precisi%C3%B3n) (`double` in C, Java, etc).
+
+### Quotes
+
+Typescript has 3 types of quotes:
+
+- Single quotes (**`'`**): To delimit strings.
+- Double quotes (**`"`**): Equivalent to the single quotes.
+- Backticks (**`` ` ``**): They enable multiline strings and interpolation.
+
+Multiline strings allow line breaks:
+
+```javascript
+let message = `This message 
+occupies more
+than one
+line`;
+```
+
+Interpolation evaluates expressions within `${}` delimiters:
+
+```javascript
+let first = "James", last = "Bond";
+console.log(`My first is ${last}, ${first} ${last})
+```
+
+### Special values
+
+**`undefined`** is used to mark variables that have never been initialized. It is the value that variables have when they weren't assigned on declaration. (It is possible to assign `undefined` after the definition but _very_ misleading.)
+
+**`null`** is used to tell that a variable is _empty_. It is more explicit than undefined since it has te be assigned.
+
+### Conversions
+
+You can convert between these types with `Number`, `Boolean` or `String`.
+
+Conversions to `boolean`:
+
+```javascript
+Boolean(0); // (is it different than 0?) -> false
+Boolean(7); // (is it different than 0?) -> true
+Boolean(''); // (string has characters?) -> false
+Boolean('sdfsd'); // (string has characters?)  -> true
+Boolean(null); // (is there anything?) -> false
+Boolean(undefined); // (is there anything?) -> false
+```
+
+Conversions to `number`:
+
+```javascript
+Number('123'); // parse an integer --> 123
+Number('abc'); // not an integer   --> NaN
+Number(true); // --> 1
+Number(false); // --> 0
+Number(null); // (something empty as a number?) --> 0
+Number(undefined); // (something unknown as a number?) --> NaN
+```
+
+Conversions to `string`:
+
+```javascript
+String(true); // 'true'
+String(false); // 'false'
+String(0); // '0'
+String(123); // '123'
+String(null); // 'null'
+String(undefined); // 'undefined'
+```
+
+### `typeof`
+
+You can obtain the type of any value with `typeof`:
+
+|                    |              |
+| ------------------ | ------------ |
+| `typeof 13`        | `number`     |
+| `typeof 3.141592`  | `number`     |
+| `typeof "asdf"`    | `string`     |
+| `typeof true`      | `boolean`    |
+| `typeof undefined` | `undefined`  |
+| `typeof null`      | `object`     |
+| `typeof {}`        | `object`     |
+| `typeof []`        | `object` ??? |
+| `typeof () => 42`  | `function`   |

@@ -1,0 +1,221 @@
+
+
+The schema is stored in `prisma/schema.prisma`, and has 3 sections:
+
+- **`datasource`**: which database type and URL to connect to.
+- **`generator`**: one or more generators (including the `prisma-client-js`, which is the default). 
+- **`model`**: the data model, comprised of all entity definitions, along with their relations.
+
+### The Datasource
+
+The [**`datasource`**](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#datasource) section includes the `provider`, and `url`, which select which database to use and what is its connection URL.
+
+```prisma
+datasource db {
+  provider = "postgres"
+  url      = "postgresql://user:passwd@host:port/db?schema=public"
+}
+```
+
+
+
+| Value           | Database                                                                 |
+| --------------- | ------------------------------------------------------------------------ |
+| `"sqlite"`      | [SQLite](https://sqlite.org)                                             |
+| `"postgres"`    | [PostgreSQL](https://postgresql.org)                                     |
+| `"mysql"`       | [MySQL](https://mysql.com)                                               |
+| `"sqlserver"`   | [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022) |
+| `"cockroachdb"` | [CockroachDB](https://www.cockroachlabs.com/)                            |
+| `"mondodb"`     | [MongoDB](https://mongodb.com)                                           |
+
+
+
+#### Environment Variables
+
+Usually we don't want to reveal sensitive information, so the `url` can be taken from an environtment variable by using the `env(...)` function:
+
+
+
+```prisma
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+```
+
+
+
+#### SQLite
+
+For SQLite, the URL is actually a file path:
+
+
+
+```prisma
+datasource db {
+  provider = "mongodb"
+  url      = "file:../dev.db"
+}
+```
+
+
+
+
+### Generators
+
+The `generator` section specifies one or more generators, which produce code of any kind taking the schema as input. They can be thought as "compilers" for the schema.
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+```
+
+The `provider` property defines which type of generator is used (currently only `prisma-client-js` is available). But many other [community-made generators](https://www.prisma.io/docs/concepts/components/prisma-schema/generators#community-generators) exist. To produce DBML output you could install a package called [`prisma-dbml-generator`](https://github.com/notiz-dev/prisma-dbml-generator), and then add an extra `generator` section:
+
+```prisma
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+```
+
+And it will produce a `schema.dbml` file in the `prisma/dbml` directory.
+
+The `output` property defines which directory to save the output to (the default value for the Prisma Client is typically good enough).
+
+### Models
+
+The model comprises a sequence of [**`model`**](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-models) entries which define the entities in your model. You can also define [**`enum`**](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model#defining-enums) types.
+
+The naming convention for models is *singular* and *PascalCase*, so an entity representing a movie would be called `Movie`:
+
+```prisma
+model Movie {
+  // ...
+}
+```
+
+Once the model is synchronized with the database, these names are preserved exactly, so they usually have to be written within double-quotes:
+
+```SQL
+SELECT * FROM "Movie";
+```
+
+### Field Definition
+
+Each field has:
+- A **name**.
+- A **type**, with optional type modifiers.
+- Optional **attributes**.
+
+```prisma
+model Movie {
+  id          Int      @id @default(autoincrement())
+  title       String
+  year        Int
+  duration    Int
+  forFamilies Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  @@unique([title, year])
+}
+```
+
+#### Scalar Types
+
+Scalar types are: **`String`**, **`Boolean`**, **`Int`**, **`BigInt`**, **`Float`**, **`Decimal`**, **`DateTime`** , **`Json`** and **`Bytes`**.
+
+#### Type modifiers
+
+You can append the following modifiers to any type:
+- **`?`** a field is "optional" (it can be `null`).
+- **`[]`** the field is then a list.
+
+#### Attributes
+
+Field attributes include:
+
+
+
+|                  |                                         |
+| ---------------- | --------------------------------------- |
+| `@id`            | The field is a primary key              |
+| `@default(x)`    | The default value for the field is `x`  |
+| `@unique`        | The field must have a unique constraint |
+| `@relation(...)` | To describe how entites are related     |
+| `@map(name)`     | To use a different name in the database |
+
+
+
+
+Entity attributes include:
+
+
+
+|                         |                                        |
+| ----------------------- | -------------------------------------- |
+| `@@id(f1, f2, ...)`     | A primary key with more than one field |
+| `@@index(f1, f2, ...)`  | An index is needed on certain fields   |
+| `@@map(name)`           | Alternate `name` in the database       |
+| `@@unique(f1, f2, ...)` | Unique constraint on field set         |
+
+
+
+#### IDs in MongoDB
+
+Since MongoDB always introduces the `_id` field as a primary key, in Prisma
+the IDs have to be defined as follows if the underlying database is MongoDB:
+
+```prisma
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  // ...
+}
+```
+
+### Relationships
+
+In relationships, the field's model is another model:
+
+
+
+```prisma
+model Post {
+  id       Int       @id @default(autoincrement())
+  comments Comment[]
+}
+model Comment {
+  id     Int   @id @default(uuid())
+  postId Int?
+  Post   Post? @relation(fields: [postId], references: [id])
+}
+```
+
+
+
+A many to many relationship would be implemented in the following way:
+
+```prisma
+model User {
+  id        String    @id @default(uuid())
+  firstName String
+  lastName  String
+  messages  Message[]
+  chats     Member[]
+}
+
+model Chat {
+  id       String    @id @default(uuid())
+  title    String
+  messages Message[]
+  members  Member[]
+}
+
+model Message {
+  id       String @id @default(uuid())
+  text     String
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+  chatId   String
+  chat     Chat   @relation(fields: [chatId], references: [id])
+}
+```
