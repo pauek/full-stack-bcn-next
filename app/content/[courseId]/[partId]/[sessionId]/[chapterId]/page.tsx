@@ -2,12 +2,11 @@ import ChapterContent from "@/components/ChapterContent";
 import ChapterDocument from "@/components/ChapterDocument";
 import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
-import { generateAllChapterPaths, getChapter, getChapterSlideList } from "@/lib/files/files";
+import { generateAllChapterParams, getChapter, getChapterSlideList } from "@/lib/files/files";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-	const chapterPaths = await generateAllChapterPaths(process.env.COURSE!);
-	return chapterPaths.map((p) => ({ params: p }));
+	return await generateAllChapterParams(process.env.COURSE!);
 }
 
 export default async function Page({ params }: any) {

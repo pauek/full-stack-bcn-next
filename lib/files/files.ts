@@ -1,5 +1,5 @@
 import { Chapter, Course, Part, Session } from "@/lib/adt";
-import { Dirent } from "fs";
+import { Dirent, readFileSync } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { join } from "path";
 import * as utils from "./utils";
@@ -313,6 +313,7 @@ export const getAllSessionPaths = async (courseId: string) => {
 	for (const part of course.parts) {
 		for (const session of await getPartSessions(part.path)) {
 			sessionPaths.push({
+				courseId,
 				partId: part.id,
 				sessionId: session.id,
 			});
@@ -321,7 +322,9 @@ export const getAllSessionPaths = async (courseId: string) => {
 	return sessionPaths;
 };
 
-export const generateAllChapterPaths = async (courseId: string) => {
+type ChapterWalkFunction = (ch: Chapter, path: string[]) => Promise<any>;
+
+export const walkAllChapterPaths = (func: ChapterWalkFunction) => async (courseId: string) => {
 	const course = await getCourse(courseId);
 	if (course === null) {
 		return [];
@@ -338,19 +341,39 @@ export const generateAllChapterPaths = async (courseId: string) => {
 				continue;
 			}
 			for (const _chapter of session.chapters) {
-				result.push([courseId, part.id, session.id, _chapter.id]);
+				const ret = await func(_chapter, [courseId, part.id, session.id, _chapter.id]);
+				if (Array.isArray(ret)) {
+					result.push(...ret);
+				} else {
+					result.push(ret);
+				}
 			}
 		}
 	}
 	return result;
 };
 
-export const generateAllChapterParams = async (courseId: string) => {
-	const paths = await generateAllChapterPaths(courseId);
-	return paths.map((path) => ({
-		courseId: path[0],
-		partId: path[1],
-		sessionId: path[2],
-		chapterId: path[3],
-	}));
-};
+export const generateAllChapterPaths = walkAllChapterPaths(async (_, path) => path);
+
+export const generateAllChapterParams = walkAllChapterPaths(async (_, path) => ({
+	courseId: path[0],
+	partId: path[1],
+	sessionId: path[2],
+	chapterId: path[3],
+}));
+
+const generateAllSubdirParams = (subdir: string) => walkAllChapterPaths(
+	async (chapter, [courseId, partId, sessionId, chapterId]) => {
+		const imageList = await utils.readDirWithFileTypes(`${chapter.path}/${subdir}`);
+		return imageList.map((ent) => ({
+			courseId,
+			partId,
+			sessionId,
+			chapterId,
+			filename: ent.name,
+		}));
+	}
+);
+
+export const generateAllImageParams = generateAllSubdirParams("images");
+export const generateAllSlideParams = generateAllSubdirParams("slides");

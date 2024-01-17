@@ -3,8 +3,7 @@ import StaticLayout from "@/components/StaticLayout";
 import { getAllSessionPaths, getSession } from "@/lib/files/files";
 
 export async function generateStaticParams() {
-	const sessionPaths = await getAllSessionPaths(process.env.COURSE!);
-	return sessionPaths.map((path) => ({ params: path }));
+	return await getAllSessionPaths(process.env.COURSE!);
 }
 
 type PageProps = {
