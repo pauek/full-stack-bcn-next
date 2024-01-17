@@ -30,7 +30,7 @@ export const getCourse = async (courseId: string): Promise<Course | null> => {
 		id: course.id,
 		path: course.path,
 		name: course.name,
-		parts,
+		children: parts,
 	};
 };
 
@@ -72,7 +72,7 @@ export const getPart = async (path: string[]): Promise<Part | null> => {
 	if (!course) {
 		return null;
 	}
-	const part = course.parts.find((part) => part.id === partId);
+	const part = course.children.find((part) => part.id === partId);
 	if (!part) {
 		return null;
 	}
@@ -80,7 +80,7 @@ export const getPart = async (path: string[]): Promise<Part | null> => {
 		id: part.id,
 		path: part.path,
 		name: part.name,
-		sessions: await getPartSessions(part.path),
+		children: await getPartSessions(part.path),
 	};
 };
 
@@ -106,7 +106,7 @@ export const getSession = async (path: string[]): Promise<Session | null> => {
 	if (!part) {
 		return null;
 	}
-	const session = part.sessions.find((session) => session.id === sessionId);
+	const session = part.children.find((session) => session.id === sessionId);
 	if (!session) {
 		return null;
 	}
@@ -114,7 +114,7 @@ export const getSession = async (path: string[]): Promise<Session | null> => {
 		id: session.id,
 		path: session.path,
 		name: session.name,
-		chapters: await getSessionChapters(session.path),
+		children: await getSessionChapters(session.path),
 	};
 };
 
@@ -125,7 +125,7 @@ export const getChapter = async (path: string[]): Promise<Chapter | null> => {
 	if (!session) {
 		return null;
 	}
-	const chapter = session.chapters.find((chapter) => chapter.id === chapterId);
+	const chapter = session.children.find((chapter) => chapter.id === chapterId);
 	if (!chapter) {
 		return null;
 	}
@@ -223,19 +223,19 @@ export const getAllFilePaths = async (courseId: string, subdir: string, extensio
 		console.error(`Course "fullstack" not found!?!`);
 		return;
 	}
-	for (const { id: partId } of course.parts) {
+	for (const { id: partId } of course.children) {
 		const part = await getPart([courseId, partId]);
 		if (part === null) {
 			console.error(`Part "${[partId].join("/")}" not found!?!`);
 			continue;
 		}
-		for (const { id: sessionId } of part.sessions) {
+		for (const { id: sessionId } of part.children) {
 			const session = await getSession([courseId, partId, sessionId]);
 			if (session === null) {
 				console.error(`Session "${[courseId, partId, sessionId].join("/")}" not found!?!`);
 				continue;
 			}
-			for (const { id: chapterId } of session.chapters) {
+			for (const { id: chapterId } of session.children) {
 				const chapter = await getChapter([courseId, partId, sessionId, chapterId]);
 				if (chapter === null) {
 					console.error(
@@ -274,7 +274,7 @@ export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> =>
 		const part = await getPart([courseId, partId]);
 		if (!part) return [];
 		crumbs.push({ name: part.name, path: [partId] });
-		siblings = part.sessions.map((s) => ({
+		siblings = part.children.map((s) => ({
 			name: s.name,
 			path: [courseId, partId, s.id],
 		}));
@@ -286,7 +286,7 @@ export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> =>
 				path: [courseId, partId, sessionId],
 				siblings,
 			});
-			siblings = session.chapters.map((ch) => ({
+			siblings = session.children.map((ch) => ({
 				name: ch.name,
 				path: [courseId, partId, sessionId, ch.id],
 			}));
@@ -310,7 +310,7 @@ export const getAllSessionPaths = async (courseId: string) => {
 	if (course === null) {
 		return [];
 	}
-	for (const part of course.parts) {
+	for (const part of course.children) {
 		for (const session of await getPartSessions(part.path)) {
 			sessionPaths.push({
 				courseId,
@@ -330,17 +330,17 @@ export const walkAllChapterPaths = (func: ChapterWalkFunction) => async (courseI
 		return [];
 	}
 	const result = [];
-	for (const _part of course.parts) {
+	for (const _part of course.children) {
 		const part = await getPart([courseId, _part.id]);
 		if (part == null) {
 			continue;
 		}
-		for (const _session of part.sessions) {
+		for (const _session of part.children) {
 			const session = await getSession([courseId, _part.id, _session.id]);
 			if (session === null) {
 				continue;
 			}
-			for (const _chapter of session.chapters) {
+			for (const _chapter of session.children) {
 				const ret = await func(_chapter, [courseId, part.id, session.id, _chapter.id]);
 				if (Array.isArray(ret)) {
 					result.push(...ret);

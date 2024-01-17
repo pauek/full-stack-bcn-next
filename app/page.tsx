@@ -8,7 +8,7 @@ export default async function Home() {
   if (course === null) {
     notFound();
   }
-  const { parts } = course;
+  const { children: parts } = course;
   return (
     <StaticLayout path={[course.id]}>
       <div className="max-w-[54em] m-auto">

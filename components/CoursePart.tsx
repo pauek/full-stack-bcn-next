@@ -13,7 +13,7 @@ export default async function CoursePart({ path }: CoursePartProps) {
   }
 
   const sessionsInRow = (n: number) =>
-    part.sessions.filter((s: any) => s.row === n);
+    part.children.filter((s: any) => s.row === n);
 
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center">

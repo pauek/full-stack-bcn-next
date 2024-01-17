@@ -1,10 +1,10 @@
-type Base = {
+export type ContentPiece = {
 	id: string;
 	name: string;
 	path: string;
 };
 
-export type Chapter = Base & { hasDoc: boolean; numSlides: number };
-export type Session = Base & { chapters: Chapter[] };
-export type Part = Base & { sessions: Session[] };
-export type Course = Base & { parts: Part[] };
+export type Chapter = ContentPiece & { hasDoc: boolean; numSlides: number };
+export type Session = ContentPiece & { children: Chapter[] };
+export type Part = ContentPiece & { children: Session[] };
+export type Course = ContentPiece & { children: Part[] };

@@ -26,7 +26,7 @@ export default async function Page({ params }: PageProps) {
 					<div id="top" className="absolute top-0" />
 					<h2 className="pt-8 pb-6">{session.name}</h2>
 					<div className="gap-4 grid lg:grid-cols-2 max-md:grid-cols-1">
-						{session.chapters.map((chapter) => (
+						{session.children.map((chapter) => (
 							<ChapterCard key={chapter.id} path={[courseId, partId, sessionId]} chapter={chapter} />
 						))}
 					</div>
