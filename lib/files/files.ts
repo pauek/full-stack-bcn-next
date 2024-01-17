@@ -71,22 +71,6 @@ export const getChildren = async (dirpath: string) => {
   return children;
 };
 
-export const getSessionChapters = async (sessionPath: string) => {
-  const chapters = [];
-  for (const ent of await utils.readDirWithFileTypes(sessionPath)) {
-    if (utils.isContentEntity(ent)) {
-      const path = pathJoin(sessionPath, ent.name);
-      const metadata = await _readMetadata(path);
-      chapters.push({
-        path,
-        name: utils.dirNameToTitle(ent.name),
-        ...metadata,
-      });
-    }
-  }
-  return chapters;
-};
-
 export const getDoc = async (chapter: ContentPiece) => {
   for (const ent of await utils.readDirWithFileTypes(chapter.path)) {
     if (ent.isFile() && ent.name.startsWith("doc.")) {
