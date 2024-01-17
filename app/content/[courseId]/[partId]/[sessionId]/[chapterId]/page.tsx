@@ -11,9 +11,7 @@ export async function generateStaticParams() {
 }
 
 export default async function Page({ params }: any) {
-	const courseId = process.env.COURSE!;
-
-	const { partId, sessionId, chapterId } = params;
+	const { courseId, partId, sessionId, chapterId } = params;
 	const path = [courseId, partId, sessionId, chapterId];
 
 	const chapter = await getChapter(path);

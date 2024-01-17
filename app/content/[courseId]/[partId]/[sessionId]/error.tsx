@@ -5,5 +5,5 @@ type Props = {
   reset: () => void;
 };
 export default function Error({ error, reset }: Props) {
-  return <div>Error: {error.toString()}</div>;
+  return <div>Fullstack error: {error.toString()}</div>;
 }

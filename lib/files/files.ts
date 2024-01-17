@@ -311,8 +311,7 @@ export const getAllSessionPaths = async (courseId: string) => {
 		return [];
 	}
 	for (const part of course.parts) {
-		const { sessions } = (await getPart([part.id])) as Part;
-		for (const session of sessions) {
+		for (const session of await getPartSessions(part.path)) {
 			sessionPaths.push({
 				partId: part.id,
 				sessionId: session.id,

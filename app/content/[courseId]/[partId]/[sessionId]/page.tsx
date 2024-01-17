@@ -9,13 +9,13 @@ export async function generateStaticParams() {
 
 type PageProps = {
 	params: {
+        courseId: string;
 		partId: string;
 		sessionId: string;
 	};
 };
 export default async function Page({ params }: PageProps) {
-    const courseId = process.env.COURSE!;
-	const { partId, sessionId } = params;
+	const { courseId, partId, sessionId } = params;
 	const session = await getSession([courseId, partId, sessionId]);
 	if (session === null) {
 		throw `Session with path ${[courseId, partId, sessionId]} not found`;
@@ -28,7 +28,7 @@ export default async function Page({ params }: PageProps) {
 					<h2 className="pt-8 pb-6">{session.name}</h2>
 					<div className="gap-4 grid lg:grid-cols-2 max-md:grid-cols-1">
 						{session.chapters.map((chapter) => (
-							<ChapterCard key={chapter.id} path={[chapter.id, partId, sessionId]} chapter={chapter} />
+							<ChapterCard key={chapter.id} path={[courseId, partId, sessionId]} chapter={chapter} />
 						))}
 					</div>
 				</div>
