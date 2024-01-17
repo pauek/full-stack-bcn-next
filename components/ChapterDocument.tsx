@@ -43,7 +43,7 @@ export default async function ChapterDocument({ path }: ChapterProps) {
 											// pueda referirse a la imagen con un path relativo
 											<NextImage
 												className="py-3 border"
-												src={'/bubi'/*`/${path.join("/")}/images/${props.src}`*/}
+												src={`/content/${path.join("/")}/images/${props.src}`}
 												alt={props.alt || "image"}
 												width={Number(props.width)}
 												height={Number(props.height)}

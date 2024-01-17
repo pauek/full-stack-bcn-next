@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 	const [imageFilenameURL] = path.slice(-1);
 	const imageFilename = decodeURIComponent(imageFilenameURL);
     const imageExtension = imageFilename.split(".").slice(-1)[0];
-	const imagePath = `${chapter.path}/slides/${imageFilename}`;
+	const imagePath = `${chapter.path}/images/${imageFilename}`;
 	const imageBytes = await readFile(imagePath);
 	return new NextResponse(imageBytes.buffer, {
 		headers: {
