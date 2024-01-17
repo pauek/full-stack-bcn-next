@@ -1,4 +1,4 @@
-import { getPart } from "@/lib/files/files";
+import { getContentPiece } from "@/lib/files/files";
 import SessionButton from "./SessionButton";
 import { range } from "@/lib/utils";
 
@@ -6,7 +6,7 @@ type CoursePartProps = {
   path: string[];
 };
 export default async function CoursePart({ path }: CoursePartProps) {
-  const part = await getPart(path);
+  const part = await getContentPiece(path);
 
   if (part === null) {
     return <div>ERROR: Part with ${path} not found.</div>;

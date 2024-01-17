@@ -1,5 +1,5 @@
 export type ContentPiece = {
-  type: "chapter" | "session" | "part" | "course";
+  type: "chapter" | "session" | "part" | "root";
   id: string;
   name: string;
   path: string;
@@ -12,4 +12,4 @@ export type Session = ContentPiece & { type: "session" };
 
 export type Part = ContentPiece & { type: "part" };
 
-export type Course = ContentPiece & { type: "course" };
+export type Course = ContentPiece & { type: "root" };

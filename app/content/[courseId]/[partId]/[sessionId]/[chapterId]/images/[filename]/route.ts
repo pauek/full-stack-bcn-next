@@ -1,4 +1,4 @@
-import { getChapter } from "@/lib/files/files";
+import { getContentPiece } from "@/lib/files/files";
 import { readFile } from "fs/promises";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +11,7 @@ const mimeType: Record<string, string> = {
 
 export async function GET(req: NextRequest) {
   const [_empty, _content, ...path] = req.nextUrl.pathname.split("/");
-  const chapter = await getChapter(path);
+  const chapter = await getContentPiece(path);
   if (!chapter) {
     notFound();
   }

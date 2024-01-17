@@ -1,10 +1,10 @@
 "use client";
 
-import type { Chapter } from "@/lib/adt";
+import type { ContentPiece } from "@/lib/adt";
 import { useState } from "react";
 
 type Props = {
-  chapter: Chapter;
+  chapter: ContentPiece;
   options: {
     name: string;
     component: React.ReactNode;

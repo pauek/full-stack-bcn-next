@@ -3,7 +3,7 @@ import Link from "next/link";
 import BookIcon from "./icons/BookIcon";
 import SlideShow from "./icons/SlideShow";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { chapterNumSlides, chapterHasDoc } from "@/lib/files/files";
+import { pieceNumSlides, pieceHasDoc } from "@/lib/files/files";
 
 type ChapterCardProps = {
   path: string[];
@@ -11,8 +11,8 @@ type ChapterCardProps = {
 };
 export default async function ChapterCard({ path, chapter }: ChapterCardProps) {
   const chapterUrl = `/content/${path!.join("/")}/${chapter.id}`;
-  const hasDoc = await chapterHasDoc(chapter);
-  const numSlides = await chapterNumSlides(chapter);
+  const hasDoc = await pieceHasDoc(chapter);
+  const numSlides = await pieceNumSlides(chapter);
   return (
     <Link href={chapterUrl}>
       <Card>

@@ -3,11 +3,11 @@ import ChapterDocument from "@/components/ChapterDocument";
 import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
 import {
-  chapterNumSlides,
+  pieceNumSlides,
   generateAllChapterParams,
-  getChapter,
-  getChapterSlideList,
-  chapterHasDoc,
+  getContentPiece,
+  getSlideList,
+  pieceHasDoc,
 } from "@/lib/files/files";
 import { notFound } from "next/navigation";
 
@@ -19,21 +19,21 @@ export default async function Page({ params }: any) {
   const { courseId, partId, sessionId, chapterId } = params;
   const path = [courseId, partId, sessionId, chapterId];
 
-  const chapter = await getChapter(path);
+  const chapter = await getContentPiece(path);
   if (chapter === null) {
     notFound();
   }
 
-  const slides = await getChapterSlideList(chapter);
+  const slides = await getSlideList(chapter);
 
   let options = [];
-  if (await chapterHasDoc(chapter)) {
+  if (await pieceHasDoc(chapter)) {
     options.push({
       name: "Document",
       component: <ChapterDocument path={path} />,
     });
   }
-  if ((await chapterNumSlides(chapter)) > 0) {
+  if ((await pieceNumSlides(chapter)) > 0) {
     options.push({
       name: "Slides",
       component: <SlideGrid path={path} slides={slides} />,
