@@ -20,8 +20,7 @@ export const H4 = ({ children }: any) => (
 
 export const P = ({ children }: any) => (
   <p className="mb-4 first:mt-0">{children}</p>
-)
-
+);
 
 export const A = (props: React.ComponentProps<"a">) => (
   <a {...props} className={`text-blue-600 ${props.className}`}>
@@ -61,9 +60,7 @@ export const Row = ({ href, keyword, children }: RowProps) => (
         </strong>
       )}
     </td>
-    <td>
-      {children}
-    </td>
+    <td>{children}</td>
   </tr>
 );
 

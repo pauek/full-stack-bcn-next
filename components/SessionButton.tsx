@@ -7,7 +7,7 @@ type SessionButtonProps = {
 const SessionButton = async ({ path }: SessionButtonProps) => {
   const session = await getSession(path);
   if (session === null) {
-    throw `Session with path ${path} not found`
+    throw `Session with path ${path} not found`;
   }
   return (
     <Link href={`/content/${path.join("/")}`} className="w-1/3">

@@ -1,7 +1,7 @@
 import React, { SVGProps } from "react";
 
 export default function BookIcon(
-  props: SVGProps<SVGSVGElement> & { size: number }
+  props: SVGProps<SVGSVGElement> & { size: number },
 ) {
   return (
     <svg

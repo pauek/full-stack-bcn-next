@@ -9,9 +9,7 @@ export default function StaticLayout({ path, children }: Props) {
   return (
     <>
       <Header path={path} />
-      <main className="pt-12 min-h-full">
-        {children}
-      </main>
+      <main className="pt-12 min-h-full">{children}</main>
     </>
   );
 }

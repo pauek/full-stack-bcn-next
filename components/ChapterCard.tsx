@@ -1,39 +1,38 @@
-import { getChapter } from "@/lib/files/files";
-import { Chapter, ContentPiece } from "@/lib/adt";
+import { Chapter } from "@/lib/adt";
 import Link from "next/link";
 import BookIcon from "./icons/BookIcon";
 import SlideShow from "./icons/SlideShow";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 
 type ChapterCardProps = {
-	path: string[];
-	chapter: Chapter;
+  path: string[];
+  chapter: Chapter;
 };
 export default async function ChapterCard({ path, chapter }: ChapterCardProps) {
-	const chapterUrl = `/content/${path!.join("/")}/${chapter.id}`;
-	return (
-		<Link href={chapterUrl}>
-			<Card>
-				<CardHeader className="p-5">
-					<CardTitle>{chapter.name}</CardTitle>
-					<CardDescription>
-						<div className="flex flex-row items-center text-stone-400 min-h-[20px]">
-							{chapter.hasDoc && <BookIcon size={18} />}
-							<div className="border-l mr-3"></div>
-							{chapter.numSlides > 0 && (
-								<>
-									<SlideShow size={16} className="mr-1" />
-									{chapter.numSlides}
-								</>
-							)}
-						</div>
-					</CardDescription>
-				</CardHeader>
-			</Card>
-		</Link>
-	);
+  const chapterUrl = `/content/${path!.join("/")}/${chapter.id}`;
+  return (
+    <Link href={chapterUrl}>
+      <Card>
+        <CardHeader className="p-5">
+          <CardTitle>{chapter.name}</CardTitle>
+          <CardDescription>
+            <div className="flex flex-row items-center text-stone-400 min-h-[20px]">
+              {chapter.hasDoc && <BookIcon size={18} />}
+              <div className="border-l mr-3"></div>
+              {chapter.numSlides > 0 && (
+                <>
+                  <SlideShow size={16} className="mr-1" />
+                  {chapter.numSlides}
+                </>
+              )}
+            </div>
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </Link>
+  );
 
-	/*
+  /*
 
       <div className="border rounded shadow-sm bg-white hover:border-stone-400 flex flex-col">
         <div className="font-bold p-3 pl-4 pb-2">{chapter.name}</div>

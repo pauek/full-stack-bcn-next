@@ -9,7 +9,7 @@ export default async function CoursePart({ path }: CoursePartProps) {
   const part = await getPart(path);
 
   if (part === null) {
-    return <div>ERROR: Part with ${path} not found.</div>
+    return <div>ERROR: Part with ${path} not found.</div>;
   }
 
   const sessionsInRow = (n: number) =>
