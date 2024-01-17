@@ -3,7 +3,7 @@ import ChapterDocument from "@/components/ChapterDocument";
 import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
 import {
-    chapterNumSlides,
+  chapterNumSlides,
   generateAllChapterParams,
   getChapter,
   getChapterSlideList,
@@ -33,7 +33,7 @@ export default async function Page({ params }: any) {
       component: <ChapterDocument path={path} />,
     });
   }
-  if (await chapterNumSlides(chapter) > 0) {
+  if ((await chapterNumSlides(chapter)) > 0) {
     options.push({
       name: "Slides",
       component: <SlideGrid path={path} slides={slides} />,

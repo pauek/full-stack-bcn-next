@@ -1,10 +1,10 @@
 import CoursePart from "@/components/CoursePart";
 import StaticLayout from "@/components/StaticLayout";
-import { getCourse } from "@/lib/files/files";
+import { getRootContentPiece } from "@/lib/files/files";
 import { notFound } from "next/navigation";
 
 export default async function Home() {
-  const course = await getCourse(process.env.COURSE!);
+  const course = await getRootContentPiece(process.env.COURSE!);
   if (course === null) {
     notFound();
   }
