@@ -5,7 +5,8 @@ import SlideViewer from "./SlideViewer";
 import { useState } from "react";
 
 function slideUrl(path: string[], slide: string) {
-	return `/${path.join("/")}/slides/${slide}`;
+    const url = `/content/${path.join("/")}/slides/${slide}`;
+	return url;
 }
 
 type Props = {
@@ -50,9 +51,9 @@ export default function SlideGrid({ path, slides }: Props) {
 					{slides &&
 						slides.map((s: any, i: number) => (
 							<Image
+								key={s}
 								className="border-2 rounded shadow-md hover:border-stone-400"
 								src={slideUrl(path, s)}
-								key={s}
 								alt="Slide"
 								width={400}
 								height={300}

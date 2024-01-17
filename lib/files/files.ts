@@ -276,7 +276,7 @@ export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> =>
 		crumbs.push({ name: part.name, path: [partId] });
 		siblings = part.sessions.map((s) => ({
 			name: s.name,
-			path: [partId, s.id],
+			path: [courseId, partId, s.id],
 		}));
 		if (sessionId) {
 			const session = await getSession([courseId, partId, sessionId]);

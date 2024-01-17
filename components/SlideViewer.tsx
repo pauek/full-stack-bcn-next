@@ -1,7 +1,6 @@
 import Image from "next/image";
-import CloseButton from "./CloseButton";
 import { useEffect } from "react";
-import { isBreakStatement } from "typescript";
+import CloseButton from "./CloseButton";
 
 type Props = {
   slide: string;
