@@ -1,4 +1,6 @@
-import { generateAllChapterPaths, getBreadcrumbs } from "@/lib/content";
+import { generateAllChapterPaths } from "@/lib/generate";
+import { getBreadcrumbs } from "files";
+
 import { NextRequest, NextResponse } from "next/server";
 
 type Context = {

@@ -1,4 +1,4 @@
-import { getCourse, getPart, getSession } from "@/lib/content";
+import { getCourse, getPart, getSession } from "files";
 import { respond } from "@/lib/http-responses";
 import { NextRequest } from "next/server";
 

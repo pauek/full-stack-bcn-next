@@ -1,4 +1,4 @@
-import { getCourse } from "@/lib/content";
+import { getCourse } from "files";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

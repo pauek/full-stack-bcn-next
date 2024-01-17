@@ -1,4 +1,4 @@
-import { generateAllChapterParams } from "@/lib/content";
+import { generateAllChapterParams } from "@/lib/generate";
 import { respondSlideList } from "@/lib/http-responses";
 import { NextRequest } from "next/server";
 

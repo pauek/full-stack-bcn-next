@@ -1,4 +1,4 @@
-import { getChapter, getChapterSlideList } from "@/lib/content";
+import { getChapter, getChapterSlideList } from "files";
 import { respondSlide } from "@/lib/http-responses";
 import { NextRequest } from "next/server";
 

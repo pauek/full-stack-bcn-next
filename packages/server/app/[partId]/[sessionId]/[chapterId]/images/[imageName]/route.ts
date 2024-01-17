@@ -1,4 +1,4 @@
-import { getChapter, getChapterImageList } from "@/lib/content";
+import { getChapter, getChapterImageList } from "files";
 import { respondImage } from "@/lib/http-responses";
 import { NextRequest } from "next/server";
 

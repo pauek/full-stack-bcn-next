@@ -1,5 +1,6 @@
-import { generateAllChapterParams, getChapter } from "@/lib/content";
+import { generateAllChapterParams } from "@/lib/generate";
 import { respond } from "@/lib/http-responses";
+import { getChapter } from "files";
 import { NextRequest } from "next/server";
 
 type Context = {

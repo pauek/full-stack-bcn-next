@@ -1,4 +1,4 @@
-import { generateAllChapterPaths } from "@/lib/content";
+import { generateAllChapterPaths } from "@/lib/generate";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

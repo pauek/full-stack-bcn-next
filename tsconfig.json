@@ -10,6 +10,7 @@
 		"jsx": "preserve",
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
+        "allowImportingTsExtensions": true,
 		"allowJs": true,
 		"types": [
 			"bun-types" // add Bun global

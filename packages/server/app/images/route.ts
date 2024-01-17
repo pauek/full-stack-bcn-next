@@ -1,9 +1,9 @@
-import * as content from "@/lib/content";
+import { getAllFilePaths } from "files";
 import { NextRequest, NextResponse } from "next/server";
 
 // List all image paths
 export async function GET(req: NextRequest) {
   const extensions = [".svg", ".png", ".jpg"];
-  const allImagePaths = await content.getAllFilePaths("images", extensions);
+  const allImagePaths = await getAllFilePaths("images", extensions);
   return NextResponse.json(allImagePaths);
 }
