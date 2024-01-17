@@ -1,11 +1,14 @@
-import { getSession } from "@/lib/content-server";
+import { getSession } from "@/lib/files/files";
 import Link from "next/link";
 
 type SessionButtonProps = {
   path: string[];
 };
 const SessionButton = async ({ path }: SessionButtonProps) => {
-  const session = await getSession(...path);
+  const session = await getSession(path);
+  if (session === null) {
+    throw `Session with path ${path} not found`
+  }
   return (
     <Link href={`/content/${path.join("/")}`} className="w-1/3">
       <div

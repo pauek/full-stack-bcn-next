@@ -1,4 +1,4 @@
-import { getPart } from "@/lib/content-server";
+import { getPart } from "@/lib/files/files";
 import SessionButton from "./SessionButton";
 import { range } from "@/lib/utils";
 
@@ -6,7 +6,11 @@ type CoursePartProps = {
   path: string[];
 };
 export default async function CoursePart({ path }: CoursePartProps) {
-  const part = await getPart(...path);
+  const part = await getPart(path);
+
+  if (part === null) {
+    return <div>ERROR: Part with ${path} not found.</div>
+  }
 
   const sessionsInRow = (n: number) =>
     part.sessions.filter((s: any) => s.row === n);
@@ -14,7 +18,7 @@ export default async function CoursePart({ path }: CoursePartProps) {
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center">
       {sessionsInRow(n)?.map((session: any) => (
-        <SessionButton key={session.path} path={[part.id, session.id]} />
+        <SessionButton key={session.path} path={[...path, session.id]} />
       ))}
     </div>
   );

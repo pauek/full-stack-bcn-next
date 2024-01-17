@@ -1,6 +1,6 @@
 "use client";
 
-import { CrumbData } from "@/lib/content-server";
+import { CrumbData } from "@/lib/files/files";
 import MobileMenuIcon from "./icons/MobileMenuIcon";
 import {
   DropdownMenu,

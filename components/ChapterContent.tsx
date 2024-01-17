@@ -1,6 +1,6 @@
 "use client";
 
-import { Chapter } from "@/lib/content-server";
+import type { Chapter } from "@/lib/adt";
 import { useState } from "react";
 
 type Props = {

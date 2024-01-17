@@ -1,42 +1,45 @@
-import ChapterDocument from "@/components/ChapterDocument";
 import ChapterContent from "@/components/ChapterContent";
+import ChapterDocument from "@/components/ChapterDocument";
 import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
-import {
-  allChapterPaths,
-  getChapter,
-  getSlidesList,
-} from "@/lib/content-server";
+import { generateAllChapterPaths, getChapter, getChapterSlideList } from "@/lib/files/files";
+import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-  const chapterPaths = (await allChapterPaths() as Array<any>);
-  return chapterPaths.map((p) => ({ params: p }));
+	const chapterPaths = await generateAllChapterPaths(process.env.COURSE!);
+	return chapterPaths.map((p) => ({ params: p }));
 }
 
 export default async function Page({ params }: any) {
-  const { partId, sessionId, chapterId } = params;
-  const path = [partId, sessionId, chapterId];
+	const courseId = process.env.COURSE!;
 
-  const chapter = await getChapter(...path);
-  const slides = await getSlidesList(path);
+	const { partId, sessionId, chapterId } = params;
+	const path = [courseId, partId, sessionId, chapterId];
 
-  let options = [];
-  if (chapter.hasDoc) {
-    options.push({
-      name: "Document",
-      component: <ChapterDocument path={path} />,
-    });
-  }
-  if (chapter.numSlides > 0) {
-    options.push({
-      name: "Slides",
-      component: <SlideGrid path={path} slides={slides} />,
-    });
-  }
+	const chapter = await getChapter(path);
+	if (chapter === null) {
+		notFound();
+	}
 
-  return (
-    <StaticLayout path={path}>
-      <ChapterContent chapter={chapter} options={options} />
-    </StaticLayout>
-  );
+	const slides = await getChapterSlideList(chapter);
+
+	let options = [];
+	if (chapter.hasDoc) {
+		options.push({
+			name: "Document",
+			component: <ChapterDocument path={path} />,
+		});
+	}
+	if (chapter.numSlides > 0) {
+		options.push({
+			name: "Slides",
+			component: <SlideGrid path={path} slides={slides} />,
+		});
+	}
+
+	return (
+		<StaticLayout path={path}>
+			<ChapterContent chapter={chapter} options={options} />
+		</StaticLayout>
+	);
 }
