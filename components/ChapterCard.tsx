@@ -1,5 +1,5 @@
 import { getChapter } from "@/lib/files/files";
-import { Chapter } from "@/lib/adt";
+import { Chapter, ContentPiece } from "@/lib/adt";
 import Link from "next/link";
 import BookIcon from "./icons/BookIcon";
 import SlideShow from "./icons/SlideShow";

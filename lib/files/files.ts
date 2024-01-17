@@ -1,4 +1,4 @@
-import { Chapter, Course, Part, Session } from "@/lib/adt";
+import { Chapter, ContentPiece, Course, Part, Session } from "@/lib/adt";
 import { Dirent, readFileSync } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { join } from "path";
@@ -27,6 +27,7 @@ export const getCourse = async (courseId: string): Promise<Course | null> => {
 	const course = { path, ...metadata };
 	const parts = await getCourseParts(course.path);
 	return {
+        type: "course",
 		id: course.id,
 		path: course.path,
 		name: course.name,
@@ -72,11 +73,12 @@ export const getPart = async (path: string[]): Promise<Part | null> => {
 	if (!course) {
 		return null;
 	}
-	const part = course.children.find((part) => part.id === partId);
+	const part = course.children?.find((part) => part.id === partId);
 	if (!part) {
 		return null;
 	}
 	return {
+        type: "part",
 		id: part.id,
 		path: part.path,
 		name: part.name,
@@ -106,11 +108,12 @@ export const getSession = async (path: string[]): Promise<Session | null> => {
 	if (!part) {
 		return null;
 	}
-	const session = part.children.find((session) => session.id === sessionId);
+	const session = part.children?.find((session) => session.id === sessionId);
 	if (!session) {
 		return null;
 	}
 	return {
+        type: "session",
 		id: session.id,
 		path: session.path,
 		name: session.name,
@@ -125,7 +128,9 @@ export const getChapter = async (path: string[]): Promise<Chapter | null> => {
 	if (!session) {
 		return null;
 	}
-	const chapter = session.children.find((chapter) => chapter.id === chapterId);
+	const chapter: Chapter | undefined = session.children?.find(
+		(chapter) => chapter.id === chapterId
+	) as Chapter;
 	if (!chapter) {
 		return null;
 	}
@@ -223,19 +228,19 @@ export const getAllFilePaths = async (courseId: string, subdir: string, extensio
 		console.error(`Course "fullstack" not found!?!`);
 		return;
 	}
-	for (const { id: partId } of course.children) {
+	for (const { id: partId } of course.children || []) {
 		const part = await getPart([courseId, partId]);
 		if (part === null) {
 			console.error(`Part "${[partId].join("/")}" not found!?!`);
 			continue;
 		}
-		for (const { id: sessionId } of part.children) {
+		for (const { id: sessionId } of part.children || []) {
 			const session = await getSession([courseId, partId, sessionId]);
 			if (session === null) {
 				console.error(`Session "${[courseId, partId, sessionId].join("/")}" not found!?!`);
 				continue;
 			}
-			for (const { id: chapterId } of session.children) {
+			for (const { id: chapterId } of session.children || []) {
 				const chapter = await getChapter([courseId, partId, sessionId, chapterId]);
 				if (chapter === null) {
 					console.error(
@@ -274,10 +279,10 @@ export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> =>
 		const part = await getPart([courseId, partId]);
 		if (!part) return [];
 		crumbs.push({ name: part.name, path: [partId] });
-		siblings = part.children.map((s) => ({
+		siblings = part.children?.map((s) => ({
 			name: s.name,
 			path: [courseId, partId, s.id],
-		}));
+		})) ?? [];
 		if (sessionId) {
 			const session = await getSession([courseId, partId, sessionId]);
 			if (!session) return [];
@@ -286,10 +291,10 @@ export const getBreadcrumbs = async (...path: string[]): Promise<CrumbData[]> =>
 				path: [courseId, partId, sessionId],
 				siblings,
 			});
-			siblings = session.children.map((ch) => ({
+			siblings = session.children?.map((ch) => ({
 				name: ch.name,
 				path: [courseId, partId, sessionId, ch.id],
-			}));
+			})) ?? [];
 			if (chapterId) {
 				const chapter = await getChapter([courseId, partId, sessionId, chapterId]);
 				if (!chapter) return [];
@@ -310,7 +315,7 @@ export const getAllSessionPaths = async (courseId: string) => {
 	if (course === null) {
 		return [];
 	}
-	for (const part of course.children) {
+	for (const part of course.children || []) {
 		for (const session of await getPartSessions(part.path)) {
 			sessionPaths.push({
 				courseId,
@@ -322,7 +327,7 @@ export const getAllSessionPaths = async (courseId: string) => {
 	return sessionPaths;
 };
 
-type ChapterWalkFunction = (ch: Chapter, path: string[]) => Promise<any>;
+type ChapterWalkFunction = (ch: ContentPiece, path: string[]) => Promise<any>;
 
 export const walkAllChapterPaths = (func: ChapterWalkFunction) => async (courseId: string) => {
 	const course = await getCourse(courseId);
@@ -330,17 +335,17 @@ export const walkAllChapterPaths = (func: ChapterWalkFunction) => async (courseI
 		return [];
 	}
 	const result = [];
-	for (const _part of course.children) {
+	for (const _part of course.children || []) {
 		const part = await getPart([courseId, _part.id]);
 		if (part == null) {
 			continue;
 		}
-		for (const _session of part.children) {
+		for (const _session of part.children || []) {
 			const session = await getSession([courseId, _part.id, _session.id]);
 			if (session === null) {
 				continue;
 			}
-			for (const _chapter of session.children) {
+			for (const _chapter of session.children || []) {
 				const ret = await func(_chapter, [courseId, part.id, session.id, _chapter.id]);
 				if (Array.isArray(ret)) {
 					result.push(...ret);
@@ -362,8 +367,8 @@ export const generateAllChapterParams = walkAllChapterPaths(async (_, path) => (
 	chapterId: path[3],
 }));
 
-const generateAllSubdirParams = (subdir: string) => walkAllChapterPaths(
-	async (chapter, [courseId, partId, sessionId, chapterId]) => {
+const generateAllSubdirParams = (subdir: string) =>
+	walkAllChapterPaths(async (chapter, [courseId, partId, sessionId, chapterId]) => {
 		const imageList = await utils.readDirWithFileTypes(`${chapter.path}/${subdir}`);
 		return imageList.map((ent) => ({
 			courseId,
@@ -372,8 +377,7 @@ const generateAllSubdirParams = (subdir: string) => walkAllChapterPaths(
 			chapterId,
 			filename: ent.name,
 		}));
-	}
-);
+	});
 
 export const generateAllImageParams = generateAllSubdirParams("images");
 export const generateAllSlideParams = generateAllSubdirParams("slides");

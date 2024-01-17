@@ -1,5 +1,6 @@
 import ChapterCard from "@/components/ChapterCard";
 import StaticLayout from "@/components/StaticLayout";
+import { Chapter } from "@/lib/adt";
 import { getAllSessionPaths, getSession } from "@/lib/files/files";
 
 export async function generateStaticParams() {
@@ -8,7 +9,7 @@ export async function generateStaticParams() {
 
 type PageProps = {
 	params: {
-        courseId: string;
+		courseId: string;
 		partId: string;
 		sessionId: string;
 	};
@@ -26,8 +27,12 @@ export default async function Page({ params }: PageProps) {
 					<div id="top" className="absolute top-0" />
 					<h2 className="pt-8 pb-6">{session.name}</h2>
 					<div className="gap-4 grid lg:grid-cols-2 max-md:grid-cols-1">
-						{session.children.map((chapter) => (
-							<ChapterCard key={chapter.id} path={[courseId, partId, sessionId]} chapter={chapter} />
+						{session.children?.map((piece) => (
+							<ChapterCard
+								key={piece.id}
+								path={[courseId, partId, sessionId]}
+								chapter={piece as Chapter}
+							/>
 						))}
 					</div>
 				</div>
