@@ -3,9 +3,11 @@ import ChapterDocument from "@/components/ChapterDocument";
 import SlideGrid from "@/components/ChapterSlideGrid";
 import StaticLayout from "@/components/StaticLayout";
 import {
+    chapterNumSlides,
   generateAllChapterParams,
   getChapter,
   getChapterSlideList,
+  chapterHasDoc,
 } from "@/lib/files/files";
 import { notFound } from "next/navigation";
 
@@ -25,13 +27,13 @@ export default async function Page({ params }: any) {
   const slides = await getChapterSlideList(chapter);
 
   let options = [];
-  if (chapter.hasDoc) {
+  if (await chapterHasDoc(chapter)) {
     options.push({
       name: "Document",
       component: <ChapterDocument path={path} />,
     });
   }
-  if (chapter.numSlides > 0) {
+  if (await chapterNumSlides(chapter) > 0) {
     options.push({
       name: "Slides",
       component: <SlideGrid path={path} slides={slides} />,

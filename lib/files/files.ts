@@ -134,9 +134,6 @@ export const getChapter = async (path: string[]): Promise<Chapter | null> => {
   if (!chapter) {
     return null;
   }
-  chapter.hasDoc = (await getDoc(chapter)) != null;
-  let slides = await getChapterSlideList(chapter);
-  chapter.numSlides = slides ? slides.length : 0;
   return chapter;
 };
 
@@ -148,6 +145,14 @@ export const getDoc = async (chapter: Chapter) => {
   }
   return null;
 };
+
+export const chapterHasDoc = async (chapter: Chapter) => {
+  return await getDoc(chapter) != null;
+}
+
+export const chapterNumSlides = async (chapter: Chapter) => {
+  return (await getChapterSlideList(chapter))?.length ?? 0;
+}
 
 export const getChapterDoc = async (path: string[]) => {
   const chapter = await getChapter(path);

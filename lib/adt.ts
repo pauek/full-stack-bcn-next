@@ -6,11 +6,10 @@ export type ContentPiece = {
   children?: ContentPiece[];
 };
 
-export type Chapter = ContentPiece & {
-  type: "chapter";
-  hasDoc: boolean;
-  numSlides: number;
-};
+export type Chapter = ContentPiece & { type: "chapter" };
+
 export type Session = ContentPiece & { type: "session" };
+
 export type Part = ContentPiece & { type: "part" };
+
 export type Course = ContentPiece & { type: "course" };
