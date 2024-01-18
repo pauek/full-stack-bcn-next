@@ -27,7 +27,6 @@ const getRootContentPiece = async (
   const path = pathJoin(CONTENT_ROOT, id);
   const metadata = await _readMetadata(path);
   const children = await getChildren(path);
-  console.log(children);
   return { type: "root", id, path, children, ...metadata };
 };
 
