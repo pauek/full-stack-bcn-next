@@ -1,7 +1,7 @@
 import { Chapter, ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
 import { readFile, readdir } from "fs/promises";
-import { join as pathJoin } from "path";
+import { basename, join, join as pathJoin } from "path";
 import * as utils from "./utils";
 
 const METADATA_FILENAME = ".meta.json";
@@ -21,58 +21,97 @@ if (!CONTENT_ROOT) {
   throw "No content root!";
 }
 
-const getRootContentPiece = async (
-  id: string
-): Promise<ContentPiece | null> => {
-  const path = pathJoin(CONTENT_ROOT, id);
-  const metadata = await _readMetadata(path);
-  const children = await getChildren(path);
-  return { type: "root", id, index: 0, path, children, ...metadata };
+const getPieceAtDir = async (dirpath: string): Promise<ContentPiece> => {
+  const dirname = basename(dirpath);
+  const diskpath = pathJoin(CONTENT_ROOT, dirpath);
+  const metadata = await _readMetadata(diskpath);
+  const name = utils.dirNameToTitle(dirname);
+  return { index: 0, diskpath, name, ...metadata /* <-- id is here */ };
 };
 
-export const getContentPiece = async (
-  path: string[]
-): Promise<ContentPiece | null> => {
-  const [id, ...rest] = path;
-  let piece: ContentPiece | null = await getRootContentPiece(id);
-  if (!piece) {
-    return null;
+const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
+  const [id, ...rest] = idpath;
+  let piece = await getPieceAtDir(id);
+  if (!rest || rest.length === 0) {
+    piece.path = [id];
+    return piece;
   }
-  while (rest.length > 0) {
-    const [id] = rest;
-    let children: ContentPiece[] | undefined = piece.children;
-    if (!children) {
-      children = await getChildren(piece.path);
-    }
-    piece = children.find((ch) => ch.id === id) || null;
-    if (!piece) {
+  let currpath = [id];
+  for (const rid of rest) {
+    let children = await getChildren(piece.diskpath, currpath);
+    let child = children.find((ch) => ch.id === rid);
+    if (!child) {
       return null;
     }
-    rest.splice(0, 1);
+    piece = child;
+    currpath.push(rid);
   }
-  piece.children = await getChildren(piece.path);
+  piece.path = idpath;
   return piece;
 };
 
-export const getChildren = async (dirpath: string) => {
+export const getPieceWithChildren = async (
+  idpath: string[]
+): Promise<ContentPiece | null> => {
+  let piece = await getPiece(idpath);
+  if (!piece) {
+    return null;
+  }
+  piece.children = await getChildren(piece.diskpath, idpath);
+  return piece;
+};
+
+const getRootPiece = async (id: string) => getPieceAtDir(id);
+
+const getRootPieceWithChildren = async (
+  id: string
+): Promise<ContentPiece | null> => {
+  const piece = await getRootPiece(id);
+  piece.children = await getChildren(piece.diskpath, [id]);
+  return piece;
+};
+
+export const getContentTree = async (idpath: string[], level: number = 2) => {
+  let k = 0;
+
+  const _getContentTree = async (idpath: string[], level: number) => {
+    if (level === 0) {
+      const piece = await getPiece(idpath);
+      if (piece) {
+        piece.index = ++k;
+      }
+      return piece;
+    }
+    let root = await getPieceWithChildren(idpath);
+    if (!root) {
+      return null;
+    }
+    if (root.children) {
+      for (let i = 0; i < root.children.length; i++) {
+        const childId = root.children[i].id;
+        const child = await _getContentTree([...idpath, childId], level - 1);
+        root.children[i] = child!;
+      }
+    }
+    return root;
+  };
+
+  return await _getContentTree(idpath, level);
+};
+
+export const getChildren = async (diskpath: string, idpath: string[]) => {
   const children = [];
-  for (const ent of await utils.readDirWithFileTypes(dirpath)) {
+  for (const ent of await utils.readDirWithFileTypes(diskpath)) {
     if (utils.isContentEntity(ent)) {
-      const path = pathJoin(dirpath, ent.name);
-      const metadata = await _readMetadata(path);
-      children.push({
-        path: path,
-        index: children.length+1,
-        name: utils.dirNameToTitle(ent.name),
-        ...metadata,
-      });
+      const childPath = join(diskpath, ent.name);
+      children.push(await getPieceAtDir(childPath));
     }
   }
   return children;
 };
 
 export const getDoc = async (chapter: ContentPiece) => {
-  for (const ent of await utils.readDirWithFileTypes(chapter.path)) {
+  for (const ent of await utils.readDirWithFileTypes(chapter.diskpath)) {
     if (ent.isFile() && ent.name.startsWith("doc.")) {
       return ent.name;
     }
@@ -90,12 +129,12 @@ export const pieceNumSlides = async (piece: ContentPiece) => {
 
 export const getChapterDoc = async (path: string[]) => {
   try {
-    const chapter = await getContentPiece(path);
+    const chapter = await getPieceWithChildren(path);
     if (!chapter) {
       return null;
     }
     let doc = await getDoc(chapter);
-    return doc ? readFile(pathJoin(chapter.path, doc)) : null;
+    return doc ? readFile(pathJoin(chapter.diskpath, doc)) : null;
   } catch (e) {
     return null;
   }
@@ -106,11 +145,11 @@ export const getChapterImage = async (
   imgName: string
 ): Promise<Buffer | null> => {
   try {
-    const chapter = await getContentPiece(path);
+    const chapter = await getPieceWithChildren(path);
     if (!chapter) {
       return null;
     }
-    const imgPath = pathJoin(chapter.path, "images", imgName);
+    const imgPath = pathJoin(chapter.diskpath, "images", imgName);
     return readFile(imgPath);
   } catch (e) {
     return null;
@@ -125,7 +164,7 @@ export const getSubdirList = async (
   filePred: FilePredicate
 ): Promise<Array<string> | null> => {
   try {
-    const dirpath = pathJoin(chapter.path, subdir);
+    const dirpath = pathJoin(chapter.diskpath, subdir);
     const files: string[] = [];
     for (const ent of await readdir(dirpath, { withFileTypes: true })) {
       if (filePred(ent)) {
@@ -148,11 +187,11 @@ export const getChapterSlide = async (
   path: string[],
   imgName: string
 ): Promise<Buffer | null> => {
-  const chapter = await getContentPiece(path);
+  const chapter = await getPieceWithChildren(path);
   if (!chapter) {
     return null;
   }
-  const slides = pathJoin(chapter.path, "slides");
+  const slides = pathJoin(chapter.diskpath, "slides");
   return readFile(pathJoin(slides, imgName));
 };
 
@@ -172,32 +211,32 @@ export const getAllFilePaths = async (
     return false;
   };
 
-  const course = await getRootContentPiece(id0);
+  const course = await getRootPieceWithChildren(id0);
   if (course === null) {
     console.error(`Course "fullstack" not found!?!`);
     return;
   }
   for (const { id: id1 } of course.children || []) {
-    const part = await getContentPiece([id0, id1]);
+    const part = await getPieceWithChildren([id0, id1]);
     if (part === null) {
       console.error(`Part "${[id1].join("/")}" not found!?!`);
       continue;
     }
     for (const { id: id2 } of part.children || []) {
-      const session = await getContentPiece([id0, id1, id2]);
+      const session = await getPieceWithChildren([id0, id1, id2]);
       if (session === null) {
         console.error(`Session "${[id0, id1, id2].join("/")}" not found!?!`);
         continue;
       }
       for (const { id: id3 } of session.children || []) {
-        const chapter = await getContentPiece([id0, id1, id2, id3]);
+        const chapter = await getPieceWithChildren([id0, id1, id2, id3]);
         if (chapter === null) {
           console.error(
             `Chapter "${[id0, id1, id2, id3].join("/")}" not found!?!`
           );
           continue;
         }
-        const imageDir = pathJoin(chapter.path, subdir);
+        const imageDir = pathJoin(chapter.diskpath, subdir);
         try {
           for (const ent of await utils.readDirWithFileTypes(imageDir)) {
             if (ent.isFile() && isMatch(ent.name)) {
@@ -227,7 +266,7 @@ export const getBreadcrumbs = async (
 
   const [courseId, partId, sessionId, chapterId] = path;
   if (partId) {
-    const part = await getContentPiece([courseId, partId]);
+    const part = await getPieceWithChildren([courseId, partId]);
     if (!part) return [];
     crumbs.push({ name: part.name, path: [partId] });
     siblings =
@@ -236,7 +275,7 @@ export const getBreadcrumbs = async (
         path: [courseId, partId, s.id],
       })) ?? [];
     if (sessionId) {
-      const session = await getContentPiece([courseId, partId, sessionId]);
+      const session = await getPieceWithChildren([courseId, partId, sessionId]);
       if (!session) return [];
       crumbs.push({
         name: session.name,
@@ -249,7 +288,7 @@ export const getBreadcrumbs = async (
           path: [courseId, partId, sessionId, ch.id],
         })) ?? [];
       if (chapterId) {
-        const chapter = await getContentPiece([
+        const chapter = await getPieceWithChildren([
           courseId,
           partId,
           sessionId,
@@ -269,12 +308,15 @@ export const getBreadcrumbs = async (
 
 export const getAllSessionPaths = async (courseId: string) => {
   const sessionPaths = [];
-  const course = await getRootContentPiece(courseId);
+  const course = await getRootPieceWithChildren(courseId);
   if (course === null) {
     return [];
   }
   for (const part of course.children || []) {
-    for (const session of await getChildren(part.path)) {
+    for (const session of await getChildren(part.diskpath, [
+      courseId,
+      part.id,
+    ])) {
       sessionPaths.push({
         courseId,
         partId: part.id,
@@ -289,18 +331,18 @@ type ChapterWalkFunction = (ch: ContentPiece, path: string[]) => Promise<any>;
 
 export const walkAllChapterPaths =
   (func: ChapterWalkFunction) => async (courseId: string) => {
-    const course = await getRootContentPiece(courseId);
+    const course = await getRootPieceWithChildren(courseId);
     if (course === null) {
       return [];
     }
     const result = [];
     for (const _part of course.children || []) {
-      const part = await getContentPiece([courseId, _part.id]);
+      const part = await getPieceWithChildren([courseId, _part.id]);
       if (part == null) {
         continue;
       }
       for (const _session of part.children || []) {
-        const session = await getContentPiece([
+        const session = await getPieceWithChildren([
           courseId,
           _part.id,
           _session.id,
@@ -343,7 +385,7 @@ const generateAllSubdirParams = (subdir: string) =>
   walkAllChapterPaths(
     async (chapter, [courseId, partId, sessionId, chapterId]) => {
       const imageList = await utils.readDirWithFileTypes(
-        pathJoin(chapter.path, subdir)
+        pathJoin(chapter.diskpath, subdir)
       );
       return imageList.map((ent) => ({
         courseId,

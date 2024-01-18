@@ -5,7 +5,7 @@ import StaticLayout from "@/components/StaticLayout";
 import {
   pieceNumSlides,
   generateAllChapterParams,
-  getContentPiece,
+  getPieceWithChildren,
   getSlideList,
   pieceHasDoc,
 } from "@/lib/files/files";
@@ -19,7 +19,7 @@ export default async function Page({ params }: any) {
   const { courseId, partId, sessionId, chapterId } = params;
   const path = [courseId, partId, sessionId, chapterId];
 
-  const chapter = await getContentPiece(path);
+  const chapter = await getPieceWithChildren(path);
   if (chapter === null) {
     notFound();
   }

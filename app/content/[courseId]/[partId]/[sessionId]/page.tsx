@@ -1,7 +1,7 @@
 import ChapterCard from "@/components/ChapterCard";
 import StaticLayout from "@/components/StaticLayout";
 import { Chapter } from "@/lib/adt";
-import { getAllSessionPaths, getContentPiece } from "@/lib/files/files";
+import { getAllSessionPaths, getPieceWithChildren } from "@/lib/files/files";
 
 export async function generateStaticParams() {
   return await getAllSessionPaths(process.env.COURSE!);
@@ -16,7 +16,7 @@ type PageProps = {
 };
 export default async function Page({ params }: PageProps) {
   const { courseId, partId, sessionId } = params;
-  const session = await getContentPiece([courseId, partId, sessionId]);
+  const session = await getPieceWithChildren([courseId, partId, sessionId]);
   if (session === null) {
     throw `Session with path ${[courseId, partId, sessionId]} not found`;
   }
