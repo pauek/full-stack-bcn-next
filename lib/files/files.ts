@@ -38,7 +38,7 @@ const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   }
   let currpath = [id];
   for (const rid of rest) {
-    let children = await getChildren(piece.diskpath, currpath);
+    let children = await getChildren(piece.diskpath);
     let child = children.find((ch) => ch.id === rid);
     if (!child) {
       return null;
@@ -57,7 +57,7 @@ export const getPieceWithChildren = async (
   if (!piece) {
     return null;
   }
-  piece.children = await getChildren(piece.diskpath, idpath);
+  piece.children = await getChildren(piece.diskpath);
   return piece;
 };
 
@@ -67,7 +67,7 @@ const getRootPieceWithChildren = async (
   id: string
 ): Promise<ContentPiece | null> => {
   const piece = await getRootPiece(id);
-  piece.children = await getChildren(piece.diskpath, [id]);
+  piece.children = await getChildren(piece.diskpath);
   return piece;
 };
 
@@ -99,7 +99,19 @@ export const getContentTree = async (idpath: string[], level: number = 2) => {
   return await _getContentTree(idpath, level);
 };
 
-export const getChildren = async (diskpath: string, idpath: string[]) => {
+export const enumerateSessions = async (courseId: string): Promise<Map<string, number>> => {
+  const course = await getContentTree([courseId], 2);
+  const sessionMap = new Map<string, number>();
+  let k = 0;
+  for (const part of course?.children || []) {
+    for (const session of part.children || []) {
+      sessionMap.set(session.diskpath, ++k);
+    }
+  }
+  return sessionMap;
+}
+
+export const getChildren = async (diskpath: string) => {
   const children = [];
   for (const ent of await utils.readDirWithFileTypes(diskpath)) {
     if (utils.isContentEntity(ent)) {
@@ -313,10 +325,7 @@ export const getAllSessionPaths = async (courseId: string) => {
     return [];
   }
   for (const part of course.children || []) {
-    for (const session of await getChildren(part.diskpath, [
-      courseId,
-      part.id,
-    ])) {
+    for (const session of await getChildren(part.diskpath)) {
       sessionPaths.push({
         courseId,
         partId: part.id,

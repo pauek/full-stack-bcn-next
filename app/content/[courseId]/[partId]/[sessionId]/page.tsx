@@ -1,7 +1,7 @@
 import ChapterCard from "@/components/ChapterCard";
 import StaticLayout from "@/components/StaticLayout";
 import { Chapter } from "@/lib/adt";
-import { getAllSessionPaths, getPieceWithChildren } from "@/lib/files/files";
+import { enumerateSessions, getAllSessionPaths, getPieceWithChildren } from "@/lib/files/files";
 
 export async function generateStaticParams() {
   return await getAllSessionPaths(process.env.COURSE!);
@@ -17,6 +17,7 @@ type PageProps = {
 export default async function Page({ params }: PageProps) {
   const { courseId, partId, sessionId } = params;
   const session = await getPieceWithChildren([courseId, partId, sessionId]);
+  const indices = await enumerateSessions(courseId);
   if (session === null) {
     throw `Session with path ${[courseId, partId, sessionId]} not found`;
   }
@@ -26,7 +27,7 @@ export default async function Page({ params }: PageProps) {
         <div className="mx-4">
           <div id="top" className="absolute top-0" />
           <div className="pt-8 border-b mb-6">
-            <p className="text-stone-400 mb-1 text-xs">SESSION {session.index}</p>
+            <p className="text-stone-400 mb-0 text-xs">SESSION {indices.get(session.diskpath)}</p>
             <h2 className="p-0 pb-2">{session.name}</h2>
           </div>
           <div className="gap-4 grid sm:grid-cols-2 max-md:grid-cols-1">
