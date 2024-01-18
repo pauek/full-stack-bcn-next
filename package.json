@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "indices": "bun run scripts/recalculate-indices.ts"
   },
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.8.0",

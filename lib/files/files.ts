@@ -1,12 +1,12 @@
 import { Chapter, ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
-import { readFile, readdir } from "fs/promises";
+import { readFile, readdir, writeFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
 import * as utils from "./utils";
 
 const METADATA_FILENAME = ".meta.json";
 
-const _readMetadata = async (dir: string) => {
+export const readMetadata = async (dir: string): Promise<any> => {
   try {
     const metadataPath = pathJoin(dir, METADATA_FILENAME);
     const bytes = await readFile(metadataPath);
@@ -14,6 +14,12 @@ const _readMetadata = async (dir: string) => {
   } catch (e) {
     return {};
   }
+};
+
+export const writeMetadata = async (dir: string, metadata: any) => {
+  const json = JSON.stringify(metadata, null, 2);
+  const metadataPath = pathJoin(dir, METADATA_FILENAME);
+  await writeFile(metadataPath, json);
 };
 
 const { CONTENT_ROOT } = process.env;
@@ -24,7 +30,7 @@ if (!CONTENT_ROOT) {
 const getPieceAtDir = async (dirpath: string): Promise<ContentPiece> => {
   const dirname = basename(dirpath);
   const diskpath = pathJoin(CONTENT_ROOT, dirpath);
-  const metadata = await _readMetadata(diskpath);
+  const metadata = await readMetadata(diskpath);
   const name = utils.dirNameToTitle(dirname);
   return { index: 0, diskpath, name, ...metadata /* <-- id is here */ };
 };
@@ -72,15 +78,9 @@ const getRootPieceWithChildren = async (
 };
 
 export const getContentTree = async (idpath: string[], level: number = 2) => {
-  let k = 0;
-
   const _getContentTree = async (idpath: string[], level: number) => {
     if (level === 0) {
-      const piece = await getPiece(idpath);
-      if (piece) {
-        piece.index = ++k;
-      }
-      return piece;
+      return await getPiece(idpath);
     }
     let root = await getPieceWithChildren(idpath);
     if (!root) {
@@ -99,17 +99,19 @@ export const getContentTree = async (idpath: string[], level: number = 2) => {
   return await _getContentTree(idpath, level);
 };
 
-export const enumerateSessions = async (courseId: string): Promise<Map<string, number>> => {
+export const enumerateSessions = async (
+  courseId: string
+): Promise<string[]> => {
   const course = await getContentTree([courseId], 2);
-  const sessionMap = new Map<string, number>();
+  const sessionSequence = [];
   let k = 0;
   for (const part of course?.children || []) {
     for (const session of part.children || []) {
-      sessionMap.set(session.diskpath, ++k);
+      sessionSequence.push(session.diskpath);
     }
   }
-  return sessionMap;
-}
+  return sessionSequence;
+};
 
 export const getChildren = async (diskpath: string) => {
   const children = [];
@@ -119,6 +121,7 @@ export const getChildren = async (diskpath: string) => {
       children.push(await getPieceAtDir(childPath));
     }
   }
+  children.sort((a, b) => a.diskpath.localeCompare(b.diskpath));
   return children;
 };
 
