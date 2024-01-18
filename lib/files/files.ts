@@ -1,4 +1,4 @@
-import { Chapter, ContentPiece, Course } from "@/lib/adt";
+import { Chapter, ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { join as pathJoin } from "path";
@@ -27,7 +27,7 @@ const getRootContentPiece = async (
   const path = pathJoin(CONTENT_ROOT, id);
   const metadata = await _readMetadata(path);
   const children = await getChildren(path);
-  return { type: "root", id, path, children, ...metadata };
+  return { type: "root", id, index: 0, path, children, ...metadata };
 };
 
 export const getContentPiece = async (
@@ -62,6 +62,7 @@ export const getChildren = async (dirpath: string) => {
       const metadata = await _readMetadata(path);
       children.push({
         path: path,
+        index: children.length+1,
         name: utils.dirNameToTitle(ent.name),
         ...metadata,
       });
@@ -299,7 +300,11 @@ export const walkAllChapterPaths =
         continue;
       }
       for (const _session of part.children || []) {
-        const session = await getContentPiece([courseId, _part.id, _session.id]);
+        const session = await getContentPiece([
+          courseId,
+          _part.id,
+          _session.id,
+        ]);
         if (session === null) {
           continue;
         }

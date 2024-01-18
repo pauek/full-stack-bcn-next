@@ -25,7 +25,10 @@ export default async function Page({ params }: PageProps) {
       <div className="max-w-[54em] w-full m-auto pb-6">
         <div className="mx-4">
           <div id="top" className="absolute top-0" />
-          <h2 className="pt-8 pb-6">{session.name}</h2>
+          <div className="pt-8 border-b mb-6">
+            <p className="text-stone-400 mb-1 text-xs">SESSION {session.index}</p>
+            <h2 className="p-0 pb-2">{session.name}</h2>
+          </div>
           <div className="gap-4 grid sm:grid-cols-2 max-md:grid-cols-1">
             {session.children?.map((piece) => (
               <ChapterCard

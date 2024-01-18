@@ -11,7 +11,7 @@ export default async function Home() {
   const { children: parts } = course;
   return (
     <StaticLayout path={[course.id]}>
-      <div className="max-w-[54em] m-auto">
+      <div className="md:min-w-[36em] m-auto">
         {parts &&
           parts.map(({ path, id }) => (
             <CoursePart key={path} path={[course.id, id]} />
