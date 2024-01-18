@@ -22,11 +22,11 @@ export default async function Page({ params }: PageProps) {
   }
   return (
     <StaticLayout path={[courseId, partId, sessionId]}>
-      <div className="max-w-[54em] m-auto pb-6">
+      <div className="max-w-[54em] w-full m-auto pb-6">
         <div className="mx-4">
           <div id="top" className="absolute top-0" />
           <h2 className="pt-8 pb-6">{session.name}</h2>
-          <div className="gap-4 grid lg:grid-cols-2 max-md:grid-cols-1">
+          <div className="gap-4 grid sm:grid-cols-2 max-md:grid-cols-1">
             {session.children?.map((piece) => (
               <ChapterCard
                 key={piece.id}

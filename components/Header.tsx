@@ -5,7 +5,7 @@ import MobileMenu from "./MobileMenu";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 
 export default async function Header({ path }: { path: string[] }) {
-  const course = await getContentPiece(path);
+  const course = await getContentPiece(path.slice(0, 1));
   if (course === null) {
     throw `Course with path ${path[0]} not found`;
   }
@@ -17,7 +17,7 @@ export default async function Header({ path }: { path: string[] }) {
         "flex-row items-center pl-5 border-b z-20 shadow-sm overflow-visible"
       }
     >
-      <Link href="/" className="font-bold">
+      <Link href="/" className="font-bold whitespace-nowrap overflow-ellipsis overflow-clip">
         {course.name}
       </Link>
       {part && (

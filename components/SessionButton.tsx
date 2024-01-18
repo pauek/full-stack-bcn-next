@@ -1,4 +1,5 @@
 import { getContentPiece } from "@/lib/files/files";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 type SessionButtonProps = {
@@ -12,12 +13,14 @@ const SessionButton = async ({ path }: SessionButtonProps) => {
   return (
     <Link href={`/content/${path.join("/")}`} className="w-1/3">
       <div
-        className={
-          "text-sm flex flex-wrap justify-center items-center text-center hover:bg-stone-50 hover:border-stone-400" +
-          " bg-white px-4 py-2 border rounded-md shadow m-1 md:h-[2.5rem] h-[3.5rem]"
-        }
+        className={cn(
+          "h-[3.5rem] text-sm text-center",
+          "flex flex-col justify-center items-center",
+          "hover:bg-stone-50 hover:border-stone-400",
+          "bg-white px-4 py-2 border rounded-md shadow m-1"
+        )}
       >
-        {session.name}
+        <div className="font-normal">{session.name}</div>
       </div>
     </Link>
   );

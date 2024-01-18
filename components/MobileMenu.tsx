@@ -24,7 +24,7 @@ export default function MobileMenu({ crumbs }: Props) {
   }
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="ml-2">
         <MobileMenuIcon size={20} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 max-h-fit">
