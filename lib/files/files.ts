@@ -174,12 +174,12 @@ export const getPieceDocument = async (path: string[]) => {
 type __FilePred = (ent: Dirent) => boolean;
 
 const __listPieceSubdir = async (
-  chapter: ContentPiece,
+  piece: ContentPiece,
   subdir: string,
   predicateFn: __FilePred
 ): Promise<Array<string> | null> => {
   try {
-    const dirpath = pathJoin(chapter.diskpath, subdir);
+    const dirpath = pathJoin(piece.diskpath, subdir);
     const files: string[] = [];
     for (const ent of await readdir(dirpath, { withFileTypes: true })) {
       if (predicateFn(ent)) {
@@ -198,16 +198,23 @@ export const getPieceSlideList = async (piece: ContentPiece) =>
 export const getPieceImageList = async (piece: ContentPiece) =>
   __listPieceSubdir(piece, "images", utils.isImage);
 
-export const getPieceCoverImage = async (piece: ContentPiece) => {
+export const getPieceCoverImageFilename = async (piece: ContentPiece) => {
   for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
     if (ent.isFile() && ent.name.startsWith("cover.")) {
-      const imagePath = join(piece.diskpath, ent.name);
-      const extension = extname(ent.name);
-      const data = await readFile(imagePath);
-      return { data, extension };
+      return join(piece.diskpath, ent.name);
     }
   }
   return null;
+};
+
+export const getPieceCoverImageData = async (piece: ContentPiece) => {
+  const coverFilename = await getPieceCoverImageFilename(piece);
+  if (!coverFilename) {
+    return null;
+  }
+  const extension = extname(coverFilename);
+  const data = await readFile(coverFilename);
+  return { data, extension };
 };
 
 export type CrumbData = {

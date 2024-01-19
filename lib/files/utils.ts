@@ -22,7 +22,7 @@ export const isContentEntity = (ent: Dirent) => {
 export const isSlide = (ent: Dirent) =>
   ent.isFile() && ent.name.endsWith(".svg");
 
-const imgExts = ["png", "jpg", "jpeg", "svg", "webp", "avif"];
+const imgExts = [".png", ".jpg", ".jpeg", ".svg", ".webp", ".avif"];
 
 export const isImage = (ent: Dirent) =>
   ent.isFile() && imgExts.includes(extname(ent.name));

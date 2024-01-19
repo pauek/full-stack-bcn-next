@@ -1,14 +1,17 @@
 import {
   getPieceWithChildren,
-  getPieceCoverImage,
+  getPieceCoverImageData,
+  getPiece,
+  getPieceCoverImageFilename,
 } from "@/lib/files/files";
+import { walkContentPieces } from "@/lib/files/hashes";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextResponse } from "next/server";
 
 type RouteParams = {
   params: {
-    parts: string[],
+    parts: string[];
   };
 };
 export async function GET(_: Request, { params }: RouteParams) {
@@ -16,7 +19,7 @@ export async function GET(_: Request, { params }: RouteParams) {
   if (!session) {
     notFound();
   }
-  const cover = await getPieceCoverImage(session);
+  const cover = await getPieceCoverImageData(session);
   if (!cover) {
     notFound();
   }
@@ -28,4 +31,19 @@ export async function GET(_: Request, { params }: RouteParams) {
   } catch (e) {
     notFound();
   }
+}
+
+export async function generateStaticParams() {
+  const course = await getPiece([process.env.COURSE!]);
+  if (!course) {
+    return [];
+  }
+  const imagePaths: { parts: string[] }[] = [];
+  await walkContentPieces(course, async (piece, _) => {
+    const filename = await getPieceCoverImageFilename(piece);
+    if (filename) {
+      imagePaths.push({ parts: [...piece.idpath] });
+    }
+  });
+  return imagePaths;
 }
