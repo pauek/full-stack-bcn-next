@@ -1,5 +1,4 @@
 export type ContentPiece = {
-  type: "chapter" | "session" | "part" | "root";
   id: string;
   name: string;
   path: string[];

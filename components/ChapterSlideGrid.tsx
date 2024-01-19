@@ -4,11 +4,6 @@ import Image from "next/image";
 import SlideViewer from "./SlideViewer";
 import { useState } from "react";
 
-function slideUrl(path: string[], slide: string) {
-  const url = `/content/${path.join("/")}/slides/${slide}`;
-  return url;
-}
-
 type Props = {
   path: string[];
   slides: Array<string> | null;

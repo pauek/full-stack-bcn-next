@@ -6,7 +6,7 @@ type Props = {
 };
 export default function Ref({ children, path }: Props) {
   return (
-    <Link className="text-blue-600" href={`/content/${path}`}>
+    <Link className="text-blue-600" href={path}>
       {children}
     </Link>
   );
