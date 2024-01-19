@@ -3,6 +3,9 @@ export type ContentPiece = {
   name: string;
   idpath: string[];
   diskpath: string;
+  numSlides: number;
+  hasDoc: boolean;
+  
   parent?: ContentPiece;
   children?: ContentPiece[];
   index?: number;

@@ -1,7 +1,7 @@
 import { readFile, readdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { ContentPiece } from "../adt";
-import { __CONTENT_ROOT, readMetadata, readPieceAtDir } from "./files";
+import { __CONTENT_ROOT, readMetadata, readPieceAtSubdir } from "./files";
 
 export const HASH_FILE = ".hash";
 export const HASH_MAP = ".hashmap";
@@ -58,7 +58,7 @@ export const walkContentPieces = async <T>(
   const results = await Promise.allSettled(
     childSubdirs.map(async (subdir) => {
       const childDir = join(piece.diskpath, subdir);
-      const child = await readPieceAtDir(childDir);
+      const child = await readPieceAtSubdir(childDir);
       child.idpath = [...piece.idpath, child.id];
       return walkContentPieces(child, func);
     })

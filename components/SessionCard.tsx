@@ -1,8 +1,8 @@
 import { ContentPiece } from "@/lib/adt";
+import { coverUrl, pieceUrl } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import ImageWithFallback from "./ImageWithFallback";
-import { coverUrl, imageUrl, pieceUrl } from "@/lib/urls";
 
 type SessionButtonProps = {
   session: ContentPiece;
