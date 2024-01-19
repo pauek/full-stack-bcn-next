@@ -1,6 +1,5 @@
 import { getPiece, readMetadata, writeMetadata } from "@/lib/files/files";
 import { walkContentPieces } from "@/lib/files/hashes";
-import { join } from "path";
 
 const fullstack = await getPiece(["fullstack"]);
 if (!fullstack) {
