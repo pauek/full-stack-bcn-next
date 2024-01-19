@@ -27,11 +27,11 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
       <NavigationMenu>
         <NavigationMenuList className="pl-0">
           {crumbs.map((crumb, i) => (
-            <React.Fragment key={crumb.path.join(":")}>
+            <React.Fragment key={crumb.idpath.join(":")}>
               {i > 0 && <BreadCrumbsSlash className="ml-10 mr-10" />}
               {crumb.siblings && crumb.siblings.length === 1 && (
                 <Link
-                  href={pieceUrl(crumb.path)}
+                  href={pieceUrl(crumb.idpath)}
                   className={
                     "block text-sm select-none space-y-1 rounded-md " +
                     "p-3 px-4 leading-none no-underline outline-none " +
@@ -52,12 +52,12 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                     <ul className="flex flex-col gap-0 w-[20em] list-none p-1 py-2 pr-3 m-0">
                       {crumb.siblings.map((sib, i) => {
                         const isCurrent =
-                          sib.path.join("/") === crumb.path.join("/");
+                          sib.idpath.join("/") === crumb.idpath.join("/");
                         return (
-                          <NavigationMenuLink key={sib.path.join(":")} asChild>
+                          <NavigationMenuLink key={sib.idpath.join(":")} asChild>
                             <li>
                               <Link
-                                href={pieceUrl(sib.path)}
+                                href={pieceUrl(sib.idpath)}
                                 className={cn(
                                   "flex flex-row items-center text-sm select-none " +
                                     "space-y-1 rounded-md p-3 leading-none " +

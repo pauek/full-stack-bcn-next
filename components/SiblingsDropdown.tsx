@@ -5,9 +5,10 @@ import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { CollapsibleContent } from "@radix-ui/react-collapsible";
 import Link from "next/link";
 import { pieceUrl } from "@/lib/urls";
+import { ContentPiece } from "@/lib/adt";
 
 type Props = {
-  siblings: Array<any>;
+  siblings: Array<ContentPiece>;
 };
 
 export default function SiblingsDropdown({ siblings }: Props) {
@@ -25,7 +26,7 @@ export default function SiblingsDropdown({ siblings }: Props) {
       <CollapsibleContent>
         <div className="min-w-[10rem] bg-white rounded border px-2 py-1 flex flex-col shadow-md">
           {siblings.map((sib) => (
-            <Link key={sib.name} className="p-1" href={pieceUrl(sib.path)}>
+            <Link key={sib.name} className="p-1" href={pieceUrl(sib.idpath)}>
               {sib.name}
             </Link>
           ))}

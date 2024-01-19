@@ -30,21 +30,21 @@ export default function MobileMenu({ crumbs }: Props) {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 max-h-fit">
         {crumbs.map((crumb, i) => (
-          <div key={crumb.path.join(":")}>
+          <div key={crumb.idpath.join(":")}>
             {i > 0 && <DropdownMenuSeparator key={`separator-${i}`} />}
             {crumb.siblings && (
               <DropdownMenuGroup>
                 {crumb.siblings.map((sib) => {
-                  const isCurrent = sib.path.join("/") === crumb.path.join("/");
+                  const isCurrent = sib.idpath.join("/") === crumb.idpath.join("/");
                   return (
                     <DropdownMenuItem
-                      key={sib.path.join(":")}
+                      key={sib.idpath.join(":")}
                       className={cn(
                         "py-3 text-md",
                         isCurrent ? "bg-accent" : "",
                       )}
                       onSelect={() =>
-                        router.push(pieceUrl(sib.path))
+                        router.push(pieceUrl(sib.idpath))
                       }
                     >
                       {sib.name}

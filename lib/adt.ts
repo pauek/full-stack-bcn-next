@@ -5,6 +5,7 @@ export type ContentPiece = {
   diskpath: string;
   index?: number;
   hidden?: boolean;
+  row?: number;
   children?: ContentPiece[];
 };
 

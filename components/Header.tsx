@@ -4,12 +4,12 @@ import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
 import MobileMenu from "./MobileMenu";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 
-export default async function Header({ path }: { path: string[] }) {
-  const course = await getPieceWithChildren(path.slice(0, 1));
+export default async function Header({ idpath }: { idpath: string[] }) {
+  const course = await getPieceWithChildren(idpath.slice(0, 1));
   if (course === null) {
-    throw `Course with path ${path[0]} not found`;
+    throw `Course with path ${idpath[0]} not found`;
   }
-  const [part, ...crumbs] = await getBreadcrumbData(...path);
+  const [part, ...crumbs] = await getBreadcrumbData(...idpath);
   return (
     <header
       className={

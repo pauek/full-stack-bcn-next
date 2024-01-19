@@ -9,7 +9,7 @@ type Props = {
 export default function StaticLayout({ path, children }: Props) {
   return (
     <>
-      <Header path={path} />
+      <Header idpath={path} />
       <main className="pt-12 min-h-full flex flex-col items-stretch">
         {children}
         <div className="flex-1"></div>

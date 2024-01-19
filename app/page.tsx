@@ -28,12 +28,12 @@ type CoursePartProps = {
 };
 async function CoursePart({ part }: CoursePartProps) {
   const sessionsInRow = (n: number) =>
-    part.children?.filter((s: any) => s.row === n);
+    part.children?.filter((s) => s.row === n);
 
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center px-2">
-      {sessionsInRow(n)?.map((session: any) => (
-        <SessionCard key={session.path} session={session} />
+      {sessionsInRow(n)?.map((session: ContentPiece) => (
+        <SessionCard key={session.diskpath} session={session} />
       ))}
     </div>
   );

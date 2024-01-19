@@ -210,59 +210,41 @@ export const getPieceCoverImage = async (piece: ContentPiece) => {
   return null;
 };
 
-export const getAllSessionPaths = async (courseId: string) => {
-  const sessionPaths = [];
-  const course = await __getRootPieceWithChildren(courseId);
-  if (course === null) {
-    return [];
-  }
-  for (const part of course.children || []) {
-    for (const session of await getPieceChildren(part.diskpath, [courseId])) {
-      sessionPaths.push({
-        courseId,
-        partId: part.id,
-        sessionId: session.id,
-      });
-    }
-  }
-  return sessionPaths;
-};
-
 export type CrumbData = {
   name: string;
-  path: string[];
+  idpath: string[];
   siblings?: Array<CrumbData>;
 };
 
 export const getBreadcrumbData = async (
-  ...path: string[]
+  ...idpath: string[]
 ): Promise<CrumbData[]> => {
   // TODO: simplify getBreadcrumbs
   const crumbs: CrumbData[] = [];
   let siblings: Array<CrumbData> = [];
 
-  const [courseId, partId, sessionId, chapterId] = path;
+  const [courseId, partId, sessionId, chapterId] = idpath;
   if (partId) {
     const part = await getPieceWithChildren([courseId, partId]);
     if (!part) return [];
-    crumbs.push({ name: part.name, path: [partId] });
+    crumbs.push({ name: part.name, idpath: [partId] });
     siblings =
       part.children?.map((s) => ({
         name: s.name,
-        path: [courseId, partId, s.id],
+        idpath: [courseId, partId, s.id],
       })) ?? [];
     if (sessionId) {
       const session = await getPieceWithChildren([courseId, partId, sessionId]);
       if (!session) return [];
       crumbs.push({
         name: session.name,
-        path: [courseId, partId, sessionId],
+        idpath: [courseId, partId, sessionId],
         siblings,
       });
       siblings =
         session.children?.map((ch) => ({
           name: ch.name,
-          path: [courseId, partId, sessionId, ch.id],
+          idpath: [courseId, partId, sessionId, ch.id],
         })) ?? [];
       if (chapterId) {
         const chapter = await getPieceWithChildren([
@@ -274,7 +256,7 @@ export const getBreadcrumbData = async (
         if (!chapter) return [];
         crumbs.push({
           name: chapter.name,
-          path: [courseId, partId, sessionId, chapterId],
+          idpath: [courseId, partId, sessionId, chapterId],
           siblings,
         });
       }
@@ -286,7 +268,8 @@ export const getBreadcrumbData = async (
 export const getAllIdpaths = async (piece: ContentPiece) => {
   const idpaths: string[][] = [];
   await walkContentPieces(piece, async (piece, _) => {
-    if (piece.idpath.length != 2) { // except parts for now
+    if (piece.idpath.length != 2) {
+      // except parts for now
       idpaths.push(piece.idpath);
     }
   });
