@@ -53,7 +53,7 @@ export const getPiece = async (
   const [id, ...rest] = idpath;
   let piece = await readPieceAtDir(id);
   if (!rest || rest.length === 0) {
-    piece.path = [id];
+    piece.idpath = [id];
     return piece;
   }
   let currpath = [id];
@@ -66,7 +66,7 @@ export const getPiece = async (
     piece = child;
     currpath.push(rid);
   }
-  piece.path = idpath;
+  piece.idpath = idpath;
   return piece;
 };
 
@@ -76,7 +76,7 @@ export const getPieceChildren = async (diskpath: string, idpath: string[]) => {
     if (utils.isContentEntity(ent)) {
       const childPath = join(diskpath, ent.name);
       const child = await readPieceAtDir(childPath);
-      child.path = [...idpath, child.id];
+      child.idpath = [...idpath, child.id];
       children.push(child);
     }
   }
@@ -286,8 +286,8 @@ export const getBreadcrumbData = async (
 export const getAllIdpaths = async (piece: ContentPiece) => {
   const idpaths: string[][] = [];
   await walkContentPieces(piece, async (piece, _) => {
-    if (piece.path.length != 2) { // except parts for now
-      idpaths.push(piece.path);
+    if (piece.idpath.length != 2) { // except parts for now
+      idpaths.push(piece.idpath);
     }
   });
   return idpaths;

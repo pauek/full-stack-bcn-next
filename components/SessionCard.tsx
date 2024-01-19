@@ -9,7 +9,7 @@ type SessionButtonProps = {
 };
 const SessionCard = async ({ session }: SessionButtonProps) => {
   return (
-    <Link href={pieceUrl(session.path)} className="w-1/3">
+    <Link href={pieceUrl(session.idpath)} className="w-1/3">
       <div
         className={cn(
           "h-[7.8rem] w-[12em] text-xs sm:text-sm",
@@ -20,7 +20,7 @@ const SessionCard = async ({ session }: SessionButtonProps) => {
       >
         <ImageWithFallback
           className="aspect-[16/9] object-contain"
-          src={coverUrl(session.path)}
+          src={coverUrl(session.idpath)}
           alt="card cover"
           width={320}
           height={180}

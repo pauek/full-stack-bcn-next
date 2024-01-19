@@ -12,7 +12,7 @@ await walkContentPieces<string>(course, async (piece, children) => {
   const oldHash = (await readFile(join(piece.diskpath, ".hash"))).toString();
   const newHash = await hashPiece(piece.diskpath, children);
   if (oldHash !== newHash) {
-    console.log(newHash, piece.path.join("/"));
+    console.log(newHash, piece.idpath.join("/"));
   }
   return newHash;
 });

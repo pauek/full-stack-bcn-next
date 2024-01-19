@@ -10,7 +10,7 @@ export default async function ChapterItem({
   index,
   chapter,
 }: ChapterItemProps) {
-  const chapterUrl = pieceUrl(chapter.path);
+  const chapterUrl = pieceUrl(chapter.idpath);
   return (
     <div className="flex flex-col items-baseline">
       <div className="mr-2 text-stone-400 text-xs">CHAPTER {index}</div>

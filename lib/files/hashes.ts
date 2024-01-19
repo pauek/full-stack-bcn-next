@@ -59,7 +59,7 @@ export const walkContentPieces = async <T>(
     childSubdirs.map(async (subdir) => {
       const childDir = join(piece.diskpath, subdir);
       const child = await readPieceAtDir(childDir);
-      child.path = [...piece.path, child.id];
+      child.idpath = [...piece.idpath, child.id];
       return walkContentPieces(child, func);
     })
   );
@@ -141,7 +141,7 @@ export const hashAllContent = async (piece: ContentPiece) => {
   const hashes: Map<string, { hash: Hash, diskpath: string }> = new Map();
   await walkContentPieces<Hash>(piece, async (piece, children) => {
     const hash = await hashPiece(piece.diskpath, children, { save: true });
-    hashes.set(piece.path.join("/"), { hash, diskpath: piece.diskpath });
+    hashes.set(piece.idpath.join("/"), { hash, diskpath: piece.diskpath });
     return hash;
   });
   return hashes;

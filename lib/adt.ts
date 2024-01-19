@@ -1,7 +1,7 @@
 export type ContentPiece = {
   id: string;
   name: string;
-  path: string[];
+  idpath: string[];
   diskpath: string;
   index?: number;
   hidden?: boolean;
