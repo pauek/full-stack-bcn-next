@@ -3,18 +3,11 @@
 import Image, { ImageProps } from "next/image";
 import { useEffect, useState } from "react";
 
-import fallbackImage from "@/assets/images/placeholder.jpg";
-
-interface ImageWithFallbackProps extends ImageProps {
+interface Props extends ImageProps {
   fallback?: ImageProps["src"];
 }
 
-export default function ImageWithFallback({
-  fallback = fallbackImage,
-  alt,
-  src,
-  ...props
-}: ImageWithFallbackProps) {
+export default function ImageWithFallback({ alt, src, ...props }: Props) {
   const [error, setError] = useState<React.SyntheticEvent<
     HTMLImageElement,
     Event
@@ -24,12 +17,8 @@ export default function ImageWithFallback({
     setError(null);
   }, [src]);
 
-  return (
-    <Image
-      alt={alt}
-      onError={setError}
-      src={error ? fallbackImage : src}
-      {...props}
-    />
-  );
+  if (error) {
+    return <></>;
+  }
+  return <Image alt={alt} onError={setError} src={src} {...props} />;
 }

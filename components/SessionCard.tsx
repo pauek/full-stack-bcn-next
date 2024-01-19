@@ -1,6 +1,5 @@
 import { ContentPiece } from "@/lib/adt";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 import ImageWithFallback from "./ImageWithFallback";
 
@@ -15,11 +14,11 @@ const SessionCard = async ({ session }: SessionButtonProps) => {
           "h-[7.8rem] w-[12em] text-xs sm:text-sm",
           "flex flex-col justify-start relative",
           "hover:bg-stone-50 hover:border-stone-400",
-          "bg-white border rounded-md shadow m-1 overflow-clip"
+          "bg-slate-100 border rounded-md shadow m-1 overflow-clip"
         )}
       >
         <ImageWithFallback
-          className="bg-slate-100 aspect-[16/9] object-contain"
+          className="aspect-[16/9] object-contain"
           src={`/content/${session.path.join("/")}/cover`}
           alt="card cover"
           width={320}

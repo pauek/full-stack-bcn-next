@@ -1,10 +1,9 @@
-import placeholder from "@/assets/images/placeholder.jpg";
 import {
   getPieceWithChildren,
   getSessionCoverImageData,
 } from "@/lib/files/files";
 import { mimeTypes } from "@/lib/mime-types";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { NextResponse } from "next/server";
 
 type RouteParams = {
