@@ -58,7 +58,7 @@ export const getPiece = async (
   }
   let currpath = [id];
   for (const rid of rest) {
-    let children = await getPieceChildren(piece.diskpath, idpath);
+    let children = await getPieceChildren(piece, idpath);
     let child = children.find((ch) => ch.id === rid);
     if (!child) {
       return null;
@@ -70,13 +70,17 @@ export const getPiece = async (
   return piece;
 };
 
-export const getPieceChildren = async (diskpath: string, idpath: string[]) => {
+export const getPieceChildren = async (
+  parent: ContentPiece,
+  idpath: string[]
+) => {
   const children = [];
-  for (const ent of await utils.readDirWithFileTypes(diskpath)) {
+  for (const ent of await utils.readDirWithFileTypes(parent.diskpath)) {
     if (utils.isContentEntity(ent)) {
-      const childPath = join(diskpath, ent.name);
+      const childPath = join(parent.diskpath, ent.name);
       const child = await readPieceAtDir(childPath);
       child.idpath = [...idpath, child.id];
+      child.parent = parent;
       children.push(child);
     }
   }
@@ -91,17 +95,7 @@ export const getPieceWithChildren = async (
   if (!piece) {
     return null;
   }
-  piece.children = await getPieceChildren(piece.diskpath, idpath);
-  return piece;
-};
-
-const __readRootPiece = async (id: string) => readPieceAtDir(id);
-
-const __getRootPieceWithChildren = async (
-  id: string
-): Promise<ContentPiece | null> => {
-  const piece = await __readRootPiece(id);
-  piece.children = await getPieceChildren(piece.diskpath, [id]);
+  piece.children = await getPieceChildren(piece, idpath);
   return piece;
 };
 
@@ -228,43 +222,23 @@ export const getBreadcrumbData = async (
 ): Promise<CrumbData[]> => {
   // TODO: simplify getBreadcrumbs
   const crumbs: CrumbData[] = [];
-
-  const [courseId, partId, sessionId, chapterId] = idpath;
-  if (partId) {
-    const part = await getPieceWithChildren([courseId, partId]);
+  const [partPath, sessionPath, chapterPath] = [2, 3, 4].map((n) =>
+    idpath.slice(0, n)
+  );
+  if (partPath.length === 2) {
+    const part = await getPieceWithChildren(partPath);
     if (!part) return [];
-    crumbs.push({ name: part.name, idpath: [partId] });
-    const sessionSiblings =
-      part.children?.map((s) => ({
-        name: s.name,
-        idpath: [courseId, partId, s.id],
-      })) ?? [];
-    if (sessionId) {
-      const session = await getPieceWithChildren([courseId, partId, sessionId]);
+    crumbs.push({ ...part });
+    const sessionSiblings = part.children;
+    if (sessionPath.length === 3) {
+      const session = await getPieceWithChildren(sessionPath);
       if (!session) return [];
-      crumbs.push({
-        name: session.name,
-        idpath: [courseId, partId, sessionId],
-        siblings: sessionSiblings,
-      });
-      const chapterSiblings =
-        session.children?.map((ch) => ({
-          name: ch.name,
-          idpath: [courseId, partId, sessionId, ch.id],
-        })) ?? [];
-      if (chapterId) {
-        const chapter = await getPieceWithChildren([
-          courseId,
-          partId,
-          sessionId,
-          chapterId,
-        ]);
+      crumbs.push({ ...session, siblings: sessionSiblings });
+      const chapterSiblings = session.children;
+      if (chapterPath.length === 4) {
+        const chapter = await getPieceWithChildren(idpath);
         if (!chapter) return [];
-        crumbs.push({
-          name: chapter.name,
-          idpath: [courseId, partId, sessionId, chapterId],
-          siblings: chapterSiblings,
-        });
+        crumbs.push({ ...chapter, siblings: chapterSiblings });
       }
     }
   }
