@@ -1,10 +1,11 @@
 export type ContentPiece = {
   type: "chapter" | "session" | "part" | "root";
   id: string;
-  path: string[];
-  index?: number;
   name: string;
+  path: string[];
   diskpath: string;
+  index?: number;
+  hidden?: boolean;
   children?: ContentPiece[];
 };
 

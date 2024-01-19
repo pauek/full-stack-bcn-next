@@ -38,6 +38,9 @@ async function CoursePart({ part }: CoursePartProps) {
     </div>
   );
 
+  if (part.hidden) {
+    return <></>;
+  }
   return (
     <div id={part.id} className="pt-3 pb-5">
       <h4
