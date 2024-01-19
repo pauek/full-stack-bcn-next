@@ -1,5 +1,5 @@
 import { getPiece } from "@/lib/files/files";
-import { HASH_MAP, hashAllContent } from "@/lib/files/hashes";
+import { HASH_MAP_FILE, hashAllContent } from "@/lib/files/hashes";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 
@@ -10,10 +10,10 @@ if (!fullstack) {
 
 const result = await hashAllContent(fullstack);
 
-const lines: string[] = [];
+const entries: Record<string, string>[] = [];
 for (const [path, { hash, diskpath }] of result) {
-  lines.push(`${hash};${path};${diskpath}`);
+  entries.push({ hash, path, diskpath });
 }
 
-const mapPath = join(process.env.CONTENT_ROOT!, HASH_MAP);
-await writeFile(mapPath, lines.join("\n") + "\n");
+const mapPath = join(process.cwd(), "lib", "db", HASH_MAP_FILE);
+await writeFile(mapPath, JSON.stringify(entries, null, 2));

@@ -14,11 +14,11 @@ import { imageUrl } from "@/lib/urls";
 // import ts from "highlight.js/lib/languages/typescript";
 
 type ChapterProps = {
-  path: string[];
+  idpath: string[];
 };
-export default async function ChapterDocument({ path }: ChapterProps) {
-  const chapter = await getPieceWithChildren(path);
-  const doc = await getPieceDocument(path);
+export default async function ChapterDocument({ idpath }: ChapterProps) {
+  const chapter = await getPieceWithChildren(idpath);
+  const doc = await getPieceDocument(idpath);
 
   const RenderError = () => {
     return (
@@ -47,7 +47,7 @@ export default async function ChapterDocument({ path }: ChapterProps) {
                       // pueda referirse a la imagen con un path relativo
                       <NextImage
                         className="py-3 border"
-                        src={imageUrl(path, props.src)}
+                        src={imageUrl(idpath, props.src)}
                         alt={props.alt || "image"}
                         width={Number(props.width)}
                         height={Number(props.height)}

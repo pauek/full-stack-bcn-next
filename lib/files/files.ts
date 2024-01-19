@@ -58,7 +58,7 @@ export const readPieceAtSubdir = async (
   try {
     hash = (await readFile(join(diskpath, HASH_FILE))).toString();
   } catch (e) {
-    throw `ERROR: Hash not found! ${e}`;
+    console.error(diskpath, `ERROR: Hash not found! ${e}`);
   }
   return {
     name,
@@ -161,9 +161,9 @@ export const pieceNumSlides = async (piece: ContentPiece) => {
   return (await getPieceSlideList(piece))?.length ?? 0;
 };
 
-export const getPieceDocument = async (path: string[]) => {
+export const getPieceDocument = async (idpath: string[]) => {
   try {
-    const chapter = await getPieceWithChildren(path);
+    const chapter = await getPieceWithChildren(idpath);
     if (!chapter) {
       return null;
     }

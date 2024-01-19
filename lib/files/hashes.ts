@@ -4,7 +4,7 @@ import { ContentPiece } from "../adt";
 import { __CONTENT_ROOT, readMetadata, readPieceAtSubdir } from "./files";
 
 export const HASH_FILE = ".hash";
-export const HASH_MAP = ".hashmap";
+export const HASH_MAP_FILE = "hashes.json";
 
 export type Hash = string;
 
@@ -14,7 +14,7 @@ export type AbstractContentPiece = {
   children: AbstractContentPiece;
 };
 
-const rPieceDirectory = /^[0-9]{2} +.+$/;
+const rPieceDirectory = /^[0-9X]{2} +.+$/;
 
 export const hashAny = (x: any) => {
   const hasher = new Bun.CryptoHasher("sha256");
@@ -156,7 +156,7 @@ const maybeReadMaps = async () => {
   if (mapsRead) {
     return;
   }
-  const mapPath = join(__CONTENT_ROOT, HASH_MAP);
+  const mapPath = join(__CONTENT_ROOT, HASH_MAP_FILE);
   const buffer = await readFile(mapPath);
   const lines = buffer.toString().split("\n").filter(Boolean);
   for (const line of lines) {

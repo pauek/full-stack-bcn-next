@@ -1,0 +1,842 @@
+[
+  {
+    "hash": "089a8395ae31ec9161ed0b33a2a37147d5dcf0d3c69de9e9a315781bf86b212e",
+    "path": "fullstack/sec/auth",
+    "diskpath": "../content/fullstack/31 Security/10 Authentication"
+  },
+  {
+    "hash": "d5769f2480c8f5f70761727225b3eb8acbd68945973350bd9f52a0987f273f6f",
+    "path": "fullstack/sec/security",
+    "diskpath": "../content/fullstack/31 Security/20 Security"
+  },
+  {
+    "hash": "7157f5798dc74a02f758e105005024486bfae2d965353cf2b476c4c7608e4ccb",
+    "path": "fullstack/fs-proj/xavi",
+    "diskpath": "../content/fullstack/70 Fullstack Project/02 Xavi Bassols"
+  },
+  {
+    "hash": "39e05f9813d6d58b89115ea83a0630fff91e3b69d117f6ccfb49073962251234",
+    "path": "fullstack/fs-proj/next-3",
+    "diskpath": "../content/fullstack/70 Fullstack Project/03 Next 3"
+  },
+  {
+    "hash": "77952d1315dcf10b4f77dd9dde00bfd6574095149a271122c25acc6a40c0c90e",
+    "path": "fullstack/fs-proj/alex-tarrago",
+    "diskpath": "../content/fullstack/70 Fullstack Project/04 Àlex Tarragó"
+  },
+  {
+    "hash": "572f0a696c67685a24b7d48ec798379fec30bc70c91314e348414b34f3e87a90",
+    "path": "fullstack/fs-proj/fullstack-proj-1",
+    "diskpath": "../content/fullstack/70 Fullstack Project/05 Demo Project 1"
+  },
+  {
+    "hash": "da9a0040f44080f33e52a68dc8222494078e0dd6b0fbf861b6992c57af27146d",
+    "path": "fullstack/fs-proj/guillermo-blasco",
+    "diskpath": "../content/fullstack/70 Fullstack Project/07 Guillermo Blasco"
+  },
+  {
+    "hash": "cde4f6a93f1140cd073debf0dd562c0911e78bbb1a0409a764f125b81d2e2049",
+    "path": "fullstack/fs-proj/fullstack-proj-2",
+    "diskpath": "../content/fullstack/70 Fullstack Project/08 Demo Project 2"
+  },
+  {
+    "hash": "f0a13e4fb95f30ab3f3bcc8a3469742254e6e35307958f05dcf68b8c7ad1a63e",
+    "path": "fullstack/fs-proj/alex-caceres",
+    "diskpath": "../content/fullstack/70 Fullstack Project/09 Álex Cáceres"
+  },
+  {
+    "hash": "4dcdafe7b50aaa7fdfc9b3039ee7dd30cdd51ce06dc30539ab0385fb79d15a3a",
+    "path": "fullstack/fs-proj/fullstack-proj-3",
+    "diskpath": "../content/fullstack/70 Fullstack Project/10 Demo Project 3"
+  },
+  {
+    "hash": "030bbfa8e9c34d9c08ae104f57e6e30ccd8e71c3632e668b20a0519354e1ebc9",
+    "path": "fullstack/fs-proj/eudald",
+    "diskpath": "../content/fullstack/70 Fullstack Project/20 Eudald Arranz"
+  },
+  {
+    "hash": "42a838d98c5c380accc471e5ed1ddd32ee0737c80f8ffefb5451a03a448242c5",
+    "path": "fullstack/fs-proj/jorge",
+    "diskpath": "../content/fullstack/70 Fullstack Project/11 Jorge Garay"
+  },
+  {
+    "hash": "85fa5dad57ec3b964c5fae37086030b5417d494342f3305812f863e8d225e1fa",
+    "path": "fullstack/presentaciones/presentaciones",
+    "diskpath": "../content/fullstack/99 Presentaciones/10 Presentaciones"
+  },
+  {
+    "hash": "252cff0c4162e6009954c58a3618a1c50e08abd082fdd522ea1abcf49f9aa72b",
+    "path": "fullstack/fs-proj/victor-navarro",
+    "diskpath": "../content/fullstack/70 Fullstack Project/13 Víctor Navarro"
+  },
+  {
+    "hash": "a1e42d1f92631ac40186ae8ae046d1af63295733e1eea8c7cd51063152af5124",
+    "path": "fullstack/dbs/docker",
+    "diskpath": "../content/fullstack/50 Databases/00 Docker"
+  },
+  {
+    "hash": "8bdff6932015e86b2aef51b1d4c8fb54fbc1735a3ab1c9e57c3f42b7b634d534",
+    "path": "fullstack/extra/flutter-2",
+    "diskpath": "../content/fullstack/XX Extra/11 Flutter 2"
+  },
+  {
+    "hash": "563fcb970b8c0388feba842e4f90e0e64166f13e698ae379c1980e55827f8b25",
+    "path": "fullstack/extra/flutter-1",
+    "diskpath": "../content/fullstack/XX Extra/10 Flutter 1"
+  },
+  {
+    "hash": "bb32643181da8c9e26a153770b91b3dced138bcfa0bcd72074da7bbc6dd1bee1",
+    "path": "fullstack/extra/graphql",
+    "diskpath": "../content/fullstack/XX Extra/20 GraphQL"
+  },
+  {
+    "hash": "bf9012c793d5dc449bad9f5609b02cf2748e2bc89d0784749b67030185d88e5c",
+    "path": "fullstack/extra/react-native-2",
+    "diskpath": "../content/fullstack/XX Extra/31 React Native 2"
+  },
+  {
+    "hash": "6e282a8eb70e2546dc4ec3b55be12f1e2ce5be3bd2e1bb883af9bf66e97139f6",
+    "path": "fullstack/extra/react-native-1",
+    "diskpath": "../content/fullstack/XX Extra/30 React Native 1"
+  },
+  {
+    "hash": "81faac34748114071b53d000cf0943bcddc54599f2576491f0095938403496ae",
+    "path": "fullstack/backend-proj/apis-1",
+    "diskpath": "../content/fullstack/51 Backend Project/10 APIs 1"
+  },
+  {
+    "hash": "85d261ae16efcdc828c4537f7f2c76efea1dadc56afd7dce05290c7ed8281502",
+    "path": "fullstack/backend-proj/apis-2",
+    "diskpath": "../content/fullstack/51 Backend Project/20 APIs 2"
+  },
+  {
+    "hash": "028466727ff7c0b0fb25885a461fc328892c0db59c65b81aed276622e526c2e0",
+    "path": "fullstack/web/web-3",
+    "diskpath": "../content/fullstack/30 Web Tech/30 Web Tech 3"
+  },
+  {
+    "hash": "5eeddbb1bad6f899f7c1117f9940ed35e5d396c05afd5400d5ac43927b0f941d",
+    "path": "fullstack/web/web-4",
+    "diskpath": "../content/fullstack/30 Web Tech/30 Web Tech 4"
+  },
+  {
+    "hash": "ba579fe351eaf1a57652eaa25f43c9b60e5a126289ab7d63b4181885007ab09d",
+    "path": "fullstack/web/web-2",
+    "diskpath": "../content/fullstack/30 Web Tech/20 Web Tech 2"
+  },
+  {
+    "hash": "ba80a1ac30c783f64f46819c05c4ecb87859f2ee34dd648d6b2adc6f17ab0d83",
+    "path": "fullstack/sec",
+    "diskpath": "../content/fullstack/31 Security"
+  },
+  {
+    "hash": "899f5b1bd4d89b315c1524c2f4aef0c6020052f415a863c4ea80fda43feaca0f",
+    "path": "fullstack/ts/ts-adv-types",
+    "diskpath": "../content/fullstack/21 Typescript/70 Advanced Types"
+  },
+  {
+    "hash": "9d86efc8b536853dab0f61f40bf76d4c4d844e19b0e1978d114e79d7dd932ede",
+    "path": "fullstack/presentaciones",
+    "diskpath": "../content/fullstack/99 Presentaciones"
+  },
+  {
+    "hash": "3140a6c13e04a874bb2e6539598685066fe97395fe13f856087e390020271bb9",
+    "path": "fullstack/extra",
+    "diskpath": "../content/fullstack/XX Extra"
+  },
+  {
+    "hash": "c7a2828f4afa81b61286625d869bed9fd48921469b2ef1393e81154348dec6e4",
+    "path": "fullstack/backend-proj",
+    "diskpath": "../content/fullstack/51 Backend Project"
+  },
+  {
+    "hash": "b8a25aab2987987f2a89c82196279590183db69612a7131051996360b899f893",
+    "path": "fullstack/git/basic/forks",
+    "diskpath": "../content/fullstack/10 Git/10 Basic Git/40 Forks"
+  },
+  {
+    "hash": "7b26337aee19692a2d1b76fb249ac351762e57504b8650c9090703cccc04e080",
+    "path": "fullstack/dbs/dbs-prisma/prisma-schema",
+    "diskpath": "../content/fullstack/50 Databases/40 Prisma/20 Prisma Schema"
+  },
+  {
+    "hash": "69baa1a91f60360557ad307b704ae233a870efad950ea01fb9311fd5562b17b0",
+    "path": "fullstack/dbs/dbs-prisma/prisma-what-is",
+    "diskpath": "../content/fullstack/50 Databases/40 Prisma/10 What is Prisma"
+  },
+  {
+    "hash": "dbe59f658c84cdd6fe450577478ccbc6a323732353a5c461c00653787d8ecaa3",
+    "path": "fullstack/dbs/dbs-prisma/prisma-client",
+    "diskpath": "../content/fullstack/50 Databases/40 Prisma/30 Prisma Client"
+  },
+  {
+    "hash": "71b4c18c63cc0de4bb6d6d20e86757c770be8d4b37ed819c5247f46c05f1d716",
+    "path": "fullstack/web-platform/html-css-3/variables",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/02 CSS Variables"
+  },
+  {
+    "hash": "ef995920a2b899bd474d5a843868ca100d635438b0c71f0c00dc9e9cc06f731e",
+    "path": "fullstack/fs-proj/next-2/vercel-deploy-preview",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2/20 Deploying a Preview"
+  },
+  {
+    "hash": "9081ae8c3efefa29adeebff3d6c7492ecbfde241af6fbca99f66a3f7fcf5627d",
+    "path": "fullstack/fs-proj/next-2/next-markdown",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2/10 Markdown"
+  },
+  {
+    "hash": "088ee33c2b25431a359111c7905f086e055e7843bfb2e8d19cbe46a452b37eb0",
+    "path": "fullstack/fs-proj/next-2/next-client-components",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2/30 Client Components"
+  },
+  {
+    "hash": "7f9621b9869f98e225aef146fd98c1071685058647910dbd468693c963bb5e0f",
+    "path": "fullstack/fs-proj/next-2/css-modules",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2/50 CSS Modules"
+  },
+  {
+    "hash": "bd5587c153d95eac9b1052033721d4f7e16976ef74e8e9c99949fa8909a052e0",
+    "path": "fullstack/fs-proj/next-1/next-dyn-routes",
+    "diskpath": "../content/fullstack/70 Fullstack Project/00 Next 1/40 Dynamic Routes"
+  },
+  {
+    "hash": "2a295fc4bbd7d552965a7e1ce7885bdcc1dc0f573625b28bcea645af2cb028a7",
+    "path": "fullstack/fs-proj/next-2/next-api-routes",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2/60 API Routes"
+  },
+  {
+    "hash": "7fe88fcc9b728dd129895d74c59108f1b66338e7f816e0d7d1e337eb454af836",
+    "path": "fullstack/fs-proj/next-1/what-is-nextjs",
+    "diskpath": "../content/fullstack/70 Fullstack Project/00 Next 1/00 What is NextJS"
+  },
+  {
+    "hash": "1b675dc5285d3c16bad6328c9a9c5f2acef9e7307b16b6106065c6fa11840c17",
+    "path": "fullstack/ts/ts-adv-functions/arrow-funcs",
+    "diskpath": "../content/fullstack/21 Typescript/30 Advanced Functions/20 Arrow Functions"
+  },
+  {
+    "hash": "3af380179723e14781c163d7eb390663bf81550be59c6808eaf71a1a772cec26",
+    "path": "fullstack/ts/ts-objects/json",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/40 JSON"
+  },
+  {
+    "hash": "c4fbe920d224988128c460857618b44f2189af342d1c1448cf12af8055cb3387",
+    "path": "fullstack/ts/ts-basics/what-is-ts",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/11 Typescript"
+  },
+  {
+    "hash": "e5507efb40db2c78e08f927fc8db2734fee99cd765faea69d38275f3152d5cad",
+    "path": "fullstack/ts/ts-basics/ts-type-annot",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/41 Type Annotations"
+  },
+  {
+    "hash": "d55e7e0b54dcf808a2b8a915cedb8696f29822635129ec4a25e9db3e7fe98d2b",
+    "path": "fullstack/ts/ts-objects/array-types",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/31 Array Types"
+  },
+  {
+    "hash": "b241fd4f2a9b28f884007a1d37237126c580ab953a940c9e202977f31df13489",
+    "path": "fullstack/ts/ts-objects/object-types",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/21 Object Types"
+  },
+  {
+    "hash": "48cfc968e4ef8dc59edd42470110e2ad8c0ab602fa9439f94e0f05257cce7a98",
+    "path": "fullstack/ts/ts-classes/ts-interfaces",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/60 Interfaces"
+  },
+  {
+    "hash": "b486f541e77cd7d32e2cafbb9373247f67c533c5753a0ef535fac161d9283ac6",
+    "path": "fullstack/fs-proj/next-1/app-router",
+    "diskpath": "../content/fullstack/70 Fullstack Project/00 Next 1/20 App Router"
+  },
+  {
+    "hash": "93bc8b01abfb193675f2ce2b1f5f5082953402f26c95a98f14d901f2d5d82ce0",
+    "path": "fullstack/git/basic/commits",
+    "diskpath": "../content/fullstack/10 Git/10 Basic Git/20 Commits"
+  },
+  {
+    "hash": "020c7bd5381566579f37e5f4fb0f755267a55c836fe63e6ae39b75173c26c9bf",
+    "path": "fullstack/dbs/dbs-prisma/prisma-studio",
+    "diskpath": "../content/fullstack/50 Databases/40 Prisma/40 Prisma Studio"
+  },
+  {
+    "hash": "8170a2bf18ea0ce7994ea5fecff3f27ba0e71cd4ef3c8ee77a3542f72a2d83c9",
+    "path": "fullstack/fs-proj/next-2/next-route-groups",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2/40 Route Groups"
+  },
+  {
+    "hash": "9e9a6a90fe77bae3eb7172465bcbc63af42672c1697958c978f628392777473e",
+    "path": "fullstack/git/basic/collab",
+    "diskpath": "../content/fullstack/10 Git/10 Basic Git/30 Collaboration"
+  },
+  {
+    "hash": "6d2804b4ef982b9dbd03a4702a714db1a0317a7a9366fc5f95f3a21dc8d4d441",
+    "path": "fullstack/dbs/doc-dbs/mongo-connection",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs/06 Connection from Javascript"
+  },
+  {
+    "hash": "5e2934dcd8b50f282563a4560cbe8e9554bdfc1db601f0a205452eb83c371c0a",
+    "path": "fullstack/fs-proj/next-2",
+    "diskpath": "../content/fullstack/70 Fullstack Project/01 Next 2"
+  },
+  {
+    "hash": "596779657cfe8a703173c4d63d3295d1ec8a4aa96020809b2ea553e95e616983",
+    "path": "fullstack/dbs/dbs-prisma",
+    "diskpath": "../content/fullstack/50 Databases/40 Prisma"
+  },
+  {
+    "hash": "94a8531c96ba739531040733e7c570766300211dfddc92ed76d9aafb4fc01633",
+    "path": "fullstack/ts/ts-basics/js-loops",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/80 Loops"
+  },
+  {
+    "hash": "ec836c95ff717e9a0f030dcc769ebd030a85039f981bb9f38212c27a7b81efa8",
+    "path": "fullstack/dbs/data-modeling/data-entities",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/06 Entities"
+  },
+  {
+    "hash": "0f5b422e2aa73599046822a2b594fdde34f72e1d336409fd2909cc916b813674",
+    "path": "fullstack/dbs/data-modeling/relational-dbs",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/04 Relational Databases"
+  },
+  {
+    "hash": "6eb62a0ddea0e1db3e59cc251b4824a21a5de89b4810b326c102b66e25bd13db",
+    "path": "fullstack/dbs/data-modeling/model-examples",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/08 Model Examples"
+  },
+  {
+    "hash": "bfc25a170cdc57ae46aac48066f341bdea51a6d76a91a094d7e34549c93e2257",
+    "path": "fullstack/dbs/rel-dbs/review-install",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/01 Review and Installation"
+  },
+  {
+    "hash": "096b15075e6d4090c08da246b8725a1c5c182bb280b06c77116d3d057eb56f88",
+    "path": "fullstack/dbs/rel-dbs/expressions",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/06 Expressions"
+  },
+  {
+    "hash": "9461b2e8e80c044a8c156620509e4ea853aeb3e584103e33d02a2053dbeaaa61",
+    "path": "fullstack/dbs/rel-dbs/aggregation",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/07 Aggregation"
+  },
+  {
+    "hash": "574461ecec7aff1b7391be71398300306fc55aa7f1d28af930477ed205f8dfc9",
+    "path": "fullstack/dbs/data-modeling/key-value-dbs",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/02 Key-Value Databases"
+  },
+  {
+    "hash": "ba1c2fcec608b13c2e57dcc42ae68b80a8ce2f85442bc841f2b7107603e29fcf",
+    "path": "fullstack/dbs/data-modeling/document-dbs",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/03 Document Databases"
+  },
+  {
+    "hash": "9c1580890802a79cfc28bf993f0a3b8c687168abbe22036c63d7218dec72811e",
+    "path": "fullstack/dbs/data-modeling/dbs",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/01 Databases"
+  },
+  {
+    "hash": "13f190f3c94e18c00fb95655cec4fe2a0230bc6fea2919327c6353fecab19919",
+    "path": "fullstack/git/basic/repos",
+    "diskpath": "../content/fullstack/10 Git/10 Basic Git/10 Repositories"
+  },
+  {
+    "hash": "58bb4ddc546d89fe82d86ab4ed1fd15c5bc0ed5fe077c443737213faa5e5276d",
+    "path": "fullstack/dbs/rel-dbs/select",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/05 SELECT"
+  },
+  {
+    "hash": "6b39060b1eec7f0807ba42a673271e8e3283f8f36a2aee9e77095750420e4b8b",
+    "path": "fullstack/web-platform/html-css-2/lists",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/02 Lists"
+  },
+  {
+    "hash": "c3bb8ad72174bb02f8e40f6bc32ebdca42812f88764dffbf2a888314e3306d8d",
+    "path": "fullstack/dbs/data-modeling/graph-dbs",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/05 Graph Databases"
+  },
+  {
+    "hash": "7fb77e4181892325c3dd0b888773101ffc9f5d4420ebc0984c8c7ff0973a5c88",
+    "path": "fullstack/dbs/doc-dbs/mongo-indexes",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs/04 Indexes"
+  },
+  {
+    "hash": "e8030bd18590dc2a4334392980a5a3777a90997b12eaf520bcbb10864d5fdc1e",
+    "path": "fullstack/ts/ts-basics/js-vars",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/50 Variables"
+  },
+  {
+    "hash": "4a2ca7c984b570f154a57237fa9b12901f08bb9f297d6897534c57fa7079a7fe",
+    "path": "fullstack/ts/ts-basics/js-fundamentals",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/30 Fundamentals"
+  },
+  {
+    "hash": "d22a64baf93b8561c295d59acda6466ebd25d3301c585a22a66cb7187000dc30",
+    "path": "fullstack/web-platform/html-css-2/elem-pos",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/05 ElementPositioning"
+  },
+  {
+    "hash": "fa5861e7fd621ce9cfc7035793588f84078b223ef0c91c55df0f619418e5d94b",
+    "path": "fullstack/web-platform/html-css-3/dom",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/04 The DOM"
+  },
+  {
+    "hash": "14bdd24a8b379d80f012000fecf3fe910c23d0551366dca3cdeb6605215cc2a9",
+    "path": "fullstack/ts/ts-async/js-events",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/90 Events"
+  },
+  {
+    "hash": "0616065666f312a4fe3144060c41a291f41b17c84eee987d3339060568f12a76",
+    "path": "fullstack/fs-proj/next-1/next-deploy",
+    "diskpath": "../content/fullstack/70 Fullstack Project/00 Next 1/30 Deploying"
+  },
+  {
+    "hash": "c96569feb17dbdcd13275f7e66cc5eb7959b85ad84d2a929b1211e56c9cde6ab",
+    "path": "fullstack/web-platform/html-css-1/doc-meta",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/02 Document Metadata"
+  },
+  {
+    "hash": "d806c9738a89cf94df28c8c445050a40638694f02eb14745cb3943f5b383f62f",
+    "path": "fullstack/web-platform/html-css-1/selectors",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/06 Selectors"
+  },
+  {
+    "hash": "afbc56310bca7420971d43d44c69e3d21ffe2580975aa43d1c6f61d2176aa75c",
+    "path": "fullstack/web-platform/html-css-2/flexbox",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/04 Flexbox"
+  },
+  {
+    "hash": "8ddf51b455cda511b9b8dfa151f5592300d9f6a511231bc2c402adf9338c056a",
+    "path": "fullstack/web-platform/html-css-2/selectors-2",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/07 Selectors2"
+  },
+  {
+    "hash": "e69584873524cb555794b86c2b34171b1e38ba353e96849fc5e458273f4389a1",
+    "path": "fullstack/ts/ts-classes/es6-classes",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/20 Typescript Classes"
+  },
+  {
+    "hash": "a8d36864670b55069f14ad0c84cbb973531077c4f3c793b41edd81c731c3f258",
+    "path": "fullstack/ts/ts-classes/exceptions",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/40 Exceptions"
+  },
+  {
+    "hash": "edc32c447d94c58c46c52803bc171432fbdaa80d33cabf82a47cfab24204f554",
+    "path": "fullstack/web-platform/html-css-1/html",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/01 HTML"
+  },
+  {
+    "hash": "bed36ea1d3704cab6c1b239bef047571c2e433b074cfd102f6bfdaae5663cc8b",
+    "path": "fullstack/ts/ts-classes/destructuring",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/50 Destructuring"
+  },
+  {
+    "hash": "e1e90498375c6a966ff84482dcdbc64272b09c4b6005ac7bd7ef2922ba8ff09e",
+    "path": "fullstack/dbs/doc-dbs/mongo-relations",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs/05 Modelling Relations"
+  },
+  {
+    "hash": "5e33137ab8c57b61640dea0a86aa315f141aa5200918c6b89716c537ae5f4568",
+    "path": "fullstack/ts/ts-modules/js-bundlers",
+    "diskpath": "../content/fullstack/21 Typescript/60 Modules/03 Bundlers"
+  },
+  {
+    "hash": "70073d65eca08801ae1a15bd1dd388d636ad85012ba28b7f82821648e7755200",
+    "path": "fullstack/web-platform/html-css-3/cascade",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/03 The Cascade"
+  },
+  {
+    "hash": "65f2e91c3ab317c78e02dd9d8636223cc1d6efcb35aa54cc04b0917e3b4303bd",
+    "path": "fullstack/web-platform/html-css-3/elem-queries",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/05 Element Queries"
+  },
+  {
+    "hash": "048173b40655adf390f3e71c9104a2bd2c973002e2ba3fbcfcdf44c347f77110",
+    "path": "fullstack/fs-proj/next-1/ssg-ssr-csr",
+    "diskpath": "../content/fullstack/70 Fullstack Project/00 Next 1/10 SSG, SSR and SPAs"
+  },
+  {
+    "hash": "09a809d84fb0708e1e9bee94ef85c51d521997af407554bcfdfa7fcad51d2068",
+    "path": "fullstack/ts/ts-async/callbacks",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/20 Callbacks"
+  },
+  {
+    "hash": "936af497ce4a8c773b498f55272e798235c41d1276af217a5a038c2a7e78f235",
+    "path": "fullstack/git/basic",
+    "diskpath": "../content/fullstack/10 Git/10 Basic Git"
+  },
+  {
+    "hash": "619e7cc731b003df53d304e42375cb0fccd9ede40e70ae6a8dbdcf25540e3625",
+    "path": "fullstack/dbs/doc-dbs/mongo-queries",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs/03 Queries"
+  },
+  {
+    "hash": "8b02fb60b6b9e0e5abdf03ae9e61c8b6801975841fd5c6481648f4fe218dcc5c",
+    "path": "fullstack/web-platform/html-css-2/global-attrs",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/06 GlobalAttributes"
+  },
+  {
+    "hash": "76ff8e74eaff7389fe183f6331ca50cf04440cd6e83c179e208d91d30d4e750c",
+    "path": "fullstack/ts/ts-basics/js-if",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/70 If"
+  },
+  {
+    "hash": "bc1729755da08750911159dac69800a2c296545671dd92a279ecdc94b5e46ff9",
+    "path": "fullstack/ts/ts-basics/js-types",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/40 Types"
+  },
+  {
+    "hash": "769924dc1d31b76d9390a560710ba90b84d755d2270e0279aad4172756ca922e",
+    "path": "fullstack/ts/ts-objects/funcs",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/10 Functions"
+  },
+  {
+    "hash": "ce602bb713936673c26be2a68f6c3f272a80c955019995c2a321085b8132560d",
+    "path": "fullstack/web-platform/html-css-2/tables",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/03 Tables"
+  },
+  {
+    "hash": "4e89b40574ca333b9c3d05cd0d2e617346161b01e14f27a35ad61857eaca5ce5",
+    "path": "fullstack/dbs/doc-dbs/mongo-crud",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs/02 CRUD Operations"
+  },
+  {
+    "hash": "57e0496ca64843838747a7d9b732650a76692167d40941ebf03f6e726dd22041",
+    "path": "fullstack/web-platform/html-css-3/events",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/07 Events"
+  },
+  {
+    "hash": "b7b04dcc5bfaa14035d3709e5e7029853c0e71c74a70c018768236ce74caa5b0",
+    "path": "fullstack/ts/ts-async/js-promises",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/30 Promises"
+  },
+  {
+    "hash": "c8c2c446b0eb4fab86b12dc2ae7caa3eb672cdc3e044544ea6a35162458935f7",
+    "path": "fullstack/web-platform/html-css-3/html-elem",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/06 HTMLElement"
+  },
+  {
+    "hash": "654d6fd167853bcf28f47b27e05d3998219a1b2efdc80476b950b323beeac7a7",
+    "path": "fullstack/dbs/rel-dbs/crud",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/04 CRUD"
+  },
+  {
+    "hash": "ec113b7fabdaf051ecd9cb71d71ebf49c8d02249b23cc8dec6bed35dfcd19bb6",
+    "path": "fullstack/dbs/rel-dbs/subqueries-ctes",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/09 Subqueries and CTEs"
+  },
+  {
+    "hash": "86d35c95bec23e1e2e9ef9019a87d3fc0a79407d03bc4f8566319196a7925482",
+    "path": "fullstack/dbs/rel-dbs/keys",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/03 Keys"
+  },
+  {
+    "hash": "c745bca4c4bbbd754de1999659cf2408890638bf918ce02e8af77db1cc1131b6",
+    "path": "fullstack/ts/ts-basics/js-lang",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/10 Javascript"
+  },
+  {
+    "hash": "2113a8aa48c3a269b42384c2e2962f9f85dac3a436531734aed6846dfed2003c",
+    "path": "fullstack/fs-proj/next-1",
+    "diskpath": "../content/fullstack/70 Fullstack Project/00 Next 1"
+  },
+  {
+    "hash": "39a2054e4c67f67fc8a3d1401688a37284a5a15533193b9ff7acbe2519e3bc4f",
+    "path": "fullstack/web-platform/html-css-3/pseudo-classes-elems",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/01 Pseudo Classes and Elements"
+  },
+  {
+    "hash": "3650192874671777b499a1ad66469ebf055ed5277de7ad81fce3a30310ce35d9",
+    "path": "fullstack/ts/ts-async/nodejs-libuv",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/92 Libuv"
+  },
+  {
+    "hash": "3c52b5e9a369b6848ea554a97390349552f3b11e3b966c34b0cbe0fa9b78fc57",
+    "path": "fullstack/git",
+    "diskpath": "../content/fullstack/10 Git"
+  },
+  {
+    "hash": "3ddfba97936e3a39d23742109544f7decc24497f39413ad42b645ff5f0e948f0",
+    "path": "fullstack/dbs/rel-dbs/table-creation",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/02 Table Creation"
+  },
+  {
+    "hash": "fa418bc2aac46f5eeeb7c271dd40d8f10405fee343ad72c4497d6d7104298d24",
+    "path": "fullstack/ts/ts-objects/copy",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/90 Copying objects"
+  },
+  {
+    "hash": "82b798d685c9e1a80eaa13ae60797527840a1f06705fc710e4c9fcca128bc82f",
+    "path": "fullstack/web-platform/html-css-1/sections",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/04 Sections"
+  },
+  {
+    "hash": "e4c4ad8ec55e92e998b63849af560e75ffaaf31fe1af8ecac2fd5513dcf3e438",
+    "path": "fullstack/dbs/doc-dbs/mongodb",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs/01 MongoDB"
+  },
+  {
+    "hash": "d36b917497246133440711baf0b433990e1f346dd03f25fd3d287785b00feeab",
+    "path": "fullstack/web-platform/html-css-2/embedded-content",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II/01 Embedded Content"
+  },
+  {
+    "hash": "9f4ad2b9f264f226cd3384f7e828866deb623d699244f31a721d13b73eae9506",
+    "path": "fullstack/web-platform/html-css-3/forms",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/08 Forms"
+  },
+  {
+    "hash": "6b6757ad352c6e58a480f58871a7ad77870541842eb5553e6e587bd68ade474a",
+    "path": "fullstack/ts/ts-classes/js-sets",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/92 Sets"
+  },
+  {
+    "hash": "1fe249f08ab312e7561e725af874638e0fc67abec228b2416220245136411b0f",
+    "path": "fullstack/fs-proj",
+    "diskpath": "../content/fullstack/70 Fullstack Project"
+  },
+  {
+    "hash": "810e0aa9c03fbc7c5f7c934e10d34371e52740c14c137320c2f5c3a0fc9b90a3",
+    "path": "fullstack/ts/ts-async/js-event-loop",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/91 The Event Loop"
+  },
+  {
+    "hash": "3c5b0db59792aef07e9117627688d21412035fb28b890c35dab657ebc06a39ac",
+    "path": "fullstack/dbs/data-modeling/data-relationships",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling/07 Relationships"
+  },
+  {
+    "hash": "15cbca4a3001e59eea8ce388137661aace7f119f7f535d905c83a03e145b17a8",
+    "path": "fullstack/ts/ts-adv-functions/js-hof",
+    "diskpath": "../content/fullstack/21 Typescript/30 Advanced Functions/90 Higher-Order Functions"
+  },
+  {
+    "hash": "dde03931f574380f69a1991985d2d349145dabc4f5510197981042fbde6bf578",
+    "path": "fullstack/ts/ts-classes/js-date",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/90 The Date Class"
+  },
+  {
+    "hash": "8ceb7a64ec8d504fff229dc024cf79403350e9227e9119c55ffb36dd9decd11b",
+    "path": "fullstack/ts/ts-async/promise-class-methods",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/50 Promise Static Methods"
+  },
+  {
+    "hash": "ed8f8d639d01269eed5d0a53d14f4c46eb55627ef335e9a1d728143139b2e86c",
+    "path": "fullstack/web-platform/html-css-1/text-tags",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/03 Text Level Tags"
+  },
+  {
+    "hash": "2a55ee74fa099f61f2133a2545e0681ff1b981f4a32dd47ecaab6b78af97e0ff",
+    "path": "fullstack/web-platform/html-css-1/css",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/05 CSS"
+  },
+  {
+    "hash": "4d3c875c5496b44d390fedf5ad6ca319d92529d2972ed09d97c4d582e1aaffd3",
+    "path": "fullstack/ts/ts-adv-functions/js-closures",
+    "diskpath": "../content/fullstack/21 Typescript/30 Advanced Functions/30 Closures"
+  },
+  {
+    "hash": "134ded988b7fe3208f95f1f67a7d6a14c1d2615c26b5615f662aeae2a8cfd7f4",
+    "path": "fullstack/dbs/doc-dbs",
+    "diskpath": "../content/fullstack/50 Databases/30 Document DBs"
+  },
+  {
+    "hash": "2870d00eabfa541e0cd896fb4accc64f523241b86cce16367ae40111aec6cfab",
+    "path": "fullstack/ts/ts-objects/objects",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/20 Objects"
+  },
+  {
+    "hash": "097335c488aa082c27da343807d683bb7a10cea7d2289cbd3cc8e8e9193edb44",
+    "path": "fullstack/ts/ts-classes/js-maps",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/91 Maps"
+  },
+  {
+    "hash": "2c102f5c6225dd6432836367c08d55434eb88ba3b797212b9059f365cb9d0667",
+    "path": "fullstack/ts/ts-async/js-async-await",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/40 Async and Await"
+  },
+  {
+    "hash": "d418cf1f2cdb193632de2fd70225c4637129a2b4ad9bae924921d262575f4314",
+    "path": "fullstack/dbs/data-modeling",
+    "diskpath": "../content/fullstack/50 Databases/10 Data Modelling"
+  },
+  {
+    "hash": "a4e530fe2b4bb8304bff9dce7f9b0a04d711827704b96ff1696a3e16df989044",
+    "path": "fullstack/web-platform/html-css-1/values-and-properties",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I/07 Values and Properties"
+  },
+  {
+    "hash": "9af2f98156f1abcf6ee979ca6b7b309771959c711e62840df258cbd88b8ebaec",
+    "path": "fullstack/ts/ts-modules/js-es-modules",
+    "diskpath": "../content/fullstack/21 Typescript/60 Modules/02 Javascript Modules"
+  },
+  {
+    "hash": "f76cccbdcf3e4ecf47dc164a48ff334bd754ab2f19690651f97899e717fff084",
+    "path": "fullstack/dbs/rel-dbs/joins",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs/08 Joins"
+  },
+  {
+    "hash": "3a096f1146eb800d448e9de93d18fd8ce55489ac94efbe84114a0cd08bd6a2d7",
+    "path": "fullstack/ts/ts-basics/js-ops",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics/60 Operators"
+  },
+  {
+    "hash": "b7db5d0cb685526558d682d5d30318c3abf233a24d9b4b1bf9c0718813601934",
+    "path": "fullstack/ts/ts-adv-functions/array-func-methods",
+    "diskpath": "../content/fullstack/21 Typescript/30 Advanced Functions/40 Array Functional Methods"
+  },
+  {
+    "hash": "50136fcb810e4b824cb0d1f4bc816f2ce8fc6845bca3fa6e2471f4f339bf01cf",
+    "path": "fullstack/web-platform/html-css-3/form-controls",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III/09 Form Controls"
+  },
+  {
+    "hash": "e4e4028da3c564327cf36ce934efc4c1970f0cc448e46ba801902ab17b6d89c0",
+    "path": "fullstack/ts/ts-adv-functions/js-this",
+    "diskpath": "../content/fullstack/21 Typescript/30 Advanced Functions/10 First-class Functions"
+  },
+  {
+    "hash": "345198bba24e7199bef26076e847726b34cc5298dd15ec0243faf7feb17cba69",
+    "path": "fullstack/dbs/rel-dbs",
+    "diskpath": "../content/fullstack/50 Databases/20 Relational DBs"
+  },
+  {
+    "hash": "004f419798d2517eac3a9fc3baafef41522983a8cb3d7135c272665f4d5d6e24",
+    "path": "fullstack/ts/ts-basics",
+    "diskpath": "../content/fullstack/21 Typescript/10 Typescript Basics"
+  },
+  {
+    "hash": "4dd552985243964784dc9e571c34957723cd3465ea93b4566f400d0401383e35",
+    "path": "fullstack/dbs",
+    "diskpath": "../content/fullstack/50 Databases"
+  },
+  {
+    "hash": "4599cb444e6c753f25df95f5d3829e368681d6aab65bd45ffd470e212510cdab",
+    "path": "fullstack/ts/ts-adv-functions",
+    "diskpath": "../content/fullstack/21 Typescript/30 Advanced Functions"
+  },
+  {
+    "hash": "a09db885953ba72057b1181ca03f5970b17a9850017187c3b645ca161b7b7a45",
+    "path": "fullstack/ts/ts-classes/prototypes",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes/10 Prototypical Inheritance"
+  },
+  {
+    "hash": "fa6c3438be098fb0276c4b20927e2ce680de244ba9dcbf3367ed193d2a76b5b7",
+    "path": "fullstack/ts/ts-objects/arrays",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects/30 Arrays"
+  },
+  {
+    "hash": "7f1c84c5022f2aa76995455b2d08f6ce2761ed67677e8e2aa87415216587f00a",
+    "path": "fullstack/ts/ts-modules/js-commonjs",
+    "diskpath": "../content/fullstack/21 Typescript/60 Modules/01 CommonJS Modules"
+  },
+  {
+    "hash": "fddebb4d10604e7afdca05d34f920005406a5618c407107c2139987220c5978a",
+    "path": "fullstack/ts/ts-objects",
+    "diskpath": "../content/fullstack/21 Typescript/20 Objects"
+  },
+  {
+    "hash": "722cfba8efb7c513447573d16ae0eea6d450981d5c92121ecf464f44081d6c16",
+    "path": "fullstack/ts/ts-async/async-js",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony/10 Asynchronous Functions"
+  },
+  {
+    "hash": "4049c19a3ea0c2552c8325a5f1519add7e2bc2cc7a56877f5d97ad548bbd66cf",
+    "path": "fullstack/react/react-apps",
+    "diskpath": "../content/fullstack/60 React/40 Applications"
+  },
+  {
+    "hash": "fd049920f6aedcb3adb8e261e5539526aaa8ff2d04a7cc56bd0a94caa3d91368",
+    "path": "fullstack/react/react-hooks",
+    "diskpath": "../content/fullstack/60 React/20 Hooks"
+  },
+  {
+    "hash": "da7f190827e6094a58aee8b2db7e2e89e16f1661646e485135e8a1771dc73210",
+    "path": "fullstack/ts/ts-modules",
+    "diskpath": "../content/fullstack/21 Typescript/60 Modules"
+  },
+  {
+    "hash": "20eba080c8c29b743e1bf3b651421f70b3466141d54aa05ef754d1e8bc482f48",
+    "path": "fullstack/web-platform/html-css-2",
+    "diskpath": "../content/fullstack/20 Platform/20 HTML and CSS II"
+  },
+  {
+    "hash": "a01ea7b1d574ec578122daacba56f875cbf87e54af46f1f5fa7c4747f96edb80",
+    "path": "fullstack/ts/ts-classes",
+    "diskpath": "../content/fullstack/21 Typescript/40 Classes"
+  },
+  {
+    "hash": "2e59d968f08f0bf6eb89195206cc2ba5b7d64b408fd52c95dbb3149343cb028a",
+    "path": "fullstack/web-platform/html-css-1",
+    "diskpath": "../content/fullstack/20 Platform/10 HTML and CSS I"
+  },
+  {
+    "hash": "bfe534e63e42ff0109d0e0a2c276c60a44495f244d07dd573026e9a38ff7972b",
+    "path": "fullstack/react/react-global-state",
+    "diskpath": "../content/fullstack/60 React/30 Global State"
+  },
+  {
+    "hash": "7da29fe201c9d52241e8183521220c6d33aaeb9cf606717dd873e7618f76da0c",
+    "path": "fullstack/web-platform/html-css-3",
+    "diskpath": "../content/fullstack/20 Platform/30 HTML and CSS III"
+  },
+  {
+    "hash": "f87fa5e04af86ab013e8b734a0dc682f076648b9f0751842706839341fbea175",
+    "path": "fullstack/web-platform",
+    "diskpath": "../content/fullstack/20 Platform"
+  },
+  {
+    "hash": "608c6314e649c8a19960c96476d45ffb40ed04e06c6b3f0446d5c699f3d64caa",
+    "path": "fullstack/ts/ts-async",
+    "diskpath": "../content/fullstack/21 Typescript/50 Asynchrony"
+  },
+  {
+    "hash": "c04bcc6d1d47d1b99d4c1eeb479e678137c2b6022f859588bf4d8c93550f9a94",
+    "path": "fullstack/ts",
+    "diskpath": "../content/fullstack/21 Typescript"
+  },
+  {
+    "hash": "8b892285687bb00bc56f59b281cf2ff0a26f1157fb0cbf41439a42261fb09e70",
+    "path": "fullstack/web/web-1/net-arch",
+    "diskpath": "../content/fullstack/30 Web Tech/10 Web Tech 1/00 Network Architecture"
+  },
+  {
+    "hash": "3831eb750ca1b3ba6859881d3d2b4be996164425e9eb59383658b23ad1cca0cd",
+    "path": "fullstack/web/web-1/virt-infra",
+    "diskpath": "../content/fullstack/30 Web Tech/10 Web Tech 1/10 Virtual Infrastructure"
+  },
+  {
+    "hash": "b390412806eb362f427f0212fa9b90249bef3d4c401d7579b498c80dabf608f0",
+    "path": "fullstack/web/web-1",
+    "diskpath": "../content/fullstack/30 Web Tech/10 Web Tech 1"
+  },
+  {
+    "hash": "5ef395614cdbfe535b2d5d66431084d91b5f9e5865d8d6c44f7438fdf85f7095",
+    "path": "fullstack/web",
+    "diskpath": "../content/fullstack/30 Web Tech"
+  },
+  {
+    "hash": "b2390b76114f1053af5bd417c3f16e3295065d7bbd358cb3da2bd44df905540c",
+    "path": "fullstack/react/react-components",
+    "diskpath": "../content/fullstack/60 React/10 Components"
+  },
+  {
+    "hash": "863289c3f58708050f6564caae213d76a9d1fbf6ceabdd12df61551512255fda",
+    "path": "fullstack/react/redux-1",
+    "diskpath": "../content/fullstack/60 React/70 Redux 1"
+  },
+  {
+    "hash": "f6c6e97b00e2b783cf0a8da55c3ff8236c7b8e2442d8dd2e89275d965e2756c1",
+    "path": "fullstack/react/redux-2",
+    "diskpath": "../content/fullstack/60 React/80 Redux 2"
+  },
+  {
+    "hash": "33ff88b3283fed103eeed3004681c33a175ed42f5a878b9b14d0ad0bdf90b944",
+    "path": "fullstack/react",
+    "diskpath": "../content/fullstack/60 React"
+  },
+  {
+    "hash": "f1b78b2371744c894f230ab95806639bc68b73fc7b743d38f9426cc170a34849",
+    "path": "fullstack",
+    "diskpath": "../content/fullstack"
+  }
+]
