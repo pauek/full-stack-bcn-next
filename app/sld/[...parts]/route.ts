@@ -12,27 +12,22 @@ const mimeType: Record<string, string> = {
 
 type RouteParams = {
   params: {
-    courseId: string;
-    partId: string;
-    sessionId: string;
-    chapterId: string;
-    filename: string;
+    parts: string[];
   };
 };
-export async function GET(req: NextRequest, { params }: RouteParams) {
-  const chapter = await getPieceWithChildren([
-    params.courseId,
-    params.partId,
-    params.sessionId,
-    params.chapterId,
-  ]);
+
+export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
+  const idpath = parts.slice(0, parts.length - 1);
+  const [filename] = parts.slice(-1);
+
+  const chapter = await getPieceWithChildren(idpath);
   if (!chapter) {
     notFound();
   }
-  const imagePath = `${chapter.diskpath}/slides/${params.filename}`;
-  const extension = extname(params.filename);
+  const imagePath = `${chapter.diskpath}/slides/${filename}`;
+  const extension = extname(filename);
   const imageData = await readFile(imagePath);
-  return new NextResponse(imageData.buffer, {
+  return new NextResponse(imageData, {
     headers: {
       "Content-Type": mimeType[extension] ?? "image/*",
     },

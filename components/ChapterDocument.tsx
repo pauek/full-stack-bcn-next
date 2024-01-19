@@ -7,6 +7,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import mdxComponents from "./mdx/mdx-components";
+import { imageUrl } from "@/lib/urls";
 
 // import bash from "highlight.js/lib/languages/bash";
 // import js from "highlight.js/lib/languages/javascript";

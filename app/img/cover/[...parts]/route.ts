@@ -8,17 +8,11 @@ import { NextResponse } from "next/server";
 
 type RouteParams = {
   params: {
-    courseId: string;
-    partId: string;
-    sessionId: string;
+    parts: string[],
   };
 };
 export async function GET(_: Request, { params }: RouteParams) {
-  const session = await getPieceWithChildren([
-    params.courseId,
-    params.partId,
-    params.sessionId,
-  ]);
+  const session = await getPieceWithChildren(params.parts);
   if (!session) {
     notFound();
   }
@@ -28,7 +22,7 @@ export async function GET(_: Request, { params }: RouteParams) {
   }
   try {
     const { data, extension } = cover;
-    return new NextResponse(data.buffer, {
+    return new NextResponse(data, {
       headers: { "Content-Type": mimeTypes[extension] },
     });
   } catch (e) {

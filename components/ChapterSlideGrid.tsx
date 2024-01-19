@@ -3,6 +3,7 @@
 import Image from "next/image";
 import SlideViewer from "./SlideViewer";
 import { useState } from "react";
+import { slideUrl } from "@/lib/urls";
 
 type Props = {
   path: string[];

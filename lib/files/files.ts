@@ -3,6 +3,7 @@ import { Dirent } from "fs";
 import { readFile, readdir, writeFile } from "fs/promises";
 import { basename, extname, join, join as pathJoin } from "path";
 import * as utils from "./utils";
+import { walkContentPieces } from "./hashes";
 
 if (!process.env.CONTENT_ROOT) {
   throw "No content root!";
@@ -27,14 +28,18 @@ export const writeMetadata = async (dir: string, metadata: any) => {
   await writeFile(metadataPath, json);
 };
 
-export const updateMetadata = async (diskpath: string, func: (metadata: any) => any) => {
+export const updateMetadata = async (
+  diskpath: string,
+  func: (metadata: any) => any
+) => {
   const metadata = await readMetadata(diskpath);
   func(metadata);
   await writeMetadata(diskpath, metadata);
+};
 
-}
-
-export const readPieceAtDir = async (dirpath: string): Promise<ContentPiece> => {
+export const readPieceAtDir = async (
+  dirpath: string
+): Promise<ContentPiece> => {
   const dirname = basename(dirpath);
   const diskpath = pathJoin(__CONTENT_ROOT, dirpath);
   const metadata = await readMetadata(diskpath);
@@ -278,50 +283,12 @@ export const getBreadcrumbData = async (
   return crumbs;
 };
 
-type __WalkFunc = (p: ContentPiece, idpath: string[]) => Promise<any>;
-
-const __walkAllChapterPaths =
-  (func: __WalkFunc) => async (courseId: string) => {
-    const course = await __getRootPieceWithChildren(courseId);
-    if (course === null) {
-      return [];
+export const getAllIdpaths = async (piece: ContentPiece) => {
+  const idpaths: string[][] = [];
+  await walkContentPieces(piece, async (piece, _) => {
+    if (piece.path.length != 2) { // except parts for now
+      idpaths.push(piece.path);
     }
-    const result = [];
-    for (const _part of course.children || []) {
-      const part = await getPieceWithChildren([courseId, _part.id]);
-      if (part == null) {
-        continue;
-      }
-      for (const _session of part.children || []) {
-        const session = await getPieceWithChildren([
-          courseId,
-          _part.id,
-          _session.id,
-        ]);
-        if (session === null) {
-          continue;
-        }
-        for (const _chapter of session.children || []) {
-          const ret = await func(_chapter, [
-            courseId,
-            part.id,
-            session.id,
-            _chapter.id,
-          ]);
-          if (Array.isArray(ret)) {
-            result.push(...ret);
-          } else {
-            result.push(ret);
-          }
-        }
-      }
-    }
-    return result;
-  };
-
-export const getAllChapterParams = __walkAllChapterPaths(async (_, path) => ({
-  courseId: path[0],
-  partId: path[1],
-  sessionId: path[2],
-  chapterId: path[3],
-}));
+  });
+  return idpaths;
+};

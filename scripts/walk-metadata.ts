@@ -1,15 +1,18 @@
-import { readMetadata, writeMetadata } from "@/lib/files/files";
+import { getPiece, readMetadata, writeMetadata } from "@/lib/files/files";
 import { walkContentPieces } from "@/lib/files/hashes";
 import { join } from "path";
 
-const fullstackPath = join(process.env.CONTENT_ROOT!, "fullstack");
+const fullstack = await getPiece(["fullstack"]);
+if (!fullstack) {
+  throw `Course "fullstack" not found!`;
+}
 
-walkContentPieces(fullstackPath, async (diskpath, _) => {
-  const metadata = await readMetadata(diskpath);
+walkContentPieces(fullstack, async (piece, _) => {
+  const metadata = await readMetadata(piece.diskpath);
   for (const field in metadata) {
     if (Array.isArray(metadata[field])) {
-      console.log(diskpath, field, metadata[field]);
+      console.log(piece.diskpath, field, metadata[field]);
     }
   }
-  await writeMetadata(diskpath, metadata);
+  await writeMetadata(piece.diskpath, metadata);
 })

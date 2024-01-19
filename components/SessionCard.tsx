@@ -2,14 +2,14 @@ import { ContentPiece } from "@/lib/adt";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import ImageWithFallback from "./ImageWithFallback";
-import { coverUrl, imageUrl } from "@/lib/urls";
+import { coverUrl, imageUrl, pieceUrl } from "@/lib/urls";
 
 type SessionButtonProps = {
   session: ContentPiece;
 };
 const SessionCard = async ({ session }: SessionButtonProps) => {
   return (
-    <Link href={coverUrl(session.path)} className="w-1/3">
+    <Link href={pieceUrl(session.path)} className="w-1/3">
       <div
         className={cn(
           "h-[7.8rem] w-[12em] text-xs sm:text-sm",

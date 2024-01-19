@@ -1,5 +1,9 @@
 import ChapterPageBody from "@/components/ChapterPageBody";
 import SessionPageBody from "@/components/SessionPageBody";
+import {
+    getAllIdpaths,
+    getPiece
+} from "@/lib/files/files";
 import { notFound } from "next/navigation";
 
 type _Props = {
@@ -16,9 +20,18 @@ export default async function Page({ params }: _Props) {
     case 3:
       return <SessionPageBody idpath={idpath} />;
     case 2:
-      // We don't render parts
+      // We don't render course Parts
       notFound();
     case 1:
       return <div>Course!</div>;
   }
+}
+
+export async function generateStaticParams() {
+  const course = await getPiece([process.env.COURSE!]);
+  if (!course) {
+    return [];
+  }
+  const idpaths = await getAllIdpaths(course);
+  return idpaths.map((idpath) => ({ idpath }));
 }
