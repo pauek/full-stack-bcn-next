@@ -10,7 +10,7 @@ import {
   getPieceSlideList,
   pieceDocFilename,
 } from "../files/files";
-import { hashFile } from "../files/hashes";
+import { hashAny } from "../files/hashes";
 import { bytesToBase64 } from "../utils";
 
 const sql = neon(process.env.DATABASE_URL!);
@@ -69,16 +69,25 @@ export const insertFiles = async (piece: ContentPiece) => {
   ];
 
   const cover = await getPieceCoverImageFilename(piece);
-  if (cover) allFiles.push({ filename: basename(cover), diskpath: cover });
+  if (cover) {
+    allFiles.push({
+      filename: basename(cover),
+      diskpath: cover,
+    });
+  }
 
   const doc = await pieceDocFilename(piece.diskpath);
-  if (doc)
-    allFiles.push({ diskpath: join(piece.diskpath, doc), filename: doc });
+  if (doc) {
+    allFiles.push({
+      diskpath: join(piece.diskpath, doc),
+      filename: doc,
+    });
+  }
 
   for (const { diskpath, filename } of allFiles) {
     try {
       const bytes = await readFile(diskpath);
-      const hash = await hashFile(diskpath);
+      const hash = await hashAny(bytes);
       await db
         .insert(schema.files)
         .values({

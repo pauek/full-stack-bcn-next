@@ -16,7 +16,7 @@ export type AbstractContentPiece = {
 
 const rPieceDirectory = /^[0-9]{2} +.+$/;
 
-export const hash = (x: any) => {
+export const hashAny = (x: any) => {
   const hasher = new Bun.CryptoHasher("sha256");
   if (typeof x === "number") {
     hasher.update(`number(${x})`);
@@ -25,13 +25,13 @@ export const hash = (x: any) => {
   } else if (typeof x === "boolean") {
     hasher.update(`boolean(${x})`);
   } else if (Array.isArray(x)) {
-    hasher.update(x.map((elem) => hash(elem)).join("\n"));
+    hasher.update(x.map((elem) => hashAny(elem)).join("\n"));
   } else if (x instanceof Buffer) {
     hasher.update(x.buffer);
   } else if (typeof x === "object") {
     hasher.update(
       Object.entries(x)
-        .map(([field, value]) => hash(`${field}=${value}\n`))
+        .map(([field, value]) => hashAny(`${field}=${value}\n`))
         .join("")
     );
   } else {
@@ -79,7 +79,7 @@ const isPieceFile = (filename: string) => {
 const isPieceSubdir = (dir: string) => dir === "images" || dir === "slides";
 
 export const hashFile = async (diskpath: string) =>
-  hash(await readFile(diskpath));
+  hashAny(await readFile(diskpath));
 
 export const hashPiece = async (
   diskpath: string,
@@ -95,7 +95,7 @@ export const hashPiece = async (
   for (const field in metadata) {
     hashes.push({
       name: field,
-      hash: hash(metadata[field]),
+      hash: hashAny(metadata[field]),
     });
   }
 
@@ -131,7 +131,7 @@ export const hashPiece = async (
   });
 
   const concat = hashes.map(({ name, hash }) => `${hash} ${name}\n`).join("");
-  const result = hash(concat);
+  const result = hashAny(concat);
   if (options?.save) {
     await writeFile(join(diskpath, HASH_FILE), result);
   }
