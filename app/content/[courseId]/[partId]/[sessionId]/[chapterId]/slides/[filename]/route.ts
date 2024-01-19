@@ -2,6 +2,7 @@ import { getPieceWithChildren } from "@/lib/files/files";
 import { readFile } from "fs/promises";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
+import { extname } from "path";
 
 const mimeType: Record<string, string> = {
   svg: "image/svg+xml",
@@ -9,20 +10,31 @@ const mimeType: Record<string, string> = {
   png: "image/png",
 };
 
-export async function GET(req: NextRequest) {
-  const [_empty, _content, ...path] = req.nextUrl.pathname.split("/");
-  const chapter = await getPieceWithChildren(path);
+type RouteParams = {
+  params: {
+    courseId: string;
+    partId: string;
+    sessionId: string;
+    chapterId: string;
+    filename: string;
+  };
+};
+export async function GET(req: NextRequest, { params }: RouteParams) {
+  const chapter = await getPieceWithChildren([
+    params.courseId,
+    params.partId,
+    params.sessionId,
+    params.chapterId,
+  ]);
   if (!chapter) {
     notFound();
   }
-  const [imageFilenameURL] = path.slice(-1);
-  const imageFilename = decodeURIComponent(imageFilenameURL);
-  const imageExtension = imageFilename.split(".").slice(-1)[0];
-  const imagePath = `${chapter.diskpath}/slides/${imageFilename}`;
-  const imageBytes = await readFile(imagePath);
-  return new NextResponse(imageBytes.buffer, {
+  const imagePath = `${chapter.diskpath}/slides/${params.filename}`;
+  const extension = extname(params.filename);
+  const imageData = await readFile(imagePath);
+  return new NextResponse(imageData.buffer, {
     headers: {
-      "Content-Type": mimeType[imageExtension] ?? "image/*",
+      "Content-Type": mimeType[extension] ?? "image/*",
     },
   });
 }

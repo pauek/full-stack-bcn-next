@@ -1,5 +1,6 @@
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
+import { extname } from "path";
 
 export const readDirWithFileTypes = (path: string) =>
   readdir(path, { withFileTypes: true });
@@ -18,15 +19,10 @@ export const isContentEntity = (ent: Dirent) => {
   );
 };
 
-export const fileExtension = (filename: string) => {
-  const lastDot = filename.lastIndexOf(".");
-  return lastDot > 0 ? filename.slice(lastDot + 1) : "";
-};
-
 export const isSlide = (ent: Dirent) =>
   ent.isFile() && ent.name.endsWith(".svg");
 
 const imgExts = ["png", "jpg", "jpeg", "svg", "webp", "avif"];
 
 export const isImage = (ent: Dirent) =>
-  ent.isFile() && imgExts.includes(fileExtension(ent.name));
+  ent.isFile() && imgExts.includes(extname(ent.name));

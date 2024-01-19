@@ -26,7 +26,7 @@ export default async function Page({ params }: PageProps) {
         <div className="mx-4">
           <div id="top" className="absolute top-0" />
           <div className="pt-8 border-b mb-6">
-            <p className="text-stone-400 mb-0 text-xs">SESSION {session.index}</p>
+            <div className="text-stone-400 mb-0 text-xs">SESSION {session.index}</div>
             <h2 className="p-0 pb-2">{session.name}</h2>
           </div>
           <div className="gap-4 grid sm:grid-cols-2 max-md:grid-cols-1">
