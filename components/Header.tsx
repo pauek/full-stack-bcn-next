@@ -1,4 +1,4 @@
-import { getBreadcrumbs, getPieceWithChildren } from "@/lib/files/files";
+import { getBreadcrumbData, getPieceWithChildren } from "@/lib/files/files";
 import Link from "next/link";
 import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
 import MobileMenu from "./MobileMenu";
@@ -9,7 +9,7 @@ export default async function Header({ path }: { path: string[] }) {
   if (course === null) {
     throw `Course with path ${path[0]} not found`;
   }
-  const [part, ...crumbs] = await getBreadcrumbs(...path);
+  const [part, ...crumbs] = await getBreadcrumbData(...path);
   return (
     <header
       className={

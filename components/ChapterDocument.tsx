@@ -1,4 +1,4 @@
-import { getPieceWithChildren, getChapterDoc } from "@/lib/files/files";
+import { getPieceWithChildren, getPieceDocument } from "@/lib/files/files";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import NextImage from "next/image";
 import { Suspense } from "react";
@@ -17,7 +17,7 @@ type ChapterProps = {
 };
 export default async function ChapterDocument({ path }: ChapterProps) {
   const chapter = await getPieceWithChildren(path);
-  const doc = await getChapterDoc(path);
+  const doc = await getPieceDocument(path);
 
   const RenderError = () => {
     return (

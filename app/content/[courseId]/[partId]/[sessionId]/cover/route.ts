@@ -1,6 +1,6 @@
 import {
   getPieceWithChildren,
-  getSessionCoverImageData,
+  getPieceCoverImage,
 } from "@/lib/files/files";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
@@ -22,7 +22,7 @@ export async function GET(_: Request, { params }: RouteParams) {
   if (!session) {
     notFound();
   }
-  const cover = await getSessionCoverImageData(session);
+  const cover = await getPieceCoverImage(session);
   if (!cover) {
     notFound();
   }
