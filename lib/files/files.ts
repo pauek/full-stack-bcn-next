@@ -228,14 +228,13 @@ export const getBreadcrumbData = async (
 ): Promise<CrumbData[]> => {
   // TODO: simplify getBreadcrumbs
   const crumbs: CrumbData[] = [];
-  let siblings: Array<CrumbData> = [];
 
   const [courseId, partId, sessionId, chapterId] = idpath;
   if (partId) {
     const part = await getPieceWithChildren([courseId, partId]);
     if (!part) return [];
     crumbs.push({ name: part.name, idpath: [partId] });
-    siblings =
+    const sessionSiblings =
       part.children?.map((s) => ({
         name: s.name,
         idpath: [courseId, partId, s.id],
@@ -246,9 +245,9 @@ export const getBreadcrumbData = async (
       crumbs.push({
         name: session.name,
         idpath: [courseId, partId, sessionId],
-        siblings,
+        siblings: sessionSiblings,
       });
-      siblings =
+      const chapterSiblings =
         session.children?.map((ch) => ({
           name: ch.name,
           idpath: [courseId, partId, sessionId, ch.id],
@@ -264,7 +263,7 @@ export const getBreadcrumbData = async (
         crumbs.push({
           name: chapter.name,
           idpath: [courseId, partId, sessionId, chapterId],
-          siblings,
+          siblings: chapterSiblings,
         });
       }
     }

@@ -1,10 +1,10 @@
-import { Chapter } from "@/lib/adt";
+import { ContentPiece } from "@/lib/adt";
 import { pieceUrl } from "@/lib/urls";
 import Link from "next/link";
 
 type ChapterItemProps = {
   index: number;
-  chapter: Chapter;
+  chapter: ContentPiece;
 };
 export default async function ChapterItem({
   index,

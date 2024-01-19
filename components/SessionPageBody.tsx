@@ -1,7 +1,6 @@
 import { getPieceWithChildren } from "@/lib/files/files";
-import StaticLayout from "./StaticLayout";
 import ChapterItem from "./ChapterItem";
-import { Chapter } from "@/lib/adt";
+import StaticLayout from "./StaticLayout";
 
 export default async function SessionPageBody({
   idpath,
@@ -28,7 +27,7 @@ export default async function SessionPageBody({
               <ChapterItem
                 key={piece.id}
                 index={index + 1}
-                chapter={piece as Chapter}
+                chapter={piece}
               />
             ))}
           </div>
