@@ -1,4 +1,4 @@
-import { insertFiles, insertPiece } from "@/lib/db/db";
+import { insertFiles, insertPiece } from "@/lib/db/insert";
 import { getPiece } from "@/lib/files/files";
 import { walkContentPieces } from "@/lib/files/hashes";
 
