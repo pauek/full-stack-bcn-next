@@ -2,7 +2,7 @@ import * as schema from "@/data/schema";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { readFile } from "fs/promises";
-import { join } from "path";
+import { basename, join } from "path";
 import { ContentPiece } from "../adt";
 import {
   getPieceCoverImageFilename,
@@ -56,7 +56,10 @@ export const insertPiece = async (piece: ContentPiece) => {
 };
 
 export const insertFiles = async (piece: ContentPiece) => {
-  const fullpath = (dir: string) => (f: string) => join(piece.diskpath, dir, f);
+  const fullpath = (dir: string) => (f: string) => ({
+    filename: `${dir}/${f}`,
+    diskpath: join(piece.diskpath, dir, f),
+  });
 
   const images = await getPieceImageList(piece);
   const slides = await getPieceSlideList(piece);
@@ -66,15 +69,16 @@ export const insertFiles = async (piece: ContentPiece) => {
   ];
 
   const cover = await getPieceCoverImageFilename(piece);
-  if (cover) allFiles.push(cover);
+  if (cover) allFiles.push({ filename: basename(cover), diskpath: cover });
 
   const doc = await pieceDocFilename(piece.diskpath);
-  if (doc) allFiles.push(join(piece.diskpath, doc));
+  if (doc)
+    allFiles.push({ diskpath: join(piece.diskpath, doc), filename: doc });
 
-  for (const filename of allFiles) {
+  for (const { diskpath, filename } of allFiles) {
     try {
-      const bytes = await readFile(filename);
-      const hash = await hashFile(filename);
+      const bytes = await readFile(diskpath);
+      const hash = await hashFile(diskpath);
       await db
         .insert(schema.files)
         .values({
