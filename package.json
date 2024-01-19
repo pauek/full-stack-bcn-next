@@ -9,7 +9,8 @@
     "lint": "next lint",
     "indices": "bun run scripts/recalculate-indices.ts",
     "hashes": "bun run scripts/compute-hashes.ts",
-    "changes": "bun run scripts/compute-changes.ts"
+    "changes": "bun run scripts/compute-changes.ts",
+    "walk": "bun run scripts/walk-metadata.ts"
   },
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.8.0",

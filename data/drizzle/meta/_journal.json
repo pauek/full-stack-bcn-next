@@ -15,6 +15,13 @@
       "when": 1705666578514,
       "tag": "0001_skinny_proemial_gods",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705690965460,
+      "tag": "0002_lethal_the_phantom",
+      "breakpoints": true
     }
   ]
 }
