@@ -1,13 +1,10 @@
 import { getPieceWithChildren } from "@/lib/files/files";
+import { mimeTypes } from "@/lib/mime-types";
 import { readFile } from "fs/promises";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
-const mimeType: Record<string, string> = {
-  svg: "image/svg+xml",
-  jpg: "image/jpeg",
-  png: "image/png",
-};
+// TODO: Refactor this!!
 
 export async function GET(req: NextRequest) {
   const [_empty, _content, ...path] = req.nextUrl.pathname.split("/");
@@ -22,7 +19,7 @@ export async function GET(req: NextRequest) {
   const imageBytes = await readFile(imagePath);
   return new NextResponse(imageBytes.buffer, {
     headers: {
-      "Content-Type": mimeType[imageExtension] ?? "image/*",
+      "Content-Type": mimeTypes[imageExtension] ?? "image/*",
     },
   });
 }

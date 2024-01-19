@@ -1,7 +1,7 @@
 import { Chapter, ContentPiece } from "@/lib/adt";
-import { Dirent } from "fs";
-import { readFile, readdir, writeFile } from "fs/promises";
-import { basename, join, join as pathJoin } from "path";
+import { Dirent, existsSync } from "fs";
+import { readFile, readdir, stat, writeFile } from "fs/promises";
+import { basename, extname, join, join as pathJoin } from "path";
 import * as utils from "./utils";
 
 const METADATA_FILENAME = ".meta.json";
@@ -97,6 +97,18 @@ export const getContentTree = async (idpath: string[], level: number = 2) => {
   };
 
   return await _getContentTree(idpath, level);
+};
+
+export const getSessionCoverImageData = async (session: ContentPiece) => {
+  for (const ent of await readdir(session.diskpath, { withFileTypes: true })) {
+    if (ent.isFile() && ent.name.startsWith("cover.")) {
+      const imagePath = join(session.diskpath, ent.name);
+      const extension = extname(ent.name);
+      const data = await readFile(imagePath);
+      return { data, extension };
+    }
+  }
+  return null;
 };
 
 export const enumerateSessions = async (
