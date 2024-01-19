@@ -1,4 +1,4 @@
-import ChapterCard from "@/components/ChapterCard";
+import ChapterItem from "@/components/ChapterCard";
 import StaticLayout from "@/components/StaticLayout";
 import { Chapter } from "@/lib/adt";
 import { getAllSessionPaths, getPieceWithChildren } from "@/lib/files/files";
@@ -29,11 +29,11 @@ export default async function Page({ params }: PageProps) {
             <div className="text-stone-400 mb-0 text-xs">SESSION {session.index}</div>
             <h2 className="p-0 pb-2">{session.name}</h2>
           </div>
-          <div className="gap-4 grid sm:grid-cols-2 max-md:grid-cols-1">
-            {session.children?.map((piece) => (
-              <ChapterCard
+          <div className="flex flex-col gap-4">
+            {session.children?.map((piece, index) => (
+              <ChapterItem
                 key={piece.id}
-                path={[courseId, partId, sessionId]}
+                index={index+1}
                 chapter={piece as Chapter}
               />
             ))}

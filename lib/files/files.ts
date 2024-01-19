@@ -44,7 +44,7 @@ const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   }
   let currpath = [id];
   for (const rid of rest) {
-    let children = await getChildren(piece.diskpath);
+    let children = await getChildren(piece.diskpath, idpath);
     let child = children.find((ch) => ch.id === rid);
     if (!child) {
       return null;
@@ -63,7 +63,7 @@ export const getPieceWithChildren = async (
   if (!piece) {
     return null;
   }
-  piece.children = await getChildren(piece.diskpath);
+  piece.children = await getChildren(piece.diskpath, idpath);
   return piece;
 };
 
@@ -73,7 +73,7 @@ const getRootPieceWithChildren = async (
   id: string
 ): Promise<ContentPiece | null> => {
   const piece = await getRootPiece(id);
-  piece.children = await getChildren(piece.diskpath);
+  piece.children = await getChildren(piece.diskpath, [id]);
   return piece;
 };
 
@@ -113,12 +113,14 @@ export const enumerateSessions = async (
   return sessionSequence;
 };
 
-export const getChildren = async (diskpath: string) => {
+export const getChildren = async (diskpath: string, idpath: string[]) => {
   const children = [];
   for (const ent of await utils.readDirWithFileTypes(diskpath)) {
     if (utils.isContentEntity(ent)) {
       const childPath = join(diskpath, ent.name);
-      children.push(await getPieceAtDir(childPath));
+      const child = await getPieceAtDir(childPath);
+      child.path = [...idpath, child.id];
+      children.push(child);
     }
   }
   children.sort((a, b) => a.diskpath.localeCompare(b.diskpath));
@@ -328,7 +330,7 @@ export const getAllSessionPaths = async (courseId: string) => {
     return [];
   }
   for (const part of course.children || []) {
-    for (const session of await getChildren(part.diskpath)) {
+    for (const session of await getChildren(part.diskpath, [courseId])) {
       sessionPaths.push({
         courseId,
         partId: part.id,
