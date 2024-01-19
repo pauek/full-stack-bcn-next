@@ -1,1 +1,0 @@
-ALTER TABLE "pieces" ADD COLUMN "metadata" json;

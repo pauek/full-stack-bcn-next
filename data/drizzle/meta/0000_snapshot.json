@@ -1,54 +1,24 @@
 {
-  "id": "6ce2797b-0297-499b-9eb9-bfb9dea92522",
+  "id": "e7e648fe-01e9-4c7b-96e4-5b858870eb68",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
   "tables": {
-    "children": {
-      "name": "children",
-      "schema": "",
-      "columns": {
-        "parent_piece_id": {
-          "name": "parent_piece_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "child_piece_id": {
-          "name": "child_piece_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "children_parent_piece_id_child_piece_id_pk": {
-          "name": "children_parent_piece_id_child_piece_id_pk",
-          "columns": [
-            "parent_piece_id",
-            "child_piece_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {}
-    },
     "files": {
       "name": "files",
       "schema": "",
       "columns": {
-        "file_id": {
-          "name": "file_id",
+        "file_hash": {
+          "name": "file_hash",
           "type": "text",
           "primaryKey": true,
           "notNull": true
         },
-        "piece_id": {
-          "name": "piece_id",
+        "piece_hash": {
+          "name": "piece_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -58,27 +28,13 @@
         },
         "data": {
           "name": "data",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "files_piece_id_pieces_piece_id_fk": {
-          "name": "files_piece_id_pieces_piece_id_fk",
-          "tableFrom": "files",
-          "tableTo": "pieces",
-          "columnsFrom": [
-            "piece_id"
-          ],
-          "columnsTo": [
-            "piece_id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -86,8 +42,8 @@
       "name": "pieces",
       "schema": "",
       "columns": {
-        "piece_id": {
-          "name": "piece_id",
+        "piece_hash": {
+          "name": "piece_hash",
           "type": "text",
           "primaryKey": true,
           "notNull": true
@@ -98,8 +54,39 @@
           "primaryKey": false,
           "notNull": true
         },
-        "string": {
-          "name": "string",
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diskpath": {
+          "name": "diskpath",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "num_slides": {
+          "name": "num_slides",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "has_doc": {
+          "name": "has_doc",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hidden": {
+          "name": "hidden",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "parent_hash": {
+          "name": "parent_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -107,6 +94,12 @@
         "index": {
           "name": "index",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "json",
           "primaryKey": false,
           "notNull": false
         }

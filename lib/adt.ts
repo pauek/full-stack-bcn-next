@@ -1,5 +1,6 @@
 export type ContentPiece = {
   id: string;
+  hash: string;
   name: string;
   idpath: string[];
   diskpath: string;

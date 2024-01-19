@@ -29,6 +29,7 @@
     "drizzle-orm": "^0.29.3",
     "next": "latest",
     "next-mdx-remote": "^4.4.1",
+    "pg": "^8.11.3",
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",

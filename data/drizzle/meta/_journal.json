@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1705666376240,
-      "tag": "0000_outgoing_terror",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1705666578514,
-      "tag": "0001_skinny_proemial_gods",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1705690965460,
-      "tag": "0002_lethal_the_phantom",
+      "when": 1705698852400,
+      "tag": "0000_purple_skreet",
       "breakpoints": true
     }
   ]

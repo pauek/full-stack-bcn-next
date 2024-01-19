@@ -16,7 +16,7 @@ export type AbstractContentPiece = {
 
 const rPieceDirectory = /^[0-9]{2} +.+$/;
 
-const hash = (x: any) => {
+export const hash = (x: any) => {
   const hasher = new Bun.CryptoHasher("sha256");
   if (typeof x === "number") {
     hasher.update(`number(${x})`);
@@ -58,8 +58,9 @@ export const walkContentPieces = async <T>(
   const results = await Promise.allSettled(
     childSubdirs.map(async (subdir) => {
       const childDir = join(piece.diskpath, subdir);
-      const child = await readPieceAtSubdir(childDir);
+      const child = await readPieceAtSubdir(childDir, piece);
       child.idpath = [...piece.idpath, child.id];
+      child.parent = piece;
       return walkContentPieces(child, func);
     })
   );
