@@ -1,8 +1,9 @@
 import { readFile, readdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { ContentPiece } from "../../adt";
-import { __CONTENT_ROOT, readPieceAtSubdir } from "./piece";
 import { readMetadata } from "./metadata";
+import * as utils from "./utils";
+import { __CONTENT_ROOT } from ".";
 
 export const HASH_FILE = ".hash";
 export const HASH_MAP_FILE = "hashes.json";
@@ -59,7 +60,7 @@ export const walkContentPieces = async <T>(
   const results = await Promise.allSettled(
     childSubdirs.map(async (subdir) => {
       const childDir = join(piece.diskpath, subdir);
-      const child = await readPieceAtSubdir(childDir, piece);
+      const child = await utils.readPieceAtSubdir(childDir, piece);
       child.idpath = [...piece.idpath, child.id];
       child.parent = piece;
       return walkContentPieces(child, func);

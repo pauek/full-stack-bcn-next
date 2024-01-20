@@ -5,12 +5,17 @@ import {
   getContentTree,
   getPiece,
   getPieceCoverImageData,
-  getPieceCoverImageFilename,
   getPieceDocument,
   getPieceImageList,
   getPieceSlideList,
   getPieceWithChildren,
+  pieceHasCover,
 } from "./piece";
+
+if (!process.env.CONTENT_ROOT) {
+  throw "No content root!";
+}
+export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
 
 export default {
   getPiece,
@@ -19,12 +24,13 @@ export default {
   getPieceImageList,
   getPieceSlideList,
   getPieceCoverImageData,
-  getPieceCoverImageFilename,
   getBreadcrumbData,
   getContentTree,
   getAllIdpaths,
+  pieceHasCover,
 } satisfies DataBackend;
 
 export * from "./hashes";
 export * from "./piece";
 export * from "./metadata";
+export { findDocFilename, findCoverImageFilename } from "./utils";

@@ -18,7 +18,7 @@ export interface DataBackend {
   getPieceImageList: (piece: ContentPiece) => Promise<string[] | null>;
   getPieceSlideList: (piece: ContentPiece) => Promise<string[] | null>;
   getPieceCoverImageData: (piece: ContentPiece) => Promise<ImgData | null>;
-  getPieceCoverImageFilename: (piece: ContentPiece) => Promise<string | null>;
+  pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
 
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
   getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;

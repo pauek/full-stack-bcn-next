@@ -2,9 +2,9 @@ import * as schema from "@/data/schema";
 import * as files from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { basename, join } from "path";
-import { ContentPiece } from "../../adt";
-import { hashAny } from "../files/hashes";
-import { bytesToBase64 } from "../../utils";
+import { ContentPiece } from "@/lib/adt";
+import { bytesToBase64 } from "@/lib/utils";
+import { hashAny } from "@/lib/data/files/hashes";
 import { db } from "./db";
 
 export const insertPiece = async (piece: ContentPiece) => {
@@ -59,7 +59,7 @@ export const insertFiles = async (piece: ContentPiece) => {
     ...(slides?.map(fullpath("slides")) || []),
   ];
 
-  const cover = await files.getPieceCoverImageFilename(piece);
+  const cover = await files.findCoverImageFilename(piece);
   if (cover) {
     allFiles.push({
       filename: basename(cover),
@@ -67,7 +67,7 @@ export const insertFiles = async (piece: ContentPiece) => {
     });
   }
 
-  const doc = await files.pieceDocFilename(piece.diskpath);
+  const doc = await files.findDocFilename(piece.diskpath);
   if (doc) {
     allFiles.push({
       diskpath: join(piece.diskpath, doc),

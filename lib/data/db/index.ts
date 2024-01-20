@@ -1,1 +1,1 @@
-export { getPieceWithChildren } from "./pieces";
+export { getPieceWithChildren } from "./piece";
