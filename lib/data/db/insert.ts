@@ -1,5 +1,5 @@
 import * as schema from "@/data/schema";
-import data from "@/lib/data";
+import * as files from "@/lib/data/files/files";
 import { readFile } from "fs/promises";
 import { basename, join } from "path";
 import { ContentPiece } from "../../adt";
@@ -52,14 +52,14 @@ export const insertFiles = async (piece: ContentPiece) => {
     diskpath: join(piece.diskpath, dir, f),
   });
 
-  const images = await data.getPieceImageList(piece);
-  const slides = await data.getPieceSlideList(piece);
+  const images = await files.getPieceImageList(piece);
+  const slides = await files.getPieceSlideList(piece);
   const allFiles = [
     ...(images?.map(fullpath("images")) || []),
     ...(slides?.map(fullpath("slides")) || []),
   ];
 
-  const cover = await data.getPieceCoverImageFilename(piece);
+  const cover = await files.getPieceCoverImageFilename(piece);
   if (cover) {
     allFiles.push({
       filename: basename(cover),
@@ -67,7 +67,7 @@ export const insertFiles = async (piece: ContentPiece) => {
     });
   }
 
-  const doc = await data.pieceDocFilename(piece.diskpath);
+  const doc = await files.pieceDocFilename(piece.diskpath);
   if (doc) {
     allFiles.push({
       diskpath: join(piece.diskpath, doc),

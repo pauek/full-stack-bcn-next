@@ -2,7 +2,7 @@ import { ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { basename, extname, join, join as pathJoin } from "path";
-import { Backend } from "..";
+import { DataBackend } from "..";
 import { HASH_FILE, walkContentPieces } from "./hashes";
 import * as utils from "./utils";
 
@@ -13,7 +13,7 @@ if (!process.env.CONTENT_ROOT) {
 export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
 const __METADATA_FILENAME = ".meta.json";
 
-const pieceDocFilename = async (diskpath: string) => {
+export const pieceDocFilename = async (diskpath: string) => {
   for (const ent of await utils.readDirWithFileTypes(diskpath)) {
     if (ent.isFile() && ent.name.startsWith("doc.")) {
       return ent.name;
@@ -193,13 +193,13 @@ const __listPieceSubdir = async (
   }
 };
 
-const getPieceSlideList = async (piece: ContentPiece) =>
+export const getPieceSlideList = async (piece: ContentPiece) =>
   __listPieceSubdir(piece.diskpath, "slides", utils.isSlide);
 
-const getPieceImageList = async (piece: ContentPiece) =>
+export const getPieceImageList = async (piece: ContentPiece) =>
   __listPieceSubdir(piece.diskpath, "images", utils.isImage);
 
-const getPieceCoverImageFilename = async (piece: ContentPiece) => {
+export const getPieceCoverImageFilename = async (piece: ContentPiece) => {
   for (const ent of await utils.readDirWithFileTypes(piece.diskpath)) {
     if (ent.isFile() && ent.name.startsWith("cover.")) {
       return join(piece.diskpath, ent.name);
@@ -276,4 +276,4 @@ export default {
   getContentTree,
   getAllIdpaths,
   pieceDocFilename,
-} satisfies Backend;
+} satisfies DataBackend;
