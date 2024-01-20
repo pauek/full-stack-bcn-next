@@ -1,5 +1,5 @@
 import backend from "@/lib/data";
-import { walkContentPieces } from "@/lib/data/files/hashes";
+import { walkContentPieces } from "@/lib/data/files";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextResponse } from "next/server";

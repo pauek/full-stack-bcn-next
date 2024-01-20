@@ -1,5 +1,5 @@
 import * as schema from "@/data/schema";
-import * as files from "@/lib/data/files/files";
+import * as files from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { basename, join } from "path";
 import { ContentPiece } from "../../adt";

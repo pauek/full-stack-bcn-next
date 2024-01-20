@@ -6,7 +6,7 @@ import { cn, range } from "@/lib/utils";
 import SessionCard from "@/components/SessionCard";
 
 export default async function Home() {
-  const course = await data.getContentTree([process.env.COURSE!]);
+  const course = await data.getContentTree([process.env.COURSE!], { level: 2 });
   if (course === null) {
     notFound();
   }

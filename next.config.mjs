@@ -31,6 +31,7 @@ export default async (phase, { defaultConfig }) => {
       break;
     case PHASE_PRODUCTION_BUILD:
       console.info("--> Production build <--");
+      break;
   }
   return withMDX(config);
 };

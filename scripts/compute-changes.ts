@@ -1,5 +1,4 @@
-import { getPiece } from "@/lib/data/files/files";
-import { hashPiece, walkContentPieces } from "@/lib/data/files/hashes";
+import { getPiece, hashPiece, walkContentPieces } from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { join } from "path";
 

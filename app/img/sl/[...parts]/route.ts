@@ -1,5 +1,5 @@
 import data from "@/lib/data";
-import { walkContentPieces } from "@/lib/data/files/hashes";
+import { walkContentPieces } from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";

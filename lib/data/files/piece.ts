@@ -1,17 +1,17 @@
 import { ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
-import { readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
 import { basename, extname, join, join as pathJoin } from "path";
-import { DataBackend } from "..";
 import { HASH_FILE, walkContentPieces } from "./hashes";
+import { readMetadata } from "./metadata";
 import * as utils from "./utils";
+import { CrumbData, ImgData } from "../data-backend";
 
 if (!process.env.CONTENT_ROOT) {
   throw "No content root!";
 }
 
 export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
-const __METADATA_FILENAME = ".meta.json";
 
 export const pieceDocFilename = async (diskpath: string) => {
   for (const ent of await utils.readDirWithFileTypes(diskpath)) {
@@ -20,31 +20,6 @@ export const pieceDocFilename = async (diskpath: string) => {
     }
   }
   return null;
-};
-
-export const readMetadata = async (diskpath: string): Promise<any> => {
-  try {
-    const metadataPath = pathJoin(diskpath, __METADATA_FILENAME);
-    const bytes = await readFile(metadataPath);
-    return JSON.parse(bytes.toString());
-  } catch (e) {
-    return {};
-  }
-};
-
-const writeMetadata = async (dir: string, metadata: any) => {
-  const json = JSON.stringify(metadata, null, 2);
-  const metadataPath = pathJoin(dir, __METADATA_FILENAME);
-  await writeFile(metadataPath, json);
-};
-
-export const updateMetadata = async (
-  diskpath: string,
-  func: (metadata: any) => any
-) => {
-  const metadata = await readMetadata(diskpath);
-  func(metadata);
-  await writeMetadata(diskpath, metadata);
 };
 
 export const readPieceAtSubdir = async (
@@ -67,10 +42,9 @@ export const readPieceAtSubdir = async (
     hash,
     parent,
     index: 0,
-    ...metadata, // <-- id
+    ...metadata, // <-- "id" is here (the 'slug')
     hasDoc: (await pieceDocFilename(diskpath)) != null,
-    numSlides:
-      (await __listPieceSubdir(diskpath, "slides", utils.isSlide))?.length ?? 0,
+    numSlides: (await __listPieceSubdir(diskpath, "slides", utils.isSlide))?.length ?? 0,
   };
 };
 
@@ -110,9 +84,7 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
   return piece;
 };
 
-const getPieceWithChildren = async (
-  idpath: string[]
-): Promise<ContentPiece | null> => {
+export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPiece | null> => {
   let piece = await getPiece(idpath);
   if (!piece) {
     return null;
@@ -121,7 +93,7 @@ const getPieceWithChildren = async (
   return piece;
 };
 
-const getContentTree = async (idpath: string[], level: number = 2) => {
+export const getContentTree = async (idpath: string[], { level = 2 }: { level: number }) => {
   const _getContentTree = async (idpath: string[], level: number) => {
     if (level === 0) {
       return await getPiece(idpath);
@@ -144,7 +116,7 @@ const getContentTree = async (idpath: string[], level: number = 2) => {
 };
 
 export const getSessionSequence = async (courseId: string): Promise<string[]> => {
-  const course = await getContentTree([courseId], 2);
+  const course = await getContentTree([courseId], { level: 2 });
   const sessionSequence = [];
   let k = 0;
   for (const part of course?.children || []) {
@@ -155,11 +127,11 @@ export const getSessionSequence = async (courseId: string): Promise<string[]> =>
   return sessionSequence;
 };
 
-const pieceNumSlides = async (piece: ContentPiece) => {
+export const pieceNumSlides = async (piece: ContentPiece) => {
   return (await getPieceSlideList(piece))?.length ?? 0;
 };
 
-const getPieceDocument = async (idpath: string[]) => {
+export const getPieceDocument = async (idpath: string[]) => {
   try {
     const chapter = await getPieceWithChildren(idpath);
     if (!chapter) {
@@ -208,11 +180,7 @@ export const getPieceCoverImageFilename = async (piece: ContentPiece) => {
   return null;
 };
 
-export type ImgData = {
-  data: Buffer;
-  extension: string;
-};
-const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgData | null> => {
+export const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgData | null> => {
   const coverFilename = await getPieceCoverImageFilename(piece);
   if (!coverFilename) {
     return null;
@@ -222,17 +190,9 @@ const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgData | nu
   return { data, extension };
 };
 
-export type CrumbData = {
-  name: string;
-  idpath: string[];
-  siblings?: Array<CrumbData>;
-};
-
-const getBreadcrumbData = async (...idpath: string[]): Promise<CrumbData[]> => {
+export const getBreadcrumbData = async (...idpath: string[]): Promise<CrumbData[]> => {
   const crumbs: CrumbData[] = [];
-  const [partPath, sessionPath, chapterPath] = [2, 3, 4].map((n) =>
-    idpath.slice(0, n)
-  );
+  const [partPath, sessionPath, chapterPath] = [2, 3, 4].map((n) => idpath.slice(0, n));
   if (partPath.length === 2) {
     const part = await getPieceWithChildren(partPath);
     if (!part) return [];
@@ -253,7 +213,7 @@ const getBreadcrumbData = async (...idpath: string[]): Promise<CrumbData[]> => {
   return crumbs;
 };
 
-const getAllIdpaths = async (piece: ContentPiece) => {
+export const getAllIdpaths = async (piece: ContentPiece) => {
   const idpaths: string[][] = [];
   await walkContentPieces(piece, async (piece, _) => {
     if (piece.idpath.length != 2) {
@@ -263,17 +223,3 @@ const getAllIdpaths = async (piece: ContentPiece) => {
   });
   return idpaths;
 };
-
-export default {
-  getPiece,
-  getPieceWithChildren,
-  getPieceDocument,
-  getPieceImageList,
-  getPieceSlideList,
-  getPieceCoverImageData,
-  getPieceCoverImageFilename,
-  getBreadcrumbData,
-  getContentTree,
-  getAllIdpaths,
-  pieceDocFilename,
-} satisfies DataBackend;

@@ -10,12 +10,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { CrumbData } from "@/lib/data/files/files";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 import CheckMark from "./icons/CheckMark";
 import { pieceUrl } from "@/lib/urls";
+import { CrumbData } from "@/lib/data/data-backend";
 
 type Props = {
   crumbs: CrumbData[];

@@ -1,6 +1,5 @@
 "use client";
 
-import { CrumbData } from "@/lib/data/files/files";
 import { cn } from "@/lib/utils";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { useRouter } from "next/navigation";
@@ -14,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { pieceUrl } from "@/lib/urls";
+import { CrumbData } from "@/lib/data/data-backend";
 
 type Props = {
   crumbs: CrumbData[];
