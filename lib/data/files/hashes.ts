@@ -16,7 +16,6 @@ export type AbstractContentPiece = {
   children: AbstractContentPiece;
 };
 
-const rPieceDirectory = /^[0-9X]{2} +.+$/;
 
 export const hashAny = (x: any) => {
   const hasher = new Bun.CryptoHasher("sha256");
@@ -50,7 +49,7 @@ export const walkContentPieces = async <T>(
 ) => {
   const childSubdirs: string[] = [];
   for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
-    if (ent.isDirectory() && ent.name.match(rPieceDirectory)) {
+    if (utils.isContentPiece(ent)) {
       childSubdirs.push(ent.name);
     }
   }

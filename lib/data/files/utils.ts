@@ -12,14 +12,9 @@ export const dirNameToTitle = (dirName: string) => {
   return firstSpace !== -1 ? dirName.slice(firstSpace + 1) : dirName;
 };
 
-export const isContentEntity = (ent: Dirent) => {
-  return (
-    ent.isDirectory() &&
-    !ent.name.startsWith("_") &&
-    !ent.name.startsWith(".") &&
-    ent.name !== "slides"
-  );
-};
+const rPieceDirectory = /^[0-9X]{2} .+$/;
+
+export const isContentPiece = (ent: Dirent) => ent.isDirectory() && ent.name.match(rPieceDirectory);
 
 export const isSlide = (ent: Dirent) => ent.isFile() && ent.name.endsWith(".svg");
 
@@ -44,7 +39,7 @@ export const findDocFilename = async (diskpath: string) =>
 export const findCoverImageFilename = async ({ diskpath }: ContentPiece) => {
   const filename = await findFilename(diskpath, (ent) => ent.name.startsWith("cover."));
   return filename ? join(diskpath, filename) : null;
-}
+};
 
 export const listPieceSubdir = async (
   diskpath: string,
@@ -64,7 +59,6 @@ export const listPieceSubdir = async (
     return null;
   }
 };
-
 
 export const readPieceAtSubdir = async (
   subdir: string,

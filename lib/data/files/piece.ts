@@ -13,7 +13,7 @@ export const pieceHasCover = async (piece: ContentPiece) =>
 const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   const children = [];
   for (const ent of await utils.readDirWithFileTypes(parent.diskpath)) {
-    if (utils.isContentEntity(ent)) {
+    if (utils.isContentPiece(ent)) {
       const childPath = join(parent.diskpath, ent.name);
       const child = await utils.readPieceAtSubdir(childPath, parent);
       child.idpath = [...idpath, child.id];
