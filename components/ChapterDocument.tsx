@@ -1,4 +1,4 @@
-import data from "@/lib/backend";
+import data from "@/lib/data";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import NextImage from "next/image";
 import { Suspense } from "react";

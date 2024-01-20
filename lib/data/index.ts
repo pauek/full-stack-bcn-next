@@ -1,6 +1,6 @@
-import { ContentPiece } from "./adt";
+import { ContentPiece } from "../adt";
 import type { CrumbData, ImgData } from "./files/files";
-import filesBackend from '@/lib/files/files';
+import filesBackend from '@/lib/data/files/files';
 
 export interface Backend {
   getPiece: (idpath: string[]) => Promise<ContentPiece | null>;

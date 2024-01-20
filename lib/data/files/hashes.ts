@@ -1,6 +1,6 @@
 import { readFile, readdir, writeFile } from "fs/promises";
 import { join } from "path";
-import { ContentPiece } from "../adt";
+import { ContentPiece } from "../../adt";
 import { __CONTENT_ROOT, readMetadata, readPieceAtSubdir } from "./files";
 
 export const HASH_FILE = ".hash";

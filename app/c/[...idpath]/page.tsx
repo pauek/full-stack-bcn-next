@@ -1,6 +1,6 @@
 import ChapterPageBody from "@/components/ChapterPageBody";
 import SessionPageBody from "@/components/SessionPageBody";
-import data from "@/lib/backend";
+import data from "@/lib/data";
 import { notFound } from "next/navigation";
 
 type _Props = {

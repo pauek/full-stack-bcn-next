@@ -10,7 +10,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { CrumbData } from "@/lib/files/files";
+import { CrumbData } from "@/lib/data/files/files";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";

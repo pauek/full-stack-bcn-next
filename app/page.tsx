@@ -1,5 +1,5 @@
 import StaticLayout from "@/components/StaticLayout";
-import data from "@/lib/backend";
+import data from "@/lib/data";
 import { notFound } from "next/navigation";
 import { ContentPiece } from "@/lib/adt";
 import { cn, range } from "@/lib/utils";

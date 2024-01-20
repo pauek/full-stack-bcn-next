@@ -1,4 +1,4 @@
-import data from "@/lib/backend";
+import data from "@/lib/data";
 import Link from "next/link";
 import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
 import MobileMenu from "./MobileMenu";

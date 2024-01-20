@@ -1,4 +1,4 @@
-import data from "@/lib/backend";
+import data from "@/lib/data";
 import ChapterItem from "./ChapterItem";
 import StaticLayout from "./StaticLayout";
 

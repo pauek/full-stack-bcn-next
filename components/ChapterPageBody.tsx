@@ -1,4 +1,4 @@
-import data from "@/lib/backend";
+import data from "@/lib/data";
 import { notFound } from "next/navigation";
 import ChapterContent from "./ChapterContent";
 import ChapterDocument from "./ChapterDocument";

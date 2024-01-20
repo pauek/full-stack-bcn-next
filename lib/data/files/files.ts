@@ -2,7 +2,7 @@ import { ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { basename, extname, join, join as pathJoin } from "path";
-import { Backend } from "../backend";
+import { Backend } from "..";
 import { HASH_FILE, walkContentPieces } from "./hashes";
 import * as utils from "./utils";
 

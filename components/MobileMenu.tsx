@@ -1,6 +1,6 @@
 "use client";
 
-import { CrumbData } from "@/lib/files/files";
+import { CrumbData } from "@/lib/data/files/files";
 import { cn } from "@/lib/utils";
 import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu";
 import { useRouter } from "next/navigation";

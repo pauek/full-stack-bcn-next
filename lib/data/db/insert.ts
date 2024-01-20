@@ -1,10 +1,10 @@
 import * as schema from "@/data/schema";
+import data from "@/lib/data";
 import { readFile } from "fs/promises";
 import { basename, join } from "path";
-import { ContentPiece } from "../adt";
-import data from "@/lib/backend";
+import { ContentPiece } from "../../adt";
 import { hashAny } from "../files/hashes";
-import { bytesToBase64 } from "../utils";
+import { bytesToBase64 } from "../../utils";
 import { db } from "./db";
 
 export const insertPiece = async (piece: ContentPiece) => {

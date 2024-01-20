@@ -1,5 +1,5 @@
-import { getPiece } from "@/lib/files/files";
-import { HASH_MAP_FILE, hashAllContent } from "@/lib/files/hashes";
+import { getPiece } from "@/lib/data/files/files";
+import { HASH_MAP_FILE, hashAllContent } from "@/lib/data/files/hashes";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 

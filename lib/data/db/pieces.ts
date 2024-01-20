@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { ContentPiece } from "../adt";
+import { ContentPiece } from "../../adt";
 import { db } from "./db";
 import * as schema from "@/data/schema";
 import hashes from "./hashes.json";

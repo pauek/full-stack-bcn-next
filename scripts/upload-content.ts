@@ -1,6 +1,6 @@
-import { insertFiles, insertPiece } from "@/lib/db/insert";
-import { getPiece } from "@/lib/files/files";
-import { walkContentPieces } from "@/lib/files/hashes";
+import { insertFiles, insertPiece } from "@/lib/data/db/insert";
+import { getPiece } from "@/lib/data/files/files";
+import { walkContentPieces } from "@/lib/data/files/hashes";
 
 const fullstack = await getPiece(["fullstack"]);
 if (!fullstack) {
