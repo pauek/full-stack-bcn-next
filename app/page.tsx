@@ -1,12 +1,12 @@
 import StaticLayout from "@/components/StaticLayout";
-import { getContentTree } from "@/lib/files/files";
+import data from "@/lib/backend";
 import { notFound } from "next/navigation";
 import { ContentPiece } from "@/lib/adt";
 import { cn, range } from "@/lib/utils";
 import SessionCard from "@/components/SessionCard";
 
 export default async function Home() {
-  const course = await getContentTree([process.env.COURSE!]);
+  const course = await data.getContentTree([process.env.COURSE!]);
   if (course === null) {
     notFound();
   }

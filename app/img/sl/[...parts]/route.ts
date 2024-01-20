@@ -1,4 +1,4 @@
-import { getPiece, getPieceSlideList, getPieceWithChildren } from "@/lib/files/files";
+import data from "@/lib/backend";
 import { walkContentPieces } from "@/lib/files/hashes";
 import { readFile } from "fs/promises";
 import { notFound } from "next/navigation";
@@ -21,7 +21,7 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   const idpath = parts.slice(0, parts.length - 1);
   const [filename] = parts.slice(-1);
 
-  const chapter = await getPieceWithChildren(idpath);
+  const chapter = await data.getPieceWithChildren(idpath);
   if (!chapter) {
     notFound();
   }
@@ -36,13 +36,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await getPiece([process.env.COURSE!]);
+  const course = await data.getPiece([process.env.COURSE!]);
   if (!course) {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
   await walkContentPieces(course, async (piece, _) => {
-    const slides = await getPieceSlideList(piece);
+    const slides = await data.getPieceSlideList(piece);
     if (slides) {
       for (const slide of slides) {
         imagePaths.push({ parts: [...piece.idpath, slide] });

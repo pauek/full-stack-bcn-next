@@ -2,6 +2,7 @@ import { ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { basename, extname, join, join as pathJoin } from "path";
+import { Backend } from "../backend";
 import { HASH_FILE, walkContentPieces } from "./hashes";
 import * as utils from "./utils";
 
@@ -10,9 +11,9 @@ if (!process.env.CONTENT_ROOT) {
 }
 
 export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
-export const __METADATA_FILENAME = ".meta.json";
+const __METADATA_FILENAME = ".meta.json";
 
-export const pieceDocFilename = async (diskpath: string) => {
+const pieceDocFilename = async (diskpath: string) => {
   for (const ent of await utils.readDirWithFileTypes(diskpath)) {
     if (ent.isFile() && ent.name.startsWith("doc.")) {
       return ent.name;
@@ -31,7 +32,7 @@ export const readMetadata = async (diskpath: string): Promise<any> => {
   }
 };
 
-export const writeMetadata = async (dir: string, metadata: any) => {
+const writeMetadata = async (dir: string, metadata: any) => {
   const json = JSON.stringify(metadata, null, 2);
   const metadataPath = pathJoin(dir, __METADATA_FILENAME);
   await writeFile(metadataPath, json);
@@ -48,7 +49,7 @@ export const updateMetadata = async (
 
 export const readPieceAtSubdir = async (
   subdir: string,
-  parent: ContentPiece | null = null,
+  parent: ContentPiece | null = null
 ): Promise<ContentPiece> => {
   const dirname = basename(subdir);
   const diskpath = pathJoin(__CONTENT_ROOT, subdir);
@@ -68,7 +69,8 @@ export const readPieceAtSubdir = async (
     index: 0,
     ...metadata, // <-- id
     hasDoc: (await pieceDocFilename(diskpath)) != null,
-    numSlides: (await __listPieceSubdir(diskpath, "slides", utils.isSlide))?.length ?? 0,
+    numSlides:
+      (await __listPieceSubdir(diskpath, "slides", utils.isSlide))?.length ?? 0,
   };
 };
 
@@ -87,9 +89,7 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   return children;
 };
 
-export const getPiece = async (
-  idpath: string[]
-): Promise<ContentPiece | null> => {
+export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const [id, ...rest] = idpath;
   let piece = await readPieceAtSubdir(id);
   if (!rest || rest.length === 0) {
@@ -110,7 +110,7 @@ export const getPiece = async (
   return piece;
 };
 
-export const getPieceWithChildren = async (
+const getPieceWithChildren = async (
   idpath: string[]
 ): Promise<ContentPiece | null> => {
   let piece = await getPiece(idpath);
@@ -121,7 +121,7 @@ export const getPieceWithChildren = async (
   return piece;
 };
 
-export const getContentTree = async (idpath: string[], level: number = 2) => {
+const getContentTree = async (idpath: string[], level: number = 2) => {
   const _getContentTree = async (idpath: string[], level: number) => {
     if (level === 0) {
       return await getPiece(idpath);
@@ -143,9 +143,7 @@ export const getContentTree = async (idpath: string[], level: number = 2) => {
   return await _getContentTree(idpath, level);
 };
 
-export const getSessionSequence = async (
-  courseId: string
-): Promise<string[]> => {
+export const getSessionSequence = async (courseId: string): Promise<string[]> => {
   const course = await getContentTree([courseId], 2);
   const sessionSequence = [];
   let k = 0;
@@ -157,11 +155,11 @@ export const getSessionSequence = async (
   return sessionSequence;
 };
 
-export const pieceNumSlides = async (piece: ContentPiece) => {
+const pieceNumSlides = async (piece: ContentPiece) => {
   return (await getPieceSlideList(piece))?.length ?? 0;
 };
 
-export const getPieceDocument = async (idpath: string[]) => {
+const getPieceDocument = async (idpath: string[]) => {
   try {
     const chapter = await getPieceWithChildren(idpath);
     if (!chapter) {
@@ -195,13 +193,13 @@ const __listPieceSubdir = async (
   }
 };
 
-export const getPieceSlideList = async (piece: ContentPiece) =>
+const getPieceSlideList = async (piece: ContentPiece) =>
   __listPieceSubdir(piece.diskpath, "slides", utils.isSlide);
 
-export const getPieceImageList = async (piece: ContentPiece) =>
+const getPieceImageList = async (piece: ContentPiece) =>
   __listPieceSubdir(piece.diskpath, "images", utils.isImage);
 
-export const getPieceCoverImageFilename = async (piece: ContentPiece) => {
+const getPieceCoverImageFilename = async (piece: ContentPiece) => {
   for (const ent of await utils.readDirWithFileTypes(piece.diskpath)) {
     if (ent.isFile() && ent.name.startsWith("cover.")) {
       return join(piece.diskpath, ent.name);
@@ -210,7 +208,11 @@ export const getPieceCoverImageFilename = async (piece: ContentPiece) => {
   return null;
 };
 
-export const getPieceCoverImageData = async (piece: ContentPiece) => {
+export type ImgData = {
+  data: Buffer;
+  extension: string;
+};
+const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgData | null> => {
   const coverFilename = await getPieceCoverImageFilename(piece);
   if (!coverFilename) {
     return null;
@@ -226,10 +228,7 @@ export type CrumbData = {
   siblings?: Array<CrumbData>;
 };
 
-export const getBreadcrumbData = async (
-  ...idpath: string[]
-): Promise<CrumbData[]> => {
-  // TODO: simplify getBreadcrumbs
+const getBreadcrumbData = async (...idpath: string[]): Promise<CrumbData[]> => {
   const crumbs: CrumbData[] = [];
   const [partPath, sessionPath, chapterPath] = [2, 3, 4].map((n) =>
     idpath.slice(0, n)
@@ -254,7 +253,7 @@ export const getBreadcrumbData = async (
   return crumbs;
 };
 
-export const getAllIdpaths = async (piece: ContentPiece) => {
+const getAllIdpaths = async (piece: ContentPiece) => {
   const idpaths: string[][] = [];
   await walkContentPieces(piece, async (piece, _) => {
     if (piece.idpath.length != 2) {
@@ -264,3 +263,17 @@ export const getAllIdpaths = async (piece: ContentPiece) => {
   });
   return idpaths;
 };
+
+export default {
+  getPiece,
+  getPieceWithChildren,
+  getPieceDocument,
+  getPieceImageList,
+  getPieceSlideList,
+  getPieceCoverImageData,
+  getPieceCoverImageFilename,
+  getBreadcrumbData,
+  getContentTree,
+  getAllIdpaths,
+  pieceDocFilename,
+} satisfies Backend;

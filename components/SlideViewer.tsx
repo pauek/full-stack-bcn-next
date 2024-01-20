@@ -3,8 +3,6 @@ import { useEffect } from "react";
 import CloseButton from "./CloseButton";
 import { cn } from "@/lib/utils";
 
-// TODO: Bug: los SVGs se estiran al h-full (why?)
-
 type Props = {
   slide: string;
   onClose: () => void;

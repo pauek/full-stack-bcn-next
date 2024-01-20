@@ -1,4 +1,4 @@
-import { getPieceWithChildren } from "@/lib/files/files";
+import data from "@/lib/backend";
 import ChapterItem from "./ChapterItem";
 import StaticLayout from "./StaticLayout";
 
@@ -7,7 +7,7 @@ export default async function SessionPageBody({
 }: {
   idpath: string[];
 }) {
-  const session = await getPieceWithChildren(idpath);
+  const session = await data.getPieceWithChildren(idpath);
   if (session === null) {
     throw `Session with path ${idpath} not found`;
   }

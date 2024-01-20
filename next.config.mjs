@@ -1,4 +1,5 @@
 import mdx from "@next/mdx";
+import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } from "next/constants.js";
 
 const withMDX = mdx({});
 
@@ -13,10 +14,6 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "*.full-stack-bcn.dev",
-      },
-      {
         protocol: "http",
         hostname: "localhost",
         port: "3333",
@@ -26,4 +23,14 @@ const nextConfig = {
   poweredByHeader: false,
 };
 
-export default withMDX(nextConfig);
+export default async (phase, { defaultConfig }) => {
+  const config = { ...nextConfig };
+  switch (phase) {
+    case PHASE_DEVELOPMENT_SERVER: 
+      console.info("--> Dev server <--");
+      break;
+    case PHASE_PRODUCTION_BUILD:
+      console.info("--> Production build <--");
+  }
+  return withMDX(config);
+};

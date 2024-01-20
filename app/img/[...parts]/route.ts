@@ -1,8 +1,4 @@
-import {
-  getPiece,
-  getPieceImageList,
-  getPieceWithChildren,
-} from "@/lib/files/files";
+import backend from "@/lib/backend";
 import { walkContentPieces } from "@/lib/files/hashes";
 import { mimeTypes } from "@/lib/mime-types";
 import { readFile } from "fs/promises";
@@ -22,7 +18,7 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   const idpath = parts.slice(0, parts.length - 1);
   const [filename] = parts.slice(-1);
 
-  const chapter = await getPieceWithChildren(idpath);
+  const chapter = await backend.getPieceWithChildren(idpath);
   if (!chapter) {
     notFound();
   }
@@ -37,13 +33,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await getPiece([process.env.COURSE!]);
+  const course = await backend.getPiece([process.env.COURSE!]);
   if (!course) {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
   await walkContentPieces(course, async (piece, _) => {
-    const images = await getPieceImageList(piece);
+    const images = await backend.getPieceImageList(piece);
     if (images) {
       for (const image of images) {
         imagePaths.push({ parts: [...piece.idpath, image] });
