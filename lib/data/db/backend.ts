@@ -1,14 +1,12 @@
 import * as schema from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
 import { base64ToBytes, lastItem } from "@/lib/utils";
 import { and, asc, eq, like } from "drizzle-orm";
-import { extname, join } from "path";
-import { ContentPiece } from "@/lib/adt";
+import { extname } from "path";
 import { ImgData } from "../data-backend";
 import { db } from "./db";
 import hashes from "./hashes.json";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
-import { readdir } from "fs/promises";
-import { isContentPiece, readPieceAtSubdir } from "../files/utils";
 
 const pathToHash = new Map(hashes.map(({ hash, path }) => [path, hash]));
 
