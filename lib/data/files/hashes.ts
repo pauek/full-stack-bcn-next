@@ -52,19 +52,12 @@ export const walkContentPieces = async <T>(piece: ContentPiece, func: WalkFunc<T
   childSubdirs.sort();
 
   const children: T[] = [];
-  const results = await Promise.allSettled(
-    childSubdirs.map(async (subdir, index) => {
-      const childDir = join(piece.diskpath, subdir);
-      const child = await utils.readPieceAtSubdir(childDir, [...piece.idpath], piece);
-      return walkContentPieces(child, func);
-    })
-  );
-  for (const res of results) {
-    if (res.status === "rejected") {
-      throw `walkContentPieces: some promise rejected: ${res.reason}`;
-    }
-    children.push(res.value);
+  for (const subdir of childSubdirs) {
+    const childSubdir = join(piece.diskpath, subdir);
+    const child = await utils.readPieceAtSubdir(childSubdir, [...piece.idpath], piece);
+    children.push(await walkContentPieces(child, func));
   }
+
   return await func(piece, children);
 };
 
