@@ -4,14 +4,15 @@ import { extname, join, join as pathJoin } from "path";
 import { CrumbData, ImgData } from "../data-backend";
 import { walkContentPieces } from "./hashes";
 import * as utils from "./utils";
+import { FileTypeEnum } from "@/data/schema";
 
-export { findCoverImageFilename } from './utils';
+export { findCoverImageFilename } from "./utils";
 
 export const pieceHasCover = async (piece: ContentPiece) =>
-  await utils.findCoverImageFilename(piece) !== null;
+  (await utils.findCoverImageFilename(piece)) !== null;
 
-export const pieceHasDoc = async (piece: ContentPiece) => 
-  await utils.findDocFilename(piece.diskpath) !== null;
+export const pieceHasDoc = async (piece: ContentPiece) =>
+  (await utils.findDocFilename(piece.diskpath)) !== null;
 
 const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   const children = [];
@@ -128,27 +129,22 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgDa
   return { data, extension };
 };
 
-export const getBreadcrumbData = async (...idpath: string[]): Promise<CrumbData[]> => {
-  const crumbs: CrumbData[] = [];
-  const [partPath, sessionPath, chapterPath] = [2, 3, 4].map((n) => idpath.slice(0, n));
-  if (partPath.length === 2) {
-    const part = await getPieceWithChildren(partPath);
-    if (!part) return [];
-    crumbs.push({ ...part });
-    const sessionSiblings = part.children;
-    if (sessionPath.length === 3) {
-      const session = await getPieceWithChildren(sessionPath);
-      if (!session) return [];
-      crumbs.push({ ...session, siblings: sessionSiblings });
-      const chapterSiblings = session.children;
-      if (chapterPath.length === 4) {
-        const chapter = await getPieceWithChildren(idpath);
-        if (!chapter) return [];
-        crumbs.push({ ...chapter, siblings: chapterSiblings });
-      }
-    }
+export const getPieceFileData = async (
+  piece: ContentPiece,
+  filename: string,
+  filetype: FileTypeEnum
+): Promise<Buffer | null> => {
+  let searchedFilename = filename;
+  if (filetype === "image") {
+    searchedFilename = `images/${filename}`;
+  } else if (filetype === "slide") {
+    searchedFilename = `images/${filename}`;
   }
-  return crumbs;
+  const foundFilename = await utils.findFilename(piece.diskpath, (ent) => ent.name === searchedFilename);
+  if (!foundFilename) {
+    return null;
+  }
+  return await readFile(join(piece.diskpath, foundFilename));
 };
 
 export const getAllIdpaths = async (piece: ContentPiece) => {

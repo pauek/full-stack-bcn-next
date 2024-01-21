@@ -2,7 +2,7 @@ import { ContentPiece } from "@/lib/adt";
 import { coverUrl, pieceUrl } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import ImageWithFallback from "./ImageWithFallback";
+import Image from "next/image";
 
 type SessionButtonProps = {
   session: ContentPiece;
@@ -18,7 +18,7 @@ const SessionCard = async ({ session }: SessionButtonProps) => {
           "bg-slate-100 border rounded-md shadow m-1 overflow-clip"
         )}
       >
-        <ImageWithFallback
+        <Image
           className="aspect-[16/9] object-contain"
           src={coverUrl(session.idpath)}
           alt="card cover"

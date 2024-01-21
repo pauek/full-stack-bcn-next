@@ -1,6 +1,5 @@
 import data from "@/lib/data";
 import { walkContentPieces } from "@/lib/data/files";
-import { readFile } from "fs/promises";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { extname } from "path";
@@ -21,14 +20,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   const idpath = parts.slice(0, parts.length - 1);
   const [filename] = parts.slice(-1);
 
-  const chapter = await data.getPieceWithChildren(idpath);
-  if (!chapter) {
+  const piece = await data.getPieceWithChildren(idpath);
+  if (!piece) {
     notFound();
   }
-  const imagePath = `${chapter.diskpath}/slides/${filename}`;
+  const fileData = await data.getPieceFileData(piece, filename, "slide");
   const extension = extname(filename);
-  const imageData = await readFile(imagePath);
-  return new NextResponse(imageData, {
+  return new NextResponse(fileData, {
     headers: {
       "Content-Type": mimeType[extension] ?? "image/*",
     },

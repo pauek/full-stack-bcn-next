@@ -1,4 +1,6 @@
-import filesBackend from '@/lib/data/files';
 import { DataBackend } from './data-backend';
 
-export default filesBackend as DataBackend;
+import { backend as filesBackend } from '@/lib/data/files';
+import { backend as dbBackend } from '@/lib/data/db';
+
+export default dbBackend as DataBackend;

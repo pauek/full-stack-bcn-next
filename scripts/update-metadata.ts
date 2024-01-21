@@ -1,6 +1,6 @@
-import files, { getPiece, pieceHasDoc, updateMetadata, walkContentPieces } from "@/lib/data/files";
+import { backend as files, updateMetadata, walkContentPieces } from "@/lib/data/files";
 
-const fullstack = await getPiece(["fullstack"]);
+const fullstack = await files.getPiece(["fullstack"]);
 if (!fullstack) {
   throw `Course "fullstack" not found!`;
 }
@@ -11,7 +11,7 @@ await walkContentPieces(fullstack, async (piece, children) => {
   const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
   await updateMetadata(piece.diskpath, async (metadata) => {
     // hasDoc
-    metadata.hasDoc = await pieceHasDoc(piece);
+    metadata.hasDoc = await files.pieceHasDoc(piece);
 
     // numSlides
     const slides = await files.getPieceSlideList(piece);

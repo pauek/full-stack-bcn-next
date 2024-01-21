@@ -2,19 +2,19 @@ import data from "@/lib/data";
 import { walkContentPieces } from "@/lib/data/files";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 type RouteParams = {
   params: {
     parts: string[];
   };
 };
-export async function GET(_: Request, { params }: RouteParams) {
-  const session = await data.getPieceWithChildren(params.parts);
-  if (!session) {
+export async function GET(req: NextRequest, { params }: RouteParams) {
+  const piece = await data.getPieceWithChildren(params.parts);
+  if (!piece) {
     notFound();
   }
-  const cover = await data.getPieceCoverImageData(session);
+  const cover = await data.getPieceCoverImageData(piece);
   if (!cover) {
     notFound();
   }

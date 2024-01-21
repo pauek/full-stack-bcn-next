@@ -1,4 +1,4 @@
-import backend from "@/lib/data";
+import data from "@/lib/data";
 import { walkContentPieces } from "@/lib/data/files";
 import { mimeTypes } from "@/lib/mime-types";
 import { readFile } from "fs/promises";
@@ -18,14 +18,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   const idpath = parts.slice(0, parts.length - 1);
   const [filename] = parts.slice(-1);
 
-  const chapter = await backend.getPieceWithChildren(idpath);
+  const chapter = await data.getPieceWithChildren(idpath);
   if (!chapter) {
     notFound();
   }
+  const fileBytes = await data.getPieceFileData(chapter, filename, "image");
   const extension = extname(filename);
-  const imagePath = `${chapter.diskpath}/images/${filename}`;
-  const imageBytes = await readFile(imagePath);
-  return new NextResponse(imageBytes, {
+  return new NextResponse(fileBytes, {
     headers: {
       "Content-Type": mimeTypes[extension] ?? "image/*",
     },
@@ -33,13 +32,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await backend.getPiece([process.env.COURSE_ID!]);
+  const course = await data.getPiece([process.env.COURSE_ID!]);
   if (!course) {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
   await walkContentPieces(course, async (piece, _) => {
-    const images = await backend.getPieceImageList(piece);
+    const images = await data.getPieceImageList(piece);
     if (images) {
       for (const image of images) {
         imagePaths.push({ parts: [...piece.idpath, image] });

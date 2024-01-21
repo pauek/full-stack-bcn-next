@@ -4,6 +4,7 @@ import { readFile, readdir } from "fs/promises";
 import { basename, extname, join } from "path";
 import { HASH_FILE, __CONTENT_ROOT } from ".";
 import { readMetadata } from "./metadata";
+import { FileTypeEnum } from "@/data/schema";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -14,17 +15,31 @@ export const dirNameToTitle = (dirName: string) => {
 
 const rPieceDirectory = /^[0-9X]{2} .+$/;
 
+const imageExtensions = [".png", ".jpg", ".jpeg", ".svg", ".webp", ".avif"];
+
 export const isContentPiece = (ent: Dirent) => ent.isDirectory() && ent.name.match(rPieceDirectory);
+export const isDoc = (ent: Dirent) => ent.isFile() && ent.name.startsWith("doc.");
+export const isCover = (ent: Dirent) => ent.isFile() && ent.name.startsWith("cover.");
+export const isSlide = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".svg";
+export const isImage = (ent: Dirent) => ent.isFile() && imageExtensions.includes(extname(ent.name));
 
-export const isSlide = (ent: Dirent) => ent.isFile() && ent.name.endsWith(".svg");
-
-const imgExts = [".png", ".jpg", ".jpeg", ".svg", ".webp", ".avif"];
-
-export const isImage = (ent: Dirent) => ent.isFile() && imgExts.includes(extname(ent.name));
+export const determineFiletype = (ent: Dirent): FileTypeEnum => {
+  if (isImage(ent)) {
+    return "image";
+  } else if (isSlide(ent)) {
+    return "slide";
+  } else if (isDoc(ent)) {
+    return "doc";
+  } else if (isCover(ent)) {
+    return "cover";
+  } else {
+    return "other";
+  }
+};
 
 export type FilePred = (ent: Dirent) => boolean;
 
-const findFilename = async (diskpath: string, func: FilePred) => {
+export const findFilename = async (diskpath: string, func: FilePred) => {
   for (const ent of await readDirWithFileTypes(diskpath)) {
     if (ent.isFile() && func(ent)) {
       return ent.name;

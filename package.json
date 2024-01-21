@@ -10,7 +10,8 @@
     "indices": "bun run scripts/recalculate-indices.ts",
     "hashes": "bun run scripts/compute-hashes.ts",
     "changes": "bun run scripts/compute-changes.ts",
-    "metadata": "bun run scripts/update-metadata.ts"
+    "metadata": "bun run scripts/update-metadata.ts",
+    "upload": "bun run scripts/upload-content.ts"
   },
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.8.0",

@@ -43,56 +43,73 @@ export const insertPiece = async (piece: ContentPiece) => {
   }
 };
 
+type FileInfo = {
+  filename: string;
+  filetype: schema.FileTypeEnum;
+  diskpath: string;
+};
+export const insertFile = async (
+  piece: ContentPiece,
+  { filename, filetype, diskpath }: FileInfo
+) => {
+  const bytes = await readFile(diskpath);
+  const hash = await hashAny(bytes);
+
+  await db
+    .insert(schema.files)
+    .values({
+      hash,
+      filetype,
+      data: bytesToBase64(bytes),
+      name: filename,
+    })
+    .onConflictDoUpdate({
+      target: schema.files.hash,
+      set: { name: filename, filetype },
+    });
+
+  await db
+    .insert(schema.attachments)
+    .values({ file: hash, piece: piece.hash })
+    .onConflictDoNothing();
+};
+
 export const insertFiles = async (piece: ContentPiece) => {
-  const fullpath = (dir: string) => (f: string) => ({
-    filename: `${dir}/${f}`,
+  const fullpath = (dir: string, filetype: schema.FileTypeEnum) => (f: string) => ({
+    filename: `${f}`,
+    filetype,
     diskpath: join(piece.diskpath, dir, f),
   });
 
   const images = await files.getPieceImageList(piece);
   const slides = await files.getPieceSlideList(piece);
   const allFiles = [
-    ...(images?.map(fullpath("images")) || []),
-    ...(slides?.map(fullpath("slides")) || []),
+    ...(images?.map(fullpath("images", "image")) || []),
+    ...(slides?.map(fullpath("slides", "slide")) || []),
   ];
-
-  const cover = await files.findCoverImageFilename(piece);
-  if (cover) {
-    allFiles.push({
-      filename: basename(cover),
-      diskpath: cover,
-    });
-  }
 
   const doc = await files.findDocFilename(piece.diskpath);
   if (doc) {
     allFiles.push({
-      diskpath: join(piece.diskpath, doc),
       filename: doc,
+      filetype: "doc",
+      diskpath: join(piece.diskpath, doc),
+    });
+  }
+  const cover = await files.findCoverImageFilename(piece);
+  if (cover) {
+    allFiles.push({
+      filename: basename(cover),
+      filetype: "cover",
+      diskpath: cover,
     });
   }
 
-  for (const { diskpath, filename } of allFiles) {
+  for (const file of allFiles) {
     try {
-      const bytes = await readFile(diskpath);
-      const hash = await hashAny(bytes);
-      await db
-        .insert(schema.files)
-        .values({
-          hash,
-          data: bytesToBase64(bytes).slice(0, 1000),
-          name: filename,
-          piece: piece.hash,
-        })
-        .onConflictDoUpdate({
-          target: schema.files.hash,
-          set: {
-            name: filename,
-            piece: piece.hash,
-          },
-        });
+      await insertFile(piece, file)
     } catch (e: any) {
-      console.error(`Cannot insert ${filename}: ${e.toString()}`);
+      console.error(`Cannot insert ${file.filename}: ${e.toString()}`);
       console.error(e.stack);
     }
   }

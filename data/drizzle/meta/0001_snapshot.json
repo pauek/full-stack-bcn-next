@@ -1,6 +1,6 @@
 {
-  "id": "f2f91342-ee10-4c43-aef3-06e60808197c",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "77142217-fdff-4440-9635-4abd4e2003ad",
+  "prevId": "f2f91342-ee10-4c43-aef3-06e60808197c",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -12,13 +12,13 @@
           "name": "piece_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "file_hash": {
           "name": "file_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
