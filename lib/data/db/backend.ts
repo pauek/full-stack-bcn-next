@@ -63,7 +63,6 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     ...ch,
     id: ch.idpath.split("/").slice(-1)[0],
     idpath: ch.idpath.split("/"),
-    parent: piece,
     metadata: ch.metadata,
   }));
   return piece;
