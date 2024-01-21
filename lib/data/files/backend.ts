@@ -1,10 +1,9 @@
-import { ContentPiece } from "@/lib/adt";
-import { readFile } from "fs/promises";
-import { extname, join, join as pathJoin } from "path";
-import { CrumbData, ImgData } from "../data-backend";
-import { walkContentPieces } from "./hashes";
-import * as utils from "./utils";
 import { FileTypeEnum } from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
+import { readFile, readdir } from "fs/promises";
+import { extname, join, join as pathJoin } from "path";
+import { ImgData } from "../data-backend";
+import * as utils from "./utils";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -149,7 +148,7 @@ export const getPieceFileData = async (
 
 export const getAllIdpaths = async (piece: ContentPiece) => {
   const idpaths: string[][] = [];
-  await walkContentPieces(piece, async (piece, _) => {
+  await walkContentPiecesGeneric(piece, async (piece, _) => {
     if (piece.idpath.length != 2) {
       // except parts for now
       idpaths.push(piece.idpath);
@@ -157,3 +156,26 @@ export const getAllIdpaths = async (piece: ContentPiece) => {
   });
   return idpaths;
 };
+
+type WalkFunc<T> = (piece: ContentPiece, children: T[]) => Promise<T>;
+
+export const walkContentPiecesGeneric = async <T>(piece: ContentPiece, func: WalkFunc<T>) => {
+  const childSubdirs: string[] = [];
+  for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
+    if (utils.isContentPiece(ent)) {
+      childSubdirs.push(ent.name);
+    }
+  }
+  childSubdirs.sort();
+
+  const children: T[] = [];
+  for (const subdir of childSubdirs) {
+    const childSubdir = join(piece.diskpath, subdir);
+    const child = await utils.readPieceAtSubdir(childSubdir, [...piece.idpath], piece);
+    children.push(await walkContentPiecesGeneric(child, func));
+  }
+
+  return await func(piece, children);
+};
+
+export const walkContentPieces = walkContentPiecesGeneric<void>;

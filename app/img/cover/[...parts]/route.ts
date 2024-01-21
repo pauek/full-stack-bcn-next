@@ -1,5 +1,4 @@
 import data from "@/lib/data";
-import { walkContentPieces } from "@/lib/data/files";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
@@ -34,7 +33,7 @@ export async function generateStaticParams() {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
-  await walkContentPieces(course, async (piece, _) => {
+  await data.walkContentPieces(course, async (piece) => {
     const filename = await data.pieceHasCover(piece);
     if (filename) {
       imagePaths.push({ parts: [...piece.idpath] });

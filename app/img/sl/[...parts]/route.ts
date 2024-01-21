@@ -1,5 +1,4 @@
 import data from "@/lib/data";
-import { walkContentPieces } from "@/lib/data/files";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { extname } from "path";
@@ -39,7 +38,7 @@ export async function generateStaticParams() {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
-  await walkContentPieces(course, async (piece, _) => {
+  await data.walkContentPieces(course, async (piece) => {
     const slides = await data.getPieceSlideList(piece);
     if (slides) {
       for (const slide of slides) {

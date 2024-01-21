@@ -3,7 +3,7 @@ import { join } from "path";
 import { ContentPiece } from "../../adt";
 import { readMetadata } from "./metadata";
 import * as utils from "./utils";
-import { __CONTENT_ROOT } from ".";
+import { __CONTENT_ROOT, walkContentPiecesGeneric } from ".";
 
 export const HASH_FILE = ".hash";
 export const HASH_MAP_FILE = "hashes.json";
@@ -38,27 +38,6 @@ export const hashAny = (x: any) => {
     throw `hash: Unsupported type ${typeof x}: ${JSON.stringify(x)}`;
   }
   return hasher.digest("hex");
-};
-
-type WalkFunc<T> = (piece: ContentPiece, children: T[]) => Promise<T>;
-
-export const walkContentPieces = async <T>(piece: ContentPiece, func: WalkFunc<T>) => {
-  const childSubdirs: string[] = [];
-  for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
-    if (utils.isContentPiece(ent)) {
-      childSubdirs.push(ent.name);
-    }
-  }
-  childSubdirs.sort();
-
-  const children: T[] = [];
-  for (const subdir of childSubdirs) {
-    const childSubdir = join(piece.diskpath, subdir);
-    const child = await utils.readPieceAtSubdir(childSubdir, [...piece.idpath], piece);
-    children.push(await walkContentPieces(child, func));
-  }
-
-  return await func(piece, children);
 };
 
 const isPieceFile = (filename: string) => {
@@ -127,7 +106,7 @@ export const hashPiece = async (
 
 export const hashAllContent = async (piece: ContentPiece) => {
   const hashes: Map<string, { hash: Hash; diskpath: string }> = new Map();
-  await walkContentPieces<Hash>(piece, async (piece, children) => {
+  await walkContentPiecesGeneric<Hash>(piece, async (piece, children) => {
     const hash = await hashPiece(piece.diskpath, children, { save: true });
     hashes.set(piece.idpath.join("/"), { hash, diskpath: piece.diskpath });
     return hash;

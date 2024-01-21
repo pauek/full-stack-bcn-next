@@ -1,4 +1,4 @@
-import { getPiece, hashPiece, walkContentPieces } from "@/lib/data/files";
+import { getPiece, hashPiece, walkContentPiecesGeneric } from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
@@ -8,7 +8,7 @@ if (!course) {
   throw `Course ${courseId} not found!`;
 }
 
-await walkContentPieces<string>(course, async (piece, children) => {
+await walkContentPiecesGeneric<string>(course, async (piece, children) => {
   const oldHash = (await readFile(join(piece.diskpath, ".hash"))).toString();
   const newHash = await hashPiece(piece.diskpath, children);
   if (oldHash !== newHash) {

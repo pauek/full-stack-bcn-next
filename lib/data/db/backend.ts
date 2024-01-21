@@ -1,12 +1,14 @@
 import * as schema from "@/data/schema";
 import { base64ToBytes, lastItem } from "@/lib/utils";
-import { and, eq, like } from "drizzle-orm";
-import { extname } from "path";
-import { ContentPiece } from "../../adt";
+import { and, asc, eq, like } from "drizzle-orm";
+import { extname, join } from "path";
+import { ContentPiece } from "@/lib/adt";
 import { ImgData } from "../data-backend";
 import { db } from "./db";
 import hashes from "./hashes.json";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
+import { readdir } from "fs/promises";
+import { isContentPiece, readPieceAtSubdir } from "../files/utils";
 
 const pathToHash = new Map(hashes.map(({ hash, path }) => [path, hash]));
 
@@ -129,7 +131,8 @@ export const getPieceFileData = async (
         eq(schema.files.name, filename),
         eq(schema.files.filetype, filetype)
       )
-    ).limit(1);
+    )
+    .limit(1);
   if (!result || !result.data) {
     return null;
   }
@@ -181,4 +184,22 @@ export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> =>
     where: like(schema.pieces.idpath, `${idjpath}%`),
   });
   return result.map(({ idpath }) => idpath.split("/"));
+};
+
+type WalkFunc = (piece: ContentPiece) => Promise<void>;
+
+export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
+  const allIdpaths = await db
+    .select({ idpath: schema.pieces.idpath })
+    .from(schema.pieces)
+    .orderBy(asc(schema.pieces.diskpath));
+
+  for (const { idpath } of allIdpaths) {
+    const piece = await getPiece(idpath.split("/"));
+    if (!piece) {
+      console.warn("Strange that cannot find a piece by idpath here!");
+      continue;
+    }
+    await func(piece);
+  }
 };

@@ -12,6 +12,9 @@ export type CrumbData = {
   siblings?: Array<CrumbData>;
 };
 
+type WalkFunc = (piece: ContentPiece) => Promise<void>;
+
+
 // prettier-ignore
 export interface DataBackend {
   getPiece: (idpath: string[]) => Promise<ContentPiece | null>;
@@ -27,4 +30,5 @@ export interface DataBackend {
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
   getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;
   getAllIdpaths: (piece: ContentPiece) => Promise<string[][]>;
+  walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>;
 }
