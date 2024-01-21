@@ -18,7 +18,7 @@ export default async function SessionPageBody({
           <div id="top" className="absolute top-0" />
           <div className="pt-8 border-b mb-6">
             <div className="text-stone-400 mb-0 text-xs">
-              SESSION {session.index}
+              SESSION {session.metadata.index}
             </div>
             <h2 className="p-0 pb-2">{session.name}</h2>
           </div>

@@ -28,7 +28,7 @@ type CoursePartProps = {
 };
 async function CoursePart({ part }: CoursePartProps) {
   const sessionsInRow = (n: number) =>
-    part.children?.filter((s) => s.row === n);
+    part.children?.filter((session) => session.metadata.row === n);
 
   const Row = ({ n }: { n: number }) => (
     <div key={n} className="flex flex-row justify-center px-2">
@@ -38,7 +38,7 @@ async function CoursePart({ part }: CoursePartProps) {
     </div>
   );
 
-  if (part.hidden) {
+  if (part.metadata.hidden) {
     return <></>;
   }
   return (

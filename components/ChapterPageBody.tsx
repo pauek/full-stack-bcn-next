@@ -18,13 +18,13 @@ export default async function ChapterPageBody({
   const slides = await data.getPieceSlideList(chapter);
 
   let options = [];
-  if (chapter.hasDoc) {
+  if (chapter.metadata.hasDoc) {
     options.push({
       name: "Document",
       component: <ChapterDocument idpath={idpath} />,
     });
   }
-  if (chapter.numSlides > 0) {
+  if (chapter.metadata.numSlides > 0) {
     options.push({
       name: "Slides",
       component: <SlideGrid path={idpath} slides={slides} />,

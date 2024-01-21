@@ -40,7 +40,7 @@ const SessionCard = async ({ session }: SessionButtonProps) => {
             "items-center top-0.5 left-0.5 text-xs rounded-sm bg-white border"
           )}
         >
-          {session.index}
+          {session.metadata.index}
         </div>
       </div>
     </Link>

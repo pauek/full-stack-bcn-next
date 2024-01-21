@@ -15,7 +15,7 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   for (const ent of await utils.readDirWithFileTypes(parent.diskpath)) {
     if (utils.isContentPiece(ent)) {
       const childPath = join(parent.diskpath, ent.name);
-      const child = await utils.readPieceAtSubdir(childPath, parent);
+      const child = await utils.readPieceAtSubdir(childPath, parent.idpath, parent);
       child.idpath = [...idpath, child.id];
       child.parent = parent;
       children.push(child);
@@ -27,7 +27,7 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const [id, ...rest] = idpath;
-  let piece = await utils.readPieceAtSubdir(id);
+  let piece = await utils.readPieceAtSubdir(id, []);
   if (!rest || rest.length === 0) {
     piece.idpath = [id];
     return piece;

@@ -5,7 +5,7 @@ if (!fullstack) {
   throw `Course "fullstack" not found!`;
 }
 await walkContentPieces(fullstack, async (piece, _) => {
-  await updateMetadata(piece.diskpath, (metadata) => {
+  await updateMetadata(piece.diskpath, async (metadata) => {
     if ("slideHashes" in metadata) {
       console.log(piece.idpath.join("/"));
       delete metadata.slideHashes;

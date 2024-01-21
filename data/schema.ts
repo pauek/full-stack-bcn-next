@@ -1,3 +1,4 @@
+import { ContentPieceMetadata } from "@/lib/adt";
 import { base64ToBytes, bytesToBase64 } from "@/lib/utils";
 import { relations } from "drizzle-orm";
 import { boolean, customType, integer, json, jsonb, pgTable, text } from "drizzle-orm/pg-core";
@@ -5,15 +6,17 @@ import { boolean, customType, integer, json, jsonb, pgTable, text } from "drizzl
 export const pieces = pgTable("pieces", {
   hash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
-  path: text("path").notNull(),
-  diskpath: text("diskpath").notNull(),
-  numSlides: integer("num_slides").notNull(),
-  hasDoc: boolean("has_doc").notNull(),
-  hidden: boolean("hidden").notNull().default(false),
-
+  idpath: text("idpath").notNull(),
   parent: text("parent_hash"),
-  index: integer("index"),
-  metadata: json("metadata"),
+  diskpath: text("diskpath").notNull(),
+
+  metadata: json("metadata").notNull().$type<ContentPieceMetadata>(),
+  
+  // Should be in metadata
+  // index: integer("index"),
+  // numSlides: integer("num_slides").notNull(),
+  // hasDoc: boolean("has_doc").notNull(),
+  // hidden: boolean("hidden").notNull().default(false),
 });
 export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parent: one(pieces, {
@@ -24,6 +27,7 @@ export const piecesRelations = relations(pieces, ({ one, many }) => ({
   children: many(pieces, { relationName: "parent_child" }),
   files: many(files, { relationName: "piece_files" }),
 }));
+export type DBPiece = typeof pieces.$inferSelect;
 
 export const files = pgTable("files", {
   hash: text("file_hash").primaryKey(),

@@ -1,15 +1,19 @@
+
+export type ContentPieceMetadata = {
+  numSlides: number;
+  hasDoc: boolean;
+  index: number;
+  hidden?: boolean | null;
+  row?: number | null;
+}
+
 export type ContentPiece = {
   id: string;
   hash: string;
   name: string;
   idpath: string[];
   diskpath: string;
-  numSlides: number;
-  hasDoc: boolean;
-  
   parent?: ContentPiece;
   children?: ContentPiece[];
-  index?: number;
-  hidden?: boolean;
-  row?: number;
+  metadata: ContentPieceMetadata;
 };

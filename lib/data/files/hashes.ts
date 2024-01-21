@@ -16,7 +16,6 @@ export type AbstractContentPiece = {
   children: AbstractContentPiece;
 };
 
-
 export const hashAny = (x: any) => {
   const hasher = new Bun.CryptoHasher("sha256");
   if (typeof x === "number") {
@@ -43,10 +42,7 @@ export const hashAny = (x: any) => {
 
 type WalkFunc<T> = (piece: ContentPiece, children: T[]) => Promise<T>;
 
-export const walkContentPieces = async <T>(
-  piece: ContentPiece,
-  func: WalkFunc<T>
-) => {
+export const walkContentPieces = async <T>(piece: ContentPiece, func: WalkFunc<T>) => {
   const childSubdirs: string[] = [];
   for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
     if (utils.isContentPiece(ent)) {
@@ -57,11 +53,9 @@ export const walkContentPieces = async <T>(
 
   const children: T[] = [];
   const results = await Promise.allSettled(
-    childSubdirs.map(async (subdir) => {
+    childSubdirs.map(async (subdir, index) => {
       const childDir = join(piece.diskpath, subdir);
-      const child = await utils.readPieceAtSubdir(childDir, piece);
-      child.idpath = [...piece.idpath, child.id];
-      child.parent = piece;
+      const child = await utils.readPieceAtSubdir(childDir, [...piece.idpath], piece);
       return walkContentPieces(child, func);
     })
   );
@@ -79,8 +73,7 @@ const isPieceFile = (filename: string) => {
 };
 const isPieceSubdir = (dir: string) => dir === "images" || dir === "slides";
 
-export const hashFile = async (diskpath: string) =>
-  hashAny(await readFile(diskpath));
+export const hashFile = async (diskpath: string) => hashAny(await readFile(diskpath));
 
 export const hashPiece = async (
   diskpath: string,
@@ -140,7 +133,7 @@ export const hashPiece = async (
 };
 
 export const hashAllContent = async (piece: ContentPiece) => {
-  const hashes: Map<string, { hash: Hash, diskpath: string }> = new Map();
+  const hashes: Map<string, { hash: Hash; diskpath: string }> = new Map();
   await walkContentPieces<Hash>(piece, async (piece, children) => {
     const hash = await hashPiece(piece.diskpath, children, { save: true });
     hashes.set(piece.idpath.join("/"), { hash, diskpath: piece.diskpath });

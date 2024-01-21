@@ -8,41 +8,38 @@ import { hashAny } from "@/lib/data/files/hashes";
 import { db } from "./db";
 
 export const insertPiece = async (piece: ContentPiece) => {
-  const adaptedPiece = {
-    index: piece.index,
-    diskpath: piece.diskpath,
-    hasDoc: piece.hasDoc,
-    hidden: piece.hidden,
+  const adaptedPiece: schema.DBPiece = {
+    hash: piece.hash,
     name: piece.name,
-    numSlides: piece.numSlides,
-    path: piece.idpath.join("/"),
-    parent: piece.parent?.hash,
+    idpath: piece.idpath.join("/"),
+    diskpath: piece.diskpath,
+    parent: piece.parent?.hash || null,
+    metadata: {
+      hasDoc: piece.metadata.hasDoc,
+      index: piece.metadata.index,
+      numSlides: piece.metadata.numSlides,
+      hidden: piece.metadata.hidden,
+      row: piece.metadata.row,
+    },
   };
   try {
     const insertedPieces = await db
       .insert(schema.pieces)
-      .values({
-        hash: piece.hash,
-        ...adaptedPiece,
-      })
+      .values(adaptedPiece)
       .onConflictDoUpdate({
         target: schema.pieces.hash,
         set: adaptedPiece,
       })
       .returning({
         hash: schema.pieces.hash,
-        path: schema.pieces.path,
+        path: schema.pieces.idpath,
       });
     if (insertedPieces.length === 1) {
       const { hash, path } = insertedPieces[0];
       console.log(hash, path);
     }
   } catch (e: any) {
-    console.log(
-      `Inserting ${piece.diskpath} [${JSON.stringify(
-        adaptedPiece
-      )}]: ${e.toString()}`
-    );
+    console.log(`Inserting ${piece.diskpath} [${JSON.stringify(adaptedPiece)}]: ${e.toString()}`);
   }
 };
 

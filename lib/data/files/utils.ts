@@ -2,8 +2,8 @@ import { ContentPiece } from "@/lib/adt";
 import { Dirent } from "fs";
 import { readFile, readdir } from "fs/promises";
 import { basename, extname, join } from "path";
-import { readMetadata } from "./metadata";
 import { HASH_FILE, __CONTENT_ROOT } from ".";
+import { readMetadata } from "./metadata";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -62,7 +62,8 @@ export const listPieceSubdir = async (
 
 export const readPieceAtSubdir = async (
   subdir: string,
-  parent: ContentPiece | null = null
+  parentIdpath: string[],
+  parent?: ContentPiece
 ): Promise<ContentPiece> => {
   const dirname = basename(subdir);
   const diskpath = join(__CONTENT_ROOT, subdir);
@@ -74,14 +75,17 @@ export const readPieceAtSubdir = async (
   } catch (e) {
     console.error(diskpath, `ERROR: Hash not found! ${e}`);
   }
+  const { id } = metadata;
+  if (!id) {
+    throw Error(`Missing id from ContentPiece at ${diskpath}!`);
+  }
   return {
+    id: id,
+    idpath: [...parentIdpath, id],
     name,
     diskpath,
     hash,
     parent,
-    index: 0,
-    ...metadata, // <-- "id" is here (the 'slug')
-    hasDoc: (await findDocFilename(diskpath)) != null,
-    numSlides: (await listPieceSubdir(diskpath, "slides", isSlide))?.length ?? 0,
+    metadata,
   };
 };
