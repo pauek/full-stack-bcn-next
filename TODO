@@ -1,3 +1,5 @@
 [ ] Dark mode!
 
 [ ] Implementar login con Authjs
+
+[ ] Quitar el componente cliente ImageWithFallback!
