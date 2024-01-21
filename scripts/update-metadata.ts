@@ -1,4 +1,4 @@
-import files, { getPiece, pieceHasCover, pieceHasDoc, updateMetadata, walkContentPieces } from "@/lib/data/files";
+import files, { getPiece, pieceHasDoc, updateMetadata, walkContentPieces } from "@/lib/data/files";
 
 const fullstack = await getPiece(["fullstack"]);
 if (!fullstack) {
