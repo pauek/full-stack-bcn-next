@@ -3,11 +3,13 @@ import { coverUrl, pieceUrl } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
+import data from "@/lib/data";
 
 type SessionButtonProps = {
   session: ContentPiece;
 };
 const SessionCard = async ({ session }: SessionButtonProps) => {
+  const hasCover = await data.pieceHasCover(session);
   return (
     <Link href={pieceUrl(session.idpath)} className="w-1/3">
       <div
@@ -18,13 +20,13 @@ const SessionCard = async ({ session }: SessionButtonProps) => {
           "bg-slate-100 border rounded-md shadow m-1 overflow-clip"
         )}
       >
-        <Image
+        {hasCover && <Image
           className="aspect-[16/9] object-contain"
           src={coverUrl(session.idpath)}
           alt="card cover"
           width={320}
           height={180}
-        />
+        />}
         <div className="flex-1"></div>
         <div
           className={cn(
