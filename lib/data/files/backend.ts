@@ -20,7 +20,6 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
       const childPath = join(parent.diskpath, ent.name);
       const child = await utils.readPieceAtSubdir(childPath, parent.idpath, parent);
       child.idpath = [...idpath, child.id];
-      child.parent = parent;
       children.push(child);
     }
   }

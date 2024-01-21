@@ -6,14 +6,22 @@ import { ContentPiece } from "@/lib/adt";
 import { bytesToBase64 } from "@/lib/utils";
 import { hashAny } from "@/lib/data/files/hashes";
 import { db } from "./db";
+import { eq } from "drizzle-orm";
 
-export const insertPiece = async (piece: ContentPiece) => {
+export const pieceSetParent = async (piece: ContentPiece, parent: ContentPiece) => {
+  await db
+    .update(schema.pieces)
+    .set({ parent: parent.hash })
+    .where(eq(schema.pieces.hash, piece.hash));
+};
+
+export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
   const adaptedPiece: schema.DBPiece = {
     hash: piece.hash,
     name: piece.name,
     idpath: piece.idpath.join("/"),
     diskpath: piece.diskpath,
-    parent: piece.parent?.hash || null,
+    parent: parent?.hash || null,
     metadata: {
       hasDoc: piece.metadata.hasDoc,
       index: piece.metadata.index,
@@ -107,7 +115,7 @@ export const insertFiles = async (piece: ContentPiece) => {
 
   for (const file of allFiles) {
     try {
-      await insertFile(piece, file)
+      await insertFile(piece, file);
     } catch (e: any) {
       console.error(`Cannot insert ${file.filename}: ${e.toString()}`);
       console.error(e.stack);

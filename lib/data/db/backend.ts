@@ -31,7 +31,6 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
     ...result,
     id: lastItem(idpath),
     idpath,
-    parent: undefined,
     children: [],
   };
 };
@@ -57,7 +56,6 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     ...result,
     idpath,
     id: lastItem(idpath),
-    parent: undefined,
     children: [],
     metadata: { index, hasDoc, numSlides, hidden, row },
   };
@@ -168,7 +166,6 @@ export const getContentTree = async (
       ...res,
       id: lastItem(res.idpath.split("/")),
       idpath: res.idpath.split("/"),
-      parent: undefined,
       children: res.children?.map((ch) => __convert(ch)),
     };
     return piece;

@@ -13,7 +13,6 @@ export type ContentPiece = {
   name: string;
   idpath: string[];
   diskpath: string;
-  parent?: ContentPiece;
   children?: ContentPiece[];
   metadata: ContentPieceMetadata;
 };

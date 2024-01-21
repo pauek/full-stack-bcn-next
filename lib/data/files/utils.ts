@@ -101,7 +101,6 @@ export const readPieceAtSubdir = async (
     idpath,
     diskpath,
     hash,
-    parent,
     metadata,
   };
 };

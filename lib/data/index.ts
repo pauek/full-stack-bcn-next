@@ -1,6 +1,6 @@
-import { DataBackend } from './data-backend';
+import { DataBackend } from "./data-backend";
 
-import { backend as filesBackend } from '@/lib/data/files';
-import { backend as dbBackend } from '@/lib/data/db';
+import { backend as filesBackend } from "@/lib/data/files";
+import { backend as dbBackend } from "@/lib/data/db";
 
-export default dbBackend as DataBackend;
+export default process.env.NODE_ENV === "production" ? dbBackend : (filesBackend as DataBackend);
