@@ -8,9 +8,6 @@ export * from "./hashes";
 export * from "./metadata";
 export * from "./utils";
 
-if (!process.env.CONTENT_ROOT) {
-  throw "No content root!";
-}
 export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
 
 export const backend: DataBackend = {
