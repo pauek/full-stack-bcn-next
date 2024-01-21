@@ -1,6 +1,6 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
-import { readFile, readdir } from "fs/promises";
+import { exists, readFile, readdir } from "fs/promises";
 import { extname, join, join as pathJoin } from "path";
 import { ImgData } from "../data-backend";
 import * as utils from "./utils";
@@ -132,17 +132,20 @@ export const getPieceFileData = async (
   filename: string,
   filetype: FileTypeEnum
 ): Promise<Buffer | null> => {
-  let searchedFilename = filename;
+  let fulldiskpath: string = "";
   if (filetype === "image") {
-    searchedFilename = `images/${filename}`;
+    fulldiskpath = join(piece.diskpath, "images", filename);
   } else if (filetype === "slide") {
-    searchedFilename = `images/${filename}`;
+    fulldiskpath = join(piece.diskpath, "slides", filename);
+  } else {
+    fulldiskpath = join(piece.diskpath, filename);
   }
-  const foundFilename = await utils.findFilename(piece.diskpath, (ent) => ent.name === searchedFilename);
-  if (!foundFilename) {
+  try {
+    return await readFile(fulldiskpath);
+  } catch (e) {
+    console.error(`Error reading ${fulldiskpath}: ${e}`);
     return null;
   }
-  return await readFile(join(piece.diskpath, foundFilename));
 };
 
 export const getAllIdpaths = async (piece: ContentPiece) => {

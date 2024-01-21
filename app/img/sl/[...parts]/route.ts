@@ -1,13 +1,8 @@
 import data from "@/lib/data";
+import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { extname } from "path";
-
-const mimeType: Record<string, string> = {
-  svg: "image/svg+xml",
-  jpg: "image/jpeg",
-  png: "image/png",
-};
 
 type RouteParams = {
   params: {
@@ -25,9 +20,10 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   }
   const fileData = await data.getPieceFileData(piece, filename, "slide");
   const extension = extname(filename);
+  
   return new NextResponse(fileData, {
     headers: {
-      "Content-Type": mimeType[extension] ?? "image/*",
+      "Content-Type": mimeTypes[extension] ?? "image/*",
     },
   });
 }
