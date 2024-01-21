@@ -5,48 +5,50 @@ import Link from "next/link";
 import Image from "next/image";
 import data from "@/lib/data";
 
-type SessionButtonProps = {
+type _Props = {
   session: ContentPiece;
 };
-const SessionCard = async ({ session }: SessionButtonProps) => {
-  const hasCover = await data.pieceHasCover(session);
+export default async function SessionCard({ session }: _Props) {
+  const showCover = await data.pieceHasCover(session);
+  const { idpath, name, metadata } = session;
+  const { index } = metadata;
   return (
-    <Link href={pieceUrl(session.idpath)} className="w-1/3">
+    <Link href={pieceUrl(idpath)} className="w-1/3 aspect-[5/4] sm:aspect-[4/3]">
       <div
         className={cn(
-          "h-[7.8rem] w-[12em] text-xs sm:text-sm",
-          "flex flex-col justify-start relative",
+          "h-full text-xs sm:text-sm",
+          "flex flex-col relative items-stretch",
           "hover:bg-stone-50 hover:border-stone-400",
           "bg-slate-100 border rounded-md shadow m-1 overflow-clip"
         )}
       >
-        {hasCover && <Image
-          className="aspect-[16/9] object-contain"
-          src={coverUrl(session.idpath)}
-          alt="card cover"
-          width={320}
-          height={180}
-        />}
-        <div className="flex-1"></div>
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 right-0 px-3 py-1 pt-1.5",
-            "bg-white border-t border-stone-200 font-semibold text-center"
-          )}
-        >
-          {session.name}
-        </div>
-        <div
-          className={cn(
-            "w-[1.8em] h-[1.8em] absolute flex flex-col justify-center font-bold text-black",
-            "items-center top-0.5 left-0.5 text-xs rounded-sm bg-white border"
-          )}
-        >
-          {session.metadata.index}
-        </div>
+        <_Image visible={showCover} src={coverUrl(idpath)} />
+        <_Label name={name} />
+        <_Index index={index} />
       </div>
     </Link>
   );
-};
+}
 
-export default SessionCard;
+const _Image = ({ visible: visible, src }: { visible: boolean; src: string }) => (
+  <div className="flex-1 relative">
+    {visible && <Image className="object-cover" src={src} alt="card cover" fill={true} />}
+  </div>
+);
+
+const _Label = ({ name }: { name: string }) => (
+  <div className="px-1 pb-1 pt-1.5 font-semibold bg-white border-t border-stone-200 text-center">
+    {name}
+  </div>
+);
+
+const _Index = ({ index }: { index: number }) => (
+  <div
+    className={cn(
+      "w-[1.8em] h-[1.8em] absolute flex flex-col justify-center font-bold text-black",
+      "items-center top-0.5 left-0.5 text-xs rounded-sm bg-white border"
+    )}
+  >
+    {index}
+  </div>
+);

@@ -3,13 +3,9 @@ import { notFound } from "next/navigation";
 import ChapterContent from "./ChapterContent";
 import ChapterDocument from "./ChapterDocument";
 import SlideGrid from "./ChapterSlideGrid";
-import StaticLayout from "./StaticLayout";
+import FullPageLayout from "./FullPageLayout";
 
-export default async function ChapterPageBody({
-  idpath,
-}: {
-  idpath: string[];
-}) {
+export default async function ChapterPageBody({ idpath }: { idpath: string[] }) {
   const chapter = await data.getPieceWithChildren(idpath);
   if (chapter === null) {
     notFound();
@@ -32,8 +28,8 @@ export default async function ChapterPageBody({
   }
 
   return (
-    <StaticLayout path={idpath}>
+    <FullPageLayout path={idpath}>
       <ChapterContent chapter={chapter} options={options} />
-    </StaticLayout>
+    </FullPageLayout>
   );
 }

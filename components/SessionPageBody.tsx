@@ -1,6 +1,6 @@
 import data from "@/lib/data";
 import ChapterItem from "./ChapterItem";
-import StaticLayout from "./StaticLayout";
+import FullPageLayout from "./FullPageLayout";
 
 export default async function SessionPageBody({ idpath }: { idpath: string[] }) {
   const session = await data.getPieceWithChildren(idpath);
@@ -8,8 +8,9 @@ export default async function SessionPageBody({ idpath }: { idpath: string[] }) 
     throw `Session with path ${idpath} not found`;
   }
   return (
-    <StaticLayout path={idpath}>
-      <div className="md:w-[54em] md:m-auto md:mt-4 m-4 pb-5 border rounded-lg bg-white">
+    <FullPageLayout path={idpath}>
+      <div className="w-full p-4">
+        <div className="md:max-w-[54em] m-auto py-4 pt-2 border rounded-lg bg-white">
           <div className="pt-4 mx-4">
             <div className="text-stone-400 mb-0 text-xs">SESSION {session.metadata.index}</div>
             <h2 className="p-0 pb-3">{session.name}</h2>
@@ -20,7 +21,8 @@ export default async function SessionPageBody({ idpath }: { idpath: string[] }) 
               <ChapterItem key={piece.id} index={index + 1} chapter={piece} />
             ))}
           </div>
+        </div>
       </div>
-    </StaticLayout>
+    </FullPageLayout>
   );
 }
