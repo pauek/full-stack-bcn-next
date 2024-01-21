@@ -152,7 +152,15 @@ export const getContentTree = async (
 
   const result = await db.query.pieces.findFirst({
     where: eq(schema.pieces.hash, hash),
-    with: { children: { with: { children: true } } },
+    with: {
+      children: {
+        with: {
+          children: { orderBy: schema.pieces.diskpath },
+        },
+        orderBy: schema.pieces.diskpath,
+      },
+    },
+    orderBy: schema.pieces.diskpath,
   });
   if (!result) {
     return null;
