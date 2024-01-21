@@ -79,10 +79,11 @@ export const readPieceAtSubdir = async (
   if (!id) {
     throw Error(`Missing id from ContentPiece at ${diskpath}!`);
   }
+  const idpath = [...parentIdpath, id];
   return {
-    id: id,
-    idpath: [...parentIdpath, id],
+    id,
     name,
+    idpath,
     diskpath,
     hash,
     parent,

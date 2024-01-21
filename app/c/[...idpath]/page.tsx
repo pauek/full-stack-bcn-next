@@ -25,7 +25,7 @@ export default async function Page({ params }: _Props) {
 }
 
 export async function generateStaticParams() {
-  const course = await data.getPiece([process.env.COURSE!]);
+  const course = await data.getPiece([process.env.COURSE_ID!]);
   if (!course) {
     return [];
   }

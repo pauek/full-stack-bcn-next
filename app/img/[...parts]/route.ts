@@ -33,7 +33,7 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await backend.getPiece([process.env.COURSE!]);
+  const course = await backend.getPiece([process.env.COURSE_ID!]);
   if (!course) {
     return [];
   }

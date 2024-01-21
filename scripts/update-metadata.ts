@@ -1,4 +1,4 @@
-import files, { getPiece, updateMetadata, walkContentPieces } from "@/lib/data/files";
+import files, { getPiece, pieceHasCover, pieceHasDoc, updateMetadata, walkContentPieces } from "@/lib/data/files";
 
 const fullstack = await getPiece(["fullstack"]);
 if (!fullstack) {
@@ -10,6 +10,9 @@ let currSessionIndex = 1;
 await walkContentPieces(fullstack, async (piece, children) => {
   const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
   await updateMetadata(piece.diskpath, async (metadata) => {
+    // hasDoc
+    metadata.hasDoc = await pieceHasDoc(piece);
+
     // numSlides
     const slides = await files.getPieceSlideList(piece);
     metadata.numSlides = slides ? slides.length : 0;

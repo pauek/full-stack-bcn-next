@@ -8,7 +8,10 @@ import * as utils from "./utils";
 export { findCoverImageFilename } from './utils';
 
 export const pieceHasCover = async (piece: ContentPiece) =>
-  utils.findCoverImageFilename(piece) != null;
+  await utils.findCoverImageFilename(piece) !== null;
+
+export const pieceHasDoc = async (piece: ContentPiece) => 
+  await utils.findDocFilename(piece.diskpath) !== null;
 
 const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   const children = [];
@@ -27,9 +30,12 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const [id, ...rest] = idpath;
-  let piece = await utils.readPieceAtSubdir(id, []);
+  let piece = await utils.readPieceAtSubdir(process.env.COURSE_SUBDIR!, []);
+  // Confirm that the root course has the same ID
+  if (id != piece.id) {
+    throw Error(`The 'id' of the course doesn't match ("${id}" vs "${piece.id})"`);
+  }
   if (!rest || rest.length === 0) {
-    piece.idpath = [id];
     return piece;
   }
   let currpath = [id];

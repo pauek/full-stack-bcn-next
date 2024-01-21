@@ -2,9 +2,10 @@ import { getPiece, hashPiece, walkContentPieces } from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-const course = await getPiece([process.env.COURSE!]);
+const courseId = process.env.COURSE_ID!
+const course = await getPiece([courseId]);
 if (!course) {
-  throw `Course ${process.env.COURSE!} not found!`;
+  throw `Course ${courseId} not found!`;
 }
 
 await walkContentPieces<string>(course, async (piece, children) => {

@@ -14,5 +14,5 @@ for (const [path, { hash, diskpath }] of result) {
   entries.push({ hash, path, diskpath });
 }
 
-const mapPath = join(process.cwd(), "lib", "db", HASH_MAP_FILE);
+const mapPath = join(process.cwd(), "lib", "data", "db", HASH_MAP_FILE);
 await writeFile(mapPath, JSON.stringify(entries, null, 2));
