@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile } from "fs/promises";
+import { exists, readFile, readdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { ContentPiece } from "../../adt";
 import { readMetadata } from "./metadata";
@@ -46,6 +46,20 @@ const isPieceFile = (filename: string) => {
 const isPieceSubdir = (dir: string) => dir === "images" || dir === "slides";
 
 export const hashFile = async (diskpath: string) => hashAny(await readFile(diskpath));
+
+export const readStoredHash = async (diskpath: string): Promise<string | null> => {
+  const hashFilePath = join(diskpath, ".hash");
+  if (!(await exists(hashFilePath))) {
+    return null;
+  }
+  try {
+    const fileContents = await readFile(hashFilePath);
+    return fileContents.toString();
+  } catch (e) {
+    console.warn(`Warning: error reading .hash at ${diskpath}.`);
+    return null;
+  }
+};
 
 export const hashPiece = async (
   diskpath: string,

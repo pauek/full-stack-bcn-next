@@ -7,12 +7,12 @@ if (!fullstack) {
   throw `Course "fullstack" not found!`;
 }
 
-const result = await hashAllContent(fullstack);
+const allHashes = await hashAllContent(fullstack);
 
 const entries: Record<string, string>[] = [];
-for (const [path, { hash, diskpath }] of result) {
+for (const [path, { hash, diskpath }] of allHashes) {
   entries.push({ hash, path, diskpath });
 }
 
-const mapPath = join(process.cwd(), "lib", "data", "db", HASH_MAP_FILE);
-await writeFile(mapPath, JSON.stringify(entries, null, 2));
+const hashMapFilePath = join(process.cwd(), "lib", "data", "db", HASH_MAP_FILE);
+await writeFile(hashMapFilePath, JSON.stringify(entries, null, 2));

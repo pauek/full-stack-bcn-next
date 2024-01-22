@@ -1,6 +1,7 @@
-import { ContentPieceMetadata } from "@/lib/adt";
+import { ContentPiece, ContentPieceMetadata } from "@/lib/adt";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
+import { getPiece, getPieceSlideList, pieceHasDoc, walkContentPiecesGeneric } from "./backend";
 
 const __METADATA_FILENAME = ".meta.json";
 
@@ -32,4 +33,29 @@ export const updateMetadata = async (diskpath: string, func: (metadata: any) => 
   const metadata = await readMetadata(diskpath);
   await func(metadata);
   await writeMetadata(diskpath, metadata);
+};
+
+export const courseUpdateMetadata = async (course: ContentPiece) => {
+  let currSessionIndex = 1;
+  await walkContentPiecesGeneric<void>(course, async (piece) => {
+    const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
+    await updateMetadata(piece.diskpath, async (metadata: any) => {
+      // hasDoc
+      metadata.hasDoc = await pieceHasDoc(piece);
+
+      // numSlides
+      const slides = await getPieceSlideList(piece);
+      metadata.numSlides = slides ? slides.length : 0;
+
+      // index
+      if (level == 2) {
+        // index (for sessions), we assume that the walk is *ordered by filenames*
+        metadata.index = currSessionIndex;
+        currSessionIndex++;
+      } else {
+        // walkContentPieces sets the index to the child index
+        metadata.index = piece.metadata.index;
+      }
+    });
+  });
 };
