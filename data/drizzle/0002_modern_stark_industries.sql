@@ -1,0 +1,1 @@
+ALTER TABLE "pieces" RENAME COLUMN "idpath" TO "idjpath";

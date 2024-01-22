@@ -19,7 +19,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
   const adaptedPiece: schema.DBPiece = {
     hash: piece.hash,
     name: piece.name,
-    idpath: piece.idpath.join("/"),
+    idjpath: piece.idpath.join("/"),
     diskpath: piece.diskpath,
     parent: parent?.hash || null,
     metadata: {
@@ -40,7 +40,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
       })
       .returning({
         hash: schema.pieces.hash,
-        path: schema.pieces.idpath,
+        path: schema.pieces.idjpath,
       });
     if (insertedPieces.length === 1) {
       const { hash, path } = insertedPieces[0];

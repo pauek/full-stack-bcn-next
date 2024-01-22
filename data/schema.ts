@@ -5,7 +5,7 @@ import { json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-c
 export const pieces = pgTable("pieces", {
   hash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
-  idpath: text("idpath").notNull(),
+  idjpath: text("idjpath").notNull(),
   parent: text("parent_hash"),
   diskpath: text("diskpath").notNull(),
 

@@ -45,7 +45,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   if (!result) {
     return null;
   }
-  if (idpath.join("/") !== result.idpath) {
+  if (idpath.join("/") !== result.idjpath) {
     throw "Mismatch between paths!";
   }
   const { index, hasDoc, numSlides, hidden, row } = result.metadata;
@@ -57,11 +57,11 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     children: [],
     metadata: { index, hasDoc, numSlides, hidden, row },
   };
-  piece.children = result.children.map((ch) => ({
-    ...ch,
-    id: ch.idpath.split("/").slice(-1)[0],
-    idpath: ch.idpath.split("/"),
-    metadata: ch.metadata,
+  piece.children = result.children.map((child) => ({
+    ...child,
+    id: child.idjpath.split("/").slice(-1)[0],
+    idpath: child.idjpath.split("/"),
+    metadata: child.metadata,
   }));
   return piece;
 };
@@ -169,8 +169,8 @@ export const getContentTree = async (
   const __convert = (res: Result): ContentPiece => {
     const piece: ContentPiece = {
       ...res,
-      id: lastItem(res.idpath.split("/")),
-      idpath: res.idpath.split("/"),
+      id: lastItem(res.idjpath.split("/")),
+      idpath: res.idjpath.split("/"),
       children: res.children?.map((ch) => __convert(ch)),
     };
     return piece;
@@ -182,17 +182,17 @@ export const getContentTree = async (
 export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> => {
   const idjpath = piece.idpath.join("/");
   const result = await db.query.pieces.findMany({
-    columns: { idpath: true },
-    where: like(schema.pieces.idpath, `${idjpath}%`),
+    columns: { idjpath: true },
+    where: like(schema.pieces.idjpath, `${idjpath}%`),
   });
-  return result.map(({ idpath }) => idpath.split("/"));
+  return result.map(({ idjpath }) => idjpath.split("/"));
 };
 
 type WalkFunc = (piece: ContentPiece) => Promise<void>;
 
 export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
   const allIdpaths = await db
-    .select({ idpath: schema.pieces.idpath })
+    .select({ idpath: schema.pieces.idjpath })
     .from(schema.pieces)
     .orderBy(asc(schema.pieces.diskpath));
 

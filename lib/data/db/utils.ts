@@ -6,7 +6,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { db } from "./db";
 
 export const fromDbPiece = (dbPiece: DBPiece): ContentPiece => {
-  const idpath = dbPiece.idpath.split("/");
+  const idpath = dbPiece.idjpath.split("/");
   return {
     hash: dbPiece.hash,
     name: dbPiece.name,
