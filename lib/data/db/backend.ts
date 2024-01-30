@@ -38,6 +38,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   if (!hash) {
     return null;
   }
+  console.log(`${idpath} -> ${hash}`);
   const result = await db.query.pieces.findFirst({
     where: eq(schema.pieces.hash, hash),
     with: { children: true },
