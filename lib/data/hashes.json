@@ -801,8 +801,8 @@
   },
   {
     "hash": "08e0e1ed1cb3ff0b8130dd203fd6818c1fd9ae693ab6147bf87384fc7a44dd7b",
-    "diskpath": "../content/00 Full-stack Web Technologies/99 Presentaciones",
-    "idjpath": "fullstack/presentaciones"
+    "idjpath": "fullstack/presentaciones",
+    "diskpath": "../content/00 Full-stack Web Technologies/99 Presentaciones"
   },
   {
     "hash": "d7722f922dd4717c3884fea126b449ddf803b64a91e8c6888532bd3817dd7321",
@@ -836,7 +836,7 @@
   },
   {
     "hash": "5b66b635e7995308a488ead505604070238c0efd4eab38991653e83b55f0e4a7",
-    "diskpath": "../content/00 Full-stack Web Technologies",
-    "idjpath": "fullstack"
+    "idjpath": "fullstack",
+    "diskpath": "../content/00 Full-stack Web Technologies"
   }
 ]

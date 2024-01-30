@@ -192,14 +192,15 @@ type WalkFunc = (piece: ContentPiece) => Promise<void>;
 
 export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
   const allIdpaths = await db
-    .select({ idpath: schema.pieces.idjpath })
+    .select({ idjpath: schema.pieces.idjpath })
     .from(schema.pieces)
     .orderBy(asc(schema.pieces.diskpath));
 
-  for (const { idpath } of allIdpaths) {
-    const piece = await getPiece(idpath.split("/"));
+  for (const { idjpath } of allIdpaths) {
+    const idpath = idjpath.split("/");
+    const piece = await getPiece(idpath);
     if (!piece) {
-      console.warn("Strange that cannot find a piece by idpath here!");
+      console.warn(`Strange that cannot find a piece by idpath here! idpath = ${idpath}`);
       continue;
     }
     await func(piece);
