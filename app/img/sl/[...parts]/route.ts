@@ -43,6 +43,6 @@ export async function generateStaticParams() {
       }
     }
   });
-  console.log(slidePaths);
+  console.log(slidePaths.map((p) => `slide:${p.parts.join("/")}`));
   return slidePaths;
 }

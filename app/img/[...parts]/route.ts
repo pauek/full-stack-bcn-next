@@ -44,6 +44,6 @@ export async function generateStaticParams() {
       }
     }
   });
-  console.log(imagePaths);
+  console.log(imagePaths.map((p) => `image:${p.parts.join("/")}`));
   return imagePaths;
 }

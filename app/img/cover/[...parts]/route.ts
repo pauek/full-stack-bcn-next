@@ -33,12 +33,12 @@ export async function generateStaticParams() {
     return [];
   }
   const coverPaths: { parts: string[] }[] = [];
-  console.log("Generating static paths for covers:");
+  console.log("Generating static paths for covers");
   await data.walkContentPieces(course, async (piece) => {
     if (await data.pieceHasCover(piece)) {
       coverPaths.push({ parts: [...piece.idpath] });
     }
   });
-  console.log(coverPaths);
+  console.log(coverPaths.map((p) => `cover:${p.parts.join("/")}`));
   return coverPaths;
 }

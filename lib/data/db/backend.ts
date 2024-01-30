@@ -16,12 +16,14 @@ export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash,
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const hash = pathToHash.get(idpath.join("/"));
   if (!hash) {
+    console.log(`Hash not found for idpath ${idpath.join("/")}`);
     return null;
   }
   const result = await db.query.pieces.findFirst({
     where: eq(schema.pieces.piece_hash, hash),
   });
   if (!result) {
+    console.log(`Piece not found in table 'pieces' for idpath ${idpath.join("/")}`);
     return null;
   }
   return {
@@ -203,7 +205,9 @@ export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => 
     .from(schema.pieces)
     .orderBy(asc(schema.pieces.diskpath));
 
-  console.log(`All idjpaths from Database:\n${allIdjpaths.join("\n")}\n`);
+  console.log(
+    `All idjpaths from Database:\n${allIdjpaths.map(({ idjpath }) => idjpath).join("\n")}\n`
+  );
 
   for (const { idjpath } of allIdjpaths) {
     const idpath = idjpath.split("/");
