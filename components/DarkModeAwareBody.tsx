@@ -8,10 +8,17 @@ export default function DarkModeAwareBody({
   className,
   children,
 }: PropsWithChildren<ComponentProps<"body">>) {
-  const [dark, setDark] = useState(false);
+  const darkModeSetting = localStorage.getItem("darkMode") === "yes";
+  const [dark, setDark] = useState(darkModeSetting);
+
+  const setDarkMode = (dark: boolean) => {
+    localStorage.setItem("darkMode", dark ? "yes" : "no");
+    setDark(dark);
+  };
+
   return (
     <html className={cn(className, dark ? "dark" : "")}>
-      <DarkModeContext.Provider value={{ dark, setDark }}>{children}</DarkModeContext.Provider>
+      <DarkModeContext.Provider value={{ dark, setDark: setDarkMode }}>{children}</DarkModeContext.Provider>
     </html>
   );
 }
