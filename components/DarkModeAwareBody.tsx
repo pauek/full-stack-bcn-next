@@ -10,8 +10,8 @@ export default function DarkModeAwareBody({
 }: PropsWithChildren<ComponentProps<"body">>) {
   const [dark, setDark] = useState(false);
   return (
-    <body className={cn(className, dark ? "dark" : "")}>
+    <html className={cn(className, dark ? "dark" : "")}>
       <DarkModeContext.Provider value={{ dark, setDark }}>{children}</DarkModeContext.Provider>
-    </body>
+    </html>
   );
 }

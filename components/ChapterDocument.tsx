@@ -24,7 +24,7 @@ export default async function ChapterDocument({ idpath }: ChapterProps) {
     return (
       <div
         id={chapter?.id}
-        className="bg-red-600 text-white text-xl px-3 py-2 rounded"
+        className="bg-red-600 text-foreground text-xl px-3 py-2 rounded"
       >
         Error in &quot;{chapter?.name}&quot;
       </div>
@@ -33,7 +33,7 @@ export default async function ChapterDocument({ idpath }: ChapterProps) {
 
   return (
     <div className="relative m-auto max-w-[54em] mt-2 mb-2">
-      <div className="mx-2 p-4 bg-white text-sm rounded-md">
+      <div className="mx-2 p-4 bg-background text-sm rounded-md">
         <div className="max-w-[40em]">
           {doc && (
             <ErrorBoundary fallback={<RenderError />}>

@@ -1,6 +1,7 @@
 import { iosevka } from "@/lib/fonts";
 import CopyableCode from "./CopyableCode";
 import Ref from "./Ref";
+import { cn } from "@/lib/utils";
 
 export const H1 = ({ children }: any) => (
   <h1 className="font-bold text-2xl">{children}</h1>
@@ -11,7 +12,7 @@ export const H2 = ({ children }: any) => (
 );
 
 export const H3 = ({ children }: any) => (
-  <h3 className="font-semibold text-md text-stone-800 mt-8 mb-2">{children}</h3>
+  <h3 className="font-semibold text-md text-foreground mt-8 mb-2">{children}</h3>
 );
 
 export const H4 = ({ children }: any) => (
@@ -23,7 +24,7 @@ export const P = ({ children }: any) => (
 );
 
 export const A = (props: React.ComponentProps<"a">) => (
-  <a {...props} className={`text-blue-600 ${props.className}`}>
+  <a {...props} className={cn(props.className, "text-accent-foreground")}>
     {props.children}
   </a>
 );

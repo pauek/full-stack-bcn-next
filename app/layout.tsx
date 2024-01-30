@@ -4,7 +4,7 @@ import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import "@highlightjs/cdn-assets/styles/a11y-light.min.css";
 import "./globals.css";
-import DarkModeAwareBody from "@/components/DarkModeAwareBody";
+import DarkModeAwareRoot from "@/components/DarkModeAwareBody";
 
 export const metadata = {
   title: "Full-stack Web Technologies",
@@ -23,9 +23,9 @@ export default function RootLayout({ children, params }: Props) {
     idpath = [process.env.COURSE_ID!];
   }
   return (
-    <html lang="en">
+    <DarkModeAwareRoot lang="en">
       <head></head>
-      <DarkModeAwareBody className={cn(inter.className, "h-screen flex flex-col")}>
+      <body className={cn(inter.className, "h-screen flex flex-col")}>
         <div className="w-full h-full pt-12">
           <Header idpath={idpath} />
           <main className="min-h-full flex flex-col items-center">
@@ -34,7 +34,7 @@ export default function RootLayout({ children, params }: Props) {
             <Footer />
           </main>
         </div>
-      </DarkModeAwareBody>
-    </html>
+      </body>
+    </DarkModeAwareRoot>
   );
 }

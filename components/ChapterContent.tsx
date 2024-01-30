@@ -35,16 +35,16 @@ export default function ChapterContent({ chapter, options }: Props) {
 
   const Option = ({ pos, isActive, text }: OptionProps) => (
     <div
-      className={cn("p-0 ", isActive ? "border-b-2 border-black text-black" : "text-stone-500")}
+      className={cn("p-0 ", isActive ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground")}
       onClick={() => setSelected(pos)}
     >
-      <div className="m-1 p-1 px-2 hover:bg-stone-100 rounded transition-color text-sm">{text}</div>
+      <div className="m-1 p-1 px-2 hover:bg-muted rounded transition-color text-sm">{text}</div>
     </div>
   );
 
   return (
     <>
-      <div className="w-full bg-white border-b">
+      <div className="w-full bg-background border-b">
         <div className="max-w-[54em] pt-8 m-auto">
           <ChapterHeader name={chapter.name} options={options} />
         </div>

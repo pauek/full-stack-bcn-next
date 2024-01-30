@@ -26,7 +26,7 @@
     --secondary-foreground: 24 9.8% 10%;
 
     --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
+    --accent-foreground: 210 70% 40%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
@@ -53,13 +53,13 @@
     --input: 12 6.5% 15.1%;
 
     --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 10%;
+    --primary-foreground: 24 9.8% 100%;
 
     --secondary: 12 6.5% 15.1%;
     --secondary-foreground: 60 9.1% 97.8%;
 
     --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
+    --accent-foreground: 210 70% 85%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
@@ -71,10 +71,9 @@
     @apply border-border;
   }
   :root {
-    @apply bg-background text-foreground bg-stone-50;
+    @apply bg-background text-foreground;
     scrollbar-gutter: stable;
   }
-
   p {
     @apply my-2 leading-5;
   }
@@ -119,13 +118,13 @@
     @apply my-1 pl-1;
   }
   pre {
-    @apply bg-stone-100 py-1 px-2 my-4 rounded text-white border border-stone-200 overflow-x-auto;
+    @apply py-1 px-2 my-4 rounded border overflow-x-auto bg-muted;
   }
   strong {
     @apply font-semibold;
   }
   code {
-    @apply text-stone-700;
     font-family: "Iosevka";
   }
 }
+

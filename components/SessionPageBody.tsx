@@ -8,7 +8,7 @@ export default async function SessionPageBody({ idpath }: { idpath: string[] }) 
   }
   return (
     <div className="w-full p-4">
-      <div className="md:max-w-[54em] m-auto py-4 pt-2 border rounded-lg bg-white">
+      <div className="md:max-w-[54em] m-auto py-4 pt-2 border rounded-lg bg-background">
         <div className="pt-4 mx-4">
           <div className="text-stone-400 mb-0 text-xs">SESSION {session.metadata.index}</div>
           <h2 className="p-0 pb-3">{session.name}</h2>

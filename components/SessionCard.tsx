@@ -18,8 +18,8 @@ export default async function SessionCard({ session }: _Props) {
         className={cn(
           "h-full text-xs sm:text-sm",
           "flex flex-col relative items-stretch",
-          "hover:bg-stone-50 hover:border-stone-400",
-          "bg-slate-100 border rounded-md shadow m-1 overflow-clip"
+          "hover:border-foreground",
+          "bg-muted border rounded-md shadow shadow-foreground-50 m-1 overflow-clip"
         )}
       >
         <_Image visible={showCover} src={coverUrl(idpath)} />
@@ -37,7 +37,7 @@ const _Image = ({ visible: visible, src }: { visible: boolean; src: string }) =>
 );
 
 const _Label = ({ name }: { name: string }) => (
-  <div className="px-1 pb-1 pt-1.5 font-semibold bg-white border-t border-stone-200 text-center">
+  <div className="px-1 pb-1 pt-1.5 font-semibold bg-card border-t border-secondary text-center">
     {name}
   </div>
 );
@@ -45,8 +45,8 @@ const _Label = ({ name }: { name: string }) => (
 const _Index = ({ index }: { index: number }) => (
   <div
     className={cn(
-      "w-[1.8em] h-[1.8em] absolute flex flex-col justify-center font-bold text-black",
-      "items-center top-0.5 left-0.5 text-xs rounded-sm bg-white border"
+      "w-[1.8em] h-[1.8em] absolute flex flex-col justify-center font-bold",
+      "items-center top-0.5 left-0.5 text-xs rounded-sm bg-card border"
     )}
   >
     {index}

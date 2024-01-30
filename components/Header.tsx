@@ -14,11 +14,11 @@ export default async function Header({ idpath }: { idpath: string[] }) {
   return (
     <header
       className={
-        "fixed top-0 left-0 right-0 bg-white h-12 flex " +
+        "fixed top-0 left-0 right-0 bg-card h-12 flex " +
         "flex-row items-center px-5 border-b z-20 shadow-sm overflow-visible"
       }
     >
-      <Link href="/" className="font-bold whitespace-nowrap overflow-ellipsis overflow-clip">
+      <Link href="/" className="font-bold whitespace-nowrap overflow-ellipsis overflow-clip header">
         {course.name}
       </Link>
       {part && (
