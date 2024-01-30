@@ -19,14 +19,14 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
     return null;
   }
   const result = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.hash, hash),
-    with: { children: true },
+    where: eq(schema.pieces.piece_hash, hash),
   });
   if (!result) {
     return null;
   }
   return {
     ...result,
+    hash: result.piece_hash,
     id: lastItem(idpath),
     idpath,
     children: [],
@@ -38,9 +38,8 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   if (!hash) {
     return null;
   }
-  console.log(`${idpath} -> ${hash}`);
   const result = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.hash, hash),
+    where: eq(schema.pieces.piece_hash, hash),
     with: { children: true },
   });
   if (!result) {
@@ -53,6 +52,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
 
   const piece: ContentPiece = {
     ...result,
+    hash: result.piece_hash,
     idpath,
     id: lastItem(idpath),
     children: [],
@@ -60,6 +60,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   };
   piece.children = result.children.map((child) => ({
     ...child,
+    hash: child.piece_hash,
     id: child.idjpath.split("/").slice(-1)[0],
     idpath: child.idjpath.split("/"),
     metadata: child.metadata,
@@ -77,8 +78,11 @@ export const getPieceDocument = async (idpath: string[]): Promise<Buffer | null>
     return null;
   }
   const data = await getFileData(result.hash);
-  if (!data) {
-    console.warn(`Document ${idpath} has dangling document!`);
+  if (data === null) {
+    console.warn(`Document ${idpath} has dangling document!
+    [file_hash = ${result.hash}]
+    [piece_hash = ${hash}]
+`);
     return null;
   }
   return Buffer.from(base64ToBytes(data));
@@ -119,11 +123,11 @@ export const getPieceFileData = async (
   const [result] = await db
     .select({ data: schema.files.data })
     .from(schema.pieces)
-    .leftJoin(schema.attachments, eq(schema.pieces.hash, schema.attachments.piece))
+    .leftJoin(schema.attachments, eq(schema.pieces.piece_hash, schema.attachments.piece))
     .leftJoin(schema.files, eq(schema.attachments.file, schema.files.hash))
     .where(
       and(
-        eq(schema.pieces.hash, piece.hash),
+        eq(schema.pieces.piece_hash, piece.hash),
         eq(schema.files.name, filename),
         eq(schema.files.filetype, filetype)
       )
@@ -150,7 +154,7 @@ export const getContentTree = async (
   }
 
   const result = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.hash, hash),
+    where: eq(schema.pieces.piece_hash, hash),
     with: {
       children: {
         with: {
@@ -170,6 +174,7 @@ export const getContentTree = async (
   const __convert = (res: Result): ContentPiece => {
     const piece: ContentPiece = {
       ...res,
+      hash: res.piece_hash,
       id: lastItem(res.idjpath.split("/")),
       idpath: res.idjpath.split("/"),
       children: res.children?.map((ch) => __convert(ch)),
@@ -185,6 +190,7 @@ export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> =>
   const result = await db.query.pieces.findMany({
     columns: { idjpath: true },
     where: like(schema.pieces.idjpath, `${idjpath}%`),
+    orderBy: schema.pieces.diskpath,
   });
   return result.map(({ idjpath }) => idjpath.split("/"));
 };

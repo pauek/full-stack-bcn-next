@@ -7,7 +7,7 @@ export const roots = pgTable("roots", {
 });
 
 export const pieces = pgTable("pieces", {
-  hash: text("piece_hash").primaryKey(),
+  piece_hash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
   idjpath: text("idjpath").notNull(),
   parent: text("parent_hash"),
@@ -19,7 +19,7 @@ export const pieces = pgTable("pieces", {
 export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parent: one(pieces, {
     fields: [pieces.parent],
-    references: [pieces.hash],
+    references: [pieces.piece_hash],
     relationName: "parent_child",
   }),
   children: many(pieces, { relationName: "parent_child" }),
@@ -46,7 +46,7 @@ export const attachments = pgTable(
   {
     piece: text("piece_hash")
       .notNull()
-      .references(() => pieces.hash),
+      .references(() => pieces.piece_hash),
     file: text("file_hash")
       .notNull()
       .references(() => files.hash),
@@ -60,7 +60,7 @@ export const attachments = pgTable(
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
     fields: [attachments.piece],
-    references: [pieces.hash],
+    references: [pieces.piece_hash],
     relationName: "piece_attachments",
   }),
   file: one(files, {

@@ -34,8 +34,7 @@ export async function generateStaticParams() {
   }
   const imagePaths: { parts: string[] }[] = [];
   await data.walkContentPieces(course, async (piece) => {
-    const filename = await data.pieceHasCover(piece);
-    if (filename) {
+    if (await data.pieceHasCover(piece)) {
       imagePaths.push({ parts: [...piece.idpath] });
     }
   });

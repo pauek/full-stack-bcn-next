@@ -6,7 +6,6 @@ const courseId = process.env.COURSE_ID!;
 
 export default async function Home() {
   const course = await data.getContentTree([courseId], { level: 2 });
-  console.log(`Tree: ${JSON.stringify(course)}`);
   if (course === null) {
     notFound();
   }

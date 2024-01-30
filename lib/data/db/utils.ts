@@ -8,7 +8,7 @@ import { db } from "./db";
 export const fromDbPiece = (dbPiece: DBPiece): ContentPiece => {
   const idpath = dbPiece.idjpath.split("/");
   return {
-    hash: dbPiece.hash,
+    hash: dbPiece.piece_hash,
     name: dbPiece.name,
     diskpath: dbPiece.diskpath,
     id: lastItem(idpath),
@@ -27,9 +27,9 @@ export const getPieceFilesByFiletype = async (
   const result = await db
     .select({ name: schema.files.name, hash: schema.files.hash })
     .from(schema.pieces)
-    .rightJoin(schema.attachments, eq(schema.pieces.hash, schema.attachments.piece))
+    .rightJoin(schema.attachments, eq(schema.pieces.piece_hash, schema.attachments.piece))
     .rightJoin(schema.files, eq(schema.attachments.file, schema.files.hash))
-    .where(and(eq(schema.pieces.hash, pieceHash), eq(schema.files.filetype, filetype)))
+    .where(and(eq(schema.pieces.piece_hash, pieceHash), eq(schema.files.filetype, filetype)))
     .limit(options?.limit ? options.limit : 1000);
   return result;
 };

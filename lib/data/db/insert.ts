@@ -12,12 +12,12 @@ export const pieceSetParent = async (childHash: string, parentHash: string) => {
   await db
     .update(schema.pieces)
     .set({ parent: parentHash })
-    .where(eq(schema.pieces.hash, childHash));
+    .where(eq(schema.pieces.piece_hash, childHash));
 };
 
 export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
   const adaptedPiece: schema.DBPiece = {
-    hash: piece.hash,
+    piece_hash: piece.hash,
     name: piece.name,
     idjpath: piece.idpath.join("/"),
     diskpath: piece.diskpath,
@@ -36,11 +36,11 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
       .insert(schema.pieces)
       .values(adaptedPiece)
       .onConflictDoUpdate({
-        target: schema.pieces.hash,
+        target: schema.pieces.piece_hash,
         set: adaptedPiece,
       })
       .returning({
-        hash: schema.pieces.hash,
+        hash: schema.pieces.piece_hash,
         path: schema.pieces.idjpath,
       });
   } catch (e: any) {

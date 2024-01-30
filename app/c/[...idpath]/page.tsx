@@ -30,5 +30,6 @@ export async function generateStaticParams() {
     return [];
   }
   const idpaths = await data.getAllIdpaths(course);
+  console.log(`allIdpaths:\n${idpaths.map((p) => `${p.join("/")}\n`).join("")}`);
   return idpaths.map((idpath) => ({ idpath }));
 }
