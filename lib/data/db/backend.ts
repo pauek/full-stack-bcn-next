@@ -23,7 +23,9 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
     where: eq(schema.pieces.piece_hash, hash),
   });
   if (!result) {
-    console.log(`Piece not found in table 'pieces' for idpath ${idpath.join("/")}`);
+    console.log(
+      `Piece not found in table 'pieces' for idpath ${idpath.join("/")} [hash = ${hash}]`
+    );
     return null;
   }
   return {
@@ -188,34 +190,23 @@ export const getContentTree = async (
 };
 
 export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> => {
-  const idjpath = piece.idpath.join("/");
-  const result = await db.query.pieces.findMany({
-    columns: { idjpath: true },
-    where: like(schema.pieces.idjpath, `${idjpath}%`),
-    orderBy: schema.pieces.diskpath,
+  const result : string[][] = [];
+  await walkContentPieces(piece, async (piece) => {
+    result.push(piece.idpath);
   });
-  return result.map(({ idjpath }) => idjpath.split("/"));
+  return result;
 };
 
-type WalkFunc = (piece: ContentPiece) => Promise<void>;
+type WalkFunc = (piece: ContentPiece) => Promise<any>;
 
 export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
-  const allIdjpaths = await db
-    .select({ idjpath: schema.pieces.idjpath })
-    .from(schema.pieces)
-    .orderBy(asc(schema.pieces.diskpath));
-
-  console.log(
-    `All idjpaths from Database:\n${allIdjpaths.map(({ idjpath }) => idjpath).join("\n")}\n`
-  );
-
-  for (const { idjpath } of allIdjpaths) {
-    const idpath = idjpath.split("/");
-    const piece = await getPiece(idpath);
-    if (piece === null) {
-      console.warn(`Strange that cannot find "${idjpath}" (${JSON.stringify(idpath)})`);
-      continue;
-    }
-    await func(piece);
+  const dbPiece = await getPieceWithChildren(piece.idpath);
+  if (!dbPiece) {
+    throw `Piece not found in database: ${piece.idpath.join("/")}`;
   }
+  const children: any[] = [];
+  for (const child of dbPiece.children || []) {
+    children.push(await walkContentPieces(child, func));
+  }
+  return await func(dbPiece);
 };
