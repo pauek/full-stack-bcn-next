@@ -4,7 +4,7 @@ import ChapterItem from "./ChapterItem";
 export default async function SessionPageBody({ idpath }: { idpath: string[] }) {
   const session = await data.getPieceWithChildren(idpath);
   if (session === null) {
-    return <div className="text-red-500">Session with path "{idpath.join("/")}" not found</div>;
+    return <div className="text-red-500">Session with path <code>{idpath.join("/")}</code> not found</div>;
   }
   return (
     <div className="w-full p-4">
