@@ -36,6 +36,7 @@ export const updateMetadata = async (diskpath: string, func: (metadata: any) => 
 };
 
 export const courseUpdateMetadata = async (course: ContentPiece) => {
+  let currPartIndex = 1;
   let currSessionIndex = 1;
   await walkContentPiecesGeneric<void>(course, async (piece) => {
     const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
@@ -48,12 +49,15 @@ export const courseUpdateMetadata = async (course: ContentPiece) => {
       metadata.numSlides = slides ? slides.length : 0;
 
       // index
-      if (level == 2) {
+      if (level === 1) {
+        metadata.index = currPartIndex;
+        currPartIndex++;
+      } else if (level === 2) {
         // index (for sessions), we assume that the walk is *ordered by filenames*
         metadata.index = currSessionIndex;
         currSessionIndex++;
       } else {
-        // walkContentPieces sets the index to the child index
+        // walkContentPieces might set the index (the child index), so we copy it here.
         metadata.index = piece.metadata.index;
       }
     });

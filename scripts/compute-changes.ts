@@ -1,18 +1,120 @@
-import { getPiece, hashPiece, walkContentPiecesGeneric } from "@/lib/data/files";
-import { readFile } from "fs/promises";
+import { ContentPiece } from "@/lib/adt";
+import * as db from "@/lib/data/db";
+import * as files from "@/lib/data/files";
+import { HASH_FILE } from "@/lib/data/files";
+import { removeNullElements } from "@/lib/utils";
+import { writeFile } from "fs/promises";
 import { join } from "path";
 
-const courseId = process.env.COURSE_ID!
-const course = await getPiece([courseId]);
-if (!course) {
-  throw `Course ${courseId} not found!`;
+// Get the course (the root)
+const getCourseRoot = async (): Promise<ContentPiece> => {
+  const courseId = process.env.COURSE_ID!;
+  const course = await files.getPiece([courseId]);
+  if (!course) {
+    throw `Course ${courseId} not found!`;
+  }
+  return course;
+};
+
+type Changes = {
+  oldHash: string | null;
+  newHash: string;
+  diskpath: string;
+  idpath: string[];
+  childrenHashes: string[];
+}[];
+
+const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
+  // Get the changed/new hashes
+  const changes: Changes = [];
+
+  await files.walkContentPiecesGeneric<string>(course, async (piece, children) => {
+    const oldHash = await files.readStoredHash(piece.diskpath);
+    const newHash = await files.hashPiece(piece.diskpath, children);
+    if (oldHash === null || oldHash !== newHash) {
+      changes.push({
+        oldHash,
+        newHash,
+        diskpath: piece.diskpath,
+        idpath: piece.idpath,
+        childrenHashes: children,
+      });
+    }
+    return newHash;
+  });
+  return changes;
+};
+
+const writePieceStoredHashes = async (changes: Changes) => {
+  for (const {diskpath, newHash} of changes) {
+    await writeFile(join(diskpath, HASH_FILE), newHash);
+  }
 }
 
-await walkContentPiecesGeneric<string>(course, async (piece, children) => {
-  const oldHash = (await readFile(join(piece.diskpath, ".hash"))).toString();
-  const newHash = await hashPiece(piece.diskpath, children);
-  if (oldHash !== newHash) {
-    console.log(newHash, piece.idpath.join("/"));
+// Apply updates to the database
+const applyChangesToDatabase = async (changes: Changes) => {
+  for (const change of changes) {
+    const piece = await files.getPiece(change.idpath);
+    if (!piece) {
+      console.error(`Error: now I don't find a piece that was there??`);
+      continue;
+    }
+    console.log(change.newHash, change.idpath.join("/"));
+    await db.insertPiece(piece);
+    await db.insertFiles(piece);
+    for (const childHash of change.childrenHashes) {
+      await db.pieceSetParent(childHash, piece.hash);
+    }
   }
-  return newHash;
-});
+};
+
+const updateRoots = async (course: ContentPiece) => {
+  await db.deleteRoot(course.hash);
+  console.log("Deleted root", course.hash);
+  const newCourse = await files.getPiece([course.id]);
+  if (!newCourse) {
+    throw Error(`Root piece not found after having made changes?!?`);
+  }
+  await db.addRoot(newCourse.hash);
+  console.log("Added   root", newCourse.hash);
+  return newCourse;
+};
+
+const updateHashmapFile = async (changes: Changes) => {
+  // Update hash map file
+  const maps = await files.readHashMapFile();
+  for (const change of changes) {
+    let pos: number = maps.info.length;
+    if (change.oldHash) {
+      const index = maps.byHash.get(change.oldHash);
+      if (!index) {
+        throw Error(`Old hash index not found?!?`);
+      }
+      pos = index;
+    }
+    const idjpath = change.idpath.join("/");
+    maps.info[pos] = {
+      hash: change.newHash,
+      diskpath: change.diskpath,
+      idjpath,
+    };
+    maps.byHash.set(change.newHash, pos);
+    maps.byPath.set(idjpath, pos);
+  }
+
+  // Save hash map file
+  await files.writeHashMapFile(removeNullElements(maps.info));
+  console.log("Updated hash map file");
+};
+
+const course = await getCourseRoot();
+await files.courseUpdateMetadata(course);
+const changes = await getChangedPieces(course);
+if (changes.length > 0) {
+  await writePieceStoredHashes(changes);
+  await applyChangesToDatabase(changes);
+  await updateHashmapFile(changes);
+  await updateRoots(course);
+} else {
+  console.log("No changes.");
+}

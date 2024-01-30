@@ -1,12 +1,12 @@
 import { exists, readFile, readdir, writeFile } from "fs/promises";
 import { join } from "path";
+import { __CONTENT_ROOT, walkContentPiecesGeneric } from "../files";
 import { ContentPiece } from "../../adt";
 import { readMetadata } from "./metadata";
-import * as utils from "./utils";
-import { __CONTENT_ROOT, walkContentPiecesGeneric } from ".";
+import { removeNullElements } from "@/lib/utils";
 
 export const HASH_FILE = ".hash";
-export const HASH_MAP_FILE = "hashes.json";
+export const HASH_MAP_FILE = "./lib/data/hashes.json";
 
 export type Hash = string;
 
@@ -120,39 +120,91 @@ export const hashPiece = async (
 
 export const hashAllContent = async (piece: ContentPiece) => {
   const hashes: Map<string, { hash: Hash; diskpath: string }> = new Map();
+  
   await walkContentPiecesGeneric<Hash>(piece, async (piece, children) => {
     const hash = await hashPiece(piece.diskpath, children, { save: true });
-    hashes.set(piece.idpath.join("/"), { hash, diskpath: piece.diskpath });
+    const idjpath = piece.idpath.join("/");
+    hashes.set(idjpath, {
+      hash,
+      diskpath: piece.diskpath,
+    });
     return hash;
   });
+
   return hashes;
 };
 
-let mapsRead: boolean = false;
-const hash2diskpath: Map<string, string> = new Map();
-const path2hash: Map<string, string> = new Map();
+let mapRead: boolean = false;
 
-const maybeReadMaps = async () => {
-  if (mapsRead) {
-    return;
+export type HashMapInfo = {
+  hash: string;
+  idjpath: string;
+  diskpath: string;
+};
+
+type GlobalHashMaps = {
+  info: (HashMapInfo | null)[];
+  byHash: Map<string, number>;
+  byPath: Map<string, number>;
+};
+
+const globalHashMaps: GlobalHashMaps = {
+  info: [],
+  byHash: new Map<string, number>(),
+  byPath: new Map<string, number>(),
+};
+
+export const readHashMapFile = async (): Promise<GlobalHashMaps> => {
+  const diskpath = join(process.cwd(), HASH_MAP_FILE);
+  const buffer = await readFile(diskpath);
+  const entries = JSON.parse(buffer.toString());
+
+  const hashMaps: GlobalHashMaps = {
+    info: [],
+    byHash: new Map(),
+    byPath: new Map(),
+  };
+  for (const { hash, idjpath, diskpath } of entries) {
+    const index = hashMaps.info.length;
+    hashMaps.info[index] = { hash, idjpath, diskpath };
+    hashMaps.byHash.set(hash, index);
+    hashMaps.byPath.set(idjpath, index);
   }
-  const mapPath = join(__CONTENT_ROOT, HASH_MAP_FILE);
-  const buffer = await readFile(mapPath);
-  const lines = buffer.toString().split("\n").filter(Boolean);
-  for (const line of lines) {
-    const [hash, path, diskpath] = line.split(";");
-    hash2diskpath.set(hash, diskpath);
-    path2hash.set(path, hash);
-  }
-  mapsRead = true;
+  return hashMaps;
+};
+
+export const writeHashMapFile = async (entries: (HashMapInfo | null)[]) => {
+  const diskpath = join(process.cwd(), HASH_MAP_FILE);
+  await writeFile(diskpath, JSON.stringify(removeNullElements(entries), null, 2));
+};
+
+const readMaps = async () => {
+  const result = await readHashMapFile();
+  globalHashMaps.info = result.info;
+  globalHashMaps.byHash = result.byHash;
+  globalHashMaps.byPath = result.byPath;
 };
 
 export const hashToDiskpath = async (hash: string) => {
-  await maybeReadMaps();
-  return hash2diskpath.get(hash);
+  if (!mapRead) {
+    await readMaps();
+    mapRead = true;
+  }
+  const index = globalHashMaps.byHash.get(hash);
+  if (!index) {
+    return undefined;
+  }
+  return globalHashMaps.info[index]?.diskpath;
 };
 
 export const pathToHash = async (path: string) => {
-  await maybeReadMaps();
-  return path2hash.get(path);
+  if (!mapRead) {
+    await readMaps();
+    mapRead = true;
+  }
+  const index = globalHashMaps.byPath.get(path);
+  if (!index) {
+    return undefined;
+  }
+  return globalHashMaps.info[index]?.hash;
 };

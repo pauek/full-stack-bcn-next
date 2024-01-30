@@ -22,3 +22,13 @@ export const bytesToBase64 = (bytes: Uint8Array) => {
 };
 
 export const lastItem = (array: Array<any>) => array[array.length - 1];
+
+export const removeNullElements = <T>(array: (T | null)[]): T[] => {
+  const result: T[] = [];
+  for (const element of array) {
+    if (element) {
+      result.push(element);
+    }
+  }
+  return result;
+};

@@ -66,9 +66,7 @@
 
     --ring: 12 6.5% 15.1%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
@@ -76,9 +74,7 @@
     @apply bg-background text-foreground bg-stone-50;
     scrollbar-gutter: stable;
   }
-}
 
-@layer base {
   p {
     @apply my-2 leading-5;
   }

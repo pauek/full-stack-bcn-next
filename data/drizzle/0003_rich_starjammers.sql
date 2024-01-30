@@ -1,0 +1,1 @@
+ALTER TABLE "pieces" ADD COLUMN "created_at" date DEFAULT now() NOT NULL;

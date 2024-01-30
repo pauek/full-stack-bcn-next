@@ -171,9 +171,14 @@ export const walkContentPiecesGeneric = async <T>(piece: ContentPiece, func: Wal
   childSubdirs.sort();
 
   const children: T[] = [];
-  for (const subdir of childSubdirs) {
+  for (let i = 0; i < childSubdirs.length; i++) {
+    const subdir = childSubdirs[i];
     const childSubdir = join(piece.diskpath, subdir);
     const child = await utils.readPieceAtSubdir(childSubdir, [...piece.idpath], piece);
+    // Set an index if there was no index in the metadata
+    if (!child.metadata.index) {
+      child.metadata.index = i;
+    }
     children.push(await walkContentPiecesGeneric(child, func));
   }
 

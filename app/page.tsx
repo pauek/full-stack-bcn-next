@@ -1,4 +1,3 @@
-import FullPageLayout from "@/components/FullPageLayout";
 import Part from "@/components/Part";
 import data from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -12,10 +11,8 @@ export default async function Home() {
   }
   const { children } = course;
   return (
-    <FullPageLayout path={[course.id]}>
-      <div className="w-full sm:w-[36em]">
-        {children && children.map((part) => <Part key={part.hash} part={part} />)}
-      </div>
-    </FullPageLayout>
+    <div className="w-full sm:w-[36em]">
+      {children && children.map((part) => <Part key={part.hash} part={part} />)}
+    </div>
   );
 }

@@ -5,10 +5,10 @@ import { and, asc, eq, like } from "drizzle-orm";
 import { extname } from "path";
 import { ImgData } from "../data-backend";
 import { db } from "./db";
-import hashes from "./hashes.json";
+import hashes from "../hashes.json";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
 
-const pathToHash = new Map(hashes.map(({ hash, path }) => [path, hash]));
+const pathToHash = new Map(hashes.map(({ hash, idjpath }) => [idjpath, hash]));
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");

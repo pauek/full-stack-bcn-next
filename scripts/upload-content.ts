@@ -10,7 +10,7 @@ await walkContentPiecesGeneric<ContentPiece>(fullstack, async (piece, children) 
   await insertPiece(piece);
   await insertFiles(piece);
   for (const child of children) {
-    await pieceSetParent(child, piece);
+    await pieceSetParent(child.hash, piece.hash);
   }
   return piece;
 });

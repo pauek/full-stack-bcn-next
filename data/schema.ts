@@ -1,6 +1,10 @@
 import { ContentPieceMetadata } from "@/lib/adt";
 import { relations } from "drizzle-orm";
-import { json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
+import { date, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
+
+export const roots = pgTable("roots", {
+  hash: text("piece_hash").primaryKey(),
+});
 
 export const pieces = pgTable("pieces", {
   hash: text("piece_hash").primaryKey(),
@@ -8,6 +12,7 @@ export const pieces = pgTable("pieces", {
   idjpath: text("idjpath").notNull(),
   parent: text("parent_hash"),
   diskpath: text("diskpath").notNull(),
+  createdAt: date("created_at", { mode: "date" }).notNull().defaultNow(),
 
   metadata: json("metadata").notNull().$type<ContentPieceMetadata>(),
 });
@@ -39,8 +44,12 @@ export const filesRelations = relations(files, ({ many }) => ({
 export const attachments = pgTable(
   "attachments",
   {
-    piece: text("piece_hash").notNull().references(() => pieces.hash),
-    file: text("file_hash").notNull().references(() => files.hash),
+    piece: text("piece_hash")
+      .notNull()
+      .references(() => pieces.hash),
+    file: text("file_hash")
+      .notNull()
+      .references(() => files.hash),
   },
   (table) => ({
     pk: primaryKey({

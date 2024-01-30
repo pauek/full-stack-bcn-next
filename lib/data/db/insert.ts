@@ -8,11 +8,11 @@ import { hashAny } from "@/lib/data/files/hashes";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
-export const pieceSetParent = async (piece: ContentPiece, parent: ContentPiece) => {
+export const pieceSetParent = async (childHash: string, parentHash: string) => {
   await db
     .update(schema.pieces)
-    .set({ parent: parent.hash })
-    .where(eq(schema.pieces.hash, piece.hash));
+    .set({ parent: parentHash })
+    .where(eq(schema.pieces.hash, childHash));
 };
 
 export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
@@ -22,6 +22,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
     idjpath: piece.idpath.join("/"),
     diskpath: piece.diskpath,
     parent: parent?.hash || null,
+    createdAt: new Date(),
     metadata: {
       hasDoc: piece.metadata.hasDoc,
       index: piece.metadata.index,
@@ -31,7 +32,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
     },
   };
   try {
-    const insertedPieces = await db
+    await db
       .insert(schema.pieces)
       .values(adaptedPiece)
       .onConflictDoUpdate({
@@ -42,10 +43,6 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
         hash: schema.pieces.hash,
         path: schema.pieces.idjpath,
       });
-    if (insertedPieces.length === 1) {
-      const { hash, path } = insertedPieces[0];
-      console.log(hash, path);
-    }
   } catch (e: any) {
     console.log(`Inserting ${piece.diskpath} [${JSON.stringify(adaptedPiece)}]: ${e.toString()}`);
   }
@@ -121,4 +118,12 @@ export const insertFiles = async (piece: ContentPiece) => {
       console.error(e.stack);
     }
   }
+};
+
+export const addRoot = async (hash: string) => {
+  await db.insert(schema.roots).values({ hash });
+};
+
+export const deleteRoot = async (hash: string) => {
+  await db.delete(schema.roots).where(eq(schema.roots.hash, hash));
 };
