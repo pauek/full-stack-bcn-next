@@ -198,16 +198,18 @@ export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> =>
 type WalkFunc = (piece: ContentPiece) => Promise<void>;
 
 export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
-  const allIdpaths = await db
+  const allIdjpaths = await db
     .select({ idjpath: schema.pieces.idjpath })
     .from(schema.pieces)
     .orderBy(asc(schema.pieces.diskpath));
 
-  for (const { idjpath } of allIdpaths) {
+  console.log(`All idjpaths from Database:\n${allIdjpaths.join("\n")}\n`);
+
+  for (const { idjpath } of allIdjpaths) {
     const idpath = idjpath.split("/");
     const piece = await getPiece(idpath);
-    if (!piece) {
-      console.warn(`Strange that cannot find a piece by idpath here! idpath = ${idpath}`);
+    if (piece === null) {
+      console.warn(`Strange that cannot find "${idjpath}" (${JSON.stringify(idpath)})`);
       continue;
     }
     await func(piece);

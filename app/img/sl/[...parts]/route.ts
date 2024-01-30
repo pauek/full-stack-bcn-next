@@ -33,14 +33,16 @@ export async function generateStaticParams() {
   if (!course) {
     return [];
   }
-  const imagePaths: { parts: string[] }[] = [];
+  const slidePaths: { parts: string[] }[] = [];
+  console.log("Generating static paths for slides");
   await data.walkContentPieces(course, async (piece) => {
     const slides = await data.getPieceSlideList(piece);
     if (slides) {
       for (const slide of slides) {
-        imagePaths.push({ parts: [...piece.idpath, slide] });
+        slidePaths.push({ parts: [...piece.idpath, slide] });
       }
     }
   });
-  return imagePaths;
+  console.log(slidePaths);
+  return slidePaths;
 }

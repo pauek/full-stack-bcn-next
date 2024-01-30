@@ -32,11 +32,13 @@ export async function generateStaticParams() {
   if (!course) {
     return [];
   }
-  const imagePaths: { parts: string[] }[] = [];
+  const coverPaths: { parts: string[] }[] = [];
+  console.log("Generating static paths for covers:");
   await data.walkContentPieces(course, async (piece) => {
     if (await data.pieceHasCover(piece)) {
-      imagePaths.push({ parts: [...piece.idpath] });
+      coverPaths.push({ parts: [...piece.idpath] });
     }
   });
-  return imagePaths;
+  console.log(coverPaths);
+  return coverPaths;
 }
