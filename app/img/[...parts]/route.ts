@@ -35,7 +35,6 @@ export async function generateStaticParams() {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
-  console.log("Generating static paths for images");
   await data.walkContentPieces(course, async (piece) => {
     const images = await data.getPieceImageList(piece);
     if (images) {
@@ -44,6 +43,5 @@ export async function generateStaticParams() {
       }
     }
   });
-  console.log(imagePaths.map((p) => `image:${p.parts.join("/")}`));
   return imagePaths;
 }

@@ -34,7 +34,6 @@ export async function generateStaticParams() {
     return [];
   }
   const slidePaths: { parts: string[] }[] = [];
-  console.log("Generating static paths for slides");
   await data.walkContentPieces(course, async (piece) => {
     const slides = await data.getPieceSlideList(piece);
     if (slides) {
@@ -43,6 +42,5 @@ export async function generateStaticParams() {
       }
     }
   });
-  console.log(slidePaths.map((p) => `slide:${p.parts.join("/")}`));
   return slidePaths;
 }
