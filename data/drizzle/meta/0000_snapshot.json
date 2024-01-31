@@ -1,5 +1,5 @@
 {
-  "id": "f2f91342-ee10-4c43-aef3-06e60808197c",
+  "id": "272f0f2c-9059-4b40-afb9-58f01b12d849",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -12,13 +12,13 @@
           "name": "piece_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "file_hash": {
           "name": "file_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -105,14 +105,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "name": {
-          "name": "name",
+        "idjpath": {
+          "name": "idjpath",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "idpath": {
-          "name": "idpath",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -129,10 +129,41 @@
           "primaryKey": false,
           "notNull": true
         },
+        "created_at": {
+          "name": "created_at",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
         "metadata": {
           "name": "metadata",
           "type": "json",
           "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "pieces_idjpath_unique": {
+          "name": "pieces_idjpath_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "idjpath"
+          ]
+        }
+      }
+    },
+    "roots": {
+      "name": "roots",
+      "schema": "",
+      "columns": {
+        "piece_hash": {
+          "name": "piece_hash",
+          "type": "text",
+          "primaryKey": true,
           "notNull": true
         }
       },

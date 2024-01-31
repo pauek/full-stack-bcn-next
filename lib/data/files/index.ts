@@ -11,6 +11,9 @@ export * from "./utils";
 export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
 
 export const backend: DataBackend = {
+  getInfo: () => {
+    return "Using local files as backend";
+  },
   ..._backend,
   getBreadcrumbData: getBreadcrumbData(getPieceWithChildren),
 };

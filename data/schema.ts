@@ -8,8 +8,8 @@ export const roots = pgTable("roots", {
 
 export const pieces = pgTable("pieces", {
   piece_hash: text("piece_hash").primaryKey(),
+  idjpath: text("idjpath").unique().notNull(),
   name: text("name").notNull(),
-  idjpath: text("idjpath").notNull(),
   parent: text("parent_hash"),
   diskpath: text("diskpath").notNull(),
   createdAt: date("created_at", { mode: "date" }).notNull().defaultNow(),

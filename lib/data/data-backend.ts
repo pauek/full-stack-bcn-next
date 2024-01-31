@@ -17,6 +17,8 @@ type WalkFunc = (piece: ContentPiece) => Promise<void>;
 
 // prettier-ignore
 export interface DataBackend {
+  getInfo: () => string;
+
   getPiece: (idpath: string[]) => Promise<ContentPiece | null>;
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
   getPieceDocument: (idpath: string[]) => Promise<Buffer | null>;

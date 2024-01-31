@@ -83,7 +83,7 @@ export const getPieceDocument = async (idpath: string[]): Promise<Buffer | null>
   }
   const data = await getFileData(result.hash);
   if (data === null) {
-    console.warn(`Document ${idpath} has dangling document!
+    console.warn(`Content piece "${idpath}" [${hash}] has a dangling document!
     [file_hash = ${result.hash}]
     [piece_hash = ${hash}]
 `);

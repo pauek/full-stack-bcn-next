@@ -25,12 +25,13 @@ const nextConfig = {
 
 export default async (phase, { defaultConfig }) => {
   const config = { ...nextConfig };
+  const { DATABASE_URL: dbUrl } = process.env;
   switch (phase) {
     case PHASE_DEVELOPMENT_SERVER: 
-      console.info("--> Dev server <--");
+      console.info(`--> Dev server [${dbUrl}] <--`);
       break;
     case PHASE_PRODUCTION_BUILD:
-      console.info("--> Production build <--");
+      console.info(`--> Production build [${dbUrl}] <--`);
       break;
   }
   return withMDX(config);

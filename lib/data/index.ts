@@ -4,13 +4,10 @@ import { backend as filesBackend } from "@/lib/data/files";
 import { backend as dbBackend } from "@/lib/data/db";
 
 const initBackend = (): DataBackend => {
-  if (process.env.MODE! === "local") {
-    console.log("--> Using files backend.");
-    return filesBackend;
-  } else {
-    console.log("--> Using database backend.");
-    return dbBackend;
-  }
+  const dbUrl = process.env.DATABASE_URL!;
+  let backend: DataBackend = dbUrl === "files" ? filesBackend : dbBackend;
+  console.log(` ${backend.getInfo()}`);
+  return backend;
 }
 
-export default initBackend();
+export default await initBackend();
