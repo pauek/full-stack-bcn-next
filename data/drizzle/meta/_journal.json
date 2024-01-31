@@ -8,6 +8,27 @@
       "when": 1706702172491,
       "tag": "0000_keen_whistler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1706706466777,
+      "tag": "0001_chemical_iron_patriot",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1706706562459,
+      "tag": "0002_ancient_forgotten_one",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1706706925557,
+      "tag": "0003_premium_moon_knight",
+      "breakpoints": true
     }
   ]
 }

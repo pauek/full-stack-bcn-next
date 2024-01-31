@@ -2,13 +2,8 @@ import { ContentPieceMetadata } from "@/lib/adt";
 import { relations } from "drizzle-orm";
 import { date, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 
-export const roots = pgTable("roots", {
-  hash: text("piece_hash").primaryKey(),
-});
-
 export const pieces = pgTable("pieces", {
   piece_hash: text("piece_hash").primaryKey(),
-  idjpath: text("idjpath").unique().notNull(),
   name: text("name").notNull(),
   parent: text("parent_hash"),
   diskpath: text("diskpath").notNull(),

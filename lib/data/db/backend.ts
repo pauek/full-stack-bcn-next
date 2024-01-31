@@ -9,6 +9,7 @@ import hashes from "../hashes.json";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
 
 const pathToHash = new Map(hashes.map(({ hash, idjpath }) => [idjpath, hash]));
+const hashToPath = new Map(hashes.map(({ hash, idjpath }) => [hash, idjpath]));
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");
@@ -49,9 +50,6 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   if (!result) {
     return null;
   }
-  if (idpath.join("/") !== result.idjpath) {
-    throw "Mismatch between paths!";
-  }
   const { index, hasDoc, numSlides, hidden, row } = result.metadata;
 
   const piece: ContentPiece = {
@@ -62,13 +60,19 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     children: [],
     metadata: { index, hasDoc, numSlides, hidden, row },
   };
-  piece.children = result.children.map((child) => ({
-    ...child,
-    hash: child.piece_hash,
-    id: child.idjpath.split("/").slice(-1)[0],
-    idpath: child.idjpath.split("/"),
-    metadata: child.metadata,
-  }));
+  piece.children = result.children.map((child) => {
+    const idjpath = hashToPath.get(child.piece_hash);
+    if (idjpath === undefined) {
+      throw Error(`getPieceWithChildren: path not found for "${child.piece_hash}"?!?`);
+    }
+    return {
+      ...child,
+      hash: child.piece_hash,
+      id: idjpath.split("/").slice(-1)[0],
+      idpath: idjpath.split("/"),
+      metadata: child.metadata,
+    };
+  });
   return piece;
 };
 
@@ -176,11 +180,15 @@ export const getContentTree = async (
   type Result = schema.DBPiece & { children?: Result[] };
 
   const __convert = (res: Result): ContentPiece => {
+    const idjpath = hashToPath.get(res.piece_hash);
+    if (idjpath === undefined) {
+      throw Error(`getContentTree: path not found for "${res.piece_hash}"?!?`);
+    }
     const piece: ContentPiece = {
       ...res,
       hash: res.piece_hash,
-      id: lastItem(res.idjpath.split("/")),
-      idpath: res.idjpath.split("/"),
+      id: lastItem(idjpath.split("/")),
+      idpath: idjpath.split("/"),
       children: res.children?.map((ch) => __convert(ch)),
     };
     return piece;
@@ -190,7 +198,7 @@ export const getContentTree = async (
 };
 
 export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> => {
-  const result : string[][] = [];
+  const result: string[][] = [];
   await walkContentPieces(piece, async (piece) => {
     result.push(piece.idpath);
   });
