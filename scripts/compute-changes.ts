@@ -33,10 +33,10 @@ const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
   await files.walkContentPieces(course, async (piece, children) => {
     const oldHash = await readStoredHash(piece.diskpath);
     const newHash = await hashPiece(files, piece, children);
-    if (oldHash === null || oldHash !== newHash) {
+    if (oldHash === null || oldHash !== newHash.hash) {
       changes.push({
         oldHash,
-        newHash,
+        newHash: newHash.hash,
         diskpath: piece.diskpath,
         idpath: piece.idpath,
         childrenHashes: children,
@@ -109,10 +109,13 @@ const course = await getCourseRoot();
 await courseUpdateMetadata(files, course);
 const changes = await getChangedPieces(course);
 if (changes.length > 0) {
-  await writePieceStoredHashes(changes);
-  await applyChangesToDatabase(changes);
-  await updateHashmapFile(changes);
-  await updateRoots(course);
+  // await writePieceStoredHashes(changes);
+  // await applyChangesToDatabase(changes);
+  // await updateHashmapFile(changes);
+  // await updateRoots(course);
+  for (const change of changes) {
+    console.log(change.newHash, change.idpath.join("/"));
+  }
 } else {
   console.log("No changes.");
 }

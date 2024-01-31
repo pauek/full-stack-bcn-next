@@ -16,28 +16,26 @@ export const pieceSetParent = async (childHash: string, parentHash: string) => {
 };
 
 export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
+  const found = await db.query.pieces.findFirst({
+    where: eq(schema.pieces.piece_hash, piece.hash),
+  });
+  if (found !== undefined) {
+    return false; // wasn't inserted
+  }
   const adaptedPiece: schema.DBPiece = {
     piece_hash: piece.hash,
     name: piece.name,
     diskpath: piece.diskpath,
     parent: parent?.hash || null,
     createdAt: new Date(),
-    metadata: {
-      hasDoc: piece.metadata.hasDoc,
-      index: piece.metadata.index,
-      numSlides: piece.metadata.numSlides,
-      hidden: piece.metadata.hidden,
-      row: piece.metadata.row,
-    },
+    metadata: piece.metadata,
   };
   try {
-    await db
-      .insert(schema.pieces)
-      .values(adaptedPiece)
-      .onConflictDoUpdate({
-        target: schema.pieces.piece_hash,
-        set: adaptedPiece,
-      });
+    await db.insert(schema.pieces).values(adaptedPiece).onConflictDoUpdate({
+      target: schema.pieces.piece_hash,
+      set: adaptedPiece,
+    });
+    return true; // it was inserted
   } catch (e: any) {
     console.log(`Inserting ${piece.diskpath} [${JSON.stringify(adaptedPiece)}]: ${e.toString()}`);
   }

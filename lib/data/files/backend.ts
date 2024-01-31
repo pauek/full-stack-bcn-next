@@ -1,7 +1,7 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
-import { readFile, readdir } from "fs/promises";
-import { join, join as pathJoin } from "path";
+import { readFile } from "fs/promises";
+import { basename, join, join as pathJoin } from "path";
 import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
 
@@ -122,7 +122,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
     return null;
   }
   const buffer = await readFile(coverFilename);
-  return { buffer, name: coverFilename };
+  return { buffer, name: basename(coverFilename) };
 };
 
 export const getPieceFileData = async (
@@ -147,25 +147,13 @@ export const getPieceFileData = async (
 };
 
 export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
-  const childSubdirs: string[] = [];
-  for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
-    if (utils.isContentPiece(ent)) {
-      childSubdirs.push(ent.name);
-    }
+  const filesPiece = await getPieceWithChildren(piece.idpath);
+  if (!filesPiece) {
+    throw `Piece not found in files: ${piece.idpath.join("/")}`;
   }
-  childSubdirs.sort();
-
   const children: any[] = [];
-  for (let i = 0; i < childSubdirs.length; i++) {
-    const subdir = childSubdirs[i];
-    const childSubdir = join(piece.diskpath, subdir);
-    const child = await utils.readPieceAtSubdir(childSubdir, [...piece.idpath], piece);
-    // Set an index if there was no index in the metadata
-    if (!child.metadata.index) {
-      child.metadata.index = i;
-    }
+  for (const child of filesPiece.children || []) {
     children.push(await walkContentPieces(child, func));
   }
-
-  return await func(piece, children);
+  return await func(filesPiece, children);
 };

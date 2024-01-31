@@ -6,10 +6,13 @@ if (!fullstack) {
   throw `Course "fullstack" not found!`;
 }
 await walkContentPieces(fullstack, async (piece, children) => {
-  await insertPiece(piece);
-  await insertFiles(piece);
-  for (const child of children) {
-    await pieceSetParent(child.hash, piece.hash);
+  console.log(piece.hash, piece.idpath.join("/"));
+  if (await insertPiece(piece)) {
+    await insertFiles(piece);
+    for (const child of children) {
+      await pieceSetParent(child.hash, piece.hash);
+    }
   }
   return piece;
 });
+

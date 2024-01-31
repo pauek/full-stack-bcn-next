@@ -41,6 +41,7 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
 export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPiece | null> => {
   const hash = pathToHash.get(idpath.join("/"));
   if (!hash) {
+    console.info("Hash not found in table!");
     return null;
   }
   const result = await db.query.pieces.findFirst({
@@ -50,7 +51,6 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   if (!result) {
     return null;
   }
-  const { index, hasDoc, numSlides, hidden, row } = result.metadata;
 
   const piece: ContentPiece = {
     ...result,
@@ -58,7 +58,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     idpath,
     id: lastItem(idpath),
     children: [],
-    metadata: { index, hasDoc, numSlides, hidden, row },
+    metadata: result.metadata,
   };
   piece.children = result.children.map((child) => {
     const idjpath = hashToPath.get(child.piece_hash);

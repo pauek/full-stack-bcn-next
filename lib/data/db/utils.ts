@@ -29,6 +29,7 @@ export const getPieceFilesByFiletype = async (
     .rightJoin(schema.attachments, eq(schema.pieces.piece_hash, schema.attachments.piece))
     .rightJoin(schema.files, eq(schema.attachments.file, schema.files.hash))
     .where(and(eq(schema.pieces.piece_hash, pieceHash), eq(schema.files.filetype, filetype)))
+    .orderBy(schema.pieces.diskpath)
     .limit(options?.limit ? options.limit : 1000);
   return result;
 };

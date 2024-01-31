@@ -1,6 +1,8 @@
 import { ContentPiece } from "@/lib/adt";
 import { DataBackendBase } from "./data-backend";
 import { HashMapInfo } from "./hash-maps";
+import { METADATA_FILENAME } from "./files/metadata";
+import { basename } from "path";
 
 export type Hash = string;
 
@@ -34,22 +36,27 @@ export const hashAny = (x: any) => {
   return hasher.digest("hex");
 };
 
+type HashItem = {
+  name: string;
+  hash: string;
+};
+
 export const hashPiece = async function (
   backend: DataBackendBase,
   piece: ContentPiece,
-  children: Hash[]
-): Promise<Hash> {
-  const hashes: { name: string; hash: string }[] = children.map((hash) => ({
-    name: "",
-    hash,
-  }));
+  children: HashItem[]
+): Promise<HashItem> {
+  children.sort((a, b) => a.name.localeCompare(b.name));
+  const childrenHashes: HashItem[] = children.map(({ name, hash }) => ({ name, hash }));
 
-  for (const field in piece.metadata) {
-    hashes.push({
-      name: field,
-      hash: hashAny(piece.metadata[field]),
-    });
-  }
+  const hashes: HashItem[] = [];
+  const fields = Object.entries(piece.metadata).sort(([a], [b]) => a.localeCompare(b));
+  const strFields = JSON.stringify(fields);
+  console.log(strFields);
+  hashes.push({
+    name: METADATA_FILENAME,
+    hash: hashAny(strFields),
+  });
 
   const doc = await backend.getPieceDocument(piece);
   if (doc !== null) {
@@ -67,7 +74,7 @@ export const hashPiece = async function (
   if (imgList !== null) {
     for (const img of imgList) {
       hashes.push({
-        name: img,
+        name: `images/${img}`,
         hash: hashAny(await backend.getPieceFileData(piece, img, "image")),
       });
     }
@@ -77,7 +84,7 @@ export const hashPiece = async function (
   if (slideList !== null) {
     for (const slide of slideList) {
       hashes.push({
-        name: slide,
+        name: `slides/${slide}`,
         hash: hashAny(await backend.getPieceFileData(piece, slide, "slide")),
       });
     }
@@ -91,20 +98,23 @@ export const hashPiece = async function (
     return cmp2;
   });
 
-  const concat = hashes.map(({ name, hash }) => `${hash} ${name}\n`).join("");
-  const result = hashAny(concat);
+  const allHashes = [...childrenHashes, ...hashes];
 
-  return result;
+  const concat = allHashes.map(({ name, hash }) => `${hash} ${name}\n`).join("");
+  const result = hashAny(concat);
+  console.log(`${concat}${result}\n`);
+
+  return { name: basename(piece.diskpath), hash: result };
 };
 
 export const hashAllContent = async function (backend: DataBackendBase, root: ContentPiece) {
   const hashes: Map<string, HashMapInfo> = new Map();
 
   await backend.walkContentPieces(root, async (piece, children) => {
-    const hash = await hashPiece(backend, piece, children);
+    const { hash, name } = await hashPiece(backend, piece, children);
     const idjpath = piece.idpath.join("/");
     hashes.set(idjpath, { hash, idjpath, diskpath: piece.diskpath });
-    return hash;
+    return { hash, name };
   });
 
   return hashes;

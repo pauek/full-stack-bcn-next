@@ -4,7 +4,7 @@ import { join } from "path";
 import { DataBackendBase } from "../data-backend";
 import { getPieceSlideList, pieceHasDoc } from "./backend";
 
-const __METADATA_FILENAME = ".meta.json";
+export const METADATA_FILENAME = ".meta.json";
 
 const defaultMetadata = {
   numSlides: 0,
@@ -14,7 +14,7 @@ const defaultMetadata = {
 
 export const readMetadata = async (diskpath: string): Promise<any> => {
   try {
-    const metadataPath = join(diskpath, __METADATA_FILENAME);
+    const metadataPath = join(diskpath, METADATA_FILENAME);
     const bytes = await readFile(metadataPath);
     const fileMetadata = JSON.parse(bytes.toString());
     return { ...defaultMetadata, ...fileMetadata };
@@ -26,7 +26,7 @@ export const readMetadata = async (diskpath: string): Promise<any> => {
 
 const writeMetadata = async (dir: string, metadata: any) => {
   const json = JSON.stringify(metadata, null, 2);
-  const metadataPath = join(dir, __METADATA_FILENAME);
+  const metadataPath = join(dir, METADATA_FILENAME);
   await writeFile(metadataPath, json);
 };
 
