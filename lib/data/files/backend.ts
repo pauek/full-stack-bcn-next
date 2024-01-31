@@ -1,8 +1,8 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { readFile, readdir } from "fs/promises";
-import { extname, join, join as pathJoin } from "path";
-import { ImgData } from "../data-backend";
+import { join, join as pathJoin } from "path";
+import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
 
 export { findCoverImageFilename } from "./utils";
@@ -98,10 +98,13 @@ export const pieceNumSlides = async (piece: ContentPiece) => {
   return (await getPieceSlideList(piece))?.length ?? 0;
 };
 
-export const getPieceDocument = async (piece: ContentPiece) => {
+export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   try {
     let doc = await utils.findDocFilename(piece.diskpath);
-    return doc ? readFile(pathJoin(piece.diskpath, doc)) : null;
+    if (!doc) {
+      return null;
+    }
+    return { name: doc, buffer: await readFile(pathJoin(piece.diskpath, doc)) };
   } catch (e) {
     return null;
   }
@@ -113,14 +116,13 @@ export const getPieceSlideList = async (piece: ContentPiece) =>
 export const getPieceImageList = async (piece: ContentPiece) =>
   utils.listPieceSubdir(piece.diskpath, "images", utils.isImage);
 
-export const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgData | null> => {
+export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const coverFilename = await utils.findCoverImageFilename(piece);
   if (!coverFilename) {
     return null;
   }
-  const extension = extname(coverFilename);
-  const data = await readFile(coverFilename);
-  return { data, extension };
+  const buffer = await readFile(coverFilename);
+  return { buffer, name: coverFilename };
 };
 
 export const getPieceFileData = async (
@@ -144,9 +146,7 @@ export const getPieceFileData = async (
   }
 };
 
-type WalkFunc<T> = (piece: ContentPiece, children: T[]) => Promise<T>;
-
-export const walkContentPiecesGeneric = async <T>(piece: ContentPiece, func: WalkFunc<T>) => {
+export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
   const childSubdirs: string[] = [];
   for (const ent of await readdir(piece.diskpath, { withFileTypes: true })) {
     if (utils.isContentPiece(ent)) {
@@ -155,7 +155,7 @@ export const walkContentPiecesGeneric = async <T>(piece: ContentPiece, func: Wal
   }
   childSubdirs.sort();
 
-  const children: T[] = [];
+  const children: any[] = [];
   for (let i = 0; i < childSubdirs.length; i++) {
     const subdir = childSubdirs[i];
     const childSubdir = join(piece.diskpath, subdir);
@@ -164,10 +164,8 @@ export const walkContentPiecesGeneric = async <T>(piece: ContentPiece, func: Wal
     if (!child.metadata.index) {
       child.metadata.index = i;
     }
-    children.push(await walkContentPiecesGeneric(child, func));
+    children.push(await walkContentPieces(child, func));
   }
 
   return await func(piece, children);
 };
-
-export const walkContentPieces = walkContentPiecesGeneric<void>;

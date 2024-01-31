@@ -1,7 +1,9 @@
 import { ContentPiece } from "@/lib/adt";
 import * as db from "@/lib/data/db";
-import * as files from "@/lib/data/files";
+import { courseUpdateMetadata, backend as files, readStoredHash } from "@/lib/data/files";
 import { HASH_FILE } from "@/lib/data/files";
+import { readHashMapFile, writeHashMapFile } from "@/lib/data/hash-maps";
+import { hashPiece } from "@/lib/data/hashing";
 import { removeNullElements } from "@/lib/utils";
 import { writeFile } from "fs/promises";
 import { join } from "path";
@@ -28,9 +30,9 @@ const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
   // Get the changed/new hashes
   const changes: Changes = [];
 
-  await files.walkContentPiecesGeneric<string>(course, async (piece, children) => {
-    const oldHash = await files.readStoredHash(piece.diskpath);
-    const newHash = await files.hashPiece(piece.diskpath, children);
+  await files.walkContentPieces(course, async (piece, children) => {
+    const oldHash = await readStoredHash(piece.diskpath);
+    const newHash = await hashPiece(files, piece, children);
     if (oldHash === null || oldHash !== newHash) {
       changes.push({
         oldHash,
@@ -78,7 +80,7 @@ const updateRoots = async (course: ContentPiece) => {
 
 const updateHashmapFile = async (changes: Changes) => {
   // Update hash map file
-  const maps = await files.readHashMapFile();
+  const maps = await readHashMapFile();
   for (const change of changes) {
     let pos: number = maps.info.length;
     if (change.oldHash) {
@@ -99,12 +101,12 @@ const updateHashmapFile = async (changes: Changes) => {
   }
 
   // Save hash map file
-  await files.writeHashMapFile(removeNullElements(maps.info));
+  await writeHashMapFile(removeNullElements(maps.info));
   console.log("Updated hash map file");
 };
 
 const course = await getCourseRoot();
-await files.courseUpdateMetadata(course);
+await courseUpdateMetadata(files, course);
 const changes = await getChangedPieces(course);
 if (changes.length > 0) {
   await writePieceStoredHashes(changes);

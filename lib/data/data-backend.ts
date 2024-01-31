@@ -12,8 +12,12 @@ export type CrumbData = {
   siblings?: Array<CrumbData>;
 };
 
-type WalkFunc = (piece: ContentPiece) => Promise<void>;
+export type WalkFunc = (piece: ContentPiece, children: any[]) => Promise<any>;
 
+export type FileBuffer = {
+  name: string;
+  buffer: Buffer;
+};
 
 // prettier-ignore
 export interface DataBackendBase {
@@ -23,10 +27,10 @@ export interface DataBackendBase {
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
 
-  getPieceDocument: (piece: ContentPiece) => Promise<Buffer | null>;
+  getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceImageList: (piece: ContentPiece) => Promise<string[] | null>;
   getPieceSlideList: (piece: ContentPiece) => Promise<string[] | null>;
-  getPieceCoverImageData: (piece: ContentPiece) => Promise<ImgData | null>;
+  getPieceCoverImageData: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileTypeEnum) => Promise<Buffer | null>;
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;

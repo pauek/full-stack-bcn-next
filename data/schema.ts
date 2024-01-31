@@ -1,4 +1,3 @@
-import { ContentPieceMetadata } from "@/lib/adt";
 import { relations } from "drizzle-orm";
 import { date, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 
@@ -9,7 +8,7 @@ export const pieces = pgTable("pieces", {
   diskpath: text("diskpath").notNull(),
   createdAt: date("created_at", { mode: "date" }).notNull().defaultNow(),
 
-  metadata: json("metadata").notNull().$type<ContentPieceMetadata>(),
+  metadata: json("metadata").notNull().$type<Record<string, any>>(),
 });
 export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parent: one(pieces, {

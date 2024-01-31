@@ -2,6 +2,7 @@ import data from "@/lib/data";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
+import { extname } from "path";
 
 type RouteParams = {
   params: {
@@ -18,8 +19,9 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     notFound();
   }
   try {
-    const { data, extension } = cover;
-    return new NextResponse(data, {
+    const { buffer, name } = cover;
+    const extension = extname(name);
+    return new NextResponse(buffer, {
       headers: { "Content-Type": mimeTypes[extension] },
     });
   } catch (e) {

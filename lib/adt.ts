@@ -1,12 +1,3 @@
-
-export type ContentPieceMetadata = {
-  numSlides: number;
-  hasDoc: boolean;
-  index: number;
-  hidden?: boolean | null;
-  row?: number | null;
-}
-
 export type ContentPiece = {
   id: string;
   hash: string;
@@ -14,5 +5,10 @@ export type ContentPiece = {
   idpath: string[];
   diskpath: string;
   children?: ContentPiece[];
-  metadata: ContentPieceMetadata;
+  metadata: Record<string, any>;
 };
+
+export const isPieceFile = (filename: string) => {
+  return filename === "doc.mdx" || filename.startsWith("cover.");
+};
+export const isPieceSubdir = (dir: string) => dir === "images" || dir === "slides";

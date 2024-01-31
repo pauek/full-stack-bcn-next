@@ -3,7 +3,7 @@ import { ContentPiece } from "@/lib/adt";
 import { base64ToBytes, lastItem } from "@/lib/utils";
 import { and, eq } from "drizzle-orm";
 import { extname } from "path";
-import { ImgData } from "../data-backend";
+import { FileBuffer, ImgData, WalkFunc } from "../data-backend";
 import hashes from "../hashes.json";
 import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
@@ -76,7 +76,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   return piece;
 };
 
-export const getPieceDocument = async (piece: ContentPiece): Promise<Buffer | null> => {
+export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const hash = pathToHash.get(piece.idpath.join("/"));
   if (!hash) {
     return null;
@@ -93,7 +93,7 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<Buffer | nu
 `);
     return null;
   }
-  return Buffer.from(base64ToBytes(data));
+  return { name: result.name, buffer: Buffer.from(base64ToBytes(data)) };
 };
 
 export const __getFileListByFiletype =
@@ -109,7 +109,7 @@ export const __getFileListByFiletype =
 export const getPieceImageList = __getFileListByFiletype("image");
 export const getPieceSlideList = __getFileListByFiletype("slide");
 
-export const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgData | null> => {
+export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const [file] = await getPieceFilesByFiletype(piece.hash, "cover", { limit: 1 });
   if (!file) {
     return null;
@@ -118,9 +118,8 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<ImgDa
   if (!base64) {
     return null;
   }
-  const extension = extname(file.name);
-  const data = Buffer.from(base64ToBytes(base64));
-  return { data, extension };
+  const buffer = Buffer.from(base64ToBytes(base64));
+  return { buffer, name: file.name };
 };
 
 export const getPieceFileData = async (
@@ -197,8 +196,6 @@ export const getContentTree = async (
   return __convert(result);
 };
 
-type WalkFunc = (piece: ContentPiece) => Promise<any>;
-
 export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
   const dbPiece = await getPieceWithChildren(piece.idpath);
   if (!dbPiece) {
@@ -208,5 +205,5 @@ export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => 
   for (const child of dbPiece.children || []) {
     children.push(await walkContentPieces(child, func));
   }
-  return await func(dbPiece);
+  return await func(dbPiece, children);
 };

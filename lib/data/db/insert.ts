@@ -4,7 +4,7 @@ import { readFile } from "fs/promises";
 import { basename, join } from "path";
 import { ContentPiece } from "@/lib/adt";
 import { bytesToBase64 } from "@/lib/utils";
-import { hashAny } from "@/lib/data/files/hashes";
+import { hashAny } from "@/lib/data/hashing";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
