@@ -98,14 +98,10 @@ export const pieceNumSlides = async (piece: ContentPiece) => {
   return (await getPieceSlideList(piece))?.length ?? 0;
 };
 
-export const getPieceDocument = async (idpath: string[]) => {
+export const getPieceDocument = async (piece: ContentPiece) => {
   try {
-    const chapter = await getPieceWithChildren(idpath);
-    if (!chapter) {
-      return null;
-    }
-    let doc = await utils.findDocFilename(chapter.diskpath);
-    return doc ? readFile(pathJoin(chapter.diskpath, doc)) : null;
+    let doc = await utils.findDocFilename(piece.diskpath);
+    return doc ? readFile(pathJoin(piece.diskpath, doc)) : null;
   } catch (e) {
     return null;
   }

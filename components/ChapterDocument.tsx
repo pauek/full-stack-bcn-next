@@ -8,17 +8,17 @@ import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import mdxComponents from "./mdx/mdx-components";
 import { imageUrl } from "@/lib/urls";
+import { ContentPiece } from "@/lib/adt";
 
 // import bash from "highlight.js/lib/languages/bash";
 // import js from "highlight.js/lib/languages/javascript";
 // import ts from "highlight.js/lib/languages/typescript";
 
 type ChapterProps = {
-  idpath: string[];
+  chapter: ContentPiece;
 };
-export default async function ChapterDocument({ idpath }: ChapterProps) {
-  const chapter = await data.getPieceWithChildren(idpath);
-  const doc = await data.getPieceDocument(idpath);
+export default async function ChapterDocument({ chapter }: ChapterProps) {
+  const doc = await data.getPieceDocument(chapter);
 
   const RenderError = () => {
     return (
@@ -47,7 +47,7 @@ export default async function ChapterDocument({ idpath }: ChapterProps) {
                       // pueda referirse a la imagen con un path relativo
                       <NextImage
                         className="py-3 border"
-                        src={imageUrl(idpath, props.src)}
+                        src={imageUrl(chapter.idpath, props.src)}
                         alt={props.alt || "image"}
                         width={Number(props.width)}
                         height={Number(props.height)}

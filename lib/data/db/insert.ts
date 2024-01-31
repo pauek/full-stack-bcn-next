@@ -19,7 +19,6 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
   const adaptedPiece: schema.DBPiece = {
     piece_hash: piece.hash,
     name: piece.name,
-    idjpath: piece.idpath.join("/"),
     diskpath: piece.diskpath,
     parent: parent?.hash || null,
     createdAt: new Date(),
@@ -38,10 +37,6 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
       .onConflictDoUpdate({
         target: schema.pieces.piece_hash,
         set: adaptedPiece,
-      })
-      .returning({
-        hash: schema.pieces.piece_hash,
-        path: schema.pieces.idjpath,
       });
   } catch (e: any) {
     console.log(`Inserting ${piece.diskpath} [${JSON.stringify(adaptedPiece)}]: ${e.toString()}`);
@@ -118,12 +113,4 @@ export const insertFiles = async (piece: ContentPiece) => {
       console.error(e.stack);
     }
   }
-};
-
-export const addRoot = async (hash: string) => {
-  await db.insert(schema.roots).values({ hash });
-};
-
-export const deleteRoot = async (hash: string) => {
-  await db.delete(schema.roots).where(eq(schema.roots.hash, hash));
 };

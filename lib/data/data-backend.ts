@@ -21,7 +21,8 @@ export interface DataBackend {
 
   getPiece: (idpath: string[]) => Promise<ContentPiece | null>;
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
-  getPieceDocument: (idpath: string[]) => Promise<Buffer | null>;
+  
+  getPieceDocument: (piece: ContentPiece) => Promise<Buffer | null>;
   getPieceImageList: (piece: ContentPiece) => Promise<string[] | null>;
   getPieceSlideList: (piece: ContentPiece) => Promise<string[] | null>;
   getPieceCoverImageData: (piece: ContentPiece) => Promise<ImgData | null>;

@@ -76,8 +76,8 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   return piece;
 };
 
-export const getPieceDocument = async (idpath: string[]): Promise<Buffer | null> => {
-  const hash = pathToHash.get(idpath.join("/"));
+export const getPieceDocument = async (piece: ContentPiece): Promise<Buffer | null> => {
+  const hash = pathToHash.get(piece.idpath.join("/"));
   if (!hash) {
     return null;
   }
@@ -87,7 +87,7 @@ export const getPieceDocument = async (idpath: string[]): Promise<Buffer | null>
   }
   const data = await getFileData(result.hash);
   if (data === null) {
-    console.warn(`Content piece "${idpath}" [${hash}] has a dangling document!
+    console.warn(`Content piece "${piece.idpath.join("/")}" [${hash}] has a dangling document!
     [file_hash = ${result.hash}]
     [piece_hash = ${hash}]
 `);

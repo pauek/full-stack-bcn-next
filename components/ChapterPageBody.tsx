@@ -16,7 +16,7 @@ export default async function ChapterPageBody({ idpath }: { idpath: string[] }) 
   if (chapter.metadata.hasDoc) {
     options.push({
       name: "Document",
-      component: <ChapterDocument idpath={idpath} />,
+      component: <ChapterDocument chapter={chapter} />,
     });
   }
   if (chapter.metadata.numSlides > 0) {

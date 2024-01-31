@@ -69,14 +69,10 @@ const applyChangesToDatabase = async (changes: Changes) => {
 };
 
 const updateRoots = async (course: ContentPiece) => {
-  await db.deleteRoot(course.hash);
-  console.log("Deleted root", course.hash);
   const newCourse = await files.getPiece([course.id]);
   if (!newCourse) {
     throw Error(`Root piece not found after having made changes?!?`);
   }
-  await db.addRoot(newCourse.hash);
-  console.log("Added   root", newCourse.hash);
   return newCourse;
 };
 

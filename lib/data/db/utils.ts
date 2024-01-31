@@ -5,18 +5,17 @@ import { lastItem } from "@/lib/utils";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "./db";
 
-export const fromDbPiece = (dbPiece: DBPiece): ContentPiece => {
-  const idpath = dbPiece.idjpath.split("/");
-  return {
-    hash: dbPiece.piece_hash,
-    name: dbPiece.name,
-    diskpath: dbPiece.diskpath,
-    id: lastItem(idpath),
-    idpath,
-    children: [],
-    metadata: dbPiece.metadata,
-  };
-};
+// export const fromDbPiece = (idpath: string[], dbPiece: DBPiece): ContentPiece => {
+//   return {
+//     hash: dbPiece.piece_hash,
+//     name: dbPiece.name,
+//     diskpath: dbPiece.diskpath,
+//     id: lastItem(idpath),
+//     idpath,
+//     children: [],
+//     metadata: dbPiece.metadata,
+//   };
+// };
 
 export const getPieceFilesByFiletype = async (
   pieceHash: string,
