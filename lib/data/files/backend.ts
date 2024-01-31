@@ -1,6 +1,6 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
-import { exists, readFile, readdir } from "fs/promises";
+import { readFile, readdir } from "fs/promises";
 import { extname, join, join as pathJoin } from "path";
 import { ImgData } from "../data-backend";
 import * as utils from "./utils";
@@ -142,17 +142,6 @@ export const getPieceFileData = async (
     console.error(`Error reading ${fulldiskpath}: ${e}`);
     return null;
   }
-};
-
-export const getAllIdpaths = async (piece: ContentPiece) => {
-  const idpaths: string[][] = [];
-  await walkContentPiecesGeneric(piece, async (piece, _) => {
-    if (piece.idpath.length != 2) {
-      // except parts for now
-      idpaths.push(piece.idpath);
-    }
-  });
-  return idpaths;
 };
 
 type WalkFunc<T> = (piece: ContentPiece, children: T[]) => Promise<T>;

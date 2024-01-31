@@ -1,6 +1,4 @@
-import { getBreadcrumbData } from "../common";
-import { DataBackend } from "../data-backend";
-import { getPieceWithChildren } from "../db";
+import { DataBackendBase } from "../data-backend";
 import * as _backend from "./backend";
 
 export * from "./backend";
@@ -10,10 +8,9 @@ export * from "./utils";
 
 export const __CONTENT_ROOT = process.env.CONTENT_ROOT!;
 
-export const backend: DataBackend = {
+export const backend: DataBackendBase = {
   getInfo: () => {
     return "Using local files as backend";
   },
   ..._backend,
-  getBreadcrumbData: getBreadcrumbData(getPieceWithChildren),
 };

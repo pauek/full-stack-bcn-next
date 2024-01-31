@@ -1,11 +1,11 @@
 import * as schema from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { base64ToBytes, lastItem } from "@/lib/utils";
-import { and, asc, eq, like } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { extname } from "path";
 import { ImgData } from "../data-backend";
-import { db } from "./db";
 import hashes from "../hashes.json";
+import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
 
 const pathToHash = new Map(hashes.map(({ hash, idjpath }) => [idjpath, hash]));
@@ -195,14 +195,6 @@ export const getContentTree = async (
   };
 
   return __convert(result);
-};
-
-export const getAllIdpaths = async (piece: ContentPiece): Promise<string[][]> => {
-  const result: string[][] = [];
-  await walkContentPieces(piece, async (piece) => {
-    result.push(piece.idpath);
-  });
-  return result;
 };
 
 type WalkFunc = (piece: ContentPiece) => Promise<any>;

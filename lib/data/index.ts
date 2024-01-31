@@ -1,15 +1,21 @@
-import { DataBackend } from "./data-backend";
-
-import { backend as filesBackend } from "@/lib/data/files";
 import { backend as dbBackend } from "@/lib/data/db";
+import { backend as filesBackend } from "@/lib/data/files";
+import { getAllIdpaths, getBreadcrumbData } from "./common";
+import { DataBackend, DataBackendBase } from "./data-backend";
 
-const initBackend = (): DataBackend => {
+const getBackend = (): DataBackend => {
   const dbUrl = process.env.DATABASE_URL!;
-  let backend: DataBackend = dbUrl === "files" ? filesBackend : dbBackend;
+  let backend: DataBackendBase = dbUrl === "files" ? filesBackend : dbBackend;
+
   if (process.env.NODE_ENV !== "production") {
     console.log(` ${backend.getInfo()}`);
   }
-  return backend;
+  
+  return {
+    ...backend,
+    getBreadcrumbData,
+    getAllIdpaths,
+  };
 };
 
-export default await initBackend();
+export default await getBackend();

@@ -16,12 +16,13 @@ type WalkFunc = (piece: ContentPiece) => Promise<void>;
 
 
 // prettier-ignore
-export interface DataBackend {
+export interface DataBackendBase {
   getInfo: () => string;
 
   getPiece: (idpath: string[]) => Promise<ContentPiece | null>;
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
-  
+  getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
+
   getPieceDocument: (piece: ContentPiece) => Promise<Buffer | null>;
   getPieceImageList: (piece: ContentPiece) => Promise<string[] | null>;
   getPieceSlideList: (piece: ContentPiece) => Promise<string[] | null>;
@@ -30,8 +31,10 @@ export interface DataBackend {
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;
 
-  getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
-  getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;
-  getAllIdpaths: (piece: ContentPiece) => Promise<string[][]>;
   walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>;
+}
+
+export interface DataBackend extends DataBackendBase {
+  getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;
+  getAllIdpaths: (root: ContentPiece) => Promise<string[][]>;
 }
