@@ -1,4 +1,6 @@
-[ ] Dark mode!
-[ ] Dangling documents.
+[X] Dark mode!
+[X] Dangling documents.
+
+[ ] Independizar los hashes del backend
 [ ] Upload changes (diff de Merkle trees).
 [ ] Implementar login con Authjs

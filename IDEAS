@@ -2,3 +2,25 @@
 Componentes:
 - Una sección que colapsa como en https://react.dev (Deep Dive).
 - Seccíon de Pitfalls (también sacado de https://react.dev).
+
+Merkle Tree:
+- Lo que queremos es simplificar modificaciones:
+  1) No borrar nada (todo el historial disponible).
+  2) Facilitar el control de cambios.
+  
+- La representación abstracta tiene: 
+  - Una lista de pieces, cuyo ID es un hash. Se relacionan entre sí 
+    por el "parent_hash" (un piece puede tener un padre).
+  - Una lista de ficheros, cuyo ID es un hash. Tiene tipo, nombre y  
+    el blob. Los ficheros son "attachments", y se relacionan con los pieces (many-to-many).
+  - La lista de idjpaths de los pieces:
+    * Con guardar el root sería suficiente pero tener todas las 
+      piezas precalculadas es estratégico (una desnormalización buena).
+    * Esta lista va cambiando, y en cada path se pone la fecha.
+
+- Objetivos:
+  I. El editor será web-based, pero la representación de tipo fichero 
+     es importante para:
+        a) Transicionar hasta que el editor esté hecho.
+        b) Cuando el editor esté, poder importar/exportar.
+        c) Mantener un repositorio Git con el contenido.
