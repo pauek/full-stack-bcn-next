@@ -61,10 +61,7 @@ export const insertFile = async (
       data: bytesToBase64(bytes),
       name: filename,
     })
-    .onConflictDoUpdate({
-      target: schema.files.hash,
-      set: { name: filename, filetype },
-    });
+    .onConflictDoNothing();
 
   await db
     .insert(schema.attachments)
