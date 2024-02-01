@@ -7,13 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:migrate": "bun run scripts/migrate.ts",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "bun run scripts/db-migrate.ts",
     "db:shell": "bun run scripts/db-shell.ts",
-    "indices": "bun run scripts/recalculate-indices.ts",
-    "hashes": "bun run scripts/compute-hashes.ts",
-    "changes": "bun run scripts/compute-changes.ts",
-    "metadata": "bun run scripts/update-metadata.ts",
-    "upload": "bun run scripts/upload-content.ts"
+    "db:upload": "bun run scripts/db-upload-content.ts",
+    "db:list": "bun run scripts/db-list.ts",
+    "files:build": "DATABASE_URL=files next build",
+    "files:indices": "DATABASE_URL=files bun run scripts/files-recompute-indices.ts",
+    "files:metadata": "DATABASE_URL=files bun run scripts/files-update-metadata.ts",
+    "files:hashes": "DATABASE_URL=files bun run scripts/files-write-hashes.ts",
+    "files:changes": "DATABASE_URL=files bun run scripts/files-compute-changes.ts"
   },
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.8.0",

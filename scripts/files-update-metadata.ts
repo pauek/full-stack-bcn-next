@@ -6,5 +6,4 @@ const course = await getPiece([courseId]);
 if (!course) {
   throw `Course "${courseId}" not found!`;
 }
-
 await courseUpdateMetadata(files, course);

@@ -3,6 +3,7 @@ import { DataBackendBase } from "./data-backend";
 import { HashMapInfo } from "./hash-maps";
 import { METADATA_FILENAME } from "./files/metadata";
 import { basename } from "path";
+import { readFile } from "fs/promises";
 
 export type Hash = string;
 
@@ -35,6 +36,10 @@ export const hashAny = (x: any) => {
   }
   return hasher.digest("hex");
 };
+
+export const hashFile = async (diskpath: string) => {
+  return hashAny(await readFile(diskpath));
+}
 
 type HashItem = {
   name: string;
@@ -71,20 +76,20 @@ export const hashPiece = async function (
 
   const imgList = await backend.getPieceImageList(piece);
   if (imgList !== null) {
-    for (const img of imgList) {
+    for (const { name } of imgList) {
       hashes.push({
-        name: `images/${img}`,
-        hash: hashAny(await backend.getPieceFileData(piece, img, "image")),
+        name: `images/${name}`,
+        hash: hashAny(await backend.getPieceFileData(piece, name, "image")),
       });
     }
   }
 
   const slideList = await backend.getPieceSlideList(piece);
   if (slideList !== null) {
-    for (const slide of slideList) {
+    for (const { name } of slideList) {
       hashes.push({
-        name: `slides/${slide}`,
-        hash: hashAny(await backend.getPieceFileData(piece, slide, "slide")),
+        name: `slides/${name}`,
+        hash: hashAny(await backend.getPieceFileData(piece, name, "slide")),
       });
     }
   }

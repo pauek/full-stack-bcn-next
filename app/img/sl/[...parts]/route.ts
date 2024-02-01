@@ -38,7 +38,7 @@ export async function generateStaticParams() {
     const slides = await data.getPieceSlideList(piece);
     if (slides) {
       for (const slide of slides) {
-        slidePaths.push({ parts: [...piece.idpath, slide] });
+        slidePaths.push({ parts: [...piece.idpath, slide.name] });
       }
     }
   });

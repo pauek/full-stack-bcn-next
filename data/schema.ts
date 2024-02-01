@@ -27,9 +27,7 @@ export const fileTypeEnum = pgEnum("filetype", ["doc", "image", "slide", "cover"
 
 export const files = pgTable("files", {
   hash: text("file_hash").primaryKey(),
-  name: text("name").notNull(),
   data: jsonb("data").$type<string>().notNull(),
-  filetype: fileTypeEnum("filetype").notNull(),
 });
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
@@ -44,10 +42,12 @@ export const attachments = pgTable(
     file: text("file_hash")
       .notNull()
       .references(() => files.hash),
+    filetype: fileTypeEnum("filetype").notNull(),
+    filename: text("filename").notNull(),
   },
   (table) => ({
     pk: primaryKey({
-      columns: [table.piece, table.file],
+      columns: [table.piece, table.file, table.filetype],
     }),
   })
 );

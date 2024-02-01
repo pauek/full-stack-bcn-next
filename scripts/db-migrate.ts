@@ -1,4 +1,5 @@
 import * as schema from "@/data/schema";
+import { closeConnection } from "@/lib/data/db";
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import { execSync } from "child_process";
 import dotenv from "dotenv";
@@ -15,3 +16,5 @@ await migrate(db, {
   migrationsFolder: "./data/drizzle",
   migrationsTable: "migrations",
 });
+
+await closeConnection();

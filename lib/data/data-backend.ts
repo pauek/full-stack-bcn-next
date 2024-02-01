@@ -28,8 +28,8 @@ export interface DataBackendBase {
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
 
   getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
-  getPieceImageList: (piece: ContentPiece) => Promise<string[] | null>;
-  getPieceSlideList: (piece: ContentPiece) => Promise<string[] | null>;
+  getPieceImageList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[] | null>;
+  getPieceSlideList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[] | null>;
   getPieceCoverImageData: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileTypeEnum) => Promise<Buffer | null>;
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;

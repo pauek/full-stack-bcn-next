@@ -61,6 +61,9 @@ export const courseUpdateMetadata = async (backend: DataBackendBase, course: Con
         // walkContentPieces might set the index (the child index), so we copy it here.
         metadata.index = piece.metadata.index;
       }
+
+      const { hasDoc, numSlides, index } = metadata;
+      console.log(`${piece.idpath.join("/")} = [#${index}${numSlides > 0 ? `, 📊 ${numSlides}` : ""}${hasDoc ? ", 📋" : ""}]`);
     });
   });
 };

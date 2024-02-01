@@ -5,6 +5,7 @@ import { basename, extname, join } from "path";
 import { HASH_FILE, __CONTENT_ROOT } from ".";
 import { readMetadata } from "./metadata";
 import { FileTypeEnum } from "@/data/schema";
+import { hashFile } from "../hashing";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -60,15 +61,16 @@ export const listPieceSubdir = async (
   diskpath: string,
   subdir: string,
   predicateFn: FilePred
-): Promise<Array<string> | null> => {
+): Promise<Array<{ name: string, hash: string }> | null> => {
   try {
     const dirpath = join(diskpath, subdir);
-    const files: string[] = [];
+    const files: { name: string, hash: string }[] = [];
     for (const ent of await readDirWithFileTypes(dirpath)) {
       if (predicateFn(ent)) {
-        files.push(ent.name);
+        files.push({ name: ent.name, hash: await hashFile(join(dirpath, ent.name)) });
       }
     }
+    files.sort((a, b) => a.name.localeCompare(b.name));
     return files;
   } catch (e) {
     return null;

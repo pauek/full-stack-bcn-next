@@ -39,7 +39,7 @@ export async function generateStaticParams() {
     const images = await data.getPieceImageList(piece);
     if (images) {
       for (const image of images) {
-        imagePaths.push({ parts: [...piece.idpath, image] });
+        imagePaths.push({ parts: [...piece.idpath, image.name] });
       }
     }
   });

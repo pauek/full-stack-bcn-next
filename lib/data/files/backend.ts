@@ -82,13 +82,13 @@ export const getContentTree = async (idpath: string[], { level = 2 }: { level: n
   return await _getContentTree(idpath, level);
 };
 
-export const getSessionSequence = async (courseId: string): Promise<string[]> => {
+export const getSessionSequence = async (courseId: string): Promise<ContentPiece[]> => {
   const course = await getContentTree([courseId], { level: 2 });
   const sessionSequence = [];
   let k = 0;
   for (const part of course?.children || []) {
     for (const session of part.children || []) {
-      sessionSequence.push(session.diskpath);
+      sessionSequence.push(session);
     }
   }
   return sessionSequence;

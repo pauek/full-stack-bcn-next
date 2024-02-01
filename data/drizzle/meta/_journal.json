@@ -29,6 +29,20 @@
       "when": 1706706925557,
       "tag": "0003_premium_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1706780277451,
+      "tag": "0004_burly_korvac",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1706781476485,
+      "tag": "0005_parallel_exiles",
+      "breakpoints": true
     }
   ]
 }

@@ -15,13 +15,25 @@ export const pieceSetParent = async (childHash: string, parentHash: string) => {
     .where(eq(schema.pieces.piece_hash, childHash));
 };
 
-export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
+export const pieceExists = async (piece: ContentPiece) => {
   const found = await db.query.pieces.findFirst({
     where: eq(schema.pieces.piece_hash, piece.hash),
   });
-  if (found !== undefined) {
-    return false; // wasn't inserted
+  return found !== undefined;
+};
+
+export const fileExists = async (hash: string) => {
+  const found = await db.query.files.findFirst({
+    where: eq(schema.files.hash, hash),
+  });
+  return found !== undefined;
+};
+
+export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
+  if (await pieceExists(piece)) {
+    return false; // it was not inserted
   }
+
   const adaptedPiece: schema.DBPiece = {
     piece_hash: piece.hash,
     name: piece.name,
@@ -53,28 +65,37 @@ export const insertFile = async (
   const bytes = await readFile(diskpath);
   const hash = await hashAny(bytes);
 
-  await db
-    .insert(schema.files)
-    .values({
-      hash,
-      filetype,
-      data: bytesToBase64(bytes),
-      name: filename,
-    })
-    .onConflictDoNothing();
+  if (!(await fileExists(hash))) {
+    await db
+      .insert(schema.files)
+      .values({
+        hash,
+        data: bytesToBase64(bytes),
+      })
+      .onConflictDoNothing();
+  }
 
   await db
     .insert(schema.attachments)
-    .values({ file: hash, piece: piece.hash })
+    .values({
+      file: hash,
+      piece: piece.hash,
+      filetype,
+      filename,
+    })
     .onConflictDoNothing();
+
+  console.log(`  ${hash} ${filetype} ${filename}`);
 };
 
 export const insertFiles = async (piece: ContentPiece) => {
-  const fullpath = (dir: string, filetype: schema.FileTypeEnum) => (f: string) => ({
-    filename: `${f}`,
-    filetype,
-    diskpath: join(piece.diskpath, dir, f),
-  });
+  const fullpath =
+    (dir: string, filetype: schema.FileTypeEnum) =>
+    ({ name }: { name: string }) => ({
+      filename: `${name}`,
+      filetype,
+      diskpath: join(piece.diskpath, dir, name),
+    });
 
   const images = await files.getPieceImageList(piece);
   const slides = await files.getPieceSlideList(piece);

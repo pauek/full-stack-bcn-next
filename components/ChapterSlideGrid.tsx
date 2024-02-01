@@ -7,7 +7,7 @@ import { slideUrl } from "@/lib/urls";
 
 type Props = {
   path: string[];
-  slides: Array<string> | null;
+  slides: Array<{ name: string, hash: string }> | null;
 };
 export default function SlideGrid({ path, slides }: Props) {
   const [currentSlide, setCurrentSlide] = useState<number>(-1);
@@ -31,7 +31,7 @@ export default function SlideGrid({ path, slides }: Props) {
     <>
       {currentSlide >= 0 && (
         <SlideViewer
-          slide={slideUrl(path, slides[currentSlide])}
+          slide={slideUrl(path, slides[currentSlide].name)}
           onClose={closeSlideViewer}
           onNext={nextSlide}
           onPrev={prevSlide}

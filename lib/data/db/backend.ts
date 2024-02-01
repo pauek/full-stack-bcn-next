@@ -98,12 +98,12 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 
 export const __getFileListByFiletype =
   (filetype: schema.FileTypeEnum) =>
-  async (piece: ContentPiece): Promise<string[] | null> => {
+  async (piece: ContentPiece): Promise<{ name: string, hash: string }[] | null> => {
     const results = await getPieceFilesByFiletype(piece.hash, filetype);
     if (!results) {
       return null;
     }
-    return results.map(({ name }) => name);
+    return results;
   };
 
 export const getPieceImageList = __getFileListByFiletype("image");
@@ -135,8 +135,8 @@ export const getPieceFileData = async (
     .where(
       and(
         eq(schema.pieces.piece_hash, piece.hash),
-        eq(schema.files.name, filename),
-        eq(schema.files.filetype, filetype)
+        eq(schema.attachments.filename, filename),
+        eq(schema.attachments.filetype, filetype)
       )
     )
     .limit(1);
