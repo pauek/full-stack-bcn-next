@@ -1,10 +1,10 @@
 import { getPiece, updateMetadata, walkContentPieces } from "@/lib/data/files";
 
-const fullstack = await getPiece(["fullstack"]);
-if (!fullstack) {
-  throw `Course "fullstack" not found!`;
+const root = await getPiece([process.env.COURSE_ID!]);
+if (!root) {
+  throw `Course "${process.env.COURSE_ID!}" not found!`;
 }
-await walkContentPieces(fullstack, async (piece, _) => {
+await walkContentPieces(root, async (piece, _) => {
   await updateMetadata(piece.diskpath, async (metadata) => {
     if ("slideHashes" in metadata) {
       console.log(piece.idpath.join("/"));

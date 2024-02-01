@@ -1,11 +1,11 @@
 import { insertFiles, insertPiece, pieceSetParent } from "@/lib/data/db";
 import { getPiece, walkContentPieces } from "@/lib/data/files";
 
-const fullstack = await getPiece(["fullstack"]);
-if (!fullstack) {
-  throw `Course "fullstack" not found!`;
+const root = await getPiece([process.env.COURSE_ID!]);
+if (!root) {
+  throw `Course "${process.env.COURSE_ID!}" not found!`;
 }
-await walkContentPieces(fullstack, async (piece, children) => {
+await walkContentPieces(root, async (piece, children) => {
   console.log(piece.hash, piece.idpath.join("/"));
   if (await insertPiece(piece)) {
     await insertFiles(piece);

@@ -3,12 +3,14 @@ import { hashAllContent } from "@/lib/data/hashing";
 import backend from "@/lib/data";
 import { HashMapInfo, writeHashMapFile } from "@/lib/data/hash-maps";
 
-const fullstack = await getPiece(["fullstack"]);
-if (!fullstack) {
-  throw `Course "fullstack" not found!`;
+const courseId = process.env.COURSE_ID!;
+
+const root = await getPiece([courseId]);
+if (!root) {
+  throw `Course "${courseId}" not found!`;
 }
 
-const allHashes = await hashAllContent(backend, fullstack);
+const allHashes = await hashAllContent(backend, root);
 
 const entries: HashMapInfo[] = [];
 for (const [idjpath, { hash, diskpath }] of allHashes) {
