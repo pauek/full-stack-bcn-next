@@ -52,7 +52,6 @@ export const hashPiece = async function (
   const hashes: HashItem[] = [];
   const fields = Object.entries(piece.metadata).sort(([a], [b]) => a.localeCompare(b));
   const strFields = JSON.stringify(fields);
-  console.log(strFields);
   hashes.push({
     name: METADATA_FILENAME,
     hash: hashAny(strFields),
@@ -99,12 +98,12 @@ export const hashPiece = async function (
   });
 
   const allHashes = [...childrenHashes, ...hashes];
+  const allHashesAsText = allHashes.map(({ name, hash }) => `${hash} ${name}\n`).join("");
 
-  const concat = allHashes.map(({ name, hash }) => `${hash} ${name}\n`).join("");
-  const result = hashAny(concat);
-  console.log(`${concat}${result}\n`);
-
-  return { name: basename(piece.diskpath), hash: result };
+  return {
+    name: basename(piece.diskpath),
+    hash: hashAny(allHashesAsText),
+  };
 };
 
 export const hashAllContent = async function (backend: DataBackendBase, root: ContentPiece) {
