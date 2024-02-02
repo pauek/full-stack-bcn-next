@@ -16,7 +16,7 @@
     "files:indices": "DATABASE_URL=files bun run scripts/files-update-indices.ts",
     "files:metadata": "DATABASE_URL=files bun run scripts/files-update-metadata.ts",
     "files:hashes": "DATABASE_URL=files bun run scripts/files-write-hashes.ts",
-    "files:changes": "DATABASE_URL=files bun run scripts/files-compute-changes.ts"
+    "files:changes": "DATABASE_URL=files bun run scripts/files-show-changes.ts"
   },
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.8.0",

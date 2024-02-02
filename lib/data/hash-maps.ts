@@ -54,7 +54,6 @@ export const pathToHash = async (path: string) => {
   return globalHashMaps.info[index]?.hash;
 };
 
-
 export const readHashMapFile = async (): Promise<GlobalHashMaps> => {
   const diskpath = join(process.cwd(), HASH_MAP_FILE);
   const buffer = await readFile(diskpath);
