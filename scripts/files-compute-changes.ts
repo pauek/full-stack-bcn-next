@@ -1,12 +1,7 @@
 import { ContentPiece } from "@/lib/adt";
 import { filesBackend } from "@/lib/data";
 import * as db from "@/lib/data/db";
-import {
-  HASH_FILE,
-  courseUpdateMetadata,
-  backend as files,
-  readStoredHash,
-} from "@/lib/data/files";
+import { courseUpdateMetadata, backend as files, readStoredHash, writeStoredHash } from "@/lib/data/files";
 import { readHashMapFile, writeHashMapFile } from "@/lib/data/hash-maps";
 import { hashPiece } from "@/lib/data/hashing";
 import { removeNullElements } from "@/lib/utils";
@@ -54,7 +49,7 @@ const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
 
 const writePieceStoredHashes = async (changes: Changes) => {
   for (const { diskpath, newHash } of changes) {
-    await writeFile(join(diskpath, HASH_FILE), newHash);
+    await writeStoredHash(diskpath, newHash);
   }
 };
 
@@ -105,13 +100,23 @@ const updateHashmapFile = async (changes: Changes) => {
 const course = await getCourseRoot();
 await courseUpdateMetadata(filesBackend, course);
 const changes = await getChangedPieces(course);
-if (changes.length > 0) {
-  // await writePieceStoredHashes(changes);
-  // await applyChangesToDatabase(changes);
-  // await updateHashmapFile(changes);
-  for (const change of changes) {
-    console.log(change.newHash, change.idpath.join("/"));
-  }
-} else {
+
+if (changes.length === 0) {
   console.log("No changes.");
+  process.exit(0);
+}
+
+/*
+
+Para cada cambio:
+- Subir los nuevos hashes (insertPiece para cada hash, con sus ficheros cada uno).
+- Actualizar el hashmap (tanto en db como ficheros).
+
+*/
+
+// await writePieceStoredHashes(changes);
+// await applyChangesToDatabase(changes);
+// await updateHashmapFile(changes);
+for (const change of changes) {
+  console.log(change.newHash, change.idpath.join("/"));
 }

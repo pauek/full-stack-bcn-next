@@ -18,7 +18,7 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   for (const ent of await utils.readDirWithFileTypes(parent.diskpath)) {
     if (utils.isContentPiece(ent)) {
       const childPath = join(parent.diskpath, ent.name);
-      const child = await utils.readPieceAtSubdir(childPath, parent.idpath, parent);
+      const child = await utils.readPieceAtSubdir(childPath, parent.idpath);
       child.idpath = [...idpath, child.id];
       children.push(child);
     }
@@ -95,7 +95,7 @@ export const getSessionSequence = async (courseId: string): Promise<ContentPiece
 };
 
 export const pieceNumSlides = async (piece: ContentPiece) => {
-  return (await getPieceSlideList(piece))?.length ?? 0;
+  return (await getPieceSlideList(piece)).length;
 };
 
 export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {

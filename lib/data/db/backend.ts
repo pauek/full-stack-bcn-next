@@ -98,10 +98,10 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 
 export const __getFileListByFiletype =
   (filetype: schema.FileTypeEnum) =>
-  async (piece: ContentPiece): Promise<{ name: string; hash: string }[] | null> => {
+  async (piece: ContentPiece): Promise<{ name: string; hash: string }[]> => {
     const results = await getPieceFilesByFiletype(piece.hash, filetype);
     if (!results) {
-      return null;
+      return [];
     }
     return results;
   };

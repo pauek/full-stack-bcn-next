@@ -100,8 +100,8 @@ export const insertFiles = async (piece: ContentPiece) => {
   const images = await files.getPieceImageList(piece);
   const slides = await files.getPieceSlideList(piece);
   const allFiles = [
-    ...(images?.map(fullpath("images", "image")) || []),
-    ...(slides?.map(fullpath("slides", "slide")) || []),
+    ...images.map(fullpath("images", "image")),
+    ...slides.map(fullpath("slides", "slide")),
   ];
 
   const doc = await files.findDocFilename(piece.diskpath);

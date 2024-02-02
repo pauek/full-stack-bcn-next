@@ -6,22 +6,20 @@ import { useState } from "react";
 import { slideUrl } from "@/lib/urls";
 
 type Props = {
-  path: string[];
-  slides: Array<{ name: string, hash: string }> | null;
+  idpath: string[];
+  slides: Array<{ name: string; hash: string }>;
 };
-export default function SlideGrid({ path, slides }: Props) {
+export default function SlideGrid({ idpath, slides }: Props) {
   const [currentSlide, setCurrentSlide] = useState<number>(-1);
 
-  if (!slides) {
+  if (slides.length === 0) {
     return <></>;
   }
-
-  const numSlides = slides ? slides.length : 0;
 
   const closeSlideViewer = () => setCurrentSlide(-1);
 
   const nextSlide = () => {
-    setCurrentSlide((x) => Math.min(x + 1, numSlides - 1));
+    setCurrentSlide((x) => Math.min(x + 1, slides.length - 1));
   };
   const prevSlide = () => {
     setCurrentSlide((x) => Math.max(x - 1, 0));
@@ -31,7 +29,7 @@ export default function SlideGrid({ path, slides }: Props) {
     <>
       {currentSlide >= 0 && (
         <SlideViewer
-          slide={slideUrl(path, slides[currentSlide].name)}
+          slide={slideUrl(idpath, slides[currentSlide].name)}
           onClose={closeSlideViewer}
           onNext={nextSlide}
           onPrev={prevSlide}
@@ -45,11 +43,11 @@ export default function SlideGrid({ path, slides }: Props) {
           }
         >
           {slides &&
-            slides.map((s: any, i: number) => (
+            slides.map((s, i: number) => (
               <Image
-                key={s}
+                key={s.hash}
                 className="border-2 rounded shadow-md hover:border-stone-400"
-                src={slideUrl(path, s)}
+                src={slideUrl(idpath, s.name)}
                 alt="Slide"
                 width={400}
                 height={300}

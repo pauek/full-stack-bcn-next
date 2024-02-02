@@ -4,6 +4,7 @@ import { HashMapInfo } from "./hash-maps";
 import { METADATA_FILENAME } from "./files/metadata";
 import { basename } from "path";
 import { readFile } from "fs/promises";
+import crypto from "crypto";
 
 export type Hash = string;
 
@@ -14,7 +15,7 @@ export interface AbstractContentPiece {
 }
 
 export const hashAny = (x: any) => {
-  const hasher = new Bun.CryptoHasher("sha256");
+  const hasher = crypto.createHash("sha256");
   if (typeof x === "number") {
     hasher.update(`number(${x})`);
   } else if (typeof x === "string") {
@@ -24,7 +25,7 @@ export const hashAny = (x: any) => {
   } else if (Array.isArray(x)) {
     hasher.update(x.map((elem) => hashAny(elem)).join("\n"));
   } else if (x instanceof Buffer) {
-    hasher.update(x.buffer);
+    hasher.update(Buffer.from(x));
   } else if (typeof x === "object") {
     hasher.update(
       Object.entries(x)
@@ -39,7 +40,7 @@ export const hashAny = (x: any) => {
 
 export const hashFile = async (diskpath: string) => {
   return hashAny(await readFile(diskpath));
-}
+};
 
 type HashItem = {
   name: string;
@@ -85,13 +86,11 @@ export const hashPiece = async function (
   }
 
   const slideList = await backend.getPieceSlideList(piece);
-  if (slideList !== null) {
-    for (const { name } of slideList) {
-      hashes.push({
-        name: `slides/${name}`,
-        hash: hashAny(await backend.getPieceFileData(piece, name, "slide")),
-      });
-    }
+  for (const { name } of slideList) {
+    hashes.push({
+      name: `slides/${name}`,
+      hash: hashAny(await backend.getPieceFileData(piece, name, "slide")),
+    });
   }
 
   hashes.sort((a, b) => {

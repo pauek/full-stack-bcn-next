@@ -39,7 +39,7 @@ export default async function ChapterDocument({ chapter }: ChapterProps) {
             <ErrorBoundary fallback={<RenderError />}>
               <Suspense>
                 <MDXRemote
-                  source={doc}
+                  source={doc.buffer}
                   components={{
                     ...mdxComponents,
                     Image: (props: React.ComponentProps<"img">) => (

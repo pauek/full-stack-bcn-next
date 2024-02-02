@@ -27,11 +27,11 @@ export interface DataBackendBase {
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
 
-  getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
-  getPieceImageList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[] | null>;
-  getPieceSlideList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[] | null>;
   getPieceCoverImageData: (piece: ContentPiece) => Promise<FileBuffer | null>;
+  getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileTypeEnum) => Promise<Buffer | null>;
+  getPieceImageList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[]>;
+  getPieceSlideList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[]>;
 
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;

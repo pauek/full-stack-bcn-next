@@ -1,22 +1,27 @@
-import { exists, readFile, writeFile } from "fs/promises";
+import { CONTENT_ROOT } from "@/lib/env";
+import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 
-export const HASH_FILE = ".hash";
-export const HASH_MAP_FILE = "./lib/data/hashes.json";
+const HASH_FILE = ".hash";
+export const HASH_MAP_FILE = join(CONTENT_ROOT, "./hashes.json");
 
 export const readStoredHash = async (diskpath: string): Promise<string | null> => {
-  const hashFilePath = join(diskpath, ".hash");
-  if (!(await exists(hashFilePath))) {
-    return null;
-  }
   try {
-    const fileContents = await readFile(hashFilePath);
+    const fileContents = await readFile(join(diskpath, HASH_FILE));
     return fileContents.toString();
   } catch (e) {
     console.warn(`Warning: error reading .hash at ${diskpath}.`);
     return null;
   }
 };
+
+export const readStoredHashOrThrow = async (diskpath: string): Promise<string> => {
+  const hash = await readStoredHash(diskpath);
+  if (hash === null) {
+    throw new Error(`Hash not found at ${diskpath}`);
+  }
+  return hash;
+}
 
 export const writeStoredHash = async (diskpath: string, hash: string) => {
   await writeFile(join(diskpath, HASH_FILE), hash);

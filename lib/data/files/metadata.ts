@@ -59,8 +59,8 @@ export const courseUpdateMetadata = async (
       metadata.hasDoc = await pieceHasDoc(piece);
 
       // numSlides
-      const slides = await getPieceSlideList(piece);
-      metadata.numSlides = slides ? slides.length : 0;
+      const slideList = await getPieceSlideList(piece);
+      metadata.numSlides = slideList.length;
 
       // index
       if (level === 1) {

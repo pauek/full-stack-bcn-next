@@ -20,7 +20,7 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   }
   const fileData = await data.getPieceFileData(piece, filename, "slide");
   const extension = extname(filename);
-  
+
   return new NextResponse(fileData, {
     headers: {
       "Content-Type": mimeTypes[extension] ?? "image/*",
@@ -35,11 +35,9 @@ export async function generateStaticParams() {
   }
   const slidePaths: { parts: string[] }[] = [];
   await data.walkContentPieces(course, async (piece) => {
-    const slides = await data.getPieceSlideList(piece);
-    if (slides) {
-      for (const slide of slides) {
-        slidePaths.push({ parts: [...piece.idpath, slide.name] });
-      }
+    const slideList = await data.getPieceSlideList(piece);
+    for (const slide of slideList) {
+      slidePaths.push({ parts: [...piece.idpath, slide.name] });
     }
   });
   return slidePaths;

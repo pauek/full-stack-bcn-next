@@ -1,11 +1,12 @@
-import { ContentPiece } from "@/lib/adt";
-import { Dirent } from "fs";
-import { readFile, readdir } from "fs/promises";
-import { basename, extname, join } from "path";
-import { HASH_FILE, __CONTENT_ROOT } from ".";
-import { readMetadata } from "./metadata";
 import { FileTypeEnum } from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
+import { CONTENT_ROOT } from "@/lib/env";
+import { Dirent } from "fs";
+import { readdir } from "fs/promises";
+import { basename, extname, join } from "path";
 import { hashFile } from "../hashing";
+import { readStoredHashOrThrow } from "./hashes";
+import { readMetadata } from "./metadata";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -61,10 +62,10 @@ export const listPieceSubdir = async (
   diskpath: string,
   subdir: string,
   predicateFn: FilePred
-): Promise<Array<{ name: string, hash: string }> | null> => {
+): Promise<Array<{ name: string; hash: string }>> => {
   try {
     const dirpath = join(diskpath, subdir);
-    const files: { name: string, hash: string }[] = [];
+    const files: { name: string; hash: string }[] = [];
     for (const ent of await readDirWithFileTypes(dirpath)) {
       if (predicateFn(ent)) {
         files.push({ name: ent.name, hash: await hashFile(join(dirpath, ent.name)) });
@@ -73,25 +74,19 @@ export const listPieceSubdir = async (
     files.sort((a, b) => a.name.localeCompare(b.name));
     return files;
   } catch (e) {
-    return null;
+    return [];
   }
 };
 
 export const readPieceAtSubdir = async (
   subdir: string,
-  parentIdpath: string[],
-  parent?: ContentPiece
+  parentIdpath: string[]
 ): Promise<ContentPiece> => {
   const dirname = basename(subdir);
-  const diskpath = join(__CONTENT_ROOT, subdir);
-  const metadata = await readMetadata(diskpath);
   const name = dirNameToTitle(dirname);
-  let hash: string = "";
-  try {
-    hash = (await readFile(join(diskpath, HASH_FILE))).toString();
-  } catch (e) {
-    console.error(diskpath, `ERROR: Hash not found! ${e}`);
-  }
+  const diskpath = join(CONTENT_ROOT, subdir);
+  const metadata = await readMetadata(diskpath);
+  const hash = await readStoredHashOrThrow(diskpath);
   const { id } = metadata;
   if (!id) {
     throw Error(`Missing id from ContentPiece at ${diskpath}!`);

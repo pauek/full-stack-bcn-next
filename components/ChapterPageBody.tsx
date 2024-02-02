@@ -9,7 +9,6 @@ export default async function ChapterPageBody({ idpath }: { idpath: string[] }) 
   if (chapter === null) {
     notFound();
   }
-
   const slides = await data.getPieceSlideList(chapter);
 
   let options = [];
@@ -22,7 +21,7 @@ export default async function ChapterPageBody({ idpath }: { idpath: string[] }) 
   if (chapter.metadata.numSlides > 0) {
     options.push({
       name: "Slides",
-      component: <SlideGrid path={idpath} slides={slides} />,
+      component: <SlideGrid idpath={idpath} slides={slides} />,
     });
   }
 

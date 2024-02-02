@@ -37,10 +37,8 @@ export async function generateStaticParams() {
   const imagePaths: { parts: string[] }[] = [];
   await data.walkContentPieces(course, async (piece) => {
     const images = await data.getPieceImageList(piece);
-    if (images) {
-      for (const image of images) {
-        imagePaths.push({ parts: [...piece.idpath, image.name] });
-      }
+    for (const image of images) {
+      imagePaths.push({ parts: [...piece.idpath, image.name] });
     }
   });
   return imagePaths;
