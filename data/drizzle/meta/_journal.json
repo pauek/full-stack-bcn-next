@@ -43,6 +43,20 @@
       "when": 1706781476485,
       "tag": "0005_parallel_exiles",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1706897062687,
+      "tag": "0006_exotic_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1706897311145,
+      "tag": "0007_flowery_silver_samurai",
+      "breakpoints": true
     }
   ]
 }

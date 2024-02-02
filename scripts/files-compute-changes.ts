@@ -75,14 +75,6 @@ const applyChangesToDatabase = async (changes: Changes) => {
   }
 };
 
-const updateRoots = async (course: ContentPiece) => {
-  const newCourse = await files.getPiece([course.id]);
-  if (!newCourse) {
-    throw Error(`Root piece not found after having made changes?!?`);
-  }
-  return newCourse;
-};
-
 const updateHashmapFile = async (changes: Changes) => {
   // Update hash map file
   const maps = await readHashMapFile();
@@ -117,7 +109,6 @@ if (changes.length > 0) {
   // await writePieceStoredHashes(changes);
   // await applyChangesToDatabase(changes);
   // await updateHashmapFile(changes);
-  // await updateRoots(course);
   for (const change of changes) {
     console.log(change.newHash, change.idpath.join("/"));
   }

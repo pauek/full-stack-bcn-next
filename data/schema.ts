@@ -1,6 +1,8 @@
 import { relations } from "drizzle-orm";
 import { date, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 
+// Pieces
+
 export const pieces = pgTable("pieces", {
   piece_hash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
@@ -25,6 +27,8 @@ export type DBPiece = typeof pieces.$inferSelect;
 export type FileTypeEnum = "doc" | "image" | "slide" | "cover" | "other";
 export const fileTypeEnum = pgEnum("filetype", ["doc", "image", "slide", "cover", "other"]);
 
+// Files
+
 export const files = pgTable("files", {
   hash: text("file_hash").primaryKey(),
   data: jsonb("data").$type<string>().notNull(),
@@ -32,6 +36,8 @@ export const files = pgTable("files", {
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
 }));
+
+// Attachments
 
 export const attachments = pgTable(
   "attachments",
@@ -63,3 +69,13 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
     relationName: "file_attachments",
   }),
 }));
+
+// Hashmap
+
+// With this we can locate any piece given an idjpath. 
+// Idjpaths give a good name to the hashes which are the true identifiers.
+
+export const hashmap = pgTable("idjpaths", {
+  idjpath: jsonb("idjpath").primaryKey(),
+  hash: text("hash").notNull(),
+});
