@@ -1,7 +1,12 @@
 import { ContentPiece } from "@/lib/adt";
+import { filesBackend } from "@/lib/data";
 import * as db from "@/lib/data/db";
-import { courseUpdateMetadata, backend as files, readStoredHash } from "@/lib/data/files";
-import { HASH_FILE } from "@/lib/data/files";
+import {
+  HASH_FILE,
+  courseUpdateMetadata,
+  backend as files,
+  readStoredHash,
+} from "@/lib/data/files";
 import { readHashMapFile, writeHashMapFile } from "@/lib/data/hash-maps";
 import { hashPiece } from "@/lib/data/hashing";
 import { removeNullElements } from "@/lib/utils";
@@ -30,7 +35,7 @@ const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
   // Get the changed/new hashes
   const changes: Changes = [];
 
-  await files.walkContentPieces(course, async (piece, children) => {
+  await filesBackend.walkContentPieces(course, async (piece, children) => {
     const oldHash = await readStoredHash(piece.diskpath);
     const newHash = await hashPiece(files, piece, children);
     if (oldHash === null || oldHash !== newHash.hash) {
@@ -48,10 +53,10 @@ const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
 };
 
 const writePieceStoredHashes = async (changes: Changes) => {
-  for (const {diskpath, newHash} of changes) {
+  for (const { diskpath, newHash } of changes) {
     await writeFile(join(diskpath, HASH_FILE), newHash);
   }
-}
+};
 
 // Apply updates to the database
 const applyChangesToDatabase = async (changes: Changes) => {
@@ -106,7 +111,7 @@ const updateHashmapFile = async (changes: Changes) => {
 };
 
 const course = await getCourseRoot();
-await courseUpdateMetadata(files, course);
+await courseUpdateMetadata(filesBackend, course);
 const changes = await getChangedPieces(course);
 if (changes.length > 0) {
   // await writePieceStoredHashes(changes);

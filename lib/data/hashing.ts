@@ -1,5 +1,5 @@
 import { ContentPiece } from "@/lib/adt";
-import { DataBackendBase } from "./data-backend";
+import { DataBackend, DataBackendBase } from "./data-backend";
 import { HashMapInfo } from "./hash-maps";
 import { METADATA_FILENAME } from "./files/metadata";
 import { basename } from "path";
@@ -111,7 +111,7 @@ export const hashPiece = async function (
   };
 };
 
-export const hashAllContent = async function (backend: DataBackendBase, root: ContentPiece) {
+export const hashAllContent = async function (backend: DataBackend, root: ContentPiece) {
   const hashes: Map<string, HashMapInfo> = new Map();
 
   await backend.walkContentPieces(root, async (piece, children) => {

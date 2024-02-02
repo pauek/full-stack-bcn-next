@@ -1,7 +1,7 @@
 import { ContentPiece } from "@/lib/adt";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { DataBackendBase } from "../data-backend";
+import { DataBackend, DataBackendBase } from "../data-backend";
 import { getPieceSlideList, pieceHasDoc } from "./backend";
 
 export const METADATA_FILENAME = ".meta.json";
@@ -36,10 +36,10 @@ export const updateMetadata = async (diskpath: string, func: (metadata: any) => 
   await writeMetadata(diskpath, metadata);
 };
 
-export const courseUpdateMetadata = async (backend: DataBackendBase, course: ContentPiece) => {
+export const courseUpdateMetadata = async (backend: DataBackend, course: ContentPiece) => {
   let currPartIndex = 1;
   let currSessionIndex = 1;
-  await backend.walkContentPieces(course, async (piece) => {
+  await backend.walkContentPieces(course, async (piece, children) => {
     const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
     await updateMetadata(piece.diskpath, async (metadata: any) => {
       // hasDoc
@@ -63,7 +63,11 @@ export const courseUpdateMetadata = async (backend: DataBackendBase, course: Con
       }
 
       const { hasDoc, numSlides, index } = metadata;
-      console.log(`${piece.idpath.join("/")} = [#${index}${numSlides > 0 ? `, 📊 ${numSlides}` : ""}${hasDoc ? ", 📋" : ""}]`);
+      console.log(
+        `${piece.idpath.join("/")} = [#${index}${numSlides > 0 ? `, 📊 ${numSlides}` : ""}${
+          hasDoc ? ", 📋" : ""
+        }]`
+      );
     });
   });
 };

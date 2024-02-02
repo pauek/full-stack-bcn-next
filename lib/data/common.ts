@@ -1,5 +1,5 @@
 import { ContentPiece } from "../adt";
-import { CrumbData, DataBackendBase } from "./data-backend";
+import { CrumbData, DataBackend, DataBackendBase, WalkFunc } from "./data-backend";
 
 export const getBreadcrumbData = async function (
   this: DataBackendBase,
@@ -17,7 +17,7 @@ export const getBreadcrumbData = async function (
 };
 
 export const getAllIdpaths = async function (
-  this: DataBackendBase,
+  this: DataBackend,
   root: ContentPiece
 ): Promise<string[][]> {
   const result: string[][] = [];
@@ -25,4 +25,20 @@ export const getAllIdpaths = async function (
     result.push(piece.idpath);
   });
   return result;
+};
+
+export const walkContentPieces = async function (
+  this: DataBackend,
+  piece: ContentPiece,
+  func: WalkFunc
+) {
+  const dbPiece = await this.getPieceWithChildren(piece.idpath);
+  if (!dbPiece) {
+    throw `Piece not found in database: ${piece.idpath.join("/")}`;
+  }
+  const children: any[] = [];
+  for (const child of dbPiece.children || []) {
+    children.push(await this.walkContentPieces(child, func));
+  }
+  return await func(dbPiece, children);
 };

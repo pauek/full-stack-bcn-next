@@ -98,7 +98,7 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 
 export const __getFileListByFiletype =
   (filetype: schema.FileTypeEnum) =>
-  async (piece: ContentPiece): Promise<{ name: string, hash: string }[] | null> => {
+  async (piece: ContentPiece): Promise<{ name: string; hash: string }[] | null> => {
     const results = await getPieceFilesByFiletype(piece.hash, filetype);
     if (!results) {
       return null;
@@ -194,16 +194,4 @@ export const getContentTree = async (
   };
 
   return __convert(result);
-};
-
-export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
-  const dbPiece = await getPieceWithChildren(piece.idpath);
-  if (!dbPiece) {
-    throw `Piece not found in database: ${piece.idpath.join("/")}`;
-  }
-  const children: any[] = [];
-  for (const child of dbPiece.children || []) {
-    children.push(await walkContentPieces(child, func));
-  }
-  return await func(dbPiece, children);
 };

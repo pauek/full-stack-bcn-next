@@ -145,15 +145,3 @@ export const getPieceFileData = async (
     return null;
   }
 };
-
-export const walkContentPieces = async (piece: ContentPiece, func: WalkFunc) => {
-  const filesPiece = await getPieceWithChildren(piece.idpath);
-  if (!filesPiece) {
-    throw `Piece not found in files: ${piece.idpath.join("/")}`;
-  }
-  const children: any[] = [];
-  for (const child of filesPiece.children || []) {
-    children.push(await walkContentPieces(child, func));
-  }
-  return await func(filesPiece, children);
-};

@@ -32,13 +32,13 @@ export interface DataBackendBase {
   getPieceSlideList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[] | null>;
   getPieceCoverImageData: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileTypeEnum) => Promise<Buffer | null>;
+
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;
-
-  walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>;
 }
 
 export interface DataBackend extends DataBackendBase {
   getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;
   getAllIdpaths: (root: ContentPiece) => Promise<string[][]>;
+  walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>;
 }
