@@ -1,6 +1,6 @@
 import { filesBackend } from ".";
 import { ContentPiece } from "../adt";
-import { readStoredHash } from "./files/hashes";
+import { readStoredHash, writeStoredHash } from "./files/hashes";
 import { hashPiece } from "./hashing";
 import * as db from "./db";
 import { readHashMapFile, writeHashMapFile } from "./hash-maps";
@@ -77,4 +77,10 @@ export const updateHashmapFile = async (changes: Changes) => {
   // Save hash map file
   await writeHashMapFile(removeNullElements(maps.info));
   console.log("Updated hash map file");
+};
+
+const writePieceStoredHashes = async (changes: Changes) => {
+  for (const { diskpath, newHash } of changes) {
+    await writeStoredHash(diskpath, newHash);
+  }
 };

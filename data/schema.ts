@@ -4,24 +4,48 @@ import { date, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-or
 // Pieces
 
 export const pieces = pgTable("pieces", {
-  piece_hash: text("piece_hash").primaryKey(),
+  pieceHash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
-  parent: text("parent_hash"),
   diskpath: text("diskpath").notNull(),
   createdAt: date("created_at", { mode: "date" }).notNull().defaultNow(),
 
   metadata: json("metadata").notNull().$type<Record<string, any>>(),
 });
-export const piecesRelations = relations(pieces, ({ one, many }) => ({
-  parent: one(pieces, {
-    fields: [pieces.parent],
-    references: [pieces.piece_hash],
-    relationName: "parent_child",
-  }),
-  children: many(pieces, { relationName: "parent_child" }),
+export const piecesRelations = relations(pieces, ({ many }) => ({
+  parents: many(relatedPieces, { relationName: "parent_relation" }),
+  children: many(relatedPieces, { relationName: "child_relation" }),
   attachments: many(attachments, { relationName: "piece_attachments" }),
 }));
 export type DBPiece = typeof pieces.$inferSelect;
+
+// HAS-A Relation
+
+export const relatedPieces = pgTable(
+  "related_pieces",
+  {
+    parentHash: text("parent")
+      .notNull()
+      .references(() => pieces.pieceHash),
+    childHash: text("child")
+      .notNull()
+      .references(() => pieces.pieceHash),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.parentHash, table.childHash] }),
+  })
+);
+export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
+  parent: one(pieces, {
+    fields: [relatedPieces.parentHash],
+    references: [pieces.pieceHash],
+    relationName: "child_relation",
+  }),
+  child: one(pieces, {
+    fields: [relatedPieces.childHash],
+    references: [pieces.pieceHash],
+    relationName: "parent_relation",
+  }),
+}));
 
 // FIXME: How to get values from the pgEnum definition??
 export type FileTypeEnum = "doc" | "image" | "slide" | "cover" | "other";
@@ -44,7 +68,7 @@ export const attachments = pgTable(
   {
     piece: text("piece_hash")
       .notNull()
-      .references(() => pieces.piece_hash),
+      .references(() => pieces.pieceHash),
     file: text("file_hash")
       .notNull()
       .references(() => files.hash),
@@ -60,7 +84,7 @@ export const attachments = pgTable(
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
     fields: [attachments.piece],
-    references: [pieces.piece_hash],
+    references: [pieces.pieceHash],
     relationName: "piece_attachments",
   }),
   file: one(files, {
@@ -72,7 +96,7 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
 
 // Hashmap
 
-// With this we can locate any piece given an idjpath. 
+// With this we can locate any piece given an idjpath.
 // Idjpaths give a good name to the hashes which are the true identifiers.
 
 export const hashmap = pgTable("idjpaths", {

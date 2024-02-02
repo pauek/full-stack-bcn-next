@@ -9,15 +9,12 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
-  await db
-    .update(schema.pieces)
-    .set({ parent: parentHash })
-    .where(eq(schema.pieces.piece_hash, childHash));
+  await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing();
 };
 
 export const pieceExists = async (piece: ContentPiece) => {
   const found = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.piece_hash, piece.hash),
+    where: eq(schema.pieces.pieceHash, piece.hash),
   });
   return found !== undefined;
 };
@@ -35,16 +32,15 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
   }
 
   const adaptedPiece: schema.DBPiece = {
-    piece_hash: piece.hash,
+    pieceHash: piece.hash,
     name: piece.name,
     diskpath: piece.diskpath,
-    parent: parent?.hash || null,
     createdAt: new Date(),
     metadata: piece.metadata,
   };
   try {
     await db.insert(schema.pieces).values(adaptedPiece).onConflictDoUpdate({
-      target: schema.pieces.piece_hash,
+      target: schema.pieces.pieceHash,
       set: adaptedPiece,
     });
     return true; // it was inserted
