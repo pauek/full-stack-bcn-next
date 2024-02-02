@@ -1,10 +1,9 @@
 import backend from "@/lib/data";
 import { hashPiece } from "@/lib/data/hashing";
+import { getCourseRoot } from "@/lib/data/root";
 
-const root = await backend.getPiece([process.env.COURSE_ID!]);
-if (!root) {
-  throw `Course "${process.env.COURSE_ID!}" not found!`;
-}
+const root = await getCourseRoot();
+
 await backend.walkContentPieces(root, async (piece, children) => {
   const computedHash = await hashPiece(backend, piece, children);
   if (piece.hash !== computedHash.hash) {

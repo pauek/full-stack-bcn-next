@@ -1,34 +1,25 @@
 import { filesBackend } from "@/lib/data";
-import {
-  closeConnection,
-  insertFiles,
-  insertPiece,
-  pieceExists,
-  pieceSetParent,
-} from "@/lib/data/db";
-import { getPiece } from "@/lib/data/files";
+import * as db from "@/lib/data/db";
+import { getCourseRoot } from "@/lib/data/root";
 
 const forcedUpload = process.argv.includes("--force");
 console.log(`forcedUpload = ${forcedUpload}`);
 
-const root = await getPiece([process.env.COURSE_ID!]);
-if (!root) {
-  throw `Course "${process.env.COURSE_ID!}" not found!`;
-}
+const root = await getCourseRoot();
 
-if (!forcedUpload && (await pieceExists(root))) {
+if (!forcedUpload && (await db.pieceExists(root))) {
   process.exit(0);
 }
 
 await filesBackend.walkContentPieces(root, async (piece, children) => {
-  if (forcedUpload || (await insertPiece(piece))) {
+  if (forcedUpload || (await db.insertPiece(piece))) {
     console.log(piece.hash, piece.idpath.join("/"));
-    await insertFiles(piece);
+    await db.insertFiles(piece);
     for (const child of children) {
-      await pieceSetParent(child.hash, piece.hash);
+      await db.pieceSetParent(child.hash, piece.hash);
     }
   }
   return piece;
 });
 
-await closeConnection();
+await db.closeConnection();

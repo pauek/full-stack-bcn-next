@@ -1,13 +1,12 @@
 import { filesBackend } from "@/lib/data";
-import { courseUpdateMetadata, getPiece } from "@/lib/data/files";
+import { MetadataLogFunc, courseUpdateMetadata } from "@/lib/data/files";
+import { getCourseRoot } from "@/lib/data/root";
 
-const courseId = process.env.COURSE_ID!;
-const course = await getPiece([courseId]);
-if (!course) {
-  throw `Course "${courseId}" not found!`;
-}
-await courseUpdateMetadata(filesBackend, course, ({ idjpath, hasDoc, numSlides, index }) => {
+const logFunc: MetadataLogFunc = ({ idjpath, hasDoc, numSlides, index }) => {
   const _slides = numSlides > 0 ? `📊 ${numSlides}` : "";
   const _doc = hasDoc ? "📋" : "";
   console.log(`${idjpath} = [#${index}${_slides}${_doc}]`);
-});
+};
+
+const root = await getCourseRoot();
+await courseUpdateMetadata(filesBackend, root, logFunc);

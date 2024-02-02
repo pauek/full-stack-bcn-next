@@ -43,7 +43,7 @@ type PieceStandardMetadata = {
   hasDoc: boolean;
 };
 
-type MetadataLogFunc = (metadata: PieceStandardMetadata) => void;
+export type MetadataLogFunc = (metadata: PieceStandardMetadata) => void;
 
 export const courseUpdateMetadata = async (
   backend: DataBackend,

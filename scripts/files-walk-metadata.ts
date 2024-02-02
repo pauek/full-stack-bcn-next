@@ -1,10 +1,9 @@
 import { filesBackend } from "@/lib/data";
-import { getPiece, updateMetadata } from "@/lib/data/files";
+import { updateMetadata } from "@/lib/data/files";
+import { getCourseRoot } from "@/lib/data/root";
 
-const root = await getPiece([process.env.COURSE_ID!]);
-if (!root) {
-  throw `Course "${process.env.COURSE_ID!}" not found!`;
-}
+const root = await getCourseRoot();
+
 await filesBackend.walkContentPieces(root, async (piece, _) => {
   await updateMetadata(piece.diskpath, async (metadata) => {
     if ("slideHashes" in metadata) {

@@ -14,18 +14,7 @@ export type Changes = {
   childrenHashes: string[];
 }[];
 
-// Get the course (the root)
-export const getCourseRoot = async (): Promise<ContentPiece> => {
-  const courseId = process.env.COURSE_ID!;
-  const course = await filesBackend.getPiece([courseId]);
-  if (!course) {
-    throw `Course ${courseId} not found!`;
-  }
-  return course;
-};
-
 export const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
-  // Get the changed/new hashes
   const changes: Changes = [];
 
   await filesBackend.walkContentPieces(course, async (piece, children) => {
@@ -42,6 +31,7 @@ export const getChangedPieces = async (course: ContentPiece): Promise<Changes> =
     }
     return newHash;
   });
+
   return changes;
 };
 

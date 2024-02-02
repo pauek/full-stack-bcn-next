@@ -1,6 +1,7 @@
 import { filesBackend } from "@/lib/data";
-import { getChangedPieces, getCourseRoot } from "@/lib/data/changes";
+import { getChangedPieces } from "@/lib/data/changes";
 import { courseUpdateMetadata } from "@/lib/data/files";
+import { getCourseRoot } from "@/lib/data/root";
 
 /*
 
@@ -10,13 +11,9 @@ Para cada cambio:
 
 */
 
-// await writePieceStoredHashes(changes);
-// await applyChangesToDatabase(changes);
-// await updateHashmapFile(changes);
-
-const course = await getCourseRoot();
-await courseUpdateMetadata(filesBackend, course);
-const changes = await getChangedPieces(course);
+const root = await getCourseRoot();
+await courseUpdateMetadata(filesBackend, root);
+const changes = await getChangedPieces(root);
 
 if (changes.length === 0) {
   console.log("No changes.");

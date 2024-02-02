@@ -1,14 +1,10 @@
-import { getPiece, writeStoredHash } from "@/lib/data/files";
-import { hashAllContent } from "@/lib/data/hashing";
 import backend from "@/lib/data";
+import { writeStoredHash } from "@/lib/data/files";
 import { HashMapInfo, writeHashMapFile } from "@/lib/data/hash-maps";
+import { hashAllContent } from "@/lib/data/hashing";
+import { getCourseRoot } from "@/lib/data/root";
 
-const courseId = process.env.COURSE_ID!;
-
-const root = await getPiece([courseId]);
-if (!root) {
-  throw `Course "${courseId}" not found!`;
-}
+const root = await getCourseRoot();
 
 const allHashes = await hashAllContent(backend, root);
 
