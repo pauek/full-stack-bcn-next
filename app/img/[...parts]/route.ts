@@ -1,4 +1,5 @@
 import data from "@/lib/data";
+import { cachedGetPiece, cachedGetPieceImageList } from "@/lib/data/cached";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
@@ -30,13 +31,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await data.getPiece([process.env.COURSE_ID!]);
+  const course = await cachedGetPiece([process.env.COURSE_ID!]);
   if (!course) {
     return [];
   }
   const imagePaths: { parts: string[] }[] = [];
   await data.walkContentPieces(course, async (piece) => {
-    const images = await data.getPieceImageList(piece);
+    const images = await cachedGetPieceImageList(piece);
     for (const image of images) {
       imagePaths.push({ parts: [...piece.idpath, image.name] });
     }

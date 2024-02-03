@@ -1,4 +1,10 @@
 import data from "@/lib/data";
+import {
+  cachedGetPiece,
+  cachedGetPieceFileData,
+  cachedGetPieceSlideList,
+  cachedGetPieceWithChildren,
+} from "@/lib/data/cached";
 import { mimeTypes } from "@/lib/mime-types";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,11 +20,11 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
   const idpath = parts.slice(0, parts.length - 1);
   const [filename] = parts.slice(-1);
 
-  const piece = await data.getPieceWithChildren(idpath);
+  const piece = await cachedGetPieceWithChildren(idpath);
   if (!piece) {
     notFound();
   }
-  const fileData = await data.getPieceFileData(piece, filename, "slide");
+  const fileData = await cachedGetPieceFileData(piece, filename, "slide");
   const extension = extname(filename);
 
   return new NextResponse(fileData, {
@@ -29,13 +35,13 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await data.getPiece([process.env.COURSE_ID!]);
+  const course = await cachedGetPiece([process.env.COURSE_ID!]);
   if (!course) {
     return [];
   }
   const slidePaths: { parts: string[] }[] = [];
   await data.walkContentPieces(course, async (piece) => {
-    const slideList = await data.getPieceSlideList(piece);
+    const slideList = await cachedGetPieceSlideList(piece);
     for (const slide of slideList) {
       slidePaths.push({ parts: [...piece.idpath, slide.name] });
     }

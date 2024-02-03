@@ -1,6 +1,7 @@
 import ChapterPageBody from "@/components/ChapterPageBody";
 import SessionPageBody from "@/components/SessionPageBody";
 import data from "@/lib/data";
+import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
 import { notFound } from "next/navigation";
 
 type _Props = {
@@ -25,10 +26,10 @@ export default async function Page({ params }: _Props) {
 }
 
 export async function generateStaticParams() {
-  const course = await data.getPiece([process.env.COURSE_ID!]);
+  const course = await cachedGetPiece([process.env.COURSE_ID!]);
   if (!course) {
     return [];
   }
-  const idpaths = await data.getAllIdpaths(course);
+  const idpaths = await cachedGetAllIdpaths(course);
   return idpaths.map((idpath) => ({ idpath }));
 }
