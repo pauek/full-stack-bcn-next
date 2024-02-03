@@ -21,6 +21,7 @@ const nextConfig = {
     ],
   },
   poweredByHeader: false,
+  staticPageGenerationTimeout: 600,
 };
 
 export default async (phase, { defaultConfig }) => {
