@@ -35,10 +35,11 @@ export interface DataBackendBase {
 
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;
+
+  getAllIdpaths: (idpath: string[]) => Promise<string[][]>;
 }
 
 export interface DataBackend extends DataBackendBase {
   getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;
-  getAllIdpaths: (root: ContentPiece) => Promise<string[][]>;
   walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>;
 }

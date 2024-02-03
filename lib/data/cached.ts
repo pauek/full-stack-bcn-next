@@ -12,7 +12,7 @@ export const cachedGetPieceWithChildren = cache(async (idpath: string[]) => {
 });
 
 export const cachedGetAllIdpaths = cache(async (root: ContentPiece) => {
-  return data.getAllIdpaths(root);
+  return data.getAllIdpaths(root.idpath);
 });
 
 export const cachedGetPieceImageList = cache(async (piece: ContentPiece) => {

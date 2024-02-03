@@ -16,17 +16,6 @@ export const getBreadcrumbData = async function (
   return crumbs;
 };
 
-export const getAllIdpaths = async function (
-  this: DataBackend,
-  root: ContentPiece
-): Promise<string[][]> {
-  const result: string[][] = [];
-  await this.walkContentPieces(root, async (piece) => {
-    result.push(piece.idpath);
-  });
-  return result;
-};
-
 export const walkContentPieces = async function (
   this: DataBackend,
   piece: ContentPiece,
@@ -45,6 +34,5 @@ export const walkContentPieces = async function (
 
 export const commonBackend = {
   getBreadcrumbData,
-  getAllIdpaths,
   walkContentPieces,
 };

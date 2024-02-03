@@ -1,7 +1,7 @@
 import * as schema from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { base64ToBytes, lastItem } from "@/lib/utils";
-import { and, eq } from "drizzle-orm";
+import { and, eq, like } from "drizzle-orm";
 import { FileBuffer } from "../data-backend";
 import hashes from "../hashes.json";
 import { db } from "./db";
@@ -229,3 +229,11 @@ export const getContentTree = async (
 
   return await __convert(result);
 };
+
+export const getAllIdpaths = async (idpath: string[]): Promise<string[][]> => {
+  const result = await db.query.hashmap.findMany({
+    where: like(schema.hashmap.idjpath, `${idpath.join("/")}%`),
+    columns: { idjpath: true },
+  });
+  return result.map(({ idjpath }) => idjpath.split("/"));
+} 

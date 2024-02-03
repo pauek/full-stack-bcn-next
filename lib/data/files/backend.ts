@@ -145,3 +145,23 @@ export const getPieceFileData = async (
     return null;
   }
 };
+
+const __walkFiles = async function (idpath: string[], func: WalkFunc) {
+  const piece = await getPieceWithChildren(idpath);
+  if (!piece) {
+    throw `__walkFiles: not found: "${idpath.join("/")}"`;
+  }
+  const children: any[] = [];
+  for (const child of piece.children || []) {
+    children.push(await __walkFiles(child.idpath, func));
+  }
+  return await func(piece, children);
+};
+
+export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {
+  const result: string[][] = [];
+  await __walkFiles(rootIdpath, async (piece) => {
+    result.push(piece.idpath);
+  });
+  return result;
+};
