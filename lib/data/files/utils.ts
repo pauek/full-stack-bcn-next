@@ -25,6 +25,19 @@ export const isCover = (ent: Dirent) => ent.isFile() && ent.name.startsWith("cov
 export const isSlide = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".svg";
 export const isImage = (ent: Dirent) => ent.isFile() && imageExtensions.includes(extname(ent.name));
 
+type FileTypeInfo = {
+  subdir: string;
+  predicate: (ent: Dirent) => boolean;
+};
+
+export const fileTypeInfo: Record<FileTypeEnum, FileTypeInfo> = {
+  doc: { predicate: isDoc, subdir: "" },
+  cover: { predicate: isCover, subdir: "" },
+  slide: { predicate: isSlide, subdir: "slides" },
+  image: { predicate: isImage, subdir: "images" },
+  other: { predicate: () => false, subdir: "" },
+};
+
 export const determineFiletype = (ent: Dirent): FileTypeEnum => {
   if (isImage(ent)) {
     return "image";
@@ -61,13 +74,14 @@ export const findCoverImageFilename = async ({ diskpath }: ContentPiece) => {
 export const listPieceSubdir = async (
   diskpath: string,
   subdir: string,
-  predicateFn: FilePred
+  filetype: FileTypeEnum
 ): Promise<Array<{ name: string; hash: string }>> => {
   try {
     const dirpath = join(diskpath, subdir);
     const files: { name: string; hash: string }[] = [];
     for (const ent of await readDirWithFileTypes(dirpath)) {
-      if (predicateFn(ent)) {
+      const { predicate } = fileTypeInfo[filetype];
+      if (predicate(ent)) {
         files.push({ name: ent.name, hash: await hashFile(join(dirpath, ent.name)) });
       }
     }

@@ -29,7 +29,7 @@ export default async function Page({ params }: _Props) {
 
 export async function generateStaticParams() {
   let idpaths: string[][] = [];
-  
+
   await showExecutionTime(async () => {
     const course = await cachedGetPiece([process.env.COURSE_ID!]);
     if (!course) {
@@ -37,6 +37,6 @@ export async function generateStaticParams() {
     }
     idpaths = await cachedGetAllIdpaths(course);
   }, "chapters");
-  
-  return idpaths.map((idpath) => ({ idpath }));
+
+  return idpaths.map(([course, part, session, chapter]) => ({ course, part, session, chapter }));
 }

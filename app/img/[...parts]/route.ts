@@ -32,11 +32,11 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  let imagePaths: string[][] = [];
+  let paths: string[][] = [];
 
   await showExecutionTime(async () => {
-    imagePaths = await data.getAllImagePaths([process.env.COURSE_ID!]);
+    paths = await data.getAllAttachmentPaths([process.env.COURSE_ID!], "image");
   }, "images");
 
-  return imagePaths;
+  return paths.map((path) => ({ parts: path }));
 }

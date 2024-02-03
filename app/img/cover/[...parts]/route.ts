@@ -32,19 +32,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const coverPaths: { parts: string[] }[] = [];
+  let paths: string[][] = [];
 
   await showExecutionTime(async () => {
-    const course = await cachedGetPiece([process.env.COURSE_ID!]);
-    if (!course) {
-      return [];
-    }
-    await data.walkContentPieces(course, async (piece) => {
-      if (await cachedPieceHasCover(piece)) {
-        coverPaths.push({ parts: [...piece.idpath] });
-      }
-    });
+    paths = await data.getAllAttachmentPaths([process.env.COURSE_ID!], "cover");
   }, "covers");
-  
-  return coverPaths;
+
+  return paths.map((path) => ({ parts: path }));
 }

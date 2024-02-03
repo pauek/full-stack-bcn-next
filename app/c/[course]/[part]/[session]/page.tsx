@@ -29,5 +29,7 @@ export async function generateStaticParams() {
     idpaths = await cachedGetAllIdpaths(course);
   }, "sessions");
 
-  return idpaths.map((idpath) => ({ idpath }));
+  return idpaths
+    .filter((path) => path.length === 3)
+    .map(([course, part, session]) => ({ course, part, session }));
 }

@@ -37,7 +37,7 @@ export interface DataBackendBase {
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;
 
   getAllIdpaths: (rootIdpath: string[]) => Promise<string[][]>;
-  getAllImagePaths: (rootIdpath: string[]) => Promise<string[][]>;
+  getAllAttachmentPaths: (rootIdpath: string[], filetype: FileTypeEnum) => Promise<string[][]>;
 }
 
 export interface DataBackend extends DataBackendBase {

@@ -4,7 +4,6 @@ import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
 import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
-import exp from "constants";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -112,10 +111,13 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 };
 
 export const getPieceSlideList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.diskpath, "slides", utils.isSlide);
+  utils.listPieceSubdir(piece.diskpath, "slides", "slide");
 
 export const getPieceImageList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.diskpath, "images", utils.isImage);
+  utils.listPieceSubdir(piece.diskpath, "images", "image");
+
+export const getPieceAttachmentList = async (piece: ContentPiece, filetype: FileTypeEnum) =>
+  utils.listPieceSubdir(piece.diskpath, "attachments", filetype);
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const coverFilename = await utils.findCoverImageFilename(piece);
@@ -167,12 +169,12 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
   return result;
 };
 
-export const getAllImagePaths = async (rootIdpath: string[]): Promise<string[][]> => {
+export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: FileTypeEnum): Promise<string[][]> => {
   const result: string[][] = [];
   await __walkFiles(rootIdpath, async (piece) => {
-    const images = await getPieceImageList(piece);
-    for (const image of images) {
-      result.push([...piece.idpath, image.name]);
+    const attachments = await getPieceAttachmentList(piece, filetype);
+    for (const file of attachments) {
+      result.push([...piece.idpath, file.name]);
     }
   });
   return result;

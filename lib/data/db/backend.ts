@@ -239,14 +239,14 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
   return result.map(({ idjpath }) => idjpath.split("/"));
 };
 
-export const getAllImagePaths = async (rootIdpath: string[]): Promise<string[][]> => {
+export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: schema.FileTypeEnum): Promise<string[][]> => {
   const results = await db.query.hashmap.findMany({
     where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
     with: {
       piece: {
         with: {
           attachments: {
-            where: eq(schema.attachments.filetype, "image"),
+            where: eq(schema.attachments.filetype, filetype),
             columns: { filename: true },
           },
         },
