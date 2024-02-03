@@ -7,6 +7,7 @@ import hashes from "../hashes.json";
 import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
 import { Hash } from "../hashing";
+import { root } from "postcss";
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");
@@ -78,7 +79,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   return piece;
 };
 
-export const pathToHash = async (idpath: string[]): Promise<Hash | null>=> {
+export const pathToHash = async (idpath: string[]): Promise<Hash | null> => {
   const mapItem = await db.query.hashmap.findFirst({
     where: eq(schema.hashmap.idjpath, idpath.join("/")),
   });
@@ -87,7 +88,7 @@ export const pathToHash = async (idpath: string[]): Promise<Hash | null>=> {
   }
   const { pieceHash: hash } = mapItem;
   return hash;
-}
+};
 
 export const hashToPath = async (hash: string): Promise<string[] | null> => {
   const mapItem = await db.query.hashmap.findFirst({
@@ -98,7 +99,7 @@ export const hashToPath = async (hash: string): Promise<string[] | null> => {
   }
   const { idjpath } = mapItem;
   return idjpath.split("/");
-}
+};
 
 export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const hash = await pathToHash(piece.idpath);
@@ -230,10 +231,33 @@ export const getContentTree = async (
   return await __convert(result);
 };
 
-export const getAllIdpaths = async (idpath: string[]): Promise<string[][]> => {
+export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {
   const result = await db.query.hashmap.findMany({
-    where: like(schema.hashmap.idjpath, `${idpath.join("/")}%`),
+    where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
     columns: { idjpath: true },
   });
   return result.map(({ idjpath }) => idjpath.split("/"));
-} 
+};
+
+export const getAllImagePaths = async (rootIdpath: string[]): Promise<string[][]> => {
+  const results = await db.query.hashmap.findMany({
+    where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
+    with: {
+      piece: {
+        with: {
+          attachments: {
+            where: eq(schema.attachments.filetype, "image"),
+            columns: { filename: true },
+          },
+        },
+      },
+    },
+  });
+  const idpaths: string[][] = [];
+  for (const { idjpath, piece } of results) {
+    for (const { filename } of piece.attachments) {
+      idpaths.push([...idjpath.split("/"), filename]);
+    }
+  }
+  return idpaths;
+};

@@ -1,7 +1,7 @@
 import SessionPageBody from "@/components/SessionPageBody";
 import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
 import Loading from "./loading";
-import { delay } from "@/lib/utils";
+import { delay, showExecutionTime } from "@/lib/utils";
 
 type _Props = {
   params: {
@@ -19,10 +19,15 @@ export default async function Page({ params }: _Props) {
 }
 
 export async function generateStaticParams() {
-  const course = await cachedGetPiece([process.env.COURSE_ID!]);
-  if (!course) {
-    return [];
-  }
-  const idpaths = await cachedGetAllIdpaths(course);
+  let idpaths: string[][] = [];
+
+  await showExecutionTime(async () => {
+    const course = await cachedGetPiece([process.env.COURSE_ID!]);
+    if (!course) {
+      return [];
+    }
+    idpaths = await cachedGetAllIdpaths(course);
+  }, "sessions");
+
   return idpaths.map((idpath) => ({ idpath }));
 }

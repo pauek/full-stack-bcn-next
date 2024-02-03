@@ -6,6 +6,7 @@ import {
   cachedGetPieceWithChildren,
 } from "@/lib/data/cached";
 import { mimeTypes } from "@/lib/mime-types";
+import { showExecutionTime } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { extname } from "path";
@@ -35,16 +36,20 @@ export async function GET(_: NextRequest, { params: { parts } }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await cachedGetPiece([process.env.COURSE_ID!]);
-  if (!course) {
-    return [];
-  }
   const slidePaths: { parts: string[] }[] = [];
-  await data.walkContentPieces(course, async (piece) => {
-    const slideList = await cachedGetPieceSlideList(piece);
-    for (const slide of slideList) {
-      slidePaths.push({ parts: [...piece.idpath, slide.name] });
+
+  await showExecutionTime(async () => {
+    const course = await cachedGetPiece([process.env.COURSE_ID!]);
+    if (!course) {
+      return [];
     }
-  });
+    await data.walkContentPieces(course, async (piece) => {
+      const slideList = await cachedGetPieceSlideList(piece);
+      for (const slide of slideList) {
+        slidePaths.push({ parts: [...piece.idpath, slide.name] });
+      }
+    });
+  }, "slides");
+
   return slidePaths;
 }

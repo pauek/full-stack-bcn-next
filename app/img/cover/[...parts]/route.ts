@@ -1,6 +1,7 @@
 import data from "@/lib/data";
 import { cachedGetPiece, cachedPieceHasCover } from "@/lib/data/cached";
 import { mimeTypes } from "@/lib/mime-types";
+import { showExecutionTime } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 import { extname } from "path";
@@ -31,15 +32,19 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 }
 
 export async function generateStaticParams() {
-  const course = await cachedGetPiece([process.env.COURSE_ID!]);
-  if (!course) {
-    return [];
-  }
   const coverPaths: { parts: string[] }[] = [];
-  await data.walkContentPieces(course, async (piece) => {
-    if (await cachedPieceHasCover(piece)) {
-      coverPaths.push({ parts: [...piece.idpath] });
+
+  await showExecutionTime(async () => {
+    const course = await cachedGetPiece([process.env.COURSE_ID!]);
+    if (!course) {
+      return [];
     }
-  });
+    await data.walkContentPieces(course, async (piece) => {
+      if (await cachedPieceHasCover(piece)) {
+        coverPaths.push({ parts: [...piece.idpath] });
+      }
+    });
+  }, "covers");
+  
   return coverPaths;
 }

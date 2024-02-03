@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
 import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
+import exp from "constants";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -165,3 +166,14 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
   });
   return result;
 };
+
+export const getAllImagePaths = async (rootIdpath: string[]): Promise<string[][]> => {
+  const result: string[][] = [];
+  await __walkFiles(rootIdpath, async (piece) => {
+    const images = await getPieceImageList(piece);
+    for (const image of images) {
+      result.push([...piece.idpath, image.name]);
+    }
+  });
+  return result;
+}

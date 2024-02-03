@@ -36,7 +36,8 @@ export interface DataBackendBase {
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;
 
-  getAllIdpaths: (idpath: string[]) => Promise<string[][]>;
+  getAllIdpaths: (rootIdpath: string[]) => Promise<string[][]>;
+  getAllImagePaths: (rootIdpath: string[]) => Promise<string[][]>;
 }
 
 export interface DataBackend extends DataBackendBase {

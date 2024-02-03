@@ -1,5 +1,6 @@
 import ChapterPageBody from "@/components/ChapterPageBody";
 import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
+import { showExecutionTime } from "@/lib/utils";
 
 type _Props = {
   params: {
@@ -27,10 +28,15 @@ export default async function Page({ params }: _Props) {
 }
 
 export async function generateStaticParams() {
-  const course = await cachedGetPiece([process.env.COURSE_ID!]);
-  if (!course) {
-    return [];
-  }
-  const idpaths = await cachedGetAllIdpaths(course);
+  let idpaths: string[][] = [];
+  
+  await showExecutionTime(async () => {
+    const course = await cachedGetPiece([process.env.COURSE_ID!]);
+    if (!course) {
+      return [];
+    }
+    idpaths = await cachedGetAllIdpaths(course);
+  }, "chapters");
+  
   return idpaths.map((idpath) => ({ idpath }));
 }
