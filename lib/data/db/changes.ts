@@ -10,7 +10,6 @@ export const applyChangesToDatabase = async (changes: Changes) => {
       console.error(`Error: now I don't find a piece that was there??`);
       continue;
     }
-    console.log(change.newHash, change.idpath.join("/"));
     await insertPiece(piece);
     await insertFiles(piece);
     for (const childHash of change.childrenHashes) {
