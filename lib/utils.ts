@@ -40,3 +40,5 @@ export const showExecutionTime = async (func: () => Promise<void>) => {
   const end = Date.now();
   console.log(chalk.gray(`\n[${(end - start)/1000}s]`));
 }
+
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

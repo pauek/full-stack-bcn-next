@@ -1,6 +1,8 @@
 import Part from "@/components/Part";
 import data from "@/lib/data";
+import { delay } from "@/lib/utils";
 import { notFound } from "next/navigation";
+import Loading from "./loading";
 
 const courseId = process.env.COURSE_ID!;
 

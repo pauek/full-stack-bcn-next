@@ -1,28 +1,21 @@
-import ChapterPageBody from "@/components/ChapterPageBody";
 import SessionPageBody from "@/components/SessionPageBody";
-import data from "@/lib/data";
 import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
-import { notFound } from "next/navigation";
+import Loading from "./loading";
+import { delay } from "@/lib/utils";
 
 type _Props = {
   params: {
-    idpath: string[];
+    course: string;
+    part: string;
+    session: string;
   };
 };
 
 export default async function Page({ params }: _Props) {
-  const { idpath } = params;
-  switch (idpath.length) {
-    case 4:
-      return <ChapterPageBody idpath={idpath} />;
-    case 3:
-      return <SessionPageBody idpath={idpath} />;
-    case 2:
-      // We don't render course Parts
-      notFound();
-    case 1:
-      return <div>Course!</div>;
-  }
+  await delay(1000);
+  const { course, part, session } = params;
+  const idpath = [course, part, session];
+  return <SessionPageBody idpath={idpath} />;
 }
 
 export async function generateStaticParams() {
