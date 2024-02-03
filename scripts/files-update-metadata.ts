@@ -1,6 +1,7 @@
-import { filesBackend } from "@/lib/data";
+import { filesBackend } from "@/lib/data/files";
 import { MetadataLogFunc, courseUpdateMetadata } from "@/lib/data/files";
-import { getCourseRoot } from "@/lib/data/root";
+import { getRoot } from "@/lib/data/root";
+import { showExecutionTime } from "@/lib/utils";
 
 const logFunc: MetadataLogFunc = ({ idjpath, hasDoc, numSlides, index }) => {
   const _slides = numSlides > 0 ? `📊 ${numSlides}` : "";
@@ -8,5 +9,7 @@ const logFunc: MetadataLogFunc = ({ idjpath, hasDoc, numSlides, index }) => {
   console.log(`${idjpath} = [#${index}${_slides}${_doc}]`);
 };
 
-const root = await getCourseRoot();
-await courseUpdateMetadata(filesBackend, root, logFunc);
+showExecutionTime(async () => {
+  const root = await getRoot(filesBackend);
+  await courseUpdateMetadata(filesBackend, root, logFunc);
+});

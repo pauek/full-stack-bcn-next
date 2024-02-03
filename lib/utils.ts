@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -32,3 +33,10 @@ export const removeNullElements = <T>(array: (T | null)[]): T[] => {
   }
   return result;
 };
+
+export const showExecutionTime = async (func: () => Promise<void>) => {
+  const start = Date.now();
+  await func();
+  const end = Date.now();
+  console.log(chalk.gray(`\n[${(end - start)/1000}s]`));
+}

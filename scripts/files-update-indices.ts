@@ -1,6 +1,7 @@
 import { ContentPiece } from "@/lib/adt";
-import { filesBackend } from "@/lib/data";
+import { filesBackend } from "@/lib/data/files";
 import { getSessionSequence, updateMetadata } from "@/lib/data/files";
+import { showExecutionTime } from "@/lib/utils";
 
 const updateSessionChildren = async (session: ContentPiece) => {
   // Chapters have an index with respect to the session
@@ -28,9 +29,11 @@ const updateSession = async (session: ContentPiece, index: number) => {
   });
 };
 
-const sessions = await getSessionSequence(process.env.COURSE_ID!);
-for (let i = 0; i < sessions.length; i++) {
-  const session = sessions[i];
-  await updateSession(session, i + 1);
-  await updateSessionChildren(session);
-}
+showExecutionTime(async () => {
+  const sessions = await getSessionSequence(process.env.COURSE_ID!);
+  for (let i = 0; i < sessions.length; i++) {
+    const session = sessions[i];
+    await updateSession(session, i + 1);
+    await updateSessionChildren(session);
+  }
+});

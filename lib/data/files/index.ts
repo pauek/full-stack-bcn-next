@@ -1,4 +1,5 @@
-import { DataBackendBase } from "../data-backend";
+import { commonBackend } from "../common";
+import { DataBackend, DataBackendBase } from "../data-backend";
 import * as _backend from "./backend";
 
 export * from "./backend";
@@ -11,4 +12,9 @@ export const backend: DataBackendBase = {
     return "Using local files as backend";
   },
   ..._backend,
+};
+
+export const filesBackend: DataBackend = {
+  ...backend,
+  ...commonBackend,
 };

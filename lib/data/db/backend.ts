@@ -2,35 +2,36 @@ import * as schema from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { base64ToBytes, lastItem } from "@/lib/utils";
 import { and, eq } from "drizzle-orm";
-import { extname } from "path";
-import { FileBuffer, ImgData, WalkFunc } from "../data-backend";
+import { FileBuffer } from "../data-backend";
 import hashes from "../hashes.json";
 import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
-
-const pathToHash = new Map(hashes.map(({ hash, idjpath }) => [idjpath, hash]));
-const hashToPath = new Map(hashes.map(({ hash, idjpath }) => [hash, idjpath]));
+import { Hash } from "../hashing";
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
-  const hash = pathToHash.get(idpath.join("/"));
-  if (!hash) {
-    console.log(`Hash not found for idpath ${idpath.join("/")}`);
-    return null;
-  }
-  const result = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.pieceHash, hash),
+  const result = await db.query.hashmap.findFirst({
+    where: eq(schema.hashmap.idjpath, idpath.join("/")),
+    with: {
+      piece: {
+        columns: {
+          pieceHash: true,
+          name: true,
+          metadata: true,
+          diskpath: true,
+        },
+      },
+    },
   });
   if (!result) {
-    console.log(
-      `Piece not found in table 'pieces' for idpath ${idpath.join("/")} [hash = ${hash}]`
-    );
+    console.log(`getPiece: piece not found for idpath "${idpath.join("/")}"`);
     return null;
   }
+
   return {
-    ...result,
+    ...result.piece,
     hash: result.pieceHash,
     id: lastItem(idpath),
     idpath,
@@ -39,45 +40,68 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
 };
 
 export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPiece | null> => {
-  const hash = pathToHash.get(idpath.join("/"));
-  if (!hash) {
-    console.info("Hash not found in table!");
-    return null;
-  }
-  const result = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.pieceHash, hash),
-    with: { children: { columns: {}, with: { child: true } } },
+  const result = await db.query.hashmap.findFirst({
+    where: eq(schema.hashmap.idjpath, idpath.join("/")),
+    with: { piece: { with: { children: { with: { child: true } } } } },
   });
   if (!result) {
     return null;
   }
-
+  const { piece: dbPiece } = result;
   const piece: ContentPiece = {
-    ...result,
-    hash: result.pieceHash,
+    ...dbPiece,
+    hash: dbPiece.pieceHash,
     idpath,
     id: lastItem(idpath),
     children: [],
-    metadata: result.metadata,
+    metadata: dbPiece.metadata,
   };
-  piece.children = result.children.map(({ child }) => {
-    const idjpath = hashToPath.get(child.pieceHash);
-    if (idjpath === undefined) {
-      throw Error(`getPieceWithChildren: path not found for "${child.pieceHash}"?!?`);
+  const children: ContentPiece[] = [];
+  for (const { child } of dbPiece.children) {
+    const result = await db.query.hashmap.findFirst({
+      where: eq(schema.hashmap.pieceHash, child.pieceHash),
+    });
+    if (!result) {
+      throw Error(`getPieceWithChildren: ijdpath for child hash not found "${child.pieceHash}"`);
     }
-    return {
+    const { idjpath } = result;
+    const idpath = idjpath.split("/");
+    children.push({
       ...child,
       hash: child.pieceHash,
-      id: idjpath.split("/").slice(-1)[0],
-      idpath: idjpath.split("/"),
+      id: idpath.slice(-1)[0],
+      idpath,
       metadata: child.metadata,
-    };
-  });
+    });
+  }
+  piece.children = children;
   return piece;
 };
 
+export const pathToHash = async (idpath: string[]): Promise<Hash | null>=> {
+  const mapItem = await db.query.hashmap.findFirst({
+    where: eq(schema.hashmap.idjpath, idpath.join("/")),
+  });
+  if (!mapItem) {
+    return null;
+  }
+  const { pieceHash: hash } = mapItem;
+  return hash;
+}
+
+export const hashToPath = async (hash: string): Promise<string[] | null> => {
+  const mapItem = await db.query.hashmap.findFirst({
+    where: eq(schema.hashmap.pieceHash, hash),
+  });
+  if (!mapItem) {
+    return null;
+  }
+  const { idjpath } = mapItem;
+  return idjpath.split("/");
+}
+
 export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const hash = pathToHash.get(piece.idpath.join("/"));
+  const hash = await pathToHash(piece.idpath);
   if (!hash) {
     return null;
   }
@@ -130,8 +154,8 @@ export const getPieceFileData = async (
   const [result] = await db
     .select({ data: schema.files.data })
     .from(schema.pieces)
-    .leftJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.piece))
-    .leftJoin(schema.files, eq(schema.attachments.file, schema.files.hash))
+    .leftJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.pieceHash))
+    .leftJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
     .where(
       and(
         eq(schema.pieces.pieceHash, piece.hash),
@@ -150,7 +174,7 @@ export const getContentTree = async (
   idpath: string[],
   { level }: { level: number }
 ): Promise<ContentPiece | null> => {
-  const hash = pathToHash.get(idpath.join("/"));
+  const hash = await pathToHash(idpath);
   if (!hash) {
     return null;
   }
@@ -184,20 +208,24 @@ export const getContentTree = async (
 
   type Result = schema.DBPiece & { children?: { child: Result }[] };
 
-  const __convert = (res: Result): ContentPiece => {
-    const idjpath = hashToPath.get(res.pieceHash);
-    if (idjpath === undefined) {
+  const __convert = async (res: Result): Promise<ContentPiece> => {
+    const idpath = await hashToPath(res.pieceHash);
+    if (!idpath) {
       throw Error(`getContentTree: path not found for "${res.pieceHash}"?!?`);
+    }
+    const children: ContentPiece[] = [];
+    for (const { child } of res.children || []) {
+      children.push(await __convert(child));
     }
     const piece: ContentPiece = {
       ...res,
       hash: res.pieceHash,
-      id: lastItem(idjpath.split("/")),
-      idpath: idjpath.split("/"),
-      children: res.children?.map(({ child }) => __convert(child)),
+      id: lastItem(idpath),
+      idpath,
+      children,
     };
     return piece;
   };
 
-  return __convert(result);
+  return await __convert(result);
 };

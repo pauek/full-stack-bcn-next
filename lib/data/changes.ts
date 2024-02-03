@@ -1,10 +1,9 @@
-import { filesBackend } from ".";
 import { ContentPiece } from "../adt";
 import { readStoredHash, writeStoredHash } from "./files/hashes";
 import { hashPiece } from "./hashing";
-import * as db from "./db";
-import { readHashMapFile, writeHashMapFile } from "./hash-maps";
 import { removeNullElements } from "../utils";
+import { readHashMapFile, writeHashMapFile } from "./hash-maps";
+import { filesBackend } from "./files";
 
 export type Changes = {
   oldHash: string | null;
@@ -33,23 +32,6 @@ export const getChangedPieces = async (course: ContentPiece): Promise<Changes> =
   });
 
   return changes;
-};
-
-// Apply updates to the database
-export const applyChangesToDatabase = async (changes: Changes) => {
-  for (const change of changes) {
-    const piece = await filesBackend.getPiece(change.idpath);
-    if (!piece) {
-      console.error(`Error: now I don't find a piece that was there??`);
-      continue;
-    }
-    console.log(change.newHash, change.idpath.join("/"));
-    await db.insertPiece(piece);
-    await db.insertFiles(piece);
-    for (const childHash of change.childrenHashes) {
-      await db.pieceSetParent(childHash, piece.hash);
-    }
-  }
 };
 
 export const updateHashmapFile = async (changes: Changes) => {

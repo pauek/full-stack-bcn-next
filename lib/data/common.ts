@@ -42,3 +42,9 @@ export const walkContentPieces = async function (
   }
   return await func(dbPiece, children);
 };
+
+export const commonBackend = {
+  getBreadcrumbData,
+  getAllIdpaths,
+  walkContentPieces,
+};

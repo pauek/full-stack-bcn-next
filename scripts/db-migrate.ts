@@ -1,18 +1,19 @@
 import * as schema from "@/data/schema";
-import { closeConnection } from "@/lib/data/db";
+import { showExecutionTime } from "@/lib/utils";
 import { Pool, neonConfig } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import ws from "ws";
 
-neonConfig.webSocketConstructor = ws;
-const sql = new Pool({ connectionString: process.env.DATABASE_URL! });
+showExecutionTime(async () => {
+  neonConfig.webSocketConstructor = ws;
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+  const db = drizzle(pool, { schema });
 
-export const db = drizzle(sql, { schema });
+  await migrate(db, {
+    migrationsFolder: "./data/drizzle",
+    migrationsTable: "migrations",
+  });
 
-await migrate(db, {
-  migrationsFolder: "./data/drizzle",
-  migrationsTable: "migrations",
+  await pool.end();
 });
-
-await closeConnection();

@@ -1,7 +1,8 @@
-import { filesBackend } from "@/lib/data";
+import { filesBackend } from "@/lib/data/files";
 import { getChangedPieces } from "@/lib/data/changes";
 import { courseUpdateMetadata } from "@/lib/data/files";
-import { getCourseRoot } from "@/lib/data/root";
+import { getRoot } from "@/lib/data/root";
+import { showExecutionTime } from "@/lib/utils";
 
 /*
 
@@ -11,14 +12,16 @@ Para cada cambio:
 
 */
 
-const root = await getCourseRoot();
-await courseUpdateMetadata(filesBackend, root);
-const changes = await getChangedPieces(root);
+showExecutionTime(async () => {
+  const root = await getRoot(filesBackend);
+  await courseUpdateMetadata(filesBackend, root);
+  const changes = await getChangedPieces(root);
 
-if (changes.length === 0) {
-  console.log("No changes.");
-} else {
-  for (const change of changes) {
-    console.log(change.newHash, change.idpath.join("/"));
+  if (changes.length === 0) {
+    console.log("No changes.");
+  } else {
+    for (const change of changes) {
+      console.log(change.newHash, change.idpath.join("/"));
+    }
   }
-}
+});

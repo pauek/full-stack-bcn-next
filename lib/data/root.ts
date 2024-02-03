@@ -1,10 +1,10 @@
 import { ContentPiece } from "../adt";
-import data from "@/lib/data";
+import { DataBackend } from "./data-backend";
 
 // Get the course (the root)
-export const getCourseRoot = async (): Promise<ContentPiece> => {
+export const getRoot = async (backend: DataBackend): Promise<ContentPiece> => {
   const courseId = process.env.COURSE_ID!;
-  const course = await data.getPiece([courseId]);
+  const course = await backend.getPiece([courseId]);
   if (!course) {
     throw `Course ${courseId} not found!`;
   }

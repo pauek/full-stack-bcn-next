@@ -26,8 +26,8 @@ export const getPieceFilesByFiletype = async (
   const result = await db
     .select({ name: schema.attachments.filename, hash: schema.files.hash })
     .from(schema.pieces)
-    .innerJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.piece))
-    .innerJoin(schema.files, eq(schema.attachments.file, schema.files.hash))
+    .innerJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.pieceHash))
+    .innerJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
     .where(and(eq(schema.pieces.pieceHash, pieceHash), eq(schema.attachments.filetype, filetype)))
     .orderBy(schema.pieces.diskpath)
     .limit(options?.limit ? options.limit : 1000);

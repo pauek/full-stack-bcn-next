@@ -1,25 +1,41 @@
-import { filesBackend } from "@/lib/data";
-import * as db from "@/lib/data/db";
-import { getCourseRoot } from "@/lib/data/root";
+import { filesBackend } from "@/lib/data/files";
+import {
+  closeConnection,
+  dbBackend,
+  insertFiles,
+  insertPiece,
+  insertPieceHashmap,
+  pieceExists,
+  pieceSetParent,
+} from "@/lib/data/db";
+import { getRoot } from "@/lib/data/root";
+import { showExecutionTime } from "@/lib/utils";
+import chalk from "chalk";
 
-const forcedUpload = process.argv.includes("--force");
-console.log(`forcedUpload = ${forcedUpload}`);
+showExecutionTime(async () => {
+  const forcedUpload = process.argv.includes("--force");
+  console.log(chalk.gray(`[${dbBackend.getInfo()}]`));
+  console.log(chalk.gray(`[forcedUpload = ${forcedUpload}]`));
 
-const root = await getCourseRoot();
+  const root = await getRoot(filesBackend);
+  await insertPieceHashmap(root);
 
-if (!forcedUpload && (await db.pieceExists(root))) {
-  process.exit(0);
-}
-
-await filesBackend.walkContentPieces(root, async (piece, children) => {
-  if (forcedUpload || (await db.insertPiece(piece))) {
-    console.log(piece.hash, piece.idpath.join("/"));
-    await db.insertFiles(piece);
-    for (const child of children) {
-      await db.pieceSetParent(child.hash, piece.hash);
-    }
+  if (!forcedUpload && (await pieceExists(root))) {
+    process.exit(0);
   }
-  return piece;
-});
 
-await db.closeConnection();
+  await filesBackend.walkContentPieces(root, async (piece, children) => {
+    if ((await insertPiece(piece)) || forcedUpload) {
+      console.log(piece.hash, piece.idpath.join("/"));
+      await insertFiles(piece);
+      for (const child of children) {
+        await pieceSetParent(child.hash, piece.hash);
+      }
+      await insertPieceHashmap(piece);
+    }
+    return piece;
+  });
+
+
+  await closeConnection();
+});

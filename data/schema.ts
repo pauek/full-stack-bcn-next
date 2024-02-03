@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { date, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
+import { date, index, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 
 // Pieces
 
@@ -66,10 +66,10 @@ export const filesRelations = relations(files, ({ many }) => ({
 export const attachments = pgTable(
   "attachments",
   {
-    piece: text("piece_hash")
+    pieceHash: text("piece_hash")
       .notNull()
       .references(() => pieces.pieceHash),
-    file: text("file_hash")
+    fileHash: text("file_hash")
       .notNull()
       .references(() => files.hash),
     filetype: fileTypeEnum("filetype").notNull(),
@@ -77,18 +77,18 @@ export const attachments = pgTable(
   },
   (table) => ({
     pk: primaryKey({
-      columns: [table.piece, table.file, table.filetype],
+      columns: [table.pieceHash, table.fileHash, table.filetype],
     }),
   })
 );
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
-    fields: [attachments.piece],
+    fields: [attachments.pieceHash],
     references: [pieces.pieceHash],
     relationName: "piece_attachments",
   }),
   file: one(files, {
-    fields: [attachments.file],
+    fields: [attachments.fileHash],
     references: [files.hash],
     relationName: "file_attachments",
   }),
@@ -99,7 +99,22 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
 // With this we can locate any piece given an idjpath.
 // Idjpaths give a good name to the hashes which are the true identifiers.
 
-export const hashmap = pgTable("idjpaths", {
-  idjpath: jsonb("idjpath").primaryKey(),
-  hash: text("hash").notNull(),
-});
+export const hashmap = pgTable(
+  "hashmap",
+  {
+    idjpath: text("idjpath").primaryKey(),
+    pieceHash: text("piece_hash")
+      .notNull()
+      .references(() => pieces.pieceHash),
+  },
+  (table) => ({
+    hashIdx: index("hash_idx").on(table.pieceHash),
+  })
+);
+export const hashmapRelations = relations(hashmap, ({ one }) => ({
+  piece: one(pieces, {
+    fields: [hashmap.pieceHash],
+    references: [pieces.pieceHash],
+    relationName: "hashmap_piece",
+  }),
+}));

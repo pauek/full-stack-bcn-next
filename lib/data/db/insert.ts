@@ -30,8 +30,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
   if (await pieceExists(piece)) {
     return false; // it was not inserted
   }
-
-  const adaptedPiece: schema.DBPiece = {
+  const dbPiece: schema.DBPiece = {
     pieceHash: piece.hash,
     name: piece.name,
     diskpath: piece.diskpath,
@@ -39,14 +38,25 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
     metadata: piece.metadata,
   };
   try {
-    await db.insert(schema.pieces).values(adaptedPiece).onConflictDoUpdate({
+    await db.insert(schema.pieces).values(dbPiece).onConflictDoUpdate({
       target: schema.pieces.pieceHash,
-      set: adaptedPiece,
+      set: dbPiece,
     });
+
     return true; // it was inserted
   } catch (e: any) {
-    console.log(`Inserting ${piece.diskpath} [${JSON.stringify(adaptedPiece)}]: ${e.toString()}`);
+    console.log(`Inserting ${piece.diskpath} [${JSON.stringify(dbPiece)}]: ${e.toString()}`);
   }
+};
+
+export const insertPieceHashmap = async (piece: ContentPiece) => {
+  await db
+    .insert(schema.hashmap)
+    .values({ pieceHash: piece.hash, idjpath: piece.idpath.join("/") })
+    .onConflictDoUpdate({
+      target: schema.hashmap.idjpath,
+      set: { idjpath: piece.idpath.join("/") },
+    });
 };
 
 type FileInfo = {
@@ -62,6 +72,7 @@ export const insertFile = async (
   const hash = await hashAny(bytes);
 
   if (!(await fileExists(hash))) {
+    process.stdout.write(`  ${hash} ${filetype} ${filename} ...\r`);
     await db
       .insert(schema.files)
       .values({
@@ -74,14 +85,14 @@ export const insertFile = async (
   await db
     .insert(schema.attachments)
     .values({
-      file: hash,
-      piece: piece.hash,
+      fileHash: hash,
+      pieceHash: piece.hash,
       filetype,
       filename,
     })
     .onConflictDoNothing();
 
-  console.log(`  ${hash} ${filetype} ${filename}`);
+  process.stdout.write(`  ${hash} ${filetype} ${filename}\r`);
 };
 
 export const insertFiles = async (piece: ContentPiece) => {

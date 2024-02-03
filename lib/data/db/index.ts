@@ -1,4 +1,5 @@
-import { DataBackendBase } from "../data-backend";
+import { commonBackend } from "../common";
+import { DataBackend, DataBackendBase } from "../data-backend";
 import * as _backend from "./backend";
 
 export * from "./backend";
@@ -17,4 +18,9 @@ export const backend: DataBackendBase = {
     return `DB: ${host}`;
   },
   ..._backend,
+};
+
+export const dbBackend: DataBackend = {
+  ...backend,
+  ...commonBackend,
 };

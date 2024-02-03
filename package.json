@@ -13,10 +13,10 @@
     "db:upload": "bun run scripts/db-upload-content.ts",
     "db:list": "bun run scripts/db-list.ts",
     "files:build": "DATABASE_URL=files next build",
-    "files:indices": "DATABASE_URL=files bun run scripts/files-update-indices.ts",
-    "files:metadata": "DATABASE_URL=files bun run scripts/files-update-metadata.ts",
-    "files:hashes": "DATABASE_URL=files bun run scripts/files-write-hashes.ts",
-    "files:changes": "DATABASE_URL=files bun run scripts/files-show-changes.ts"
+    "files:indices": "bun run scripts/files-update-indices.ts",
+    "files:metadata": "bun run scripts/files-update-metadata.ts",
+    "files:hashes": "bun run scripts/files-write-hashes.ts",
+    "files:changes": "bun run scripts/files-show-changes.ts"
   },
   "dependencies": {
     "@highlightjs/cdn-assets": "^11.8.0",
@@ -30,6 +30,7 @@
     "@radix-ui/react-navigation-menu": "^1.1.3",
     "@radix-ui/react-scroll-area": "^1.0.4",
     "autoprefixer": "10.4.14",
+    "chalk": "^5.3.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "dotenv": "^16.4.1",
