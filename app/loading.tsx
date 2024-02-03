@@ -1,4 +1,3 @@
-
 export default function Loading() {
   return (
     <div className="w-full sm:w-[36em]">
@@ -18,10 +17,10 @@ const PartSkeleton = ({ numCards }: { numCards: number }) => {
     <div className="blur-xs">
       <div className="pt-3 pb-5">
         <div className="h-8"></div>
-        {rows.map((numCards) => (
-          <div className="flex flex-row justify-center px-2">
-            {Array.from({ length: numCards }).map((_, index) => (
-              <CardSkeleton key={index} />
+        {rows.map((numCards, i) => (
+          <div key={i} className="flex flex-row justify-center px-2">
+            {Array.from({ length: numCards }).map((_, j) => (
+              <CardSkeleton key={j} />
             ))}
           </div>
         ))}
