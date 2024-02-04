@@ -42,3 +42,11 @@ export const showExecutionTime = async <T>(func: () => Promise<T>, msg?: string)
 }
 
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const chunkArray = (array: Array<any>, chunkSize: number) => {
+  const result = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+  return result;
+}

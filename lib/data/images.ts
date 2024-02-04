@@ -1,4 +1,5 @@
 import { FileTypeEnum } from "@/data/schema";
+import data from "@/lib/data";
 import { fileTypeInfo } from "@/lib/data/files";
 import { hashAny } from "@/lib/data/hashing";
 import {
@@ -12,7 +13,7 @@ import {
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { readFile } from "fs/promises";
 import { extname, join } from "path";
-import data from "@/lib/data";
+import { mimeTypes } from "../mime-types";
 
 const s3 = new S3Client({
   region: R2_REGION,
@@ -37,6 +38,7 @@ const uploadImage = async (dirpath: string, filename: string, filetype: FileType
       Key: imageKey,
       Body: content,
       ACL: "public-read",
+      ContentType: mimeTypes[ext],
     });
 
     await s3.send(command);
@@ -49,9 +51,14 @@ const uploadImage = async (dirpath: string, filename: string, filetype: FileType
   }
 };
 
-export const uploadAllFilesOfType = async (filetype: FileTypeEnum) => {
+export const uploadAllFilesOfType = async (
+  filetype: FileTypeEnum,
+  parallelRequests: number = 50
+) => {
   const imagePaths = await data.getAllAttachmentPaths([COURSE_ID], filetype);
-  for (const path of imagePaths) {
+
+  const _uploadOne = async (index: number) => {
+    const path = imagePaths[index];
     const idpath = path.slice(0, path.length - 1);
     const imageFilename = path.slice(-1)[0];
     const piece = await data.getPiece(idpath);
@@ -59,5 +66,17 @@ export const uploadAllFilesOfType = async (filetype: FileTypeEnum) => {
       throw new Error(`Piece not found: ${idpath}`);
     }
     await uploadImage(piece.diskpath, imageFilename, filetype);
-  }
+  };
+
+  const _uploadAllWithOffset = async (offset: number) => {
+    for (let i = offset; i < imagePaths.length; i += parallelRequests) {
+      await _uploadOne(i);
+    }
+  };
+
+  await Promise.allSettled(
+    Array.from({ length: parallelRequests }).map((_, i) => {
+      return _uploadAllWithOffset(i);
+    })
+  );
 };

@@ -1,5 +1,6 @@
 
 const throwForVar = (name: string) => {
+    console.log(`I show you: ${process.env[name]}`);
     throw new Error(`${name} not set`);
 }
 
