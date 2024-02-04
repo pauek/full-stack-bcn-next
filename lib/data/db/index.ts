@@ -9,11 +9,11 @@ export * from "./insert";
 export * from "./utils";
 
 const extractHost = (url: string) => {
-  const match = url.match(/^postgresql:\/\/([^:]+):([^@]+)\@([^\/]+)(\/.*)$/);
+  const match = url.match(/^postgres(?:ql)?:\/\/([^:]+):([^@]+)\@([^\/]+)(\/.*)$/);
   if (!match) {
     return "";
   }
-  const [_0, _1, _2, host, _3] = match;
+  const [_0, _1, _2, host, _4] = match;
   return host;
 };
 

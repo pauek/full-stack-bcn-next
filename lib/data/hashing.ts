@@ -113,6 +113,8 @@ export const hashPiece = async function (
 export const hashAllContent = async function (backend: DataBackend, root: ContentPiece) {
   const hashes: Map<string, HashMapInfo> = new Map();
 
+  // TODO: optimize with offset parallel async functions...
+
   await backend.walkContentPieces(root, async (piece, children) => {
     const { hash, filename } = await hashPiece(backend, piece, children);
     const idjpath = piece.idpath.join("/");

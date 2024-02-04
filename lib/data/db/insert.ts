@@ -7,6 +7,7 @@ import { bytesToBase64 } from "@/lib/utils";
 import { hashAny } from "@/lib/data/hashing";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import chalk from "chalk";
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
   await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing();
@@ -42,7 +43,6 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
       target: schema.pieces.pieceHash,
       set: dbPiece,
     });
-
     return true; // it was inserted
   } catch (e: any) {
     console.log(`Inserting ${piece.diskpath} [${JSON.stringify(dbPiece)}]: ${e.toString()}`);
@@ -72,7 +72,7 @@ export const insertFile = async (
   const hash = await hashAny(bytes);
 
   if (!(await fileExists(hash))) {
-    process.stdout.write(`  ${hash} ${filetype} ${filename} ...\r`);
+    process.stdout.write(`  ${chalk.gray(hash)} ${chalk.green(filetype)} ${chalk.yellow(filename)}\r`);
     await db
       .insert(schema.files)
       .values({

@@ -1,3 +1,5 @@
+import "@/lib/env.mjs";
+
 import { filesBackend } from "@/lib/data/files";
 import {
   closeConnection,
@@ -18,6 +20,7 @@ showExecutionTime(async () => {
   console.log(chalk.gray(`[forcedUpload = ${forcedUpload}]`));
 
   const root = await getRoot(filesBackend);
+  await insertPiece(root);
   await insertPieceHashmap(root);
 
   if (!forcedUpload && (await pieceExists(root))) {
