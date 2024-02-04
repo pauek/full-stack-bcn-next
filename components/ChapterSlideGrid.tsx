@@ -3,14 +3,13 @@
 import Image from "next/image";
 import SlideViewer from "./SlideViewer";
 import { useState } from "react";
-import { slideUrl } from "@/lib/urls";
+import { attachmentUrl } from "@/lib/urls";
 import { FileReference } from "@/lib/data/data-backend";
 
 type Props = {
-  idpath: string[];
-  slides: Array<FileReference>;
+  slides: Array<string>;
 };
-export default function SlideGrid({ idpath, slides }: Props) {
+export default function SlideGrid({ slides }: Props) {
   const [currentSlide, setCurrentSlide] = useState<number>(-1);
 
   if (slides.length === 0) {
@@ -30,7 +29,7 @@ export default function SlideGrid({ idpath, slides }: Props) {
     <>
       {currentSlide >= 0 && (
         <SlideViewer
-          slide={slideUrl(idpath, slides[currentSlide].filename)}
+          slide={slides[currentSlide]}
           onClose={closeSlideViewer}
           onNext={nextSlide}
           onPrev={prevSlide}
@@ -44,11 +43,11 @@ export default function SlideGrid({ idpath, slides }: Props) {
           }
         >
           {slides &&
-            slides.map((s, i: number) => (
+            slides.map((url, i: number) => (
               <Image
-                key={s.hash}
+                key={url}
                 className="border-2 rounded shadow-md hover:border-stone-400"
-                src={slideUrl(idpath, s.filename)}
+                src={url}
                 alt="Slide"
                 width={400}
                 height={300}
