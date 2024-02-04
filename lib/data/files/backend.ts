@@ -4,7 +4,7 @@ import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
 import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
-import { COURSE_SUBDIR } from "@/lib/env";
+import { COURSE_SUBDIR } from "@/lib/env.local";
 
 export { findCoverImageFilename } from "./utils";
 

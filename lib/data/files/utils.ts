@@ -1,6 +1,6 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
-import { CONTENT_ROOT } from "@/lib/env";
+import { CONTENT_ROOT } from "@/lib/env.local";
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
 import { basename, extname, join } from "path";

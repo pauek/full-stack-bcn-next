@@ -1,4 +1,4 @@
-import { CONTENT_ROOT } from "@/lib/env";
+import { CONTENT_ROOT } from "@/lib/env.local";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 
