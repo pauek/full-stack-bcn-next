@@ -1,3 +1,4 @@
+import { DATABASE_URL } from "@/lib/env";
 import { commonBackend } from "../common";
 import { DataBackend, DataBackendBase } from "../data-backend";
 import * as _backend from "./backend";
@@ -9,7 +10,6 @@ export * from "./utils";
 
 export const backend: DataBackendBase = {
   getInfo: () => {
-    const DATABASE_URL = process.env.DATABASE_URL!;
     const match = DATABASE_URL.match(/^postgresql:\/\/([^:]+):([^@]+)\@([^\/]+)(\/.*)$/);
     if (!match) {
       return `Database ${DATABASE_URL}`;

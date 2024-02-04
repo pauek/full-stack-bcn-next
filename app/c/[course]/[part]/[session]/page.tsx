@@ -2,6 +2,7 @@ import SessionPageBody from "@/components/SessionPageBody";
 import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
 import Loading from "./loading";
 import { delay, showExecutionTime } from "@/lib/utils";
+import { COURSE_ID } from "@/lib/env";
 
 type _Props = {
   params: {
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
   let idpaths: string[][] = [];
 
   await showExecutionTime(async () => {
-    const course = await cachedGetPiece([process.env.COURSE_ID!]);
+    const course = await cachedGetPiece([COURSE_ID]);
     if (!course) {
       return [];
     }

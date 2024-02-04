@@ -98,10 +98,10 @@ export const insertFile = async (
 export const insertFiles = async (piece: ContentPiece) => {
   const fullpath =
     (dir: string, filetype: schema.FileTypeEnum) =>
-    ({ name }: { name: string }) => ({
-      filename: `${name}`,
+    ({ filename }: { filename: string }) => ({
+      filename,
       filetype,
-      diskpath: join(piece.diskpath, dir, name),
+      diskpath: join(piece.diskpath, dir, filename),
     });
 
   const images = await files.getPieceImageList(piece);

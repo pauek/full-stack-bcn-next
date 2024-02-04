@@ -2,12 +2,10 @@ import * as schema from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { base64ToBytes, lastItem } from "@/lib/utils";
 import { and, eq, like } from "drizzle-orm";
-import { FileBuffer } from "../data-backend";
-import hashes from "../hashes.json";
+import { FileBuffer, FileReference } from "../data-backend";
+import { Hash } from "../hashing";
 import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
-import { Hash } from "../hashing";
-import { root } from "postcss";
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");
@@ -118,12 +116,12 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 `);
     return null;
   }
-  return { name: result.name, buffer: Buffer.from(base64ToBytes(data)) };
+  return { name: result.filename, buffer: Buffer.from(base64ToBytes(data)) };
 };
 
 export const __getFileListByFiletype =
   (filetype: schema.FileTypeEnum) =>
-  async (piece: ContentPiece): Promise<{ name: string; hash: string }[]> => {
+  async (piece: ContentPiece): Promise<{ filename: string; hash: string }[]> => {
     const results = await getPieceFilesByFiletype(piece.hash, filetype);
     if (!results) {
       return [];
@@ -144,7 +142,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
     return null;
   }
   const buffer = Buffer.from(base64ToBytes(base64));
-  return { buffer, name: file.name };
+  return { buffer, name: file.filename };
 };
 
 export const getPieceFileData = async (
@@ -239,7 +237,10 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
   return result.map(({ idjpath }) => idjpath.split("/"));
 };
 
-export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: schema.FileTypeEnum): Promise<string[][]> => {
+export const getAllAttachmentPaths = async (
+  rootIdpath: string[],
+  filetype: schema.FileTypeEnum
+): Promise<string[][]> => {
   const results = await db.query.hashmap.findMany({
     where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
     with: {
@@ -260,4 +261,15 @@ export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: sche
     }
   }
   return idpaths;
+};
+
+export const getPieceAttachmentList = async (
+  piece: ContentPiece,
+  filetype: schema.FileTypeEnum
+): Promise<FileReference[]> => {
+  const results = await getPieceFilesByFiletype(piece.hash, filetype);
+  if (!results) {
+    return [];
+  }
+  return results;
 };

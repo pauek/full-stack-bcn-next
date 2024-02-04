@@ -19,6 +19,7 @@
     "files:changes": "bun run scripts/files-show-changes.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.504.0",
     "@highlightjs/cdn-assets": "^11.8.0",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",

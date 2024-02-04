@@ -43,7 +43,7 @@ export const hashFile = async (diskpath: string) => {
 };
 
 type HashItem = {
-  name: string;
+  filename: string;
   hash: string;
 };
 
@@ -52,60 +52,60 @@ export const hashPiece = async function (
   piece: ContentPiece,
   children: HashItem[]
 ): Promise<HashItem> {
-  children.sort((a, b) => a.name.localeCompare(b.name));
-  const childrenHashes: HashItem[] = children.map(({ name, hash }) => ({ name, hash }));
+  children.sort((a, b) => a.filename.localeCompare(b.filename));
+  const childrenHashes: HashItem[] = children.map(({ filename, hash }) => ({ filename, hash }));
 
   const hashes: HashItem[] = [];
   const fields = Object.entries(piece.metadata).sort(([a], [b]) => a.localeCompare(b));
   const strFields = JSON.stringify(fields);
   hashes.push({
-    name: METADATA_FILENAME,
+    filename: METADATA_FILENAME,
     hash: hashAny(strFields),
   });
 
   const doc = await backend.getPieceDocument(piece);
   if (doc !== null) {
     const { name, buffer } = doc;
-    hashes.push({ name, hash: hashAny(buffer) });
+    hashes.push({ filename: name, hash: hashAny(buffer) });
   }
 
-  const cover = await backend.getPieceCoverImageData(piece);
-  if (cover !== null) {
-    const { name, buffer } = cover;
-    hashes.push({ name, hash: hashAny(buffer) });
+  const [cover] = await backend.getPieceAttachmentList(piece, "cover");
+  if (cover) {
+    const { filename, hash } = cover;
+    hashes.push({ filename: filename, hash });
   }
 
   const imgList = await backend.getPieceImageList(piece);
   if (imgList !== null) {
-    for (const { name } of imgList) {
+    for (const { filename } of imgList) {
       hashes.push({
-        name: `images/${name}`,
-        hash: hashAny(await backend.getPieceFileData(piece, name, "image")),
+        filename: `images/${filename}`,
+        hash: hashAny(await backend.getPieceFileData(piece, filename, "image")),
       });
     }
   }
 
   const slideList = await backend.getPieceSlideList(piece);
-  for (const { name } of slideList) {
+  for (const { filename } of slideList) {
     hashes.push({
-      name: `slides/${name}`,
-      hash: hashAny(await backend.getPieceFileData(piece, name, "slide")),
+      filename: `slides/${filename}`,
+      hash: hashAny(await backend.getPieceFileData(piece, filename, "slide")),
     });
   }
 
   hashes.sort((a, b) => {
     // first by name, then by hash
-    const cmp1 = a.name.localeCompare(b.name);
+    const cmp1 = a.filename.localeCompare(b.filename);
     if (cmp1 != 0) return cmp1;
     const cmp2 = a.hash.localeCompare(b.hash);
     return cmp2;
   });
 
   const allHashes = [...childrenHashes, ...hashes];
-  const allHashesAsText = allHashes.map(({ name, hash }) => `${hash} ${name}\n`).join("");
+  const allHashesAsText = allHashes.map(({ filename: name, hash }) => `${hash} ${name}\n`).join("");
 
   return {
-    name: basename(piece.diskpath),
+    filename: basename(piece.diskpath),
     hash: hashAny(allHashesAsText),
   };
 };
@@ -114,7 +114,7 @@ export const hashAllContent = async function (backend: DataBackend, root: Conten
   const hashes: Map<string, HashMapInfo> = new Map();
 
   await backend.walkContentPieces(root, async (piece, children) => {
-    const { hash, name } = await hashPiece(backend, piece, children);
+    const { hash, filename: name } = await hashPiece(backend, piece, children);
     const idjpath = piece.idpath.join("/");
     hashes.set(idjpath, { hash, idjpath, diskpath: piece.diskpath });
     return { hash, name };

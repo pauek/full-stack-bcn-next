@@ -1,5 +1,6 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "../adt";
+import { Hash } from "./hashing";
 
 export type ImgData = {
   data: Buffer;
@@ -19,6 +20,11 @@ export type FileBuffer = {
   buffer: Buffer;
 };
 
+export type FileReference = {
+  filename: string;
+  hash: string;
+};
+
 // prettier-ignore
 export interface DataBackendBase {
   getInfo: () => string;
@@ -27,11 +33,12 @@ export interface DataBackendBase {
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
 
-  getPieceCoverImageData: (piece: ContentPiece) => Promise<FileBuffer | null>;
+  getPieceAttachmentList: (piece: ContentPiece, filetype: FileTypeEnum) => Promise<FileReference[]>;
+  
   getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileTypeEnum) => Promise<Buffer | null>;
-  getPieceImageList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[]>;
-  getPieceSlideList: (piece: ContentPiece) => Promise<{ name: string, hash: string }[]>;
+  getPieceImageList: (piece: ContentPiece) => Promise<FileReference[]>;
+  getPieceSlideList: (piece: ContentPiece) => Promise<FileReference[]>;
 
   pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;

@@ -1,6 +1,7 @@
 import { ContentPiece } from "@/lib/adt";
 import { filesBackend } from "@/lib/data/files";
 import { getSessionSequence, updateMetadata } from "@/lib/data/files";
+import { COURSE_ID } from "@/lib/env";
 import { showExecutionTime } from "@/lib/utils";
 
 const updateSessionChildren = async (session: ContentPiece) => {
@@ -30,7 +31,7 @@ const updateSession = async (session: ContentPiece, index: number) => {
 };
 
 showExecutionTime(async () => {
-  const sessions = await getSessionSequence(process.env.COURSE_ID!);
+  const sessions = await getSessionSequence(COURSE_ID);
   for (let i = 0; i < sessions.length; i++) {
     const session = sessions[i];
     await updateSession(session, i + 1);

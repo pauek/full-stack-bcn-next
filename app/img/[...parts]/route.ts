@@ -1,5 +1,6 @@
 import data from "@/lib/data";
 import { cachedGetPiece, cachedGetPieceImageList } from "@/lib/data/cached";
+import { COURSE_ID } from "@/lib/env";
 import { mimeTypes } from "@/lib/mime-types";
 import { showExecutionTime } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -35,7 +36,7 @@ export async function generateStaticParams() {
   let paths: string[][] = [];
 
   await showExecutionTime(async () => {
-    paths = await data.getAllAttachmentPaths([process.env.COURSE_ID!], "image");
+    paths = await data.getAllAttachmentPaths([COURSE_ID], "image");
   }, "images");
 
   return paths.map((path) => ({ parts: path }));

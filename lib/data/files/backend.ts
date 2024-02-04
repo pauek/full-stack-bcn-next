@@ -4,6 +4,7 @@ import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
 import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
+import { COURSE_SUBDIR } from "@/lib/env";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -29,7 +30,7 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const [id, ...rest] = idpath;
-  let piece = await utils.readPieceAtSubdir(process.env.COURSE_SUBDIR!, []);
+  let piece = await utils.readPieceAtSubdir(COURSE_SUBDIR, []);
   // Confirm that the root course has the same ID
   if (id != piece.id) {
     throw Error(`The 'id' of the course doesn't match ("${id}" vs "${piece.id})"`);
@@ -111,13 +112,13 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 };
 
 export const getPieceSlideList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.diskpath, "slides", "slide");
+  utils.listPieceSubdir(piece.diskpath, "slide");
 
 export const getPieceImageList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.diskpath, "images", "image");
+  utils.listPieceSubdir(piece.diskpath, "image");
 
 export const getPieceAttachmentList = async (piece: ContentPiece, filetype: FileTypeEnum) =>
-  utils.listPieceSubdir(piece.diskpath, "attachments", filetype);
+  utils.listPieceSubdir(piece.diskpath, filetype);
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const coverFilename = await utils.findCoverImageFilename(piece);
@@ -174,7 +175,7 @@ export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: File
   await __walkFiles(rootIdpath, async (piece) => {
     const attachments = await getPieceAttachmentList(piece, filetype);
     for (const file of attachments) {
-      result.push([...piece.idpath, file.name]);
+      result.push([...piece.idpath, file.filename]);
     }
   });
   return result;

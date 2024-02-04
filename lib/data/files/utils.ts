@@ -7,6 +7,7 @@ import { basename, extname, join } from "path";
 import { hashFile } from "../hashing";
 import { readStoredHashOrThrow } from "./hashes";
 import { readMetadata } from "./metadata";
+import { FileReference } from "../data-backend";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -73,19 +74,18 @@ export const findCoverImageFilename = async ({ diskpath }: ContentPiece) => {
 
 export const listPieceSubdir = async (
   diskpath: string,
-  subdir: string,
   filetype: FileTypeEnum
-): Promise<Array<{ name: string; hash: string }>> => {
+): Promise<Array<FileReference>> => {
   try {
-    const dirpath = join(diskpath, subdir);
-    const files: { name: string; hash: string }[] = [];
-    for (const ent of await readDirWithFileTypes(dirpath)) {
-      const { predicate } = fileTypeInfo[filetype];
-      if (predicate(ent)) {
-        files.push({ name: ent.name, hash: await hashFile(join(dirpath, ent.name)) });
+    const typeInfo = fileTypeInfo[filetype];
+    const abspath = join(diskpath, typeInfo.subdir);
+    const files: FileReference[] = [];
+    for (const ent of await readDirWithFileTypes(abspath)) {
+      if (typeInfo.predicate(ent)) {
+        files.push({ filename: ent.name, hash: await hashFile(join(abspath, ent.name)) });
       }
     }
-    files.sort((a, b) => a.name.localeCompare(b.name));
+    files.sort((a, b) => a.filename.localeCompare(b.filename));
     return files;
   } catch (e) {
     return [];

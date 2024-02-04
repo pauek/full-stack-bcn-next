@@ -1,15 +1,16 @@
 import { ContentPiece } from "@/lib/adt";
-import { coverUrl, pieceUrl } from "@/lib/urls";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import Image from "next/image";
 import data from "@/lib/data";
+import { FileReference } from "@/lib/data/data-backend";
+import { attachmentUrl, pieceUrl } from "@/lib/urls";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
 type _Props = {
   session: ContentPiece;
 };
 export default async function SessionCard({ session }: _Props) {
-  const showCover = await data.pieceHasCover(session);
+  const [cover] = await data.getPieceAttachmentList(session, "cover");
   const { idpath, name, metadata } = session;
   const { index } = metadata;
   return (
@@ -22,7 +23,7 @@ export default async function SessionCard({ session }: _Props) {
           "bg-muted border rounded-md shadow shadow-foreground-50 m-1 overflow-clip"
         )}
       >
-        <_Image visible={showCover} src={coverUrl(idpath)} />
+        <_Image fileref={cover} />
         <_Label name={name} />
         <_Index index={index} />
       </div>
@@ -30,9 +31,9 @@ export default async function SessionCard({ session }: _Props) {
   );
 }
 
-const _Image = ({ visible: visible, src }: { visible: boolean; src: string }) => (
+const _Image = ({ fileref }: { fileref: FileReference | undefined }) => (
   <div className="flex-1 relative">
-    {visible && <Image className="object-cover" src={src} alt="card cover" fill={true} />}
+    {fileref && <Image className="object-cover" src={attachmentUrl(fileref)} alt="card cover" fill={true} />}
   </div>
 );
 

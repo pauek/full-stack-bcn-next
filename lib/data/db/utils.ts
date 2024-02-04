@@ -24,7 +24,11 @@ export const getPieceFilesByFiletype = async (
 ) => {
   // find file starting with cover associated with piece
   const result = await db
-    .select({ name: schema.attachments.filename, hash: schema.files.hash })
+    .select({
+      hash: schema.files.hash,
+      filename: schema.attachments.filename,
+      filetype: schema.attachments.filetype,
+    })
     .from(schema.pieces)
     .innerJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.pieceHash))
     .innerJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
@@ -50,4 +54,4 @@ export const getFileData = async (fileHash: string) => {
 export const pieceHasFiletype = async (
   pieceHash: string,
   filetype: FileTypeEnum
-): Promise<boolean> => getPieceFilesByFiletype(pieceHash, filetype) !== null;
+): Promise<boolean> => (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0;

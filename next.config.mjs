@@ -1,4 +1,5 @@
 import mdx from "@next/mdx";
+import chalk from "chalk";
 import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } from "next/constants.js";
 
 const withMDX = mdx({});
@@ -18,21 +19,25 @@ const nextConfig = {
         hostname: "localhost",
         port: "3333",
       },
+      {
+        protocol: "https",
+        hostname: `${process.env.R2_PUBLIC_URL}/**`,
+      },
     ],
   },
   poweredByHeader: false,
-  staticPageGenerationTimeout: 600,
 };
 
 export default async (phase, { defaultConfig }) => {
   const config = { ...nextConfig };
   const { DATABASE_URL: dbUrl } = process.env;
+  const location = dbUrl === "files" ? chalk.green("<< FILES >>") : new URL(dbUrl).hostname;
   switch (phase) {
-    case PHASE_DEVELOPMENT_SERVER: 
-      console.info(`--> Dev server [${dbUrl}] <--`);
+    case PHASE_DEVELOPMENT_SERVER:
+      console.info(`--> Dev server [${location}] <--`);
       break;
     case PHASE_PRODUCTION_BUILD:
-      console.info(`--> Production build [${dbUrl}] <--`);
+      console.info(`--> Production build [${location}] <--`);
       break;
   }
   return withMDX(config);

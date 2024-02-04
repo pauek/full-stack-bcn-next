@@ -1,10 +1,9 @@
 import Part from "@/components/Part";
 import data from "@/lib/data";
-import { delay } from "@/lib/utils";
+import { COURSE_ID } from "@/lib/env";
 import { notFound } from "next/navigation";
-import Loading from "./loading";
 
-const courseId = process.env.COURSE_ID!;
+const courseId = COURSE_ID;
 
 export default async function Home() {
   const course = await data.getContentTree([courseId], { level: 2 });

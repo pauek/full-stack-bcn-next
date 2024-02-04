@@ -4,10 +4,11 @@ import Image from "next/image";
 import SlideViewer from "./SlideViewer";
 import { useState } from "react";
 import { slideUrl } from "@/lib/urls";
+import { FileReference } from "@/lib/data/data-backend";
 
 type Props = {
   idpath: string[];
-  slides: Array<{ name: string; hash: string }>;
+  slides: Array<FileReference>;
 };
 export default function SlideGrid({ idpath, slides }: Props) {
   const [currentSlide, setCurrentSlide] = useState<number>(-1);
@@ -29,7 +30,7 @@ export default function SlideGrid({ idpath, slides }: Props) {
     <>
       {currentSlide >= 0 && (
         <SlideViewer
-          slide={slideUrl(idpath, slides[currentSlide].name)}
+          slide={slideUrl(idpath, slides[currentSlide].filename)}
           onClose={closeSlideViewer}
           onNext={nextSlide}
           onPrev={prevSlide}
@@ -47,7 +48,7 @@ export default function SlideGrid({ idpath, slides }: Props) {
               <Image
                 key={s.hash}
                 className="border-2 rounded shadow-md hover:border-stone-400"
-                src={slideUrl(idpath, s.name)}
+                src={slideUrl(idpath, s.filename)}
                 alt="Slide"
                 width={400}
                 height={300}

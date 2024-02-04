@@ -15,7 +15,7 @@ showExecutionTime(async () => {
     for (const filetype of ["doc", "cover", "image", "slide"]) {
       const files = await getPieceFilesByFiletype(piece.hash, filetype as FileTypeEnum);
       for (const file of files || []) {
-        console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.name}`));
+        console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.filename}`));
       }
     }
   });
