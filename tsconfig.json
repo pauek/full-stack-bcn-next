@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "bun-types"
+    "bun-types",
+    "lib/env.mjs"
   ],
   "exclude": ["node_modules"]
 }

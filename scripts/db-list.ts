@@ -6,7 +6,8 @@ import { showExecutionTime } from "@/lib/utils";
 import chalk from "chalk";
 
 showExecutionTime(async () => {
-  console.log(chalk.gray(`[${dbBackend.getInfo()}]`));
+  const info = dbBackend.getInfo();
+  console.log(chalk.gray(`[${info}]`));
   
   const root = await getRoot(dbBackend);
 

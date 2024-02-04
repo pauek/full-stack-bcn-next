@@ -9,7 +9,7 @@ export * from "./utils";
 
 export const backend: DataBackendBase = {
   getInfo: () => {
-    return "Using local files as backend";
+    return "<< FILES >>";
   },
   ..._backend,
 };

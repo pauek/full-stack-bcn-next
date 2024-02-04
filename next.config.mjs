@@ -1,6 +1,8 @@
-const mdx = require("@next/mdx");
-const { yellow } = require("colorette");
-const { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD } = require("next/constants.js");
+import mdx from "@next/mdx";
+import chalk from "chalk";
+import { PHASE_PRODUCTION_BUILD, PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
+
+import { env } from "./lib/env.mjs"; // <--- IMPORTANT: Validate variable at build time
 
 const withMDX = mdx({});
 
@@ -16,7 +18,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: process.env.R2_PUBLIC_HOSTNAME,
+        hostname: env.R2_PUBLIC_HOSTNAME,
         port: "",
         pathname: "/**",
       },
@@ -25,27 +27,27 @@ const nextConfig = {
   poweredByHeader: false,
 };
 
-module.exports = async (phase, { defaultConfig }) => {
+export default async (phase, { defaultConfig }) => {
   const config = { ...nextConfig };
-  const DB_URL = process.env.DB_URL || "files";
+  const dbUrl = env.DB_URL || "files";
 
   let backend;
-  switch (DB_URL) {
+  switch (dbUrl) {
     case "files":
       backend = "<< FILES >>";
       break;
     default: {
-      const { hostname } = new URL(DB_URL);
+      const { hostname } = new URL(dbUrl);
       backend = `DB: ${hostname}`;
     }
   }
 
   switch (phase) {
     case PHASE_DEVELOPMENT_SERVER:
-      console.info(`--> Dev server [${yellow(backend)}]`);
+      console.info(`--> Dev server [${chalk.yellow(backend)}]`);
       break;
     case PHASE_PRODUCTION_BUILD:
-      console.info(`--> Production build [${yellow(backend)}]`);
+      console.info(`--> Production build [${chalk.yellow(backend)}]`);
       break;
   }
 

@@ -1,4 +1,6 @@
 import ChapterPageBody from "@/components/ChapterPageBody";
+import { env } from "@/lib/env.mjs";
+import data from "@/lib/data";
 
 type _Props = {
   params: {
@@ -23,14 +25,13 @@ export default async function Page({ params }: _Props) {
   );
 }
 
-// export async function generateStaticParams() {
-//   console.log("chapter::generateStaticParams");
-//   const course = await data.getPiece([process.env.COURSE_ID!]);
-//   if (!course) {
-//     return [];
-//   }
-//   const idpaths = await data.getAllIdpaths(course.idpath);
-//   return idpaths
-//     .filter((path) => path.length === 4)
-//     .map(([course, part, session, chapter]) => ({ course, part, session, chapter }));
-// }
+export async function generateStaticParams() {
+  const course = await data.getPiece([env.COURSE_ID]);
+  if (!course) {
+    return [];
+  }
+  const idpaths = await data.getAllIdpaths(course.idpath);
+  return idpaths
+    .filter((path) => path.length === 4)
+    .map(([course, part, session, chapter]) => ({ course, part, session, chapter }));
+}

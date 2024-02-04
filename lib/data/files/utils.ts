@@ -1,6 +1,5 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
-import { CONTENT_ROOT } from "@/lib/env.local";
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
 import { basename, extname, join } from "path";
@@ -8,6 +7,7 @@ import { hashFile } from "../hashing";
 import { readStoredHashOrThrow } from "./hashes";
 import { readMetadata } from "./metadata";
 import { FileReference } from "../data-backend";
+import { env } from "@/lib/env.mjs";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -98,7 +98,7 @@ export const readPieceAtSubdir = async (
 ): Promise<ContentPiece> => {
   const dirname = basename(subdir);
   const name = dirNameToTitle(dirname);
-  const diskpath = join(CONTENT_ROOT, subdir);
+  const diskpath = join(env.CONTENT_ROOT, subdir);
   const metadata = await readMetadata(diskpath);
   const hash = await readStoredHashOrThrow(diskpath);
   const { id } = metadata;

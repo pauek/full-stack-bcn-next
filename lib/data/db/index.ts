@@ -1,4 +1,4 @@
-
+import { env } from "@/lib/env.mjs";
 import { commonBackend } from "../common";
 import { DataBackend, DataBackendBase } from "../data-backend";
 import * as _backend from "./backend";
@@ -8,15 +8,17 @@ export * from "./db";
 export * from "./insert";
 export * from "./utils";
 
+const extractHost = (url: string) => {
+  const match = url.match(/^postgresql:\/\/([^:]+):([^@]+)\@([^\/]+)(\/.*)$/);
+  if (!match) {
+    return "";
+  }
+  const [_0, _1, _2, host, _3] = match;
+  return host;
+};
+
 export const backend: DataBackendBase = {
-  getInfo: () => {
-    const match = process.env.DB_URL!.match(/^postgresql:\/\/([^:]+):([^@]+)\@([^\/]+)(\/.*)$/);
-    if (!match) {
-      return `Database ${process.env.DB_URL!}`;
-    }
-    const [_, _username, _password, host, _database] = match;
-    return `DB: ${host}`;
-  },
+  getInfo: () => `DB: ${extractHost(env.DB_URL)}`,
   ..._backend,
 };
 

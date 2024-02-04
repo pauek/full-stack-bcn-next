@@ -4,7 +4,7 @@ import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
 import { FileBuffer, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
-import { COURSE_SUBDIR } from "@/lib/env.local";
+import { env } from "@/lib/env.mjs";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -30,7 +30,7 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const [id, ...rest] = idpath;
-  let piece = await utils.readPieceAtSubdir(COURSE_SUBDIR, []);
+  let piece = await utils.readPieceAtSubdir(env.COURSE_SUBDIR, []);
   // Confirm that the root course has the same ID
   if (id != piece.id) {
     throw Error(`The 'id' of the course doesn't match ("${id}" vs "${piece.id})"`);
@@ -170,7 +170,10 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
   return result;
 };
 
-export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: FileTypeEnum): Promise<string[][]> => {
+export const getAllAttachmentPaths = async (
+  rootIdpath: string[],
+  filetype: FileTypeEnum
+): Promise<string[][]> => {
   const result: string[][] = [];
   await __walkFiles(rootIdpath, async (piece) => {
     const attachments = await getPieceAttachmentList(piece, filetype);
@@ -179,4 +182,4 @@ export const getAllAttachmentPaths = async (rootIdpath: string[], filetype: File
     }
   });
   return result;
-}
+};

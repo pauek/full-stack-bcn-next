@@ -1,9 +1,9 @@
-import { CONTENT_ROOT } from "@/lib/env.local";
+import { env } from "@/lib/env.mjs";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 
 const HASH_FILE = ".hash";
-export const HASH_MAP_FILE = join(CONTENT_ROOT, "./hashes.json");
+export const HASH_MAP_FILE = join(env.CONTENT_ROOT, "./hashes.json");
 
 export const readStoredHash = async (diskpath: string): Promise<string | null> => {
   try {

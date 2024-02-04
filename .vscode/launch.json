@@ -25,10 +25,10 @@
       }
     },
     {
-      "name": "Next.js: debug hashes",
+      "name": "Next.js: debug build",
       "type": "node-terminal",
       "request": "launch",
-      "command": "bun run scripts/compute-hashes.ts"
+      "command": "bun files:build"
     }
   ]
 }

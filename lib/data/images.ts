@@ -7,14 +7,15 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { readFile } from "fs/promises";
 import { extname, join } from "path";
 import { mimeTypes } from "../mime-types";
+import { env } from "@/lib/env.mjs";
 
 const s3 = new S3Client({
-  region: process.env.R2_REGION!,
+  region: env.R2_REGION,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    accessKeyId: env.R2_ACCESS_KEY_ID,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
   },
-  endpoint: process.env.R2_ENDPOINT!,
+  endpoint: env.R2_ENDPOINT,
 });
 
 const uploadImage = async (dirpath: string, filename: string, filetype: FileTypeEnum) => {
@@ -48,7 +49,7 @@ export const uploadAllFilesOfType = async (
   filetype: FileTypeEnum,
   parallelRequests: number = 50
 ) => {
-  const imagePaths = await data.getAllAttachmentPaths([process.env.COURSE_ID!], filetype);
+  const imagePaths = await data.getAllAttachmentPaths([env.COURSE_ID], filetype);
 
   const _uploadOne = async (index: number) => {
     const path = imagePaths[index];

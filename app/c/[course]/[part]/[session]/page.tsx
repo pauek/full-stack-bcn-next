@@ -1,4 +1,6 @@
 import SessionPageBody from "@/components/SessionPageBody";
+import { env } from "@/lib/env.mjs";
+import data from "@/lib/data";
 
 type _Props = {
   params: {
@@ -14,14 +16,13 @@ export default async function Page({ params }: _Props) {
   return <SessionPageBody idpath={idpath} />;
 }
 
-// export async function generateStaticParams() {
-//   console.log("session::generateStaticParams")
-//   const course = await data.getPiece([process.env.COURSE_ID!]);
-//   if (!course) {
-//     return [];
-//   }
-//   const idpaths = await data.getAllIdpaths(course.idpath);
-//   return idpaths
-//     .filter((path) => path.length === 3)
-//     .map(([course, part, session]) => ({ course, part, session }));
-// }
+export async function generateStaticParams() {
+  const course = await data.getPiece([env.COURSE_ID]);
+  if (!course) {
+    return [];
+  }
+  const idpaths = await data.getAllIdpaths(course.idpath);
+  return idpaths
+    .filter((path) => path.length === 3)
+    .map(([course, part, session]) => ({ course, part, session }));
+}
