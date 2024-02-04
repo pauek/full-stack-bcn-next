@@ -1,18 +1,17 @@
 import "@/lib/env.mjs";
 
+import { closeConnection, dbBackend } from "@/lib/data/db";
 import { filesBackend } from "@/lib/data/files";
+import { getRoot } from "@/lib/data/root";
+import { showExecutionTime } from "@/lib/utils";
+import chalk from "chalk";
 import {
-  closeConnection,
-  dbBackend,
   insertFiles,
   insertPiece,
   insertPieceHashmap,
   pieceExists,
   pieceSetParent,
-} from "@/lib/data/db";
-import { getRoot } from "@/lib/data/root";
-import { showExecutionTime } from "@/lib/utils";
-import chalk from "chalk";
+} from "@/lib/data/db/insert";
 
 showExecutionTime(async () => {
   const forcedUpload = process.argv.includes("--force");
@@ -38,7 +37,6 @@ showExecutionTime(async () => {
     }
     return piece;
   });
-
 
   await closeConnection();
 });

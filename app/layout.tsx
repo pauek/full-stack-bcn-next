@@ -6,7 +6,9 @@ import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import "@highlightjs/cdn-assets/styles/a11y-light.min.css";
 import "./globals.css";
+import data from "@/lib/data";
 import { env } from "@/lib/env.mjs";
+import { notFound } from "next/navigation";
 
 export const metadata = {
   title: "Full-stack Web Technologies",
@@ -15,21 +17,18 @@ export const metadata = {
 
 type Props = {
   children: React.ReactNode;
-  params: {
-    idpath: string[];
-  };
 };
-export default function RootLayout({ children, params }: Props) {
-  let { idpath } = params;
-  if (idpath === undefined) {
-    idpath = [env.COURSE_ID];
+export default async function RootLayout({ children }: Props) {
+  const course = await data.getPiece([env.COURSE_ID]);
+  if (!course) {
+    notFound();
   }
   return (
     <DarkModeAwareRoot lang="en">
       <head></head>
       <body className={cn(inter.className, "h-screen flex flex-col")}>
         <div className="w-full h-full pt-12">
-          <Header idpath={idpath} />
+          <Header course={course} />
           <main className="min-h-full flex flex-col items-center">
             {children}
             <div className="flex-1"></div>

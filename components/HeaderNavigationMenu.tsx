@@ -28,7 +28,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
         <NavigationMenuList className="pl-0">
           {crumbs.map((crumb, i) => (
             <React.Fragment key={crumb.idpath.join(":")}>
-              {i > 0 && <BreadCrumbsSlash className="ml-10 mr-10" />}
+              {i > 0 && <BreadCrumbsSlash />}
               {crumb.siblings && crumb.siblings.length === 1 && (
                 <Link
                   href={pieceUrl(crumb.idpath)}
@@ -51,8 +51,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                   <NavigationMenuContent>
                     <ul className="flex flex-col gap-0 w-[20em] list-none p-1 py-2 pr-3 m-0">
                       {crumb.siblings.map((sib, i) => {
-                        const isCurrent =
-                          sib.idpath.join("/") === crumb.idpath.join("/");
+                        const isCurrent = sib.idpath.join("/") === crumb.idpath.join("/");
                         return (
                           <NavigationMenuLink key={sib.idpath.join(":")} asChild>
                             <li>
@@ -64,13 +63,11 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                                     "no-underline outline-none transition-colors " +
                                     "hover:bg-accent hover:text-accent-foreground " +
                                     "focus:bg-accent focus:text-accent-foreground",
-                                  isCurrent ? "bg-accent" : "",
+                                  isCurrent ? "bg-accent" : ""
                                 )}
                               >
                                 {sib.name}
-                                {isCurrent && (
-                                  <CheckMark className="ml-2" size={20} />
-                                )}
+                                {isCurrent && <CheckMark className="ml-2" size={20} />}
                               </Link>
                             </li>
                           </NavigationMenuLink>

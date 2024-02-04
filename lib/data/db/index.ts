@@ -5,7 +5,6 @@ import * as _backend from "./backend";
 
 export * from "./backend";
 export * from "./db";
-export * from "./insert";
 export * from "./utils";
 
 const extractHost = (url: string) => {

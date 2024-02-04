@@ -1,16 +1,32 @@
-import data from "@/lib/data";
+"use client";
+
 import Link from "next/link";
+import { useSelectedLayoutSegments } from "next/navigation";
+import DarkModeSwitch from "./DarkModeSwitch";
 import { HeaderNavigationMenu } from "./HeaderNavigationMenu";
 import MobileMenu from "./MobileMenu";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
-import DarkModeSwitch from "./DarkModeSwitch";
+import { useEffect, useState } from "react";
+import { ContentPiece } from "@/lib/adt";
+import type { CrumbData } from "@/lib/data/data-backend";
+import { backend as data } from "@/lib/data/db";
+import { getBreadcrumbData } from "@/lib/data/common";
 
-export default async function Header({ idpath }: { idpath: string[] }) {
-  const course = await data.getPieceWithChildren(idpath.slice(0, 1));
-  if (course === null) {
-    throw `Course with path ${idpath[0]} not found`;
-  }
-  const [part, ...crumbs] = await data.getBreadcrumbData(...idpath);
+export default function Header({ course }: { course: ContentPiece }) {
+  const [_c, _courseId, part, session, chapter] = useSelectedLayoutSegments();
+  const [partCrumb, setPart] = useState<CrumbData | undefined>();
+  const [crumbs, setCrumbs] = useState<CrumbData[]>([]);
+
+  useEffect(() => {
+    const idpath = [course.id, part, session, chapter].filter(Boolean);
+    console.log("Idpath", { idpath });
+    getBreadcrumbData.call(data, ...idpath).then(([part, ...rest]) => {
+      setPart(part);
+      setCrumbs(rest);
+    });
+  }, [course.id, part, session, chapter]);
+  
+
   return (
     <header
       className={
@@ -25,7 +41,7 @@ export default async function Header({ idpath }: { idpath: string[] }) {
         <div className="md:flex flex-row items-center hidden">
           <BreadCrumbsSlash className="ml-5 mr-5" />
           <div className="font-medium text-sm text-stone-400 mx-1">
-            {part.name}
+            {partCrumb?.name}
           </div>
         </div>
       )}
