@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
-const { NODE_ENV, DATABASE_URL } = process.env;
+const { NODE_ENV, DB_URL } = process.env;
 
-console.log(`Database: ${NODE_ENV}\n[${DATABASE_URL}]`);
+console.log(`Database: ${NODE_ENV}\n[${process.env.DB_URL!}]`);
 
-execSync(`psql ${DATABASE_URL}`, { stdio: "inherit" });
+execSync(`psql ${process.env.DB_URL!}`, { stdio: "inherit" });

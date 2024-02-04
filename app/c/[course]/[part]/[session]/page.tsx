@@ -1,8 +1,4 @@
 import SessionPageBody from "@/components/SessionPageBody";
-import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
-import Loading from "./loading";
-import { delay, showExecutionTime } from "@/lib/utils";
-import { COURSE_ID } from "@/lib/env";
 
 type _Props = {
   params: {
@@ -13,24 +9,19 @@ type _Props = {
 };
 
 export default async function Page({ params }: _Props) {
-  await delay(1000);
   const { course, part, session } = params;
   const idpath = [course, part, session];
   return <SessionPageBody idpath={idpath} />;
 }
 
-export async function generateStaticParams() {
-  let idpaths: string[][] = [];
-
-  await showExecutionTime(async () => {
-    const course = await cachedGetPiece([COURSE_ID]);
-    if (!course) {
-      return [];
-    }
-    idpaths = await cachedGetAllIdpaths(course);
-  }, "sessions");
-
-  return idpaths
-    .filter((path) => path.length === 3)
-    .map(([course, part, session]) => ({ course, part, session }));
-}
+// export async function generateStaticParams() {
+//   console.log("session::generateStaticParams")
+//   const course = await data.getPiece([process.env.COURSE_ID!]);
+//   if (!course) {
+//     return [];
+//   }
+//   const idpaths = await data.getAllIdpaths(course.idpath);
+//   return idpaths
+//     .filter((path) => path.length === 3)
+//     .map(([course, part, session]) => ({ course, part, session }));
+// }

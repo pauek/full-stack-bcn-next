@@ -2,26 +2,19 @@ import { FileTypeEnum } from "@/data/schema";
 import data from "@/lib/data";
 import { fileTypeInfo } from "@/lib/data/files";
 import { hashAny } from "@/lib/data/hashing";
-import {
-  COURSE_ID,
-  R2_ACCESS_KEY_ID,
-  R2_BUCKET,
-  R2_ENDPOINT,
-  R2_REGION,
-  R2_SECRET_ACCESS_KEY,
-} from "@/lib/env";
+
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { readFile } from "fs/promises";
 import { extname, join } from "path";
 import { mimeTypes } from "../mime-types";
 
 const s3 = new S3Client({
-  region: R2_REGION,
+  region: process.env.R2_REGION!,
   credentials: {
-    accessKeyId: R2_ACCESS_KEY_ID,
-    secretAccessKey: R2_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
   },
-  endpoint: R2_ENDPOINT,
+  endpoint: process.env.R2_ENDPOINT!,
 });
 
 const uploadImage = async (dirpath: string, filename: string, filetype: FileTypeEnum) => {
@@ -34,7 +27,7 @@ const uploadImage = async (dirpath: string, filename: string, filetype: FileType
     const imageKey = `${hash}${ext}`;
 
     const command = new PutObjectCommand({
-      Bucket: R2_BUCKET,
+      Bucket: process.env.R2_BUCKET,
       Key: imageKey,
       Body: content,
       ACL: "public-read",
@@ -55,7 +48,7 @@ export const uploadAllFilesOfType = async (
   filetype: FileTypeEnum,
   parallelRequests: number = 50
 ) => {
-  const imagePaths = await data.getAllAttachmentPaths([COURSE_ID], filetype);
+  const imagePaths = await data.getAllAttachmentPaths([process.env.COURSE_ID!], filetype);
 
   const _uploadOne = async (index: number) => {
     const path = imagePaths[index];

@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1706952265854,
-      "tag": "0000_bouncy_nightmare",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1706956197064,
-      "tag": "0001_nervous_greymalkin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1706956280232,
-      "tag": "0002_strange_menace",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1706958561762,
-      "tag": "0003_thick_bruce_banner",
+      "when": 1707061279057,
+      "tag": "0000_perfect_lethal_legion",
       "breakpoints": true
     }
   ]

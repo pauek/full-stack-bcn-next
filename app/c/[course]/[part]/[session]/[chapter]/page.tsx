@@ -1,7 +1,4 @@
 import ChapterPageBody from "@/components/ChapterPageBody";
-import { cachedGetAllIdpaths, cachedGetPiece } from "@/lib/data/cached";
-import { COURSE_ID } from "@/lib/env";
-import { showExecutionTime } from "@/lib/utils";
 
 type _Props = {
   params: {
@@ -14,8 +11,6 @@ type _Props = {
 
 export default async function Page({ params }: _Props) {
   const { course, part, session, chapter } = params;
-  const idpath = [course, part, session, chapter];
-
   return (
     <>
       {/* <div className="absolute top-[2.2em] left-0 right-0 bottom-0 z-50">
@@ -23,21 +18,19 @@ export default async function Page({ params }: _Props) {
           <Loading />
         </div>
       </div> */}
-      <ChapterPageBody idpath={idpath} />
+      <ChapterPageBody idpath={[course, part, session, chapter]} />
     </>
   );
 }
 
-export async function generateStaticParams() {
-  let idpaths: string[][] = [];
-
-  await showExecutionTime(async () => {
-    const course = await cachedGetPiece([COURSE_ID]);
-    if (!course) {
-      return [];
-    }
-    idpaths = await cachedGetAllIdpaths(course);
-  }, "chapters");
-
-  return idpaths.map(([course, part, session, chapter]) => ({ course, part, session, chapter }));
-}
+// export async function generateStaticParams() {
+//   console.log("chapter::generateStaticParams");
+//   const course = await data.getPiece([process.env.COURSE_ID!]);
+//   if (!course) {
+//     return [];
+//   }
+//   const idpaths = await data.getAllIdpaths(course.idpath);
+//   return idpaths
+//     .filter((path) => path.length === 4)
+//     .map(([course, part, session, chapter]) => ({ course, part, session, chapter }));
+// }

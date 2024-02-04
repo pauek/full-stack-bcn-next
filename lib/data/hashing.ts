@@ -114,10 +114,10 @@ export const hashAllContent = async function (backend: DataBackend, root: Conten
   const hashes: Map<string, HashMapInfo> = new Map();
 
   await backend.walkContentPieces(root, async (piece, children) => {
-    const { hash, filename: name } = await hashPiece(backend, piece, children);
+    const { hash, filename } = await hashPiece(backend, piece, children);
     const idjpath = piece.idpath.join("/");
     hashes.set(idjpath, { hash, idjpath, diskpath: piece.diskpath });
-    return { hash, name };
+    return { hash, filename };
   });
 
   return hashes;

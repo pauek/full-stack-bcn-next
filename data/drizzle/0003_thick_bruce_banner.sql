@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS "hash_idx" ON "hashmap" ("piece_hash");

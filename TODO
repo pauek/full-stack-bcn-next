@@ -1,6 +1,9 @@
 [X] Dark mode!
 [X] Dangling documents.
+[X] Independizar los hashes del backend
 
-[ ] Independizar los hashes del backend
-[ ] Upload changes (diff de Merkle trees).
+[ ] Pasar todos los ficheros a R2, y sólo tener "attachments" en la base de datos.
+    Ahora mismo los ficheros estan duplicados
+
+[ ] Conseguir hacer upload de los cambios (diff Merkle trees).
 [ ] Implementar login con Authjs

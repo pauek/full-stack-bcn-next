@@ -1,7 +1,7 @@
 import DarkModeAwareRoot from "@/components/DarkModeAwareBody";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { COURSE_ID } from "@/lib/env";
+
 import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import "@highlightjs/cdn-assets/styles/a11y-light.min.css";
@@ -21,7 +21,7 @@ type Props = {
 export default function RootLayout({ children, params }: Props) {
   let { idpath } = params;
   if (idpath === undefined) {
-    idpath = [COURSE_ID];
+    idpath = [process.env.COURSE_ID!];
   }
   return (
     <DarkModeAwareRoot lang="en">

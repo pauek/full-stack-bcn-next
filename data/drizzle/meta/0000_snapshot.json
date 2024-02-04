@@ -1,5 +1,5 @@
 {
-  "id": "6b1f4b25-8179-4215-81e4-6fe011de010b",
+  "id": "d77a7292-088d-4501-a284-97b844af42a8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -96,25 +96,47 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "idjpaths": {
-      "name": "idjpaths",
+    "hashmap": {
+      "name": "hashmap",
       "schema": "",
       "columns": {
         "idjpath": {
           "name": "idjpath",
-          "type": "jsonb",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
-        "hash": {
-          "name": "hash",
+        "piece_hash": {
+          "name": "piece_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
+      "indexes": {
+        "hash_idx": {
+          "name": "hash_idx",
+          "columns": [
+            "piece_hash"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "hashmap_piece_hash_pieces_piece_hash_fk": {
+          "name": "hashmap_piece_hash_pieces_piece_hash_fk",
+          "tableFrom": "hashmap",
+          "tableTo": "pieces",
+          "columnsFrom": [
+            "piece_hash"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
