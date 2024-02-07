@@ -49,15 +49,15 @@ export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
 
 // FIXME: How to get values from the pgEnum definition??
 export type FileTypeEnum = "doc" | "image" | "slide" | "cover" | "exercise" | "other";
-
-export const fileTypeEnum = pgEnum("filetype", [
+export const fileTypeEnumValues: [FileTypeEnum, ...FileTypeEnum[]] = [
   "doc",
   "image",
   "slide",
   "cover",
   "exercise",
   "other",
-]);
+];
+export const fileTypeEnum = pgEnum("filetype", fileTypeEnumValues);
 
 // Files
 
