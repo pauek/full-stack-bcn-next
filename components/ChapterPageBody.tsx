@@ -2,7 +2,7 @@ import data from "@/lib/data";
 import { notFound } from "next/navigation";
 import ChapterContent from "./ChapterContent";
 import ChapterDocument from "./ChapterDocument";
-import SlideGrid from "./ChapterSlideGrid";
+import SlideGrid from "./SlideGrid";
 import { attachmentUrl } from "@/lib/urls";
 
 export default async function ChapterPageBody({ idpath }: { idpath: string[] }) {

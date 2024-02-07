@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="w-full sm:w-[36em]">
+    <div className="w-full sm:w-[36em] m-auto">
       <PartSkeleton numCards={1} />
       <PartSkeleton numCards={3} />
       <PartSkeleton numCards={7} />

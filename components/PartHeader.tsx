@@ -6,7 +6,7 @@ export default function PartHeader({ name }: { name: string }) {
   return (
     <h4
       className={cn(
-        "text-stone-400 mb-2 text-center uppercase font-semibold",
+        "w-full text-stone-400 mb-2 text-center uppercase font-semibold",
         "flex flex-row justify-center items-center gap-3 px-2"
       )}
     >

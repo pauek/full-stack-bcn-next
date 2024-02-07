@@ -11,8 +11,10 @@ export default async function Home() {
   }
   const { children } = course;
   return (
-    <div className="w-full sm:w-[36em]">
-      {children && children.map((part) => <Part key={part.hash} part={part} />)}
+    <div className="m-auto max-w-[38em]">
+      <div className="w-full sm:w-[38em]">
+        {children && children.map((part) => <Part key={part.hash} part={part} />)}
+      </div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default async function Part({ part }: CoursePartProps) {
     return <></>;
   }
   return (
-    <div id={part.id} className="pt-3 pb-5">
+    <div id={part.id} className="w-full pt-3 pb-5">
       <PartHeader name={part.name} />
       {computeRows(children).map((row, index) => (
         <div key={index} className="flex flex-row justify-center items-center px-2">

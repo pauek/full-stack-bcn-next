@@ -1,10 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import SlideViewer from "./SlideViewer";
 import { useState } from "react";
-import { attachmentUrl } from "@/lib/urls";
-import { FileReference } from "@/lib/data/data-backend";
+import SlideViewer from "./SlideViewer";
 
 type Props = {
   slides: Array<string>;
@@ -35,7 +33,7 @@ export default function SlideGrid({ slides }: Props) {
           onPrev={prevSlide}
         />
       )}
-      <div className="max-w-[54em] m-auto">
+      <div className="max-w-[54em] m-auto pb-4">
         <div
           className={
             `mx-5 grid xl:grid-cols-8 lg:grid-cols-6 ` +

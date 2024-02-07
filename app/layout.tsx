@@ -27,11 +27,10 @@ export default async function RootLayout({ children }: Props) {
     <DarkModeAwareRoot lang="en">
       <head></head>
       <body className={cn(inter.className, "h-screen flex flex-col")}>
-        <div className="w-full h-full pt-12">
+        <div className="w-full h-full pt-12 flex flex-col">
           <Header course={course} />
-          <main className="min-h-full flex flex-col items-center">
-            {children}
-            <div className="flex-1"></div>
+          <main className="min-h-full w-full flex flex-col items-center">
+            <div className="flex-1 w-full">{children}</div>
             <Footer />
           </main>
         </div>
