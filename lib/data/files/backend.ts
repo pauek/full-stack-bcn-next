@@ -145,14 +145,8 @@ export const getPieceFileData = async (
   filename: string,
   filetype: FileTypeEnum
 ): Promise<Buffer | null> => {
-  let fulldiskpath: string = "";
-  if (filetype === "image") {
-    fulldiskpath = join(piece.diskpath, "images", filename);
-  } else if (filetype === "slide") {
-    fulldiskpath = join(piece.diskpath, "slides", filename);
-  } else {
-    fulldiskpath = join(piece.diskpath, filename);
-  }
+  const fileTypeInfo = utils.fileTypeInfo[filetype];
+  const fulldiskpath = join(piece.diskpath, fileTypeInfo.subdir, filename);
   try {
     return await readFile(fulldiskpath);
   } catch (e) {
