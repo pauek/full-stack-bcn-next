@@ -11,7 +11,7 @@ export default function Loading() {
               <div className="flex flex-row gap-2 cursor-pointer">
                 {Array.from({ length: 3 }).map((_, index) => (
                   <div key={index} className="p-0">
-                    <div className="m-1 p-1 px-2 hover:bg-skeleton rounded transition-color text-sm">
+                    <div className="m-1 p-1 px-2 bg-skeleton rounded transition-color text-sm">
                       <div className="w-[5em] h-5 bg-skeleton"></div>
                     </div>
                   </div>

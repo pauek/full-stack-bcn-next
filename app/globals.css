@@ -57,7 +57,7 @@
     --primary: 60 9.1% 97.8%;
     --primary-foreground: 24 9.8% 100%;
 
-    --secondary: 12 6.5% 15.1%;
+    --secondary: 12 6.5% 7%;
     --secondary-foreground: 60 9.1% 97.8%;
 
     --accent: 12 6.5% 15.1%;
@@ -67,6 +67,8 @@
     --destructive-foreground: 0 85.7% 97.3%;
 
     --ring: 12 6.5% 15.1%;
+
+    --skeleton: 60 4.8% 14%;
   }
 
   * {
