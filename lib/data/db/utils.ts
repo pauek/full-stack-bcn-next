@@ -1,8 +1,6 @@
 import * as schema from "@/data/schema";
-import { DBPiece, FileTypeEnum } from "@/data/schema";
-import { ContentPiece } from "@/lib/adt";
-import { lastItem } from "@/lib/utils";
-import { and, eq, sql } from "drizzle-orm";
+import { FileTypeEnum } from "@/data/schema";
+import { and, eq } from "drizzle-orm";
 import { db } from "./db";
 
 // export const fromDbPiece = (idpath: string[], dbPiece: DBPiece): ContentPiece => {
