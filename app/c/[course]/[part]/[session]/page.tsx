@@ -1,7 +1,9 @@
-import SessionPageBody from "@/components/SessionPageBody";
-import { env } from "@/lib/env.mjs";
+import ChapterItem from "@/components/ChapterItem";
 import data from "@/lib/data";
+import { env } from "@/lib/env.mjs";
+import { pieceUrl } from "@/lib/urls";
 import { showExecutionTime } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 type _Props = {
   params: {
@@ -14,7 +16,26 @@ type _Props = {
 export default async function Page({ params }: _Props) {
   const { course, part, session } = params;
   const idpath = [course, part, session];
-  return <SessionPageBody idpath={idpath} />;
+  const piece = await data.getPieceWithChildren(idpath);
+  if (piece === null) {
+    return (
+      <div className="text-red-500">
+        Session with path <code>{idpath.join("/")}</code> not found
+      </div>
+    );
+  }
+
+  redirect(`${pieceUrl(idpath)}/doc`);
+
+  // return (
+  //   <div className="md:max-w-[54em] m-auto py-4 pt-4 border rounded-lg bg-background">
+  //     <div className="flex flex-col gap-4 mx-5">
+  //       {piece.children?.map((piece, index) => (
+  //         <ChapterItem key={piece.id} index={index + 1} chapter={piece} />
+  //       ))}
+  //     </div>
+  //   </div>
+  // );
 }
 
 export async function generateStaticParams() {

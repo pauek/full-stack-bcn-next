@@ -1,9 +1,8 @@
 import { ContentPiece } from "@/lib/adt";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { DataBackend, DataBackendBase } from "../data-backend";
+import { DataBackend } from "../data-backend";
 import { getPieceSlideList, pieceHasDoc } from "./backend";
-import { log } from "console";
 
 export const METADATA_FILENAME = ".meta.json";
 
