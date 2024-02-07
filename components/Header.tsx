@@ -49,11 +49,10 @@ export default function Header({ course }: { course: ContentPiece }) {
         <HeaderNavigationMenu crumbs={crumbs} />
       </div>
       <div className="flex-1 md:hidden block"></div>
+      <DarkModeSwitch />
       <div className="md:hidden flex flex-col justify-center items-center">
         <MobileMenu crumbs={crumbs} />
       </div>
-      <div className="flex-1"></div>
-      <DarkModeSwitch />
     </header>
   );
 }
