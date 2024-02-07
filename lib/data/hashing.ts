@@ -93,6 +93,14 @@ export const hashPiece = async function (
     });
   }
 
+  const exerciseList = await backend.getPieceAttachmentList(piece, "exercise");
+  for (const { filename } of exerciseList) {
+    hashes.push({
+      filename: `exercises/${filename}`,
+      hash: hashAny(await backend.getPieceFileData(piece, filename, "exercise")),
+    });
+  }
+
   hashes.sort((a, b) => {
     // first by name, then by hash
     const cmp1 = a.filename.localeCompare(b.filename);
