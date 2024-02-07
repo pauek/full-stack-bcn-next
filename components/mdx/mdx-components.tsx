@@ -3,39 +3,31 @@ import CopyableCode from "./CopyableCode";
 import Ref from "./Ref";
 import { cn } from "@/lib/utils";
 
-export const H1 = ({ children }: any) => (
-  <h1 className="font-bold text-2xl">{children}</h1>
-);
+const H1 = ({ children }: any) => <h1 className="font-bold text-2xl">{children}</h1>;
 
-export const H2 = ({ children }: any) => (
-  <h2 className="font-bold text-lg mt-6">{children}</h2>
-);
+const H2 = ({ children }: any) => <h2 className="font-bold text-lg mt-6">{children}</h2>;
 
-export const H3 = ({ children }: any) => (
+const H3 = ({ children }: any) => (
   <h3 className="font-semibold text-md text-foreground mt-8 mb-2">{children}</h3>
 );
 
-export const H4 = ({ children }: any) => (
-  <h4 className="mt-3 mb-1">{children}</h4>
-);
+const H4 = ({ children }: any) => <h4 className="mt-3 mb-1">{children}</h4>;
 
-export const P = ({ children }: any) => (
-  <p className="mb-4 first:mt-0">{children}</p>
-);
+const P = ({ children }: any) => <p className="mb-4 first:mt-0">{children}</p>;
 
-export const A = (props: React.ComponentProps<"a">) => (
+const A = (props: React.ComponentProps<"a">) => (
   <a {...props} className={cn(props.className, "text-accent-foreground")}>
     {props.children}
   </a>
 );
 
-export const Code = (props: React.ComponentProps<"code">) => (
+const Code = (props: React.ComponentProps<"code">) => (
   <code {...props} className={cn(iosevka.className, "mx-1")}>
     {props.children}
   </code>
 );
 
-export const Table = (props: React.ComponentProps<"table">) => (
+const Table = (props: React.ComponentProps<"table">) => (
   <div className="flex flex-row justify-center py-2">
     <table {...props}>{props.children}</table>
   </div>
@@ -46,7 +38,7 @@ type RowProps = {
   keyword: string;
   children: any;
 };
-export const Row = ({ href, keyword, children }: RowProps) => (
+const Row = ({ href, keyword, children }: RowProps) => (
   <tr>
     <td>
       {href ? (
@@ -65,14 +57,24 @@ export const Row = ({ href, keyword, children }: RowProps) => (
   </tr>
 );
 
-export const Td = (props: React.ComponentProps<"td">) => (
+const Td = (props: React.ComponentProps<"td">) => (
   <td className="px-3 py-1 border-y">{props.children}</td>
 );
 
-export const Th = (props: React.ComponentProps<"th">) => (
-  <th className={`px-3 py-1 text-left text-bold ${props.className}`}>
+const Th = (props: React.ComponentProps<"th">) => (
+  <th className={cn("px-3 py-1 text-left text-bold", props.className)}>{props.children}</th>
+);
+
+const Aside = (props: React.ComponentProps<"aside">) => (
+  <div
+    className={cn(
+      props.className,
+      "lg:absolute lg:w-[18em] left-full ml-3 mr-2 top-0",
+      "text-[0.7rem] leading-4 text-secondary-foreground"
+    )}
+  >
     {props.children}
-  </th>
+  </div>
 );
 
 const components = {
@@ -85,11 +87,13 @@ const components = {
   CopyableCode,
   code: Code,
   table: Table,
-  Table: Table,
+  Table,
   Row: Row,
   Ref,
   td: Td,
   th: Th,
+  aside: Aside,
+  Aside,
 };
 
 export default components;

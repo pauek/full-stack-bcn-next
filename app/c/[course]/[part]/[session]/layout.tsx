@@ -28,7 +28,7 @@ export default async function Layout({ children, params }: _Props) {
       <div className="border-b"></div>
 
       {/* Page */}
-      <div className="bg-secondary pt-2 pb-12 flex-1">
+      <div className="bg-secondary pt-2 px-2 pb-12 flex-1">
         <div className="m-auto max-w-[54em]">{children}</div>
       </div>
     </div>

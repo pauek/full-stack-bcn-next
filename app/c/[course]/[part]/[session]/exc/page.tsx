@@ -18,7 +18,7 @@ const Exercise = async ({ index, chapter, exercise }: ExerciseProps) => {
 
   return (
     text && (
-      <div className="flex flex-row">
+      <div className="md:flex md:flex-row flex-col">
         <div
           className={cn(
             "ml-5 mt-[.7em] w-[1.8em] h-[1.8em]",
@@ -42,7 +42,7 @@ export default async function Page({ params }: SessionPageProps) {
   return (
     <div className="flex flex-col gap-4">
       {exercises.map(({ chapter, attachments: exercises }, index) => (
-        <div className="bg-card rounded min-h-[6em]">
+        <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
           <ChapterHeader index={index + 1} />
           {exercises &&
             exercises.map(async (exercise, index) => (
