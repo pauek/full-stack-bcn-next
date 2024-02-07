@@ -134,7 +134,7 @@ export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileRefer
 
 export const __getFileListByFiletype =
   (filetype: schema.FileTypeEnum) =>
-  async (piece: ContentPiece): Promise<{ filename: string; hash: string }[]> => {
+  async (piece: ContentPiece): Promise<FileReference[]> => {
     const results = await getPieceFilesByFiletype(piece.hash, filetype);
     if (!results) {
       return [];
