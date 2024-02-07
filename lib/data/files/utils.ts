@@ -25,6 +25,7 @@ export const isDoc = (ent: Dirent) => ent.isFile() && ent.name.startsWith("doc."
 export const isCover = (ent: Dirent) => ent.isFile() && ent.name.startsWith("cover.");
 export const isSlide = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".svg";
 export const isImage = (ent: Dirent) => ent.isFile() && imageExtensions.includes(extname(ent.name));
+export const isExercise = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".md";
 
 type FileTypeInfo = {
   subdir: string;
@@ -36,6 +37,7 @@ export const fileTypeInfo: Record<FileTypeEnum, FileTypeInfo> = {
   cover: { predicate: isCover, subdir: "" },
   slide: { predicate: isSlide, subdir: "slides" },
   image: { predicate: isImage, subdir: "images" },
+  exercise: { predicate: isExercise, subdir: "exercises" },
   other: { predicate: () => false, subdir: "" },
 };
 
@@ -82,7 +84,7 @@ export const listPieceSubdir = async (
     const files: FileReference[] = [];
     for (const ent of await readDirWithFileTypes(abspath)) {
       if (typeInfo.predicate(ent)) {
-        files.push({ filename: ent.name, hash: await hashFile(join(abspath, ent.name)) });
+        files.push({ filename: ent.name, hash: await hashFile(join(abspath, ent.name)), filetype });
       }
     }
     files.sort((a, b) => a.filename.localeCompare(b.filename));

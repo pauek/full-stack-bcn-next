@@ -1,5 +1,5 @@
 type ChapterHeaderProps = {
-  name: string;
+  name?: string;
   index: number;
 };
 export default function ChapterHeader({ name, index }: ChapterHeaderProps) {

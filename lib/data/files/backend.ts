@@ -2,9 +2,10 @@ import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
-import { FileBuffer, WalkFunc } from "../data-backend";
+import { FileBuffer, FileReference, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
 import { env } from "@/lib/env.mjs";
+import { Hash } from "../hashing";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -106,6 +107,16 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
       return null;
     }
     return { name: doc, buffer: await readFile(pathJoin(piece.diskpath, doc)) };
+  } catch (e) {
+    return null;
+  }
+};
+
+export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileReference) => {
+  try {
+    let typeInfo = utils.fileTypeInfo[fileref.filetype];
+    const filepath = pathJoin(piece.diskpath, typeInfo.subdir, fileref.filename);
+    return await readFile(filepath);
   } catch (e) {
     return null;
   }

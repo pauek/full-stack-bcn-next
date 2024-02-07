@@ -1,25 +1,14 @@
-import data from "@/lib/data";
-import { notFound } from "next/navigation";
+import { pieceUrl } from "@/lib/urls";
 import TabButton from "./TabButton";
+import { SessionPageProps, getPieceOrNotFound } from "./common";
 import { getTabs } from "./get-tabs";
 
-type _Props = {
+type _Props = SessionPageProps & {
   children: React.ReactNode;
-  params: {
-    course: string;
-    part: string;
-    session: string;
-  };
 };
-
 export default async function Layout({ children, params }: _Props) {
-  const { course, part, session } = params;
-  const idpath = [course, part, session];
-  const path = `/c/${course}/${part}/${session}`;
-  const piece = await data.getPieceWithChildren(idpath);
-  if (piece === null) {
-    notFound();
-  }
+  const piece = await getPieceOrNotFound({ params });
+  const path = pieceUrl(piece.idpath);
 
   const tabInfos = await getTabs();
   return (

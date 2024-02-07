@@ -124,6 +124,9 @@
   pre {
     @apply py-1 px-2 my-4 rounded border overflow-x-auto bg-muted;
   }
+  .mdx-document pre code {
+    margin: 0;
+  }
   strong {
     @apply font-semibold;
   }

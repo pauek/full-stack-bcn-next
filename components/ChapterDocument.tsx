@@ -40,7 +40,7 @@ export default async function ChapterDocument({ chapter }: ChapterProps) {
   );
 
   return (
-    <div className="relative m-auto max-w-[54em]">
+    <div className="relative m-auto max-w-[54em] mdx-document">
       <div className="mx-2 p-4 bg-background text-sm rounded-md">
         <div className="max-w-[40em]">
           {doc && (

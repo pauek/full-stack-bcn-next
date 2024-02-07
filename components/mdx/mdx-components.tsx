@@ -16,7 +16,7 @@ export const H3 = ({ children }: any) => (
 );
 
 export const H4 = ({ children }: any) => (
-  <h3 className="mt-6 mb-1">{children}</h3>
+  <h4 className="mt-3 mb-1">{children}</h4>
 );
 
 export const P = ({ children }: any) => (
@@ -30,7 +30,7 @@ export const A = (props: React.ComponentProps<"a">) => (
 );
 
 export const Code = (props: React.ComponentProps<"code">) => (
-  <code {...props} className={iosevka.className}>
+  <code {...props} className={cn(iosevka.className, "mx-1")}>
     {props.children}
   </code>
 );

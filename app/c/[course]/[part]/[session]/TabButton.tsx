@@ -12,7 +12,6 @@ type TabButtonProps = {
 export default function TabButton({ path, name, slug }: TabButtonProps) {
   const segments = useSelectedLayoutSegments();
   const lastSegment = segments.slice(-1)[0];
-  console.log("segments", segments);
   return (
     <div
       className={cn(

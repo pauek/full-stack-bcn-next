@@ -23,6 +23,7 @@ export type FileBuffer = {
 export type FileReference = {
   filename: string;
   hash: string;
+  filetype: FileTypeEnum;
 };
 
 // prettier-ignore
@@ -34,6 +35,7 @@ export interface DataBackendBase {
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
 
   getPieceAttachmentList: (piece: ContentPiece, filetype: FileTypeEnum) => Promise<FileReference[]>;
+  getAttachmentBytes: (piece: ContentPiece, fileref: FileReference) => Promise<Buffer | null>;
   
   getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileTypeEnum) => Promise<Buffer | null>;

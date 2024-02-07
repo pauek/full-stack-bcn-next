@@ -6,6 +6,7 @@ import { FileBuffer, FileReference } from "../data-backend";
 import { Hash } from "../hashing";
 import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
+import { fileTypeInfo } from "../files/utils";
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");
@@ -118,6 +119,18 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   }
   return { name: result.filename, buffer: Buffer.from(base64ToBytes(data)) };
 };
+
+export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileReference) => {
+  try {
+    const data = await getFileData(fileref.hash);
+    if (!data) {
+      return null;
+    }
+    return Buffer.from(data);
+  } catch (e) {
+    return null;
+  }
+}
 
 export const __getFileListByFiletype =
   (filetype: schema.FileTypeEnum) =>
