@@ -10,12 +10,15 @@ export default async function Page({ params }: SessionPageProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      {slides.map(({ chapter, attachments: slides }, index) => (
-        <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
-          <ChapterHeader name={chapter.name} index={index + 1} />
-          {slides && <SlideGrid slides={slides.map((ref) => attachmentUrl(ref))} />}
-        </div>
-      ))}
+      {slides.map(
+        ({ chapter, attachments: slides }, index) =>
+          slides.length > 0 && (
+            <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
+              <ChapterHeader name={chapter.name} index={index + 1} />
+              <SlideGrid slides={slides.map((ref) => attachmentUrl(ref))} />
+            </div>
+          )
+      )}
     </div>
   );
 }
