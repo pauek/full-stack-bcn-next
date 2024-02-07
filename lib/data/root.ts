@@ -11,3 +11,4 @@ export const getRoot = async (backend: DataBackend): Promise<ContentPiece> => {
   }
   return course;
 };
+
