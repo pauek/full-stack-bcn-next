@@ -10,15 +10,20 @@ import { eq } from "drizzle-orm";
 import chalk from "chalk";
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
+  // const parentExists = await _pieceHashExists(parentHash);
+  // const childExists = await _pieceHashExists(childHash);
   await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing();
+  
 };
 
-export const pieceExists = async (piece: ContentPiece) => {
+const _pieceHashExists = async (hash: string) => {
   const found = await db.query.pieces.findFirst({
-    where: eq(schema.pieces.pieceHash, piece.hash),
+    where: eq(schema.pieces.pieceHash, hash),
   });
   return found !== undefined;
-};
+}
+
+export const pieceExists = async (piece: ContentPiece) => _pieceHashExists(piece.hash)
 
 export const fileExists = async (hash: string) => {
   const found = await db.query.files.findFirst({
@@ -55,7 +60,7 @@ export const insertPieceHashmap = async (piece: ContentPiece) => {
     .values({ pieceHash: piece.hash, idjpath: piece.idpath.join("/") })
     .onConflictDoUpdate({
       target: schema.hashmap.idjpath,
-      set: { idjpath: piece.idpath.join("/") },
+      set: { pieceHash: piece.hash },
     });
 };
 
@@ -106,9 +111,11 @@ export const insertFiles = async (piece: ContentPiece) => {
 
   const images = await files.getPieceImageList(piece);
   const slides = await files.getPieceSlideList(piece);
+  const exercises = await files.getPieceAttachmentList(piece, "exercise");
   const allFiles = [
     ...images.map(fullpath("images", "image")),
     ...slides.map(fullpath("slides", "slide")),
+    ...exercises.map(fullpath("exercises", "exercise")),
   ];
 
   const doc = await files.findDocFilename(piece.diskpath);
