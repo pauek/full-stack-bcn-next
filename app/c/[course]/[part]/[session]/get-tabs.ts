@@ -1,5 +1,8 @@
 "use server";
 
+import { FileTypeEnum } from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
+import data from "@/lib/data";
 import { readMetadata } from "@/lib/data/files/metadata";
 import { readdir } from "fs/promises";
 import { join } from "path";
@@ -17,16 +20,29 @@ type TabInfo = {
   name from the .meta.json file.
   
   */
-export const getTabs = async () => {
+
+const anyChildHasAttachmentsOfType = async (piece: ContentPiece, filetype: FileTypeEnum) => {
+  for (const child of piece.children || []) {
+    const attachments = await data.getPieceAttachmentList(child, filetype);
+    if (attachments.length > 0) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const getTabs = async (piece: ContentPiece) => {
   const options: TabInfo[] = [];
   const baseDir = "./app/c/[course]/[part]/[session]";
   for (const ent of await readdir(baseDir, { withFileTypes: true })) {
     if (ent.isDirectory()) {
       const metadata = await readMetadata(join(baseDir, ent.name));
-      options.push({
-        slug: ent.name,
-        ...metadata,
-      });
+      if (await anyChildHasAttachmentsOfType(piece, metadata.filetype)) {
+        options.push({
+          slug: ent.name,
+          ...metadata,
+        });
+      }
     }
   }
   options.sort((a, b) => a.order - b.order);

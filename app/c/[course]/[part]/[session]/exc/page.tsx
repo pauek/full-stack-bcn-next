@@ -42,7 +42,7 @@ export default async function Page({ params }: SessionPageProps) {
   return (
     <div className="flex flex-col gap-4">
       {exercises.map(({ chapter, attachments: exercises }, index) => (
-        <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
+        exercises.length > 0 && <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
           <ChapterHeader index={index + 1} />
           {exercises &&
             exercises.map(async (exercise, index) => (

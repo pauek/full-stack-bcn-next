@@ -1,16 +1,17 @@
 import { pieceUrl } from "@/lib/urls";
 import TabButton from "./TabButton";
-import { SessionPageProps, getPieceOrNotFound } from "./common";
+import { SessionPageProps, getPieceOrNotFound as getPieceWithChildrenOrNotFound } from "./common";
 import { getTabs } from "./get-tabs";
 
 type _Props = SessionPageProps & {
   children: React.ReactNode;
 };
 export default async function Layout({ children, params }: _Props) {
-  const piece = await getPieceOrNotFound({ params });
+  const piece = await getPieceWithChildrenOrNotFound({ params });
   const path = pieceUrl(piece.idpath);
 
-  const tabInfos = await getTabs();
+  const tabInfos = await getTabs(piece);
+
   return (
     <div className="w-full h-full flex flex-col">
       {/* Header */}

@@ -84,7 +84,9 @@ export const listPieceSubdir = async (
     const files: FileReference[] = [];
     for (const ent of await readDirWithFileTypes(abspath)) {
       if (typeInfo.predicate(ent)) {
-        files.push({ filename: ent.name, hash: await hashFile(join(abspath, ent.name)), filetype });
+        const filename = ent.name;
+        const hash = await hashFile(join(abspath, filename));
+        files.push({ filename, hash, filetype });
       }
     }
     files.sort((a, b) => a.filename.localeCompare(b.filename));
