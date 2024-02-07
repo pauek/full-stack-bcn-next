@@ -126,7 +126,7 @@ export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileRefer
     if (!data) {
       return null;
     }
-    return Buffer.from(data);
+    return Buffer.from(base64ToBytes(data))
   } catch (e) {
     return null;
   }
