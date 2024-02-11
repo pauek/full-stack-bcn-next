@@ -4,11 +4,9 @@ type ChapterHeaderProps = {
 };
 export default function ChapterHeader({ name, index }: ChapterHeaderProps) {
   return (
-    <div className="ml-5">
-      <h2 className="text-2xl font-bold pb-0">
-        <div className="text-xs font-light">CHAPTER {index}</div>
-        {name}
-      </h2>
-    </div>
+    <h2 className="mx-5 text-2xl font-bold pt-4 pb-2 mb-2 border-b">
+      <div className="text-xs font-light pl-0.5">CHAPTER {index}</div>
+      {name}
+    </h2>
   );
 }

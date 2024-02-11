@@ -4,17 +4,13 @@ import Ref from "./Ref";
 import { cn } from "@/lib/utils";
 import { WarningIcon } from "../icons/WarningIcon";
 
-const H1 = ({ children }: any) => <h1 className="font-bold text-2xl">{children}</h1>;
+const H1 = ({ children }: any) => <h2>{children}</h2>;
+const H2 = ({ children }: any) => <h3>{children}</h3>;
+const H3 = ({ children }: any) => <h4>{children}</h4>;
+const H4 = ({ children }: any) => <h5>{children}</h5>;
+const H5 = ({ children }: any) => <h6>{children}</h6>;
 
-const H2 = ({ children }: any) => <h2 className="font-bold text-lg mt-6">{children}</h2>;
-
-const H3 = ({ children }: any) => (
-  <h3 className="font-semibold text-md text-foreground mt-8 mb-2">{children}</h3>
-);
-
-const H4 = ({ children }: any) => <h4 className="mt-3 mb-1">{children}</h4>;
-
-const P = ({ children }: any) => <p className="mb-4 first:mt-0">{children}</p>;
+const P = ({ children }: any) => <p>{children}</p>;
 
 const A = (props: React.ComponentProps<"a">) => (
   <a {...props} className={cn(props.className, "text-accent-foreground")}>
@@ -79,8 +75,8 @@ const Aside = (props: React.ComponentProps<"aside">) => (
 );
 
 const Warn = (props: React.ComponentProps<"div">) => (
-  <div className="px-2 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-center gap-2">
-    <WarningIcon className="text-yellow-600"/>
+  <div className="warning">
+    <WarningIcon className="text-yellow-600" />
     <div>{props.children}</div>
   </div>
 );

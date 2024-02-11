@@ -6,10 +6,10 @@ import ClipboardCopyButton from "../ClipboardCopyButton";
 type Props = {
   children: React.ReactNode;
 };
-export default function CopyableCommand({ children }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+export default function CopyableCode({ children }: Props) {
+  const ref = useRef<HTMLPreElement>(null);
   return (
-    <div className="relative" ref={ref}>
+    <pre className="relative" ref={ref}>
       {children}
       <ClipboardCopyButton
         size={20}
@@ -17,6 +17,6 @@ export default function CopyableCommand({ children }: Props) {
           navigator.clipboard.writeText(ref.current?.textContent ?? "")
         }
       />
-    </div>
+    </pre>
   );
 }

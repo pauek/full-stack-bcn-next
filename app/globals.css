@@ -81,9 +81,7 @@
   p {
     @apply my-2 leading-5;
   }
-  h3 + p {
-    @apply mt-1;
-  }
+
   h1,
   h2,
   h3,
@@ -96,16 +94,19 @@
     @apply text-5xl font-bold;
   }
   h2 {
-    @apply text-4xl pt-8 pb-4 first:pt-4 font-normal;
-  }
-  h2 + h3 {
-    @apply mt-3;
+    @apply text-4xl pt-8 pb-4 first:pt-4 font-normal m-0;
   }
   h3 {
-    @apply text-xl first:mt-0;
+    @apply text-xl first:mt-0 mb-2;
   }
   h4 {
-    @apply text-base;
+    @apply text-base mt-5 mb-1 first:mt-0;
+  }
+  h1 + p, h2 + p, h3 + p {
+    @apply mt-1;
+  }
+  .warning {
+    @apply my-2 px-2 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-center gap-2;
   }
 
   ol {
@@ -122,7 +123,7 @@
     @apply my-1 pl-1;
   }
   pre {
-    @apply py-1 px-2 my-4 rounded border overflow-x-auto bg-muted;
+    @apply py-1 px-2 rounded border overflow-x-auto bg-muted m-0;
   }
   .mdx-document pre code {
     margin: 0;
@@ -130,8 +131,32 @@
   strong {
     @apply font-semibold;
   }
-  code {
-    font-family: "Iosevka";
+  pre, code {
+    font-family: "Iosevka SS14", monospace;
+  }
+  p {
+    margin: 0;
+  }
+  p + p, ul + p, ol + p {
+    margin-top: 1em;
+  }
+  pre + pre {
+    @apply mt-0;
+  }
+  p + pre, pre + p {
+    @apply mt-2;
+  }
+  * + h3 {
+    margin-top: 1.4em;
+  }
+  p + ol {
+    margin-top: 1.2em;
+  }
+  h5 + p {
+    @apply mt-2;
+  }
+  li p:last-child {
+    @apply mb-4;
   }
 }
 
