@@ -6,7 +6,7 @@ import { useSelectedLayoutSegments } from "next/navigation";
 import DarkModeSwitch from "./DarkModeSwitch";
 
 export default function Header({ course }: { course: ContentPiece }) {
-  const [_c, _courseId, part, session, chapter] = useSelectedLayoutSegments();
+  const [_c, _courseId] = useSelectedLayoutSegments();
 
   return (
     <header
