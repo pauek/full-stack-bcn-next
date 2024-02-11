@@ -1,5 +1,5 @@
 import ChapterDocument from "@/components/ChapterDocument";
-import { SessionPageProps, getAttachments, getPieceOrNotFound } from "../common";
+import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
 import { generateStaticParamsCommon } from "../static-params";
 import ChapterHeader from "@/components/ChapterHeader";
 import MdxDocument from "@/components/MdxDocument";
@@ -37,7 +37,7 @@ const Exercise = async ({ index, chapter, exercise }: ExerciseProps) => {
 };
 
 export default async function Page({ params }: SessionPageProps) {
-  const piece = await getPieceOrNotFound({ params });
+  const piece = await getPieceWithChildrenOrNotFound({ params });
   const exercises = await getAttachments(piece, "exercise");
   return (
     <div className="flex flex-col gap-4">

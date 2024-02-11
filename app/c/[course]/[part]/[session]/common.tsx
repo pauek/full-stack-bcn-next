@@ -12,7 +12,7 @@ export type SessionPageProps = {
   };
 };
 
-export const getPieceOrNotFound = async ({ params }: SessionPageProps) => {
+export const getPieceWithChildrenOrNotFound = async ({ params }: SessionPageProps) => {
   const { course, part, session } = params;
   const idpath = [course, part, session];
   const piece = await data.getPieceWithChildren(idpath);
