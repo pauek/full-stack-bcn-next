@@ -2,6 +2,7 @@ import { iosevka } from "@/lib/fonts";
 import CopyableCode from "./CopyableCode";
 import Ref from "./Ref";
 import { cn } from "@/lib/utils";
+import { WarningIcon } from "../icons/WarningIcon";
 
 const H1 = ({ children }: any) => <h1 className="font-bold text-2xl">{children}</h1>;
 
@@ -77,6 +78,13 @@ const Aside = (props: React.ComponentProps<"aside">) => (
   </div>
 );
 
+const Warn = (props: React.ComponentProps<"div">) => (
+  <div className="px-2 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-center gap-2">
+    <WarningIcon className="text-yellow-600"/>
+    <div>{props.children}</div>
+  </div>
+);
+
 const components = {
   h1: H1,
   h2: H2,
@@ -94,6 +102,7 @@ const components = {
   th: Th,
   aside: Aside,
   Aside,
+  Warn,
 };
 
 export default components;
