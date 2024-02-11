@@ -137,9 +137,7 @@
   li {
     @apply my-1 pl-1;
   }
-  pre {
-    @apply py-1 px-2 rounded border overflow-x-clip bg-code text-code-foreground mx-0 my-1;
-  }
+
   .mdx-document pre code {
     @apply m-0 bg-code;
   }
@@ -150,14 +148,22 @@
   code {
     font-family: "Iosevka SS14", monospace;
   }
-  h1 code, h2 code, h3 code, h4 code, h5 code {
+  h1 code,
+  h2 code,
+  h3 code,
+  h4 code,
+  h5 code {
     @apply bg-background text-foreground;
   }
   code {
     @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
   }
   pre {
-    @apply flex flex-row overflow-x-auto;
+    @apply flex flex-row overflow-x-auto py-1 px-2 rounded border mx-0 my-1;
+  }
+  pre,
+  pre code {
+    @apply bg-code text-code-foreground;
   }
   p {
     margin: 0;
