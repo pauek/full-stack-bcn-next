@@ -12,10 +12,9 @@ export default function CopyableCode({ children }: Props) {
     <pre className="relative" ref={ref}>
       {children}
       <ClipboardCopyButton
+        className="hidden sm:flex"
         size={20}
-        onClick={() =>
-          navigator.clipboard.writeText(ref.current?.textContent ?? "")
-        }
+        onClick={() => navigator.clipboard.writeText(ref.current?.textContent ?? "")}
       />
     </pre>
   );

@@ -29,7 +29,7 @@ export default async function Layout({ children, params }: _Props) {
       <div className="border-b"></div>
 
       {/* Page */}
-      <div className="bg-secondary pt-2 px-2 pb-12 flex-1 relative flex flex-row">
+      <div className="w-full bg-secondary pt-2 px-2 pb-12 flex-1 relative flex flex-row">
         {children}
       </div>
     </div>

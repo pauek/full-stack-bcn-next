@@ -7,7 +7,7 @@ type Props = {
 };
 export default function ChapterLocalLinks({ piece, chapters }: Props) {
   return (
-    <div className="absolute sticky z-10 top-[3rem] right-0 p-3 pr-8 flex flex-row justify-end">
+    <div className="hidden absolute sticky z-10 top-[3rem] right-0 p-3 pr-8 md:flex md:flex-row justify-end">
       <div className="flex flex-col gap-2">
         <Link href="#top">{piece.name}</Link>
         {chapters.map((chapter, index) => (

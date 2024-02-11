@@ -86,6 +86,7 @@ const components = {
   h2: H2,
   h3: H3,
   h4: H4,
+  h5: H5,
   a: A,
   p: P,
   CopyableCode,
