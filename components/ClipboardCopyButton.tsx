@@ -13,7 +13,7 @@ export default function ClipboardCopyButton({ className, size, onClick }: Props)
 
   useEffect(() => {
     if (showCopied) {
-      const timeout = setTimeout(() => setShowCopied(false), 1000);
+      const timeout = setTimeout(() => setShowCopied(false), 500);
       return () => clearTimeout(timeout);
     }
   }, [showCopied]);
@@ -21,10 +21,11 @@ export default function ClipboardCopyButton({ className, size, onClick }: Props)
   return (
     <div
       className={cn(
-        "text-stone-400 absolute right-0 top-0 bottom-0 px-1",
-        "cursor-pointer flex flex-col justify-center hover:bg-stone-100",
-        "hover:text-black rounded",
-        className
+        "text-code-foreground absolute right-0 top-0 p-[0.3em] px-1",
+        "cursor-pointer flex flex-col justify-start",
+        "hover:opacity-100 rounded ",
+        className,
+        showCopied ? "opacity-100" : "opacity-40",
       )}
       onClick={() => {
         setShowCopied(true);
@@ -32,7 +33,7 @@ export default function ClipboardCopyButton({ className, size, onClick }: Props)
       }}
     >
       {showCopied ? (
-        <CheckMark size={20} className="text-green-500" />
+        <CheckMark size={18} className="text-green-500" />
       ) : (
         <ClipboardCopy size={size} />
       )}

@@ -159,7 +159,10 @@
     @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
   }
   pre {
-    @apply flex flex-row overflow-x-auto py-1 px-2 rounded border mx-0 my-1;
+    @apply flex flex-row border mx-0 my-1 rounded;
+  }
+  pre > code {
+    @apply overflow-x-auto py-1 px-2 rounded;
   }
   pre,
   pre code {

@@ -3,6 +3,7 @@ import CopyableCode from "./CopyableCode";
 import Ref from "./Ref";
 import { cn } from "@/lib/utils";
 import { WarningIcon } from "../icons/WarningIcon";
+import React from "react";
 
 const H1 = ({ children }: any) => <h2>{children}</h2>;
 const H2 = ({ children }: any) => <h3>{children}</h3>;
@@ -62,24 +63,26 @@ const Th = (props: React.ComponentProps<"th">) => (
   <th className={cn("px-3 py-1 text-left text-bold", props.className)}>{props.children}</th>
 );
 
-const Aside = (props: React.ComponentProps<"aside">) => (
+const Aside = ({ className, children }: React.ComponentProps<"aside">) => (
   <div
     className={cn(
-      props.className,
+      className,
       "lg:absolute lg:w-[18em] left-full ml-3 mr-2 top-0",
       "text-[0.7rem] leading-4 text-secondary-foreground"
     )}
   >
-    {props.children}
+    {children}
   </div>
 );
 
-const Warn = (props: React.ComponentProps<"div">) => (
+const Warn = ({ children }: React.ComponentProps<"div">) => (
   <div className="warning mx-6">
     <WarningIcon className="text-yellow-600" />
-    <div className="text-stone-900">{props.children}</div>
+    <div className="text-stone-900">{children}</div>
   </div>
 );
+
+const Pre = ({ children }: React.ComponentProps<"pre">) => <CopyableCode>{children}</CopyableCode>;
 
 const components = {
   h1: H1,
@@ -100,6 +103,7 @@ const components = {
   aside: Aside,
   Aside,
   Warn,
+  pre: Pre,
 };
 
 export default components;
