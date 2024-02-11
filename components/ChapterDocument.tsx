@@ -32,7 +32,7 @@ export default async function ChapterDocument({ chapter }: ChapterProps) {
     // pueda referirse a la imagen con un path relativo
     <div className="my-4">
       <NextImage
-        className="py-3 border"
+        className="border"
         src={attachmentUrl(chapterImageMap.get(props.src!)!)}
         alt={props.alt || "image"}
         width={Number(props.width)}

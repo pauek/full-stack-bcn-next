@@ -1,14 +1,12 @@
-import { MDXRemote } from "next-mdx-remote/rsc";
-import NextImage from "next/image";
-import { Suspense } from "react";
-
 import { FileReference } from "@/lib/data/data-backend";
-import { attachmentUrl } from "@/lib/urls";
+import { cn } from "@/lib/utils";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
+import ImageFromMap from "./ImageFromMap";
 import mdxComponents from "./mdx-components";
-import { cn } from "@/lib/utils";
 
 type _Props = {
   className?: string;
@@ -16,19 +14,6 @@ type _Props = {
   imageMap: Map<string, FileReference>;
 };
 export default async function MdxDocument({ className = "", text, imageMap }: _Props) {
-  const Image = (props: React.ComponentProps<"img">) => (
-    // Hay que insertar el id del Chapter para que el documento
-    // pueda referirse a la imagen con un path relativo
-    <div className="py-3 border my-4">
-      <NextImage
-        src={attachmentUrl(imageMap.get(props.src!)!)}
-        alt={props.alt || "image"}
-        width={Number(props.width)}
-        height={Number(props.height)}
-      />
-    </div>
-  );
-
   const RenderError = () => {
     return (
       <div className="bg-red-600 text-foreground text-xl px-3 py-2 rounded">
@@ -46,7 +31,10 @@ export default async function MdxDocument({ className = "", text, imageMap }: _P
             <Suspense>
               <MDXRemote
                 source={text}
-                components={{ ...mdxComponents, Image }}
+                components={{
+                  ...mdxComponents,
+                  Image: ImageFromMap(imageMap),
+                }}
                 options={{
                   mdxOptions: {
                     remarkPlugins: [remarkGfm],

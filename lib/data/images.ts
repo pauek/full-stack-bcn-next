@@ -3,74 +3,159 @@ import data from "@/lib/data";
 import { fileTypeInfo } from "@/lib/data/files";
 import { hashAny } from "@/lib/data/hashing";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { env } from "@/lib/env.mjs";
+import {
+  ListObjectsV2Command,
+  ListObjectsV2CommandOutput,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { readFile } from "fs/promises";
 import { extname, join } from "path";
 import { mimeTypes } from "../mime-types";
-import { env } from "@/lib/env.mjs";
+import { delay } from "../utils";
 
-const s3 = new S3Client({
-  region: env.R2_REGION,
-  credentials: {
-    accessKeyId: env.R2_ACCESS_KEY_ID,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-  },
-  endpoint: env.R2_ENDPOINT,
-});
-
-const uploadImage = async (dirpath: string, filename: string, filetype: FileTypeEnum) => {
-  try {
-    const { subdir } = fileTypeInfo[filetype];
-    const filePath = join(dirpath, subdir, filename);
-    const content = await readFile(filePath);
-    const hash = hashAny(content);
-    const ext = extname(filename);
-    const imageKey = `${hash}${ext}`;
-
-    const command = new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET,
-      Key: imageKey,
-      Body: content,
-      ACL: "public-read",
-      ContentType: mimeTypes[ext],
-    });
-
-    await s3.send(command);
-    console.log(`${hash} ${filePath}`);
-
-    return true;
-  } catch (err) {
-    console.log(`Error! ${err}`);
-    return false;
-  }
+type ImageUploaderOptions = {
+  parallelRequests: number;
 };
 
-export const uploadAllFilesOfType = async (
-  filetype: FileTypeEnum,
-  parallelRequests: number = 50
+class ImageUploader {
+  parallelRequests: number;
+  s3client: S3Client;
+
+  constructor(options?: ImageUploaderOptions) {
+    this.parallelRequests = options?.parallelRequests || 1;
+    this.s3client = new S3Client({
+      region: env.R2_REGION,
+      credentials: {
+        accessKeyId: env.R2_ACCESS_KEY_ID,
+        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+      },
+      endpoint: env.R2_ENDPOINT,
+      // logger: console,
+    });
+  }
+
+  destroy() {
+    this.client.destroy();
+  }
+
+  get client() {
+    if (!this.s3client) {
+      throw new Error(`S3 Client not initialized!?!?!`);
+    }
+    return this.s3client;
+  }
+
+  async uploadImage(
+    dirpath: string,
+    filename: string,
+    filetype: FileTypeEnum,
+    existing: Set<string>
+  ) {
+    try {
+      const { subdir } = fileTypeInfo[filetype];
+      const filePath = join(dirpath, subdir, filename);
+      const content = await readFile(filePath);
+      const hash = hashAny(content);
+      const ext = extname(filename);
+      const imageKey = `${hash}${ext}`;
+
+      if (existing.has(imageKey)) {
+        const space = " ".repeat(process.stdout.columns - imageKey.length - 1);
+        process.stdout.write(`${imageKey}${space}\r`);
+        return;
+      }
+
+      const command = new PutObjectCommand({
+        Bucket: process.env.R2_BUCKET,
+        Key: imageKey,
+        Body: content,
+        ACL: "public-read",
+        ContentType: mimeTypes[ext],
+      });
+
+      await this.client.send(command);
+      console.log(`${imageKey}`);
+
+      return true;
+    } catch (err) {
+      console.log(`Error! ${err}`);
+      return false;
+    }
+  }
+
+  async uploadAllFilesOfType(filetype: FileTypeEnum, existing: Set<string>) {
+    const imagePaths = await data.getAllAttachmentPaths([env.COURSE_ID], filetype);
+
+    const _uploadOne = async (index: number) => {
+      const path = imagePaths[index];
+      const idpath = path.slice(0, path.length - 1);
+      const imageFilename = path.slice(-1)[0];
+      const piece = await data.getPiece(idpath);
+      if (!piece) {
+        throw new Error(`Piece not found: ${idpath}`);
+      }
+      await this.uploadImage(piece.diskpath, imageFilename, filetype, existing);
+    };
+
+    const _uploadAllWithOffset = async (offset: number) => {
+      for (let i = offset; i < imagePaths.length; i += this.parallelRequests) {
+        await _uploadOne(i);
+      }
+    };
+
+    await Promise.allSettled(
+      Array.from({ length: this.parallelRequests }).map((_, i) => {
+        return _uploadAllWithOffset(i);
+      })
+    );
+
+    // Erase last line if necessary
+    const space = " ".repeat(process.stdout.columns - 1);
+    process.stdout.write(`${space}\r`);
+  }
+
+  async listAllFiles() {
+    process.stdout.write("Listing images");
+    try {
+      let isTruncated = true;
+      let contToken: string | undefined = undefined;
+      let fileList: { name: string; size: number }[] = [];
+      while (isTruncated) {
+        process.stdout.write(".");
+        const result: ListObjectsV2CommandOutput = await this.client.send(
+          new ListObjectsV2Command({
+            Bucket: process.env.R2_BUCKET,
+            ContinuationToken: contToken,
+            MaxKeys: 200,
+          })
+        );
+        if (result.Contents) {
+          for (const { Key: name, Size: size } of result.Contents) {
+            if (name && size) {
+              fileList.push({ name, size });
+            }
+          }
+        }
+        contToken = result.NextContinuationToken;
+        isTruncated = result.IsTruncated || false;
+      }
+      process.stdout.write(`${fileList.length} images\n`);
+      return fileList;
+    } catch (e) {
+      console.error(`Error Listing Images:\n${e}`);
+      return [];
+    }
+  }
+}
+
+export const withImageUploader = async (
+  options: ImageUploaderOptions,
+  func: (uploader: ImageUploader) => Promise<void>
 ) => {
-  const imagePaths = await data.getAllAttachmentPaths([env.COURSE_ID], filetype);
-
-  const _uploadOne = async (index: number) => {
-    const path = imagePaths[index];
-    const idpath = path.slice(0, path.length - 1);
-    const imageFilename = path.slice(-1)[0];
-    const piece = await data.getPiece(idpath);
-    if (!piece) {
-      throw new Error(`Piece not found: ${idpath}`);
-    }
-    await uploadImage(piece.diskpath, imageFilename, filetype);
-  };
-
-  const _uploadAllWithOffset = async (offset: number) => {
-    for (let i = offset; i < imagePaths.length; i += parallelRequests) {
-      await _uploadOne(i);
-    }
-  };
-
-  await Promise.allSettled(
-    Array.from({ length: parallelRequests }).map((_, i) => {
-      return _uploadAllWithOffset(i);
-    })
-  );
+  const uploader = new ImageUploader(options);
+  // await delay(1000);
+  await func(uploader);
+  uploader.destroy();
 };
