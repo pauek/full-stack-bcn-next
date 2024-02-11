@@ -7,7 +7,7 @@ import { attachmentUrl } from "@/lib/urls";
 import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import mdxComponents from "./mdx/mdx-components";
+import mdxComponents from "./mdx-components";
 import { cn } from "@/lib/utils";
 
 type _Props = {
@@ -19,13 +19,14 @@ export default async function MdxDocument({ className = "", text, imageMap }: _P
   const Image = (props: React.ComponentProps<"img">) => (
     // Hay que insertar el id del Chapter para que el documento
     // pueda referirse a la imagen con un path relativo
-    <NextImage
-      className="py-3 border"
-      src={attachmentUrl(imageMap.get(props.src!)!)}
-      alt={props.alt || "image"}
-      width={Number(props.width)}
-      height={Number(props.height)}
-    />
+    <div className="py-3 border my-4">
+      <NextImage
+        src={attachmentUrl(imageMap.get(props.src!)!)}
+        alt={props.alt || "image"}
+        width={Number(props.width)}
+        height={Number(props.height)}
+      />
+    </div>
   );
 
   const RenderError = () => {

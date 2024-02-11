@@ -30,13 +30,15 @@ export default async function ChapterDocument({ chapter }: ChapterProps) {
   const Image = (props: React.ComponentProps<"img">) => (
     // Hay que insertar el id del Chapter para que el documento
     // pueda referirse a la imagen con un path relativo
-    <NextImage
-      className="py-3 border"
-      src={attachmentUrl(chapterImageMap.get(props.src!)!)}
-      alt={props.alt || "image"}
-      width={Number(props.width)}
-      height={Number(props.height)}
-    />
+    <div className="my-4">
+      <NextImage
+        className="py-3 border"
+        src={attachmentUrl(chapterImageMap.get(props.src!)!)}
+        alt={props.alt || "image"}
+        width={Number(props.width)}
+        height={Number(props.height)}
+      />
+    </div>
   );
 
   return (

@@ -2,7 +2,7 @@ import ChapterDocument from "@/components/ChapterDocument";
 import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
 import { generateStaticParamsCommon } from "../static-params";
 import ChapterHeader from "@/components/ChapterHeader";
-import MdxDocument from "@/components/MdxDocument";
+import MdxDocument from "@/components/mdx/MdxDocument";
 import data from "@/lib/data";
 import { ContentPiece } from "@/lib/adt";
 import { FileReference } from "@/lib/data/data-backend";
