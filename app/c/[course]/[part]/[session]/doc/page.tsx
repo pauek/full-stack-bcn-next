@@ -2,8 +2,10 @@ import ChapterDocument from "@/components/ChapterDocument";
 import ChapterHeader from "@/components/ChapterHeader";
 import { SessionPageProps, getPieceWithChildrenOrNotFound } from "../common";
 import { generateStaticParamsCommon } from "../static-params";
+import { delay } from "@/lib/utils";
 
 export default async function Page({ params }: SessionPageProps) {
+  await delay(1000);
   const piece = await getPieceWithChildrenOrNotFound({ params });
   const chapters = piece.children || [];
   return (

@@ -75,7 +75,7 @@ const Aside = (props: React.ComponentProps<"aside">) => (
 );
 
 const Warn = (props: React.ComponentProps<"div">) => (
-  <div className="warning">
+  <div className="warning mx-6">
     <WarningIcon className="text-yellow-600" />
     <div>{props.children}</div>
   </div>

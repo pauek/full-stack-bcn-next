@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 
 import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
-import "@highlightjs/cdn-assets/styles/a11y-light.min.css";
 import "./globals.css";
 import data from "@/lib/data";
 import { env } from "@/lib/env.mjs";
@@ -25,7 +24,9 @@ export default async function RootLayout({ children }: Props) {
   }
   return (
     <DarkModeAwareRoot lang="en">
-      <head></head>
+      <head>
+        <link rel="css" href="/stackoverflow-dark.css" />
+      </head>
       <body className={cn(inter.className, "h-screen flex flex-col")}>
         <div className="w-full h-full pt-12 flex flex-col">
           <Header course={course} />

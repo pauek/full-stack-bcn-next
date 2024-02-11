@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme for HighlightJS */
+@import url("./stackoverflow-dark.css");
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -36,6 +39,9 @@
     --ring: 24 5.4% 63.9%;
 
     --radius: 0.5rem;
+
+    --code: #1c1b1b;
+    --code-foreground: white;
   }
 
   .dark {
@@ -69,6 +75,9 @@
     --ring: 12 6.5% 15.1%;
 
     --skeleton: 60 4.8% 14%;
+
+    --code: black;
+    --code-foreground: white;
   }
 
   * {
@@ -102,11 +111,13 @@
   h4 {
     @apply text-base mt-5 mb-1 first:mt-0;
   }
-  h1 + p, h2 + p, h3 + p {
+  h1 + p,
+  h2 + p,
+  h3 + p {
     @apply mt-1;
   }
   .warning {
-    @apply my-2 px-2 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-center gap-2;
+    @apply my-2 px-2 pl-1.5 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-start gap-2;
   }
 
   ol {
@@ -123,7 +134,7 @@
     @apply my-1 pl-1;
   }
   pre {
-    @apply py-1 px-2 rounded border overflow-x-clip bg-muted mx-0 my-1;
+    @apply py-1 px-2 rounded border overflow-x-clip bg-code text-code-foreground mx-0 my-1;
   }
   .mdx-document pre code {
     margin: 0;
@@ -131,7 +142,8 @@
   strong {
     @apply font-semibold;
   }
-  pre, code {
+  pre,
+  code {
     font-family: "Iosevka SS14", monospace;
   }
   pre {
@@ -140,13 +152,16 @@
   p {
     margin: 0;
   }
-  p + p, ul + p, ol + p {
+  p + p,
+  ul + p,
+  ol + p {
     margin-top: 1em;
   }
   pre + pre {
     @apply mt-0;
   }
-  p + pre, pre + p {
+  p + pre,
+  pre + p {
     @apply mt-2;
   }
   * + h3 {
@@ -162,4 +177,3 @@
     @apply mb-4;
   }
 }
-

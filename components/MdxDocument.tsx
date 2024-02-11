@@ -8,12 +8,14 @@ import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import mdxComponents from "./mdx/mdx-components";
+import { cn } from "@/lib/utils";
 
 type _Props = {
+  className?: string;
   text: string;
   imageMap: Map<string, FileReference>;
 };
-export default async function MdxDocument({ text, imageMap }: _Props) {
+export default async function MdxDocument({ className = "", text, imageMap }: _Props) {
   const Image = (props: React.ComponentProps<"img">) => (
     // Hay que insertar el id del Chapter para que el documento
     // pueda referirse a la imagen con un path relativo
@@ -30,16 +32,14 @@ export default async function MdxDocument({ text, imageMap }: _Props) {
     return (
       <div className="bg-red-600 text-foreground text-xl px-3 py-2 rounded">
         Error rendering MDX Document
-        <pre>
-          {text.split("\n").slice(0, 10).join("\n")}
-        </pre>
+        <pre>{text.split("\n").slice(0, 10).join("\n")}</pre>
       </div>
     );
   };
 
   return (
-    <div className="relative m-auto max-w-[54em] mdx-document">
-      <div className="mx-2 p-4 bg-background text-sm rounded-md">
+    <div className={cn(className, "relative m-auto max-w-[54em] mdx-document")}>
+      <div className="bg-background text-sm rounded-md">
         <div className="max-w-[40em]">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>
@@ -60,4 +60,3 @@ export default async function MdxDocument({ text, imageMap }: _Props) {
     </div>
   );
 }
-

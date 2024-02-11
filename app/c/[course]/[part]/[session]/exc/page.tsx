@@ -21,7 +21,7 @@ const Exercise = async ({ index, chapter, exercise }: ExerciseProps) => {
       <div className="md:flex md:flex-row flex-col">
         <div
           className={cn(
-            "ml-5 mt-[.7em] w-[1.8em] h-[1.8em]",
+            "mx-2.5 lg:ml-5 mt-[.7em] w-[1.8em] h-[1.8em]",
             "flex flex-col justify-center items-center",
             "bg-primary text-background font-bold rounded-full"
           )}
@@ -29,7 +29,7 @@ const Exercise = async ({ index, chapter, exercise }: ExerciseProps) => {
           {index}
         </div>
         <div className="flex-1">
-          <MdxDocument text={text?.toString()} imageMap={new Map()} />
+          <MdxDocument className="p-2.5" text={text?.toString()} imageMap={new Map()} />
         </div>
       </div>
     )
@@ -40,7 +40,7 @@ export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
   const exercises = await getAttachments(piece, "exercise");
   return (
-    <div className="flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4">
       {exercises.map(({ chapter, attachments: exercises }, index) => (
         exercises.length > 0 && <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
           <ChapterHeader index={index + 1} />

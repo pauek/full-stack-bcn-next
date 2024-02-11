@@ -41,7 +41,7 @@ export default async function ChapterDocument({ chapter }: ChapterProps) {
 
   return (
     <div className="relative m-auto max-w-[54em] mdx-document">
-      <div className="mx-2 p-4 bg-background text-sm rounded-md">
+      <div className="p-2.5 lg:p-4 bg-background text-sm rounded-md">
         <div className="max-w-[40em] min-w-0">
           {doc && (
             <ErrorBoundary fallback={<RenderError />}>
