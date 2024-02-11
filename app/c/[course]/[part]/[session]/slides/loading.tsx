@@ -1,4 +1,3 @@
-
 export default function Loading() {
-  return <div>Loading slides...</div>
+  return <div>Loading slides...</div>;
 }
