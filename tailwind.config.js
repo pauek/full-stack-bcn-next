@@ -60,6 +60,10 @@ module.exports = {
           DEFAULT: "var(--code)",
           foreground: "var(--code-foreground)",
         },
+        inlcode: {
+          DEFAULT: "var(--inlcode)",
+          foreground: "var(--inlcode-foreground)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

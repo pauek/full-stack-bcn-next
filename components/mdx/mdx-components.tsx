@@ -19,7 +19,7 @@ const A = (props: React.ComponentProps<"a">) => (
 );
 
 const Code = (props: React.ComponentProps<"code">) => (
-  <code {...props} className={cn(iosevka.className, "mx-1")}>
+  <code {...props} className={cn(iosevka.className)}>
     {props.children}
   </code>
 );
@@ -77,7 +77,7 @@ const Aside = (props: React.ComponentProps<"aside">) => (
 const Warn = (props: React.ComponentProps<"div">) => (
   <div className="warning mx-6">
     <WarningIcon className="text-yellow-600" />
-    <div>{props.children}</div>
+    <div className="text-stone-900">{props.children}</div>
   </div>
 );
 

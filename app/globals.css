@@ -41,7 +41,9 @@
     --radius: 0.5rem;
 
     --code: #1c1b1b;
+    --inlcode: #ebe4e4;
     --code-foreground: white;
+    --inlcode-foreground: black;
   }
 
   .dark {
@@ -77,7 +79,9 @@
     --skeleton: 60 4.8% 14%;
 
     --code: black;
+    --inlcode: black;
     --code-foreground: white;
+    --inlcode-foreground: white;
   }
 
   * {
@@ -137,7 +141,7 @@
     @apply py-1 px-2 rounded border overflow-x-clip bg-code text-code-foreground mx-0 my-1;
   }
   .mdx-document pre code {
-    margin: 0;
+    @apply m-0 bg-code;
   }
   strong {
     @apply font-semibold;
@@ -145,6 +149,12 @@
   pre,
   code {
     font-family: "Iosevka SS14", monospace;
+  }
+  h1 code, h2 code, h3 code, h4 code, h5 code {
+    @apply bg-background text-foreground;
+  }
+  code {
+    @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
   }
   pre {
     @apply flex flex-row overflow-x-auto;
