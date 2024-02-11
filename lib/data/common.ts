@@ -5,7 +5,6 @@ export const getBreadcrumbData = async function (
   this: DataBackendBase,
   ...idpath: string[]
 ): Promise<CrumbData[]> {
-  console.log(`getBreadcrumbData: ${idpath.join("/")}`);
   const crumbs: CrumbData[] = [];
   let siblings: ContentPiece[] | undefined;
   for (const size of [2, 3, 4].slice(0, idpath.length - 1)) {
