@@ -4,7 +4,7 @@ import { Dirent } from "fs";
 import { readdir } from "fs/promises";
 import { basename, extname, join } from "path";
 import { hashFile } from "../hashing";
-import { readStoredHashOrThrow } from "./hashes";
+import { readStoredHash, readStoredHashOrThrow } from "./hashes";
 import { readMetadata } from "./metadata";
 import { FileReference } from "../data-backend";
 import { env } from "@/lib/env.mjs";
@@ -96,6 +96,15 @@ export const listPieceSubdir = async (
   }
 };
 
+// HACK: Let's make sure we don't skip hashing except in 'bun files:hashes'!
+export let _okToSkipMissingHashes = false;
+export const okToSkipMissingHashes = async (func: (...args: any[]) => Promise<any>) => {
+  _okToSkipMissingHashes = true;
+  await func();
+  _okToSkipMissingHashes = false;
+}
+
+
 export const readPieceAtSubdir = async (
   subdir: string,
   parentIdpath: string[]
@@ -104,7 +113,18 @@ export const readPieceAtSubdir = async (
   const name = dirNameToTitle(dirname);
   const diskpath = join(env.CONTENT_ROOT, subdir);
   const metadata = await readMetadata(diskpath);
-  const hash = await readStoredHashOrThrow(diskpath);
+
+  let hash: string = "";
+  try {
+    hash = await readStoredHashOrThrow(diskpath);
+  } catch (e) {
+    if (_okToSkipMissingHashes) {
+      console.info(`warning: missing hash for ${diskpath}`);
+    } else {
+      throw e;
+    }
+  }
+
   const { id } = metadata;
   if (!id) {
     throw Error(`Missing id from ContentPiece at ${diskpath}!`);
@@ -115,7 +135,7 @@ export const readPieceAtSubdir = async (
     name,
     idpath,
     diskpath,
-    hash,
+    hash, 
     metadata,
   };
 };
