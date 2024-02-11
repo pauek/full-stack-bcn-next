@@ -77,7 +77,7 @@ export const insertFile = async (
   const hash = await hashAny(bytes);
 
   if (!(await fileExists(hash))) {
-    process.stdout.write(`  ${chalk.gray(hash)} ${chalk.green(filetype)} ${chalk.yellow(filename)}\r`);
+    process.stdout.write(`  ${chalk.gray(hash)} ${chalk.green(filetype)} ${chalk.yellow(filename)}\n`);
     await db
       .insert(schema.files)
       .values({
