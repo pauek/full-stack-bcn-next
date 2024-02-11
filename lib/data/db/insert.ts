@@ -13,7 +13,6 @@ export const pieceSetParent = async (childHash: string, parentHash: string) => {
   // const parentExists = await _pieceHashExists(parentHash);
   // const childExists = await _pieceHashExists(childHash);
   await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing();
-  
 };
 
 const _pieceHashExists = async (hash: string) => {
@@ -21,9 +20,9 @@ const _pieceHashExists = async (hash: string) => {
     where: eq(schema.pieces.pieceHash, hash),
   });
   return found !== undefined;
-}
+};
 
-export const pieceExists = async (piece: ContentPiece) => _pieceHashExists(piece.hash)
+export const pieceExists = async (piece: ContentPiece) => _pieceHashExists(piece.hash);
 
 export const fileExists = async (hash: string) => {
   const found = await db.query.files.findFirst({
@@ -77,7 +76,9 @@ export const insertFile = async (
   const hash = await hashAny(bytes);
 
   if (!(await fileExists(hash))) {
-    process.stdout.write(`  ${chalk.gray(hash)} ${chalk.green(filetype)} ${chalk.yellow(filename)}\n`);
+    process.stdout.write(
+      `  ${chalk.gray(hash)} ${chalk.green(filetype)} ${chalk.yellow(filename)}\n`
+    );
     await db
       .insert(schema.files)
       .values({
@@ -97,7 +98,9 @@ export const insertFile = async (
     })
     .onConflictDoNothing();
 
-  process.stdout.write(`  ${hash} ${filetype} ${filename}\r`);
+  const line = `  ${hash} ${filetype} ${filename}`;
+  const space = " ".repeat(process.stdout.columns - line.length - 1);
+  process.stdout.write(`${line}${space}\r`);
 };
 
 export const insertFiles = async (piece: ContentPiece) => {
