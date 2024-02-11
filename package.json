@@ -12,6 +12,7 @@
     "db:shell": "bun run scripts/db-shell.ts",
     "db:upload": "bun run scripts/db-upload-content.ts",
     "db:list": "bun run scripts/db-list.ts",
+    "img:upload": "bun run scripts/images-upload.ts",
     "files:dev": "DB_URL=files next dev --turbo",
     "files:build": "DB_URL=files next build",
     "files:indices": "bun run scripts/files-update-indices.ts",
