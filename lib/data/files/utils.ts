@@ -1,13 +1,13 @@
 import { FileTypeEnum } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
+import { env } from "@/lib/env.mjs";
 import { Dirent } from "fs";
 import { readdir } from "fs/promises";
 import { basename, extname, join } from "path";
-import { hashFile } from "../hashing";
-import { readStoredHash, readStoredHashOrThrow } from "./hashes";
-import { readMetadata } from "./metadata";
 import { FileReference } from "../data-backend";
-import { env } from "@/lib/env.mjs";
+import { hashFile } from "../hashing";
+import { readStoredHashOrThrow } from "./hashes";
+import { readMetadata } from "./metadata";
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true });
 
@@ -20,12 +20,14 @@ const rPieceDirectory = /^[0-9X]{2} .+$/;
 
 const imageExtensions = [".png", ".jpg", ".jpeg", ".svg", ".webp", ".avif"];
 
+const isMarkdown = (filename: string) => [".md", ".mdx"].includes(extname(filename));
+
 export const isContentPiece = (ent: Dirent) => ent.isDirectory() && ent.name.match(rPieceDirectory);
-export const isDoc = (ent: Dirent) => ent.isFile() && ent.name.startsWith("doc.");
+export const isDoc = (ent: Dirent) => ent.isFile() && ent.name.startsWith("doc.") && isMarkdown(ent.name);
 export const isCover = (ent: Dirent) => ent.isFile() && ent.name.startsWith("cover.");
 export const isSlide = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".svg";
 export const isImage = (ent: Dirent) => ent.isFile() && imageExtensions.includes(extname(ent.name));
-export const isExercise = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".md";
+export const isExercise = (ent: Dirent) => ent.isFile() && isMarkdown(ent.name) ;
 
 type FileTypeInfo = {
   subdir: string;
