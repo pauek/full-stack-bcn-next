@@ -178,6 +178,9 @@
   pre code {
     @apply bg-code text-code-foreground;
   }
+  a code {
+    @apply text-accent-foreground;
+  }
   p {
     margin: 0;
   }
