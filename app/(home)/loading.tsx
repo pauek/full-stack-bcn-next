@@ -16,7 +16,7 @@ const PartSkeleton = ({ numCards }: { numCards: number }) => {
   return (
     <div className="blur-xs">
       <div className="pt-3 pb-5">
-        <div className="h-8"></div>
+        <div className="h-10"></div>
         {rows.map((numCards, i) => (
           <div key={i} className="flex flex-row justify-center px-2">
             {Array.from({ length: numCards }).map((_, j) => (
@@ -31,6 +31,6 @@ const PartSkeleton = ({ numCards }: { numCards: number }) => {
 
 const CardSkeleton = () => (
   <div className="w-1/3 flex flex-col relative items-stretch bg-skeleton rounded-md m-1">
-    <div className="flex-1 relative w-full aspect-[4/3]"></div>
+    <div className="flex-1 relative w-full aspect-[7/6]"></div>
   </div>
 );

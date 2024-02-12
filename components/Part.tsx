@@ -15,9 +15,11 @@ export default async function Part({ part }: CoursePartProps) {
       <PartHeader name={part.name} />
       {computeRows(children).map((row, index) => (
         <div key={index} className="flex flex-row justify-center items-center px-2">
-          {row.map((session) => (
-            <SessionCard key={session.hash} session={session} />
-          ))}
+          {row
+            .filter(({ metadata }) => !metadata.hidden)
+            .map((session) => (
+              <SessionCard key={session.hash} session={session} />
+            ))}
         </div>
       ))}
     </div>

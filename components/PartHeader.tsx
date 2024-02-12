@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-const HLine = () => <div className="h-0 border-t border-stone-300 border-dashed flex-1" />;
+const HLine = () => <div className="h-0 border-t border-stone-300 flex-1" />;
 
 export default function PartHeader({ name }: { name: string }) {
   return (

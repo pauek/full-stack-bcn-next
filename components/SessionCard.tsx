@@ -14,7 +14,7 @@ export default async function SessionCard({ session }: _Props) {
   const { idpath, name, metadata } = session;
   const { index } = metadata;
   return (
-    <Link href={pieceUrl(idpath)} className="w-1/3 aspect-[5/4] sm:aspect-[4/3]">
+    <Link href={pieceUrl(idpath)} className="w-1/3 aspect-[7/6]">
       <div
         className={cn(
           "h-full text-xs sm:text-sm",
@@ -33,12 +33,14 @@ export default async function SessionCard({ session }: _Props) {
 
 const _Image = ({ fileref }: { fileref: FileReference | undefined }) => (
   <div className="flex-1 relative">
-    {fileref && <Image className="object-cover" src={attachmentUrl(fileref)} alt="card cover" fill={true} />}
+    {fileref && (
+      <Image className="object-cover dark:invert" src={attachmentUrl(fileref)} alt="card cover" fill={true} />
+    )}
   </div>
 );
 
 const _Label = ({ name }: { name: string }) => (
-  <div className="px-1 pb-1 pt-1.5 font-semibold bg-card border-t border-secondary text-center">
+  <div className="px-2 pb-1 pt-1.5 font-semibold bg-card border-t border-secondary text-center whitespace-nowrap overflow-hidden text-ellipsis">
     {name}
   </div>
 );
