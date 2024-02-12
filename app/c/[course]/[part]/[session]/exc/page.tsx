@@ -13,7 +13,7 @@ export default async function Page({ params }: SessionPageProps) {
         ({ chapter, attachments: exercises }, index) =>
           exercises.length > 0 && (
             <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
-              <ChapterHeader index={index + 1} />
+              <ChapterHeader index={index + 1} name={chapter.name} />
               {exercises.map(async (exercise, index) => (
                 <Exercise
                   key={exercise.hash}
