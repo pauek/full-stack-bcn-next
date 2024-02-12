@@ -94,6 +94,13 @@
   p {
     @apply my-2 leading-5;
   }
+  .aside > p {
+    @apply leading-4;
+  }
+  .focus {
+    @apply font-bold bg-foreground text-background rounded px-1 py-0.5;
+  }
+
 
   h1,
   h2,
@@ -158,6 +165,9 @@
   code {
     @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
   }
+  .focus code {
+    @apply bg-foreground text-background px-0.5;
+  }
   pre {
     @apply flex flex-row border mx-0 my-1 rounded;
   }
@@ -173,8 +183,12 @@
   }
   p + p,
   ul + p,
-  ol + p {
+  ol + p,
+  div.aside + p {
     margin-top: 1em;
+  }
+  .aside {
+    margin-top: 1rem;
   }
   pre + pre {
     @apply mt-0;

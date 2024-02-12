@@ -1,10 +1,10 @@
-import SyntaxHighlighter from "react-syntax-highlighter";
+import { iosevka } from "@/lib/fonts";
+import { cn } from "@/lib/utils";
 
-export default function Code(props: any) {
-  const match = /language-(\w+)/.exec(props.className || "");
-  return match ? (
-    <SyntaxHighlighter language={match[1]} {...props} />
-  ) : (
-    <code className={props.className} {...props} />
+export default function Code2(props: React.ComponentProps<"code">) {
+  return (
+    <code {...props} className={cn(iosevka.className)}>
+      {props.children}
+    </code>
   );
 }

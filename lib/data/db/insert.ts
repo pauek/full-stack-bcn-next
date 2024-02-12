@@ -3,7 +3,7 @@ import * as files from "@/lib/data/files";
 import { readFile } from "fs/promises";
 import { basename, join } from "path";
 import { ContentPiece } from "@/lib/adt";
-import { bytesToBase64 } from "@/lib/utils";
+import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils";
 import { hashAny } from "@/lib/data/hashing";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -76,9 +76,8 @@ export const insertFile = async (
   const hash = await hashAny(bytes);
 
   if (!(await fileExists(hash))) {
-    process.stdout.write(
-      `  ${chalk.gray(hash)} ${chalk.green(filetype)} ${chalk.yellow(filename)}\n`
-    );
+    logUploadedFile(hash, filetype, filename);
+
     await db
       .insert(schema.files)
       .values({
@@ -86,6 +85,8 @@ export const insertFile = async (
         data: bytesToBase64(bytes),
       })
       .onConflictDoNothing();
+  } else {
+    logPresentFile(hash, filetype, filename);
   }
 
   await db
@@ -97,10 +98,6 @@ export const insertFile = async (
       filename,
     })
     .onConflictDoNothing();
-
-  const line = `  ${hash} ${filetype} ${filename}`;
-  const space = " ".repeat(process.stdout.columns - line.length - 1);
-  process.stdout.write(`${line}${space}\r`);
 };
 
 export const insertFiles = async (piece: ContentPiece) => {

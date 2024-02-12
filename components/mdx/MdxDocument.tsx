@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import ImageFromMap from "./ImageFromMap";
+import ImageForChapter from "./ImageForChapter";
 import mdxComponents from "./mdx-components";
 
 type _Props = {
@@ -24,16 +24,16 @@ export default async function MdxDocument({ className = "", text, imageMap }: _P
   };
 
   return (
-    <div className={cn(className, "relative m-auto max-w-[54em] mdx-document")}>
+    <div className={cn(className, "m-auto max-w-[54em] mdx-document")}>
       <div className="bg-background text-sm rounded-md">
-        <div className="max-w-[40em]">
+        <div className="max-w-[40em] min-w-0 relative">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>
               <MDXRemote
                 source={text}
                 components={{
                   ...mdxComponents,
-                  Image: ImageFromMap(imageMap),
+                  Image: ImageForChapter(imageMap),
                 }}
                 options={{
                   mdxOptions: {
