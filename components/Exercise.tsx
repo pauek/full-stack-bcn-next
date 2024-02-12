@@ -14,7 +14,7 @@ export default async function Exercise({ index, chapter, exercise }: ExercisePro
 
   return (
     text && (
-      <div className="md:flex md:flex-row flex-col">
+      <div className="md:flex md:flex-row flex-col mx-2.5">
         <div
           className={cn(
             "mx-2.5 lg:ml-5 mt-[.7em] w-[1.8em] h-[1.8em]",
