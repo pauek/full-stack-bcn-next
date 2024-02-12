@@ -6,35 +6,36 @@ import NextImage from "next/image";
 
 type _ImageProps = {
   border?: boolean;
+  zoomable?: boolean;
 };
 
 export default function ImageForChapter(imageMap: Map<string, FileReference>) {
-  return function Image({
-    src,
-    alt,
-    width,
-    height,
-    border = true,
-  }: React.ComponentProps<"img"> & _ImageProps) {
+  return function Image(props: React.ComponentProps<"img"> & _ImageProps) {
     // Hay que insertar el id del Chapter para que el documento
     // pueda referirse a la imagen con un path relativo
-    if (!src) {
+    if (!props.src) {
       throw new Error("Image src missing!");
     }
-    const fileref = imageMap.get(src);
+    const fileref = imageMap.get(props.src);
     if (!fileref) {
-      throw new Error(`Image "${src}" not found in imageMap!`);
+      throw new Error(`Image "${props.src}" not found in imageMap!`);
     }
+
+    const { zoomable = true, border = true } = props;
+
+    const Identity = ({ children }: { children: React.ReactNode }) => children;
+    const MaybeZoomable = zoomable ? Zoomable : Identity;
+
     return (
       <div className={cn(border ? "border" : "", "my-4 flex justify-center items-center")}>
-        <Zoomable>
+        <MaybeZoomable>
           <NextImage
             src={attachmentUrl(fileref)}
-            alt={alt || "image"}
-            width={Number(width)}
-            height={Number(height)}
+            alt={props.alt || "image"}
+            width={Number(props.width)}
+            height={Number(props.height)}
           />
-        </Zoomable>
+        </MaybeZoomable>
       </div>
     );
   };
