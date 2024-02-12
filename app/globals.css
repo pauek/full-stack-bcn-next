@@ -101,6 +101,7 @@
     @apply font-bold bg-foreground text-background rounded px-1 py-0.5;
   }
 
+
   h1,
   h2,
   h3,
@@ -163,6 +164,9 @@
   }
   code {
     @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
+  }
+  .focus code {
+    @apply bg-foreground text-background px-0.5;
   }
   pre {
     @apply flex flex-row border mx-0 my-1 rounded;
