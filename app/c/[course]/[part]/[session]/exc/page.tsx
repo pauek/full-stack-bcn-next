@@ -1,12 +1,11 @@
-import ChapterDocument from "@/components/ChapterDocument";
-import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
-import { generateStaticParamsCommon } from "../static-params";
 import ChapterHeader from "@/components/ChapterHeader";
 import MdxDocument from "@/components/mdx/MdxDocument";
-import data from "@/lib/data";
 import { ContentPiece } from "@/lib/adt";
+import data from "@/lib/data";
 import { FileReference } from "@/lib/data/data-backend";
 import { cn } from "@/lib/utils";
+import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
+import { generateStaticParamsCommon } from "../static-params";
 
 type ExerciseProps = {
   chapter: ContentPiece;
@@ -38,23 +37,26 @@ const Exercise = async ({ index, chapter, exercise }: ExerciseProps) => {
 
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
-  const exercises = await getAttachments(piece, "exercise");
+  const attachments = await getAttachments(piece, "exercise");
+
   return (
     <div className="w-full flex flex-col gap-4">
-      {exercises.map(({ chapter, attachments: exercises }, index) => (
-        exercises.length > 0 && <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
-          <ChapterHeader index={index + 1} />
-          {exercises &&
-            exercises.map(async (exercise, index) => (
-              <Exercise
-                key={exercise.hash}
-                index={index + 1}
-                chapter={chapter}
-                exercise={exercise}
-              />
-            ))}
-        </div>
-      ))}
+      {attachments.map(
+        ({ chapter, attachments: exercises }, index) =>
+          exercises.length > 0 && (
+            <div key={chapter.hash} className="bg-card rounded min-h-[6em]">
+              <ChapterHeader index={index + 1} name={chapter.name} />
+              {exercises.map(async (exercise, index) => (
+                <Exercise
+                  key={exercise.hash}
+                  index={index + 1}
+                  chapter={chapter}
+                  exercise={exercise}
+                />
+              ))}
+            </div>
+          )
+      )}
     </div>
   );
 }
