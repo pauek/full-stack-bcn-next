@@ -25,7 +25,7 @@ export default async function MdxDocument({ className = "", text, imageMap }: _P
 
   return (
     <div className={cn(className, "m-auto max-w-[54em] mdx-document")}>
-      <div className="p-2.5 lg:p-4 bg-background text-sm rounded-md">
+      <div className="bg-background text-sm rounded-md">
         <div className="max-w-[40em] min-w-0 relative">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>
