@@ -101,7 +101,6 @@
     @apply font-bold bg-foreground text-background rounded px-1 py-0.5;
   }
 
-
   h1,
   h2,
   h3,
@@ -179,7 +178,16 @@
     @apply bg-code text-code-foreground;
   }
   a code {
-    @apply text-accent-foreground;
+    @apply bg-accent-foreground text-background;
+  }
+  /* Links to MDN */
+  a[href^="https://developer.mozilla.org"] {
+    font-weight: 500;
+  }
+
+  a[href^="https://developer.mozilla.org"]::after
+  {
+    content: url("/mdn.svg");
   }
   p {
     margin: 0;
