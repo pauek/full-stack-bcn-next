@@ -6,7 +6,7 @@ export default function Aside({ className, children }: React.ComponentProps<"asi
       className={cn(
         "aside",
         className,
-        "lg:absolute lg:w-[20em] left-full ml-4 mr-2",
+        "lg:absolute lg:w-[18em] left-full ml-3 mr-2",
         "text-[0.7rem] leading-3 text-secondary-foreground opacity-60"
       )}
     >

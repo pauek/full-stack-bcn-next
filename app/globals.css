@@ -191,7 +191,7 @@
     margin-top: 1em;
   }
   .aside {
-    margin-top: 1rem;
+    margin-top: 0.1rem;
   }
   pre + pre {
     @apply mt-0;
