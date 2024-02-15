@@ -2,10 +2,8 @@
 [X] Dangling documents.
 [X] Independizar los hashes del backend
 [X] Arreglar tema ñopos de "Collecting page data...", que ha sido un marrón de variables de entorno 😰
+[X] Quitar la dependencia con la base de datos de ficheros, excepto por los documentos?
+[X] Pasar todos los ficheros a R2, y sólo tener "attachments" en la base de datos. Ahora mismo los ficheros estan duplicados
+[X] Conseguir hacer upload de los cambios (diff Merkle trees).
 
-[ ] Quitar la dependencia con la base de datos de ficheros, excepto por los documentos?
-[ ] Pasar todos los ficheros a R2, y sólo tener "attachments" en la base de datos.
-    Ahora mismo los ficheros estan duplicados
-
-[ ] Conseguir hacer upload de los cambios (diff Merkle trees).
 [ ] Implementar login con Authjs
