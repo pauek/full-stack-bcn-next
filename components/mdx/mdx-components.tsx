@@ -3,6 +3,7 @@ import Code from "./Code";
 import CopyableCode from "./CopyableCode";
 import * as dom from "./dom";
 import Focus from "./Focus";
+import Note from "./Note";
 import Pre from "./Pre";
 import Ref from "./Ref";
 import Row from "./Row";
@@ -30,6 +31,7 @@ const components = {
   Warn,
   pre: Pre,
   Focus,
+  Note,
 };
 
 export default components;
