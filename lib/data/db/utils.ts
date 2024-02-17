@@ -1,5 +1,5 @@
 import * as schema from "@/data/schema";
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import { and, eq } from "drizzle-orm";
 import { db } from "./db";
 
@@ -17,7 +17,7 @@ import { db } from "./db";
 
 export const getPieceFilesByFiletype = async (
   pieceHash: string,
-  filetype: FileTypeEnum,
+  filetype: FileType,
   options?: { limit: number }
 ) => {
   // find file starting with cover associated with piece
@@ -51,5 +51,5 @@ export const getFileData = async (fileHash: string) => {
 
 export const pieceHasFiletype = async (
   pieceHash: string,
-  filetype: FileTypeEnum
+  filetype: FileType
 ): Promise<boolean> => (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0;

@@ -1,4 +1,4 @@
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import chalk from "chalk";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -63,7 +63,7 @@ type LogFileOptions = { preserve?: boolean, color?: boolean }
 
 const logFile =
   (options?: LogFileOptions) =>
-  (hash: string, filetype: FileTypeEnum, filename: string) => {
+  (hash: string, filetype: FileType, filename: string) => {
     const { preserve = false, color = false } = options || {};
 
     const _hash = color ? chalk.gray(hash) : hash;

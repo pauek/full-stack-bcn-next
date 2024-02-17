@@ -1,4 +1,4 @@
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import { isFulfilled } from "@/lib/utils";
@@ -22,7 +22,7 @@ export const getPieceWithChildrenOrNotFound = async ({ params }: SessionPageProp
   return piece;
 };
 
-export const getAttachments = async (piece: ContentPiece, filetype: FileTypeEnum) => {
+export const getAttachments = async (piece: ContentPiece, filetype: FileType) => {
   const children = piece.children || [];
 
   const result = await Promise.allSettled(

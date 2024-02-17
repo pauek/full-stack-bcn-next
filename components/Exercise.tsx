@@ -25,7 +25,7 @@ export default async function Exercise({ index, chapter, exercise }: ExercisePro
           {index}
         </div>
         <div className="flex-1">
-          <MdxDocument className="p-2.5" text={text?.toString()} imageMap={new Map()} />
+          <MdxDocument className="p-2.5" text={text?.toString()} />
         </div>
       </div>
     )

@@ -1,13 +1,13 @@
 import * as schema from "@/data/schema";
+import { FileType } from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
 import * as files from "@/lib/data/files";
+import { hashAny } from "@/lib/data/hashing";
+import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils";
+import { eq } from "drizzle-orm";
 import { readFile } from "fs/promises";
 import { basename, join } from "path";
-import { ContentPiece } from "@/lib/adt";
-import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils";
-import { hashAny } from "@/lib/data/hashing";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
-import chalk from "chalk";
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
   // const parentExists = await _pieceHashExists(parentHash);
@@ -65,7 +65,7 @@ export const insertPieceHashmap = async (piece: ContentPiece) => {
 
 type FileInfo = {
   filename: string;
-  filetype: schema.FileTypeEnum;
+  filetype: schema.FileType;
   diskpath: string;
 };
 export const insertFile = async (
@@ -102,7 +102,7 @@ export const insertFile = async (
 
 export const insertFiles = async (piece: ContentPiece) => {
   const fullpath =
-    (dir: string, filetype: schema.FileTypeEnum) =>
+    (dir: string, filetype: schema.FileType) =>
     ({ filename }: { filename: string }) => ({
       filename,
       filetype,
@@ -111,18 +111,18 @@ export const insertFiles = async (piece: ContentPiece) => {
 
   const images = await files.getPieceImageList(piece);
   const slides = await files.getPieceSlideList(piece);
-  const exercises = await files.getPieceAttachmentList(piece, "exercise");
+  const exercises = await files.getPieceAttachmentList(piece, FileType.exercise);
   const allFiles = [
-    ...images.map(fullpath("images", "image")),
-    ...slides.map(fullpath("slides", "slide")),
-    ...exercises.map(fullpath("exercises", "exercise")),
+    ...images.map(fullpath("images", FileType.image)),
+    ...slides.map(fullpath("slides", FileType.slide)),
+    ...exercises.map(fullpath("exercises", FileType.exercise)),
   ];
 
   const doc = await files.findDocFilename(piece.diskpath);
   if (doc) {
     allFiles.push({
       filename: doc,
-      filetype: "doc",
+      filetype: FileType.doc,
       diskpath: join(piece.diskpath, doc),
     });
   }
@@ -130,7 +130,7 @@ export const insertFiles = async (piece: ContentPiece) => {
   if (cover) {
     allFiles.push({
       filename: basename(cover),
-      filetype: "cover",
+      filetype: FileType.cover,
       diskpath: cover,
     });
   }

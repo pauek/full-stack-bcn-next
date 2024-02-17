@@ -5,6 +5,8 @@ import { METADATA_FILENAME } from "./files/metadata";
 import { basename } from "path";
 import { readFile } from "fs/promises";
 import crypto from "crypto";
+import { FileType } from "@/data/schema";
+import { fileTypeInfo } from "./files";
 
 export type Hash = string;
 
@@ -69,36 +71,24 @@ export const hashPiece = async function (
     hashes.push({ filename: name, hash: hashAny(buffer) });
   }
 
-  const [cover] = await backend.getPieceAttachmentList(piece, "cover");
+  const [cover] = await backend.getPieceAttachmentList(piece, FileType.cover);
   if (cover) {
     const { filename, hash } = cover;
     hashes.push({ filename: filename, hash });
   }
 
-  const imgList = await backend.getPieceImageList(piece);
-  if (imgList !== null) {
-    for (const { filename } of imgList) {
+  // All kinds of attachments
+  for (const filetype of [FileType.image, FileType.slide, FileType.exercise, FileType.quiz]) {
+    const info = fileTypeInfo[filetype];
+    const attachmentList = await backend.getPieceAttachmentList(piece, filetype);
+    for (const { filename } of attachmentList) {
+      const fileData = await backend.getPieceFileData(piece, filename, filetype);
       hashes.push({
-        filename: `images/${filename}`,
-        hash: hashAny(await backend.getPieceFileData(piece, filename, "image")),
+        filename: `${info.subdir}/${filename}`,
+        hash: hashAny(fileData),
       });
     }
-  }
-
-  const slideList = await backend.getPieceSlideList(piece);
-  for (const { filename } of slideList) {
-    hashes.push({
-      filename: `slides/${filename}`,
-      hash: hashAny(await backend.getPieceFileData(piece, filename, "slide")),
-    });
-  }
-
-  const exerciseList = await backend.getPieceAttachmentList(piece, "exercise");
-  for (const { filename } of exerciseList) {
-    hashes.push({
-      filename: `exercises/${filename}`,
-      hash: hashAny(await backend.getPieceFileData(piece, filename, "exercise")),
-    });
+  
   }
 
   hashes.sort((a, b) => {

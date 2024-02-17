@@ -1,3 +1,4 @@
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import { FileReference } from "@/lib/data/data-backend";
@@ -10,7 +11,7 @@ type _Props = {
   session: ContentPiece;
 };
 export default async function SessionCard({ session }: _Props) {
-  const [cover] = await data.getPieceAttachmentList(session, "cover");
+  const [cover] = await data.getPieceAttachmentList(session, FileType.cover);
   const { idpath, name, metadata } = session;
   const { index } = metadata;
   return (

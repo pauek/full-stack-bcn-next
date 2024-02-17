@@ -1,4 +1,4 @@
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { readFile } from "fs/promises";
 import { basename, join, join as pathJoin } from "path";
@@ -123,12 +123,12 @@ export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileRefer
 };
 
 export const getPieceSlideList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.diskpath, "slide");
+  utils.listPieceSubdir(piece.diskpath, FileType.slide);
 
 export const getPieceImageList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.diskpath, "image");
+  utils.listPieceSubdir(piece.diskpath, FileType.image);
 
-export const getPieceAttachmentList = async (piece: ContentPiece, filetype: FileTypeEnum) =>
+export const getPieceAttachmentList = async (piece: ContentPiece, filetype: FileType) =>
   utils.listPieceSubdir(piece.diskpath, filetype);
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
@@ -143,7 +143,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: FileTypeEnum
+  filetype: FileType
 ): Promise<Buffer | null> => {
   const fileTypeInfo = utils.fileTypeInfo[filetype];
   const fulldiskpath = join(piece.diskpath, fileTypeInfo.subdir, filename);
@@ -177,7 +177,7 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
 
 export const getAllAttachmentPaths = async (
   rootIdpath: string[],
-  filetype: FileTypeEnum
+  filetype: FileType
 ): Promise<string[][]> => {
   const result: string[][] = [];
   await __walkFiles(rootIdpath, async (piece) => {

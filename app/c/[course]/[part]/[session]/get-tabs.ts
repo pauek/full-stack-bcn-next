@@ -1,6 +1,6 @@
 "use server";
 
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import { readMetadata } from "@/lib/data/files/metadata";
@@ -21,7 +21,7 @@ type TabInfo = {
   
   */
 
-const anyChildHasAttachmentsOfType = async (piece: ContentPiece, filetype: FileTypeEnum) => {
+const anyChildHasAttachmentsOfType = async (piece: ContentPiece, filetype: FileType) => {
   for (const child of piece.children || []) {
     const attachments = await data.getPieceAttachmentList(child, filetype);
     if (attachments.length > 0) {
@@ -45,6 +45,7 @@ export const getTabs = async (piece: ContentPiece) => {
       }
     }
   }
+  console.log(options);
   options.sort((a, b) => a.order - b.order);
   return options;
 };

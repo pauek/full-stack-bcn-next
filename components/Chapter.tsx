@@ -2,6 +2,7 @@ import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import MdxDocument from "./mdx/MdxDocument";
 import ChapterHeader from "./ChapterHeader";
+import { FileType } from "@/data/schema";
 
 type ChapterProps = {
   index: number;
@@ -9,7 +10,7 @@ type ChapterProps = {
 };
 export default async function Chapter({ index, chapter }: ChapterProps) {
   const doc = await data.getPieceDocument(chapter);
-  const images = await data.getPieceAttachmentList(chapter, "image");
+  const images = await data.getPieceAttachmentList(chapter, FileType.image);
   const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]));
 
   return (

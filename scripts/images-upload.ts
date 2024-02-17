@@ -1,4 +1,4 @@
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import { withImageUploader } from "@/lib/data/images";
 import { showExecutionTime } from "@/lib/utils";
 
@@ -8,9 +8,9 @@ await showExecutionTime(async () => {
     for (const { name } of await uploader.listAllFiles()) {
       if (name) existing.add(name);
     }
-    const types: FileTypeEnum[] = ["image", "slide", "cover"];
+    const types: FileType[] = [FileType.image, FileType.slide, FileType.cover];
     for (const ty of types) {
-      await uploader.uploadAllFilesOfType(ty as FileTypeEnum, existing);
+      await uploader.uploadAllFilesOfType(ty as FileType, existing);
     }
   });
 });

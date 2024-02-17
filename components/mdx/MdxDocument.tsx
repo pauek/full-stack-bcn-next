@@ -6,14 +6,21 @@ import { ErrorBoundary } from "react-error-boundary";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import ImageForChapter from "./ImageForChapter";
-import mdxComponents from "./mdx-components";
+import mdxStandardComponents from "./mdx-standard-components";
+import { MDXComponents } from "mdx/types";
 
 type _Props = {
   className?: string;
   text: string;
-  imageMap: Map<string, FileReference>;
+  imageMap?: Map<string, FileReference>;
+  components?: MDXComponents;
 };
-export default async function MdxDocument({ className = "", text, imageMap }: _Props) {
+export default async function MdxDocument({
+  className = "",
+  text,
+  imageMap = new Map(),
+  components: propsComponents,
+}: _Props) {
   const RenderError = () => {
     return (
       <div className="bg-red-600 text-foreground text-xl px-3 py-2 rounded">
@@ -32,7 +39,8 @@ export default async function MdxDocument({ className = "", text, imageMap }: _P
               <MDXRemote
                 source={text}
                 components={{
-                  ...mdxComponents,
+                  ...mdxStandardComponents,
+                  ...propsComponents,
                   Image: ImageForChapter(imageMap),
                 }}
                 options={{

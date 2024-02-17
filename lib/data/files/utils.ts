@@ -1,4 +1,4 @@
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import { env } from "@/lib/env.mjs";
 import { Dirent } from "fs";
@@ -23,37 +23,40 @@ const imageExtensions = [".png", ".jpg", ".jpeg", ".svg", ".webp", ".avif"];
 const isMarkdown = (filename: string) => [".md", ".mdx"].includes(extname(filename));
 
 export const isContentPiece = (ent: Dirent) => ent.isDirectory() && ent.name.match(rPieceDirectory);
-export const isDoc = (ent: Dirent) => ent.isFile() && ent.name.startsWith("doc.") && isMarkdown(ent.name);
+export const isDoc = (ent: Dirent) =>
+  ent.isFile() && ent.name.startsWith("doc.") && isMarkdown(ent.name);
 export const isCover = (ent: Dirent) => ent.isFile() && ent.name.startsWith("cover.");
 export const isSlide = (ent: Dirent) => ent.isFile() && extname(ent.name) === ".svg";
 export const isImage = (ent: Dirent) => ent.isFile() && imageExtensions.includes(extname(ent.name));
-export const isExercise = (ent: Dirent) => ent.isFile() && isMarkdown(ent.name) ;
+export const isExercise = (ent: Dirent) => ent.isFile() && isMarkdown(ent.name);
+export const isQuiz = (ent: Dirent) => ent.isFile() && isMarkdown(ent.name);
 
 type FileTypeInfo = {
   subdir: string;
   predicate: (ent: Dirent) => boolean;
 };
 
-export const fileTypeInfo: Record<FileTypeEnum, FileTypeInfo> = {
+export const fileTypeInfo: Record<FileType, FileTypeInfo> = {
   doc: { predicate: isDoc, subdir: "" },
   cover: { predicate: isCover, subdir: "" },
   slide: { predicate: isSlide, subdir: "slides" },
   image: { predicate: isImage, subdir: "images" },
   exercise: { predicate: isExercise, subdir: "exercises" },
+  quiz: { predicate: isQuiz, subdir: "quiz" },
   other: { predicate: () => false, subdir: "" },
 };
 
-export const determineFiletype = (ent: Dirent): FileTypeEnum => {
+export const determineFiletype = (ent: Dirent): FileType => {
   if (isImage(ent)) {
-    return "image";
+    return FileType.image;
   } else if (isSlide(ent)) {
-    return "slide";
+    return FileType.slide;
   } else if (isDoc(ent)) {
-    return "doc";
+    return FileType.doc;
   } else if (isCover(ent)) {
-    return "cover";
+    return FileType.cover;
   } else {
-    return "other";
+    return FileType.other;
   }
 };
 
@@ -78,7 +81,7 @@ export const findCoverImageFilename = async ({ diskpath }: ContentPiece) => {
 
 export const listPieceSubdir = async (
   diskpath: string,
-  filetype: FileTypeEnum
+  filetype: FileType
 ): Promise<Array<FileReference>> => {
   try {
     const typeInfo = fileTypeInfo[filetype];
@@ -104,8 +107,7 @@ export const okToSkipMissingHashes = async (func: (...args: any[]) => Promise<an
   _okToSkipMissingHashes = true;
   await func();
   _okToSkipMissingHashes = false;
-}
-
+};
 
 export const readPieceAtSubdir = async (
   subdir: string,
@@ -137,7 +139,7 @@ export const readPieceAtSubdir = async (
     name,
     idpath,
     diskpath,
-    hash, 
+    hash,
     metadata,
   };
 };

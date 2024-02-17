@@ -1,4 +1,4 @@
-import { FileTypeEnum } from "@/data/schema";
+import { FileType } from "@/data/schema";
 import data from "@/lib/data";
 import { fileTypeInfo } from "@/lib/data/files";
 import { hashAny } from "@/lib/data/hashing";
@@ -50,7 +50,7 @@ class ImageUploader {
   async uploadImage(
     dirpath: string,
     filename: string,
-    filetype: FileTypeEnum,
+    filetype: FileType,
     existing: Set<string>
   ) {
     try {
@@ -85,7 +85,7 @@ class ImageUploader {
     }
   }
 
-  async uploadAllFilesOfType(filetype: FileTypeEnum, existing: Set<string>) {
+  async uploadAllFilesOfType(filetype: FileType, existing: Set<string>) {
     const imagePaths = await data.getAllAttachmentPaths([env.COURSE_ID], filetype);
 
     const _uploadOne = async (index: number) => {

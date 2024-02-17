@@ -6,10 +6,10 @@ import { FileBuffer, FileReference } from "../data-backend";
 import { Hash } from "../hashing";
 import { db } from "./db";
 import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
-import { fileTypeInfo } from "../files/utils";
+import { FileType } from "@/data/schema";
 
-export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "cover");
-export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, "doc");
+export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.cover);
+export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.doc);
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const result = await db.query.hashmap.findFirst({
@@ -105,7 +105,7 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   if (!hash) {
     return null;
   }
-  const [result] = await getPieceFilesByFiletype(hash, "doc");
+  const [result] = await getPieceFilesByFiletype(hash, FileType.doc);
   if (!result) {
     return null;
   }
@@ -133,7 +133,7 @@ export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileRefer
 }
 
 export const __getFileListByFiletype =
-  (filetype: schema.FileTypeEnum) =>
+  (filetype: schema.FileType) =>
   async (piece: ContentPiece): Promise<FileReference[]> => {
     const results = await getPieceFilesByFiletype(piece.hash, filetype);
     if (!results) {
@@ -142,11 +142,11 @@ export const __getFileListByFiletype =
     return results;
   };
 
-export const getPieceImageList = __getFileListByFiletype("image");
-export const getPieceSlideList = __getFileListByFiletype("slide");
+export const getPieceImageList = __getFileListByFiletype(FileType.image);
+export const getPieceSlideList = __getFileListByFiletype(FileType.slide);
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const [file] = await getPieceFilesByFiletype(piece.hash, "cover", { limit: 1 });
+  const [file] = await getPieceFilesByFiletype(piece.hash, FileType.cover, { limit: 1 });
   if (!file) {
     return null;
   }
@@ -161,7 +161,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: schema.FileTypeEnum
+  filetype: schema.FileType
 ): Promise<Buffer | null> => {
   const [result] = await db
     .select({ data: schema.files.data })
@@ -252,7 +252,7 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
 
 export const getAllAttachmentPaths = async (
   rootIdpath: string[],
-  filetype: schema.FileTypeEnum
+  filetype: schema.FileType
 ): Promise<string[][]> => {
   const results = await db.query.hashmap.findMany({
     where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
@@ -278,7 +278,7 @@ export const getAllAttachmentPaths = async (
 
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
-  filetype: schema.FileTypeEnum
+  filetype: schema.FileType
 ): Promise<FileReference[]> => {
   const results = await getPieceFilesByFiletype(piece.hash, filetype);
   if (!results) {

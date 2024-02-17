@@ -47,17 +47,20 @@ export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
   }),
 }));
 
-// FIXME: How to get values from the pgEnum definition??
-export type FileTypeEnum = "doc" | "image" | "slide" | "cover" | "exercise" | "other";
-export const fileTypeEnumValues: [FileTypeEnum, ...FileTypeEnum[]] = [
-  "doc",
-  "image",
-  "slide",
-  "cover",
-  "exercise",
-  "other",
+export enum FileType {
+  doc = "doc",
+  image = "image",
+  slide = "slide",
+  cover = "cover",
+  exercise = "exercise",
+  quiz = "quiz",
+  other = "other",
+}
+export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType) as [
+  FileType,
+  ...FileType[]
 ];
-export const fileTypeEnum = pgEnum("filetype", fileTypeEnumValues);
+export const FileTypePg = pgEnum("filetype", FileTypeValues);
 
 // Files
 
@@ -80,7 +83,7 @@ export const attachments = pgTable(
     fileHash: text("file_hash")
       .notNull()
       .references(() => files.hash),
-    filetype: fileTypeEnum("filetype").notNull(),
+    filetype: FileTypePg("filetype").notNull(),
     filename: text("filename").notNull(),
   },
   (table) => ({
