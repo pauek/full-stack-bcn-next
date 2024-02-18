@@ -16,7 +16,7 @@ export default function TabButton({ path, name, slug }: TabButtonProps) {
     <div
       className={cn(
         "p-0 ",
-        slug === lastSegment
+        lastSegment === "(doc)" && slug === "" || slug === lastSegment
           ? "border-b-2 border-foreground text-foreground"
           : "text-muted-foreground"
       )}

@@ -25,4 +25,4 @@ export default async function Page({ params }: SessionPageProps) {
   );
 }
 
-export const generateStaticParams = generateStaticParamsCommon("slides");
+export const generateStaticParams = generateStaticParamsCommon;

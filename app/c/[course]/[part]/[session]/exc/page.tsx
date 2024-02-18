@@ -30,4 +30,4 @@ export default async function Page({ params }: SessionPageProps) {
   );
 }
 
-export const generateStaticParams = generateStaticParamsCommon("exercises");
+export const generateStaticParams = generateStaticParamsCommon;

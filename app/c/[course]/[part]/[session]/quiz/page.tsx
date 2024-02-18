@@ -3,6 +3,7 @@ import { FileType } from "@/data/schema";
 import { ErrorBoundary } from "react-error-boundary";
 import { SessionPageProps, getAllChapterAttachments, getPieceWithChildrenOrNotFound } from "../common";
 import { FileReference } from "@/lib/data/data-backend";
+import { generateStaticParamsCommon } from "../static-params";
 
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
@@ -30,3 +31,5 @@ const QuestionError = ({ quiz }: { quiz: FileReference }) => {
     </div>
   );
 };
+
+export const generateStaticParams = generateStaticParamsCommon;
