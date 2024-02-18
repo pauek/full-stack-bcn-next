@@ -2,7 +2,7 @@ import mdx from "@next/mdx";
 import chalk from "chalk";
 import { PHASE_PRODUCTION_BUILD, PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
 
-import { env } from "./lib/env.mjs"; // <--- IMPORTANT: Validate variable at build time
+import { env } from "./lib/env.mjs"; // <--- IMPORTANT: Validate variables at build time
 
 const withMDX = mdx({});
 
