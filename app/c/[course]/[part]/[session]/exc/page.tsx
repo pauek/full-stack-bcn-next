@@ -1,12 +1,12 @@
 import ChapterHeader from "@/components/ChapterHeader";
 import Exercise from "@/components/Exercise";
-import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
+import { SessionPageProps, getAllChapterAttachments, getPieceWithChildrenOrNotFound } from "../common";
 import { generateStaticParamsCommon } from "../static-params";
 import { FileType } from "@/data/schema";
 
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
-  const attachments = await getAttachments(piece, FileType.exercise);
+  const attachments = await getAllChapterAttachments(piece, FileType.exercise);
 
   return (
     <div className="w-full flex flex-col gap-4">

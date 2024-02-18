@@ -1,13 +1,13 @@
 import ChapterHeader from "@/components/ChapterHeader";
 import SlideGrid from "@/components/SlideGrid";
 import { attachmentUrl } from "@/lib/urls";
-import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
+import { SessionPageProps, getAllChapterAttachments, getPieceWithChildrenOrNotFound } from "../common";
 import { generateStaticParamsCommon } from "../static-params";
 import { FileType } from "@/data/schema";
 
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
-  const slides = await getAttachments(piece, FileType.slide);
+  const slides = await getAllChapterAttachments(piece, FileType.slide);
 
   return (
     <div className="flex flex-col gap-2">

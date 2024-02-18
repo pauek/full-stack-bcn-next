@@ -26,18 +26,18 @@ export const getPieceWithChildrenOrNotFound = async ({ params }: SessionPageProp
   return piece;
 };
 
-export const getAttachments = async (piece: ContentPiece, filetype: FileType) => {
+export const getAllChapterAttachments = async (piece: ContentPiece, filetype: FileType) => {
   const children = piece.children || [];
-
-  const result = await Promise.allSettled(
-    children.map(async (chapter) => ({
-      chapter,
-      attachments: await unstable_cache(
-        async () => await data.getPieceAttachmentList(chapter, filetype),
-        [chapter.hash, filetype.toString()]
-      )(),
-    }))
-  );
-
-  return result.filter(isFulfilled).map((res) => res.value);
+  if (children.length === 0) {
+    return [];
+  }
+  return unstable_cache(async () => {
+    const result = await Promise.allSettled(
+      children.map(async (chapter) => ({
+        chapter,
+        attachments: await data.getPieceAttachmentList(chapter, filetype),
+      }))
+    );
+    return result.filter(isFulfilled).map((res) => res.value);
+  }, [`${piece.hash}/chapter-attachments/${filetype}`])();
 };

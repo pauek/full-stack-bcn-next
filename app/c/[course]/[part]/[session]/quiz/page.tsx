@@ -1,12 +1,12 @@
 import QuizQuestion from "@/components/QuizQuestion";
 import { FileType } from "@/data/schema";
 import { ErrorBoundary } from "react-error-boundary";
-import { SessionPageProps, getAttachments, getPieceWithChildrenOrNotFound } from "../common";
+import { SessionPageProps, getAllChapterAttachments, getPieceWithChildrenOrNotFound } from "../common";
 import { FileReference } from "@/lib/data/data-backend";
 
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
-  const chapterAttachments = await getAttachments(piece, FileType.quiz);
+  const chapterAttachments = await getAllChapterAttachments(piece, FileType.quiz);
   const allQuestions = chapterAttachments.flatMap(({ attachments: questions, chapter }) =>
     questions.map((quiz) => ({ chapter, quiz }))
   );
