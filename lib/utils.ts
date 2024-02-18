@@ -70,8 +70,12 @@ const logFile =
     const _filename = color ? chalk.yellow(filename) : filename;
 
     const line = `  ${_hash} ${_filetype} ${_filename}`;
-    const space = " ".repeat(process.stdout.columns - 1 - line.length);
 
+    const nspaces = process.stdout.columns - 1 - line.length;
+    let space ="";
+    if (nspaces > 0) {
+      space = " ".repeat(nspaces);
+    }
     process.stdout.write(`${line}${space}${preserve ? "\n" : "\r"}`);
   };
 
