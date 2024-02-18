@@ -53,4 +53,5 @@ export interface DataBackendBase {
 export interface DataBackend extends DataBackendBase {
   getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>;
   walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>;
+  anyChildHasAttachmentsOfType: (piece: ContentPiece, filetype: FileType) => Promise<boolean>;
 }

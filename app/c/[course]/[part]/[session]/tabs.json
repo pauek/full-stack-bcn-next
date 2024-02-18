@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Documents",
+    "filetype": "doc",
+    "slug": "doc"
+  },
+  {
+    "name": "Slides",
+    "filetype": "slide",
+    "slug": "slides"
+  },
+  {
+    "name": "Exercises",
+    "filetype": "exercise",
+    "slug": "exc"
+  },
+  {
+    "name": "Quiz",
+    "filetype": "quiz",
+    "slug": "quiz"
+  }
+]

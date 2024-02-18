@@ -1,3 +1,4 @@
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "../adt";
 import { CrumbData, DataBackend, DataBackendBase, WalkFunc } from "./data-backend";
 
@@ -35,7 +36,22 @@ export const walkContentPieces = async function (
   return await func(dbPiece, children);
 };
 
+export const anyChildHasAttachmentsOfType = async function (
+  this: DataBackend,
+  piece: ContentPiece,
+  filetype: FileType
+) {
+  for (const child of piece.children || []) {
+    const attachments = await this.getPieceAttachmentList(child, filetype);
+    if (attachments.length > 0) {
+      return true;
+    }
+  }
+  return false;
+};
+
 export const commonBackend = {
   getBreadcrumbData,
   walkContentPieces,
+  anyChildHasAttachmentsOfType,
 };

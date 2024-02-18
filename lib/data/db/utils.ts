@@ -2,6 +2,7 @@ import * as schema from "@/data/schema";
 import { FileType } from "@/data/schema";
 import { and, eq } from "drizzle-orm";
 import { db } from "./db";
+import { ContentPiece } from "@/lib/adt";
 
 // export const fromDbPiece = (idpath: string[], dbPiece: DBPiece): ContentPiece => {
 //   return {
@@ -49,7 +50,5 @@ export const getFileData = async (fileHash: string) => {
   return result.data;
 };
 
-export const pieceHasFiletype = async (
-  pieceHash: string,
-  filetype: FileType
-): Promise<boolean> => (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0;
+export const pieceHasFiletype = async (pieceHash: string, filetype: FileType): Promise<boolean> =>
+  (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0;

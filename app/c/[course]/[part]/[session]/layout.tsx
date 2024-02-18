@@ -1,7 +1,20 @@
 import { pieceUrl } from "@/lib/urls";
 import TabButton from "./TabButton";
 import { SessionPageProps, getPieceWithChildrenOrNotFound } from "./common";
-import { getTabs } from "./get-tabs";
+import tabStaticInfo from "./tabs.json";
+import data from "@/lib/data";
+import { FileType } from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
+
+const getTabs = async (piece: ContentPiece) => {
+  const result: typeof tabStaticInfo = [];
+  for (const tab of tabStaticInfo) {
+    if (await data.anyChildHasAttachmentsOfType(piece, tab.filetype as FileType)) {
+      result.push(tab);
+    }
+  }
+  return result;
+};
 
 type _Props = SessionPageProps & {
   children: React.ReactNode;
@@ -9,7 +22,7 @@ type _Props = SessionPageProps & {
 export default async function Layout({ children, params }: _Props) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
   const path = pieceUrl(piece.idpath);
-  const tabInfos = await getTabs(piece);
+  const tabs = await getTabs(piece);
   return (
     <div id="top" className="w-full h-full flex flex-col">
       {/* Header */}
@@ -20,7 +33,7 @@ export default async function Layout({ children, params }: _Props) {
         </h2>
       </div>
       <div className="flex flex-row gap-2 cursor-pointer pl-5">
-        {tabInfos.map(({ name, slug }, i) => (
+        {tabs.map(({ name, slug }, i) => (
           <TabButton key={i} name={name} slug={slug} path={path} />
         ))}
       </div>
