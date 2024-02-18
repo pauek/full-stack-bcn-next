@@ -10,6 +10,7 @@ const withMDX = mdx({});
 const nextConfig = {
   experimental: {
     mdxRs: true,
+    ppr: true,
   },
   images: {
     dangerouslyAllowSVG: true,

@@ -1,6 +1,6 @@
 import React, { SVGProps } from "react";
 
-export function CheckMark(props: SVGProps<SVGSVGElement> & { size: number }) {
+export function CheckMark(props: SVGProps<SVGSVGElement> & { size?: number }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
