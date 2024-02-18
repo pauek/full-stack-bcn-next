@@ -2,7 +2,7 @@ import * as schema from "@/data/schema";
 import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import * as files from "@/lib/data/files";
-import { hashAny } from "@/lib/data/hashing";
+import { Hash, hashAny } from "@/lib/data/hashing";
 import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 import { readFile } from "fs/promises";
@@ -10,8 +10,6 @@ import { basename, join } from "path";
 import { db } from "./db";
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
-  // const parentExists = await _pieceHashExists(parentHash);
-  // const childExists = await _pieceHashExists(childHash);
   await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing();
 };
 
@@ -100,24 +98,29 @@ export const insertFile = async (
     .onConflictDoNothing();
 };
 
+type FileInsertion = {
+  filename: string;
+  filetype: schema.FileType;
+  diskpath: string;
+};
+
 export const insertFiles = async (piece: ContentPiece) => {
   const fullpath =
     (dir: string, filetype: schema.FileType) =>
-    ({ filename }: { filename: string }) => ({
+    ({ filename }: { filename: string }): FileInsertion => ({
       filename,
       filetype,
       diskpath: join(piece.diskpath, dir, filename),
     });
 
-  const images = await files.getPieceImageList(piece);
-  const slides = await files.getPieceSlideList(piece);
-  const exercises = await files.getPieceAttachmentList(piece, FileType.exercise);
-  const allFiles = [
-    ...images.map(fullpath("images", FileType.image)),
-    ...slides.map(fullpath("slides", FileType.slide)),
-    ...exercises.map(fullpath("exercises", FileType.exercise)),
-  ];
-
+  let allFiles: FileInsertion[] = [];
+  for (const filetype of schema.AllAttachmentTypes) {
+    allFiles = allFiles.concat(
+      (await files.getPieceAttachmentList(piece, filetype)).map(
+        fullpath(files.fileTypeInfo[filetype].subdir, filetype)
+      )
+    );
+  }
   const doc = await files.findDocFilename(piece.diskpath);
   if (doc) {
     allFiles.push({
@@ -142,5 +145,14 @@ export const insertFiles = async (piece: ContentPiece) => {
       console.error(`Cannot insert ${file.filename}: ${e.toString()}`);
       console.error(e.stack);
     }
+  }
+};
+
+export const insertQuizAnswers = async (answers: Map<Hash, string>) => {
+  if (answers.size > 0) {
+    await db
+      .insert(schema.quizAnswers)
+      .values([...answers.entries()].map(([hash, answer]) => ({ hash, answer })))
+      .onConflictDoNothing();
   }
 };

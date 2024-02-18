@@ -6,6 +6,7 @@ import { FileBuffer, FileReference, WalkFunc } from "../data-backend";
 import * as utils from "./utils";
 import { env } from "@/lib/env.mjs";
 import { Hash } from "../hashing";
+import { readAnswers } from "./answers";
 
 export { findCoverImageFilename } from "./utils";
 
@@ -188,3 +189,8 @@ export const getAllAttachmentPaths = async (
   });
   return result;
 };
+
+export const getQuizAnswerForHash = async (hash: Hash) => {
+  const answers = await readAnswers();
+  return answers.get(hash) || null;
+}

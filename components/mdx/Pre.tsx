@@ -1,5 +1,9 @@
 import CopyableCode from "./CopyableCode";
 
-export default function Pre({ children }: React.ComponentProps<"pre">) {
+export function CopyablePre({ children }: React.ComponentProps<"pre">) {
   return <CopyableCode>{children}</CopyableCode>;
+}
+
+export function Pre({ children }: React.ComponentProps<"pre">) {
+  return <pre className="relative">{children}</pre>;
 }

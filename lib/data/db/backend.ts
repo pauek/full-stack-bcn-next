@@ -120,17 +120,21 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   return { name: result.filename, buffer: Buffer.from(base64ToBytes(data)) };
 };
 
-export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileReference) => {
+export const getAttachmentBytes = async (_piece: ContentPiece, fileref: FileReference) => {
+  return getAttachmentBytesByHash(fileref.hash);
+};
+
+const getAttachmentBytesByHash = async (hash: string): Promise<Buffer | null> => {
   try {
-    const data = await getFileData(fileref.hash);
+    const data = await getFileData(hash);
     if (!data) {
       return null;
     }
-    return Buffer.from(base64ToBytes(data))
+    return Buffer.from(base64ToBytes(data));
   } catch (e) {
     return null;
   }
-}
+};
 
 export const __getFileListByFiletype =
   (filetype: schema.FileType) =>
@@ -286,3 +290,9 @@ export const getPieceAttachmentList = async (
   }
   return results;
 };
+
+
+export const getQuizAnswerForHash = async (hash: Hash) => {
+  const result = await db.query.quizAnswers.findFirst({ where: eq(schema.quizAnswers.hash, hash) });
+  return result?.answer || null;
+}

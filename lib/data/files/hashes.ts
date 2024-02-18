@@ -26,3 +26,4 @@ export const readStoredHashOrThrow = async (diskpath: string): Promise<string> =
 export const writeStoredHash = async (diskpath: string, hash: string) => {
   await writeFile(join(diskpath, HASH_FILE), hash);
 };
+

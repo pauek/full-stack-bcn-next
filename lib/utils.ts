@@ -59,11 +59,10 @@ export const isFulfilled = function <T>(
   return input.status === "fulfilled";
 };
 
-type LogFileOptions = { preserve?: boolean, color?: boolean }
+type LogFileOptions = { preserve?: boolean; color?: boolean };
 
 const logFile =
-  (options?: LogFileOptions) =>
-  (hash: string, filetype: FileType, filename: string) => {
+  (options?: LogFileOptions) => (hash: string, filetype: FileType, filename: string) => {
     const { preserve = false, color = false } = options || {};
 
     const _hash = color ? chalk.gray(hash) : hash;
@@ -72,10 +71,34 @@ const logFile =
 
     const line = `  ${_hash} ${_filetype} ${_filename}`;
     const space = " ".repeat(process.stdout.columns - 1 - line.length);
-    
+
     process.stdout.write(`${line}${space}${preserve ? "\n" : "\r"}`);
   };
 
 export const logUploadedFile = logFile({ preserve: true, color: true });
 export const logPresentFile = logFile();
 
+export const splitMarkdownPreamble = (text: string) => {
+  const lines = text.split("\n");
+  if (lines[0] === "---") {
+    const preambleEnd = lines.indexOf("---", 1);
+    if (preambleEnd !== -1) {
+      const preamble = lines.slice(1, preambleEnd).join("\n");
+      const body = lines.slice(preambleEnd + 1).join("\n");
+      return { preamble, body };
+    }
+  }
+  return { preamble: "", body: text };
+};
+
+export const getQuizPartsFromFile = (text: string) => {
+  const { preamble, body } = splitMarkdownPreamble(text);
+  if (!preamble) {
+    throw new Error("Question missing preamble");
+  }
+  const { answer } = JSON.parse(preamble);
+  if (!answer) {
+    throw new Error("Question missing answer");
+  }
+  return { answer, body };
+}

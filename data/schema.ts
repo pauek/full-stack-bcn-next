@@ -56,6 +56,12 @@ export enum FileType {
   quiz = "quiz",
   other = "other",
 }
+export const AllAttachmentTypes = [
+  FileType.image,
+  FileType.slide,
+  FileType.exercise,
+  FileType.quiz,
+];
 export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType) as [
   FileType,
   ...FileType[]
@@ -129,3 +135,13 @@ export const hashmapRelations = relations(hashmap, ({ one }) => ({
     relationName: "hashmap_piece",
   }),
 }));
+
+// Answers
+
+// This is a collection of all answers to quizzes which we want
+// to isolate in the server
+
+export const quizAnswers = pgTable("quiz_answers", {
+  hash: text("hash").primaryKey(),
+  answer: text("answer").notNull(),
+});

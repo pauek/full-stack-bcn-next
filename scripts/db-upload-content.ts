@@ -7,14 +7,31 @@ import { filesBackend } from "@/lib/data/files";
 import { getRoot } from "@/lib/data/root";
 import { showExecutionTime } from "@/lib/utils";
 import chalk from "chalk";
+import { collectAnswersForPiece } from "@/lib/data/files/answers";
+import { ContentPiece } from "@/lib/adt";
+
+const {
+  argv: [_bun, _script, idjpath],
+} = process;
 
 showExecutionTime(async () => {
   const forcedUpload = process.argv.includes("--force");
   console.log(chalk.gray(`[${dbBackend.getInfo()}]`));
   console.log(chalk.gray(`[forcedUpload = ${forcedUpload}]`));
 
-  const root = await getRoot(filesBackend);
-  if (!forcedUpload && await db.pieceExists(root)) {
+  // Get root (user can select one)
+  let root: ContentPiece | null = null;
+  if (idjpath) {
+    root = await dbBackend.getPiece(idjpath.split("/"));
+    if (!root) {
+      console.error(`Piece "${idjpath}" not found.`);
+      process.exit(1);
+    }
+  } else {
+    root = await getRoot(dbBackend);
+  }
+
+  if (!forcedUpload && (await db.pieceExists(root))) {
     console.log("No changes.");
     process.exit(0);
   }
@@ -41,6 +58,10 @@ showExecutionTime(async () => {
     await db.insertPiece(piece);
     await db.insertPieceHashmap(piece);
     await db.insertFiles(piece);
+
+    const answers = await collectAnswersForPiece(piece);
+    await db.insertQuizAnswers(answers);
+
     for (const child of children) {
       await db.pieceSetParent(child.hash, piece.hash);
     }

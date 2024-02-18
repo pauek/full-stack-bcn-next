@@ -15,4 +15,4 @@ const getBackend = (): DataBackend => {
   return backend;
 };
 
-export default await getBackend();
+export default getBackend();

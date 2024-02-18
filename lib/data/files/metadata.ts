@@ -3,6 +3,8 @@ import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { DataBackend } from "../data-backend";
 import { getPieceSlideList, pieceHasDoc } from "./backend";
+import { Hash } from "../hashing";
+import { collectAnswersForPiece, writeAnswers } from "./answers";
 
 export const METADATA_FILENAME = ".meta.json";
 
@@ -51,8 +53,15 @@ export const courseUpdateMetadata = async (
 ) => {
   let currPartIndex = 1;
   let currSessionIndex = 1;
+  const allAnswers: Map<Hash, string> = new Map();
+
   await backend.walkContentPieces(course, async (piece, children) => {
     const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
+
+    // Collect answers for quiz questions
+    const pieceAnswers: Map<Hash, string> = await collectAnswersForPiece(piece);
+    pieceAnswers.forEach((value, key) => allAnswers.set(key, value));
+
     await updateMetadata(piece.diskpath, async (metadata: any) => {
       // hasDoc
       metadata.hasDoc = await pieceHasDoc(piece);
@@ -79,4 +88,6 @@ export const courseUpdateMetadata = async (
       }
     });
   });
+
+  await writeAnswers(allAnswers);
 };

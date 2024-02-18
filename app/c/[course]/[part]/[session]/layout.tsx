@@ -9,9 +9,7 @@ type _Props = SessionPageProps & {
 export default async function Layout({ children, params }: _Props) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
   const path = pieceUrl(piece.idpath);
-
   const tabInfos = await getTabs(piece);
-
   return (
     <div id="top" className="w-full h-full flex flex-col">
       {/* Header */}

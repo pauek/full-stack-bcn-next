@@ -38,14 +38,10 @@ export const getTabs = async (piece: ContentPiece) => {
     if (ent.isDirectory()) {
       const metadata = await readMetadata(join(baseDir, ent.name));
       if (await anyChildHasAttachmentsOfType(piece, metadata.filetype)) {
-        options.push({
-          slug: ent.name,
-          ...metadata,
-        });
+        options.push({ slug: ent.name, ...metadata });
       }
     }
   }
-  console.log(options);
   options.sort((a, b) => a.order - b.order);
   return options;
 };

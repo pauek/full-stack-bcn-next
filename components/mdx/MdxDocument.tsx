@@ -14,12 +14,14 @@ type _Props = {
   text: string;
   imageMap?: Map<string, FileReference>;
   components?: MDXComponents;
+  syntaxHighlighting?: boolean;
 };
 export default async function MdxDocument({
   className = "",
   text,
   imageMap = new Map(),
   components: propsComponents,
+  syntaxHighlighting = true,
 }: _Props) {
   const RenderError = () => {
     return (
@@ -46,7 +48,9 @@ export default async function MdxDocument({
                 options={{
                   mdxOptions: {
                     remarkPlugins: [remarkGfm],
-                    rehypePlugins: [[rehypeHighlight, { ignoreMissing: true }]],
+                    rehypePlugins: syntaxHighlighting
+                      ? [[rehypeHighlight, { ignoreMissing: true }]]
+                      : [],
                   },
                 }}
               />
