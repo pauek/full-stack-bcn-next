@@ -18,7 +18,7 @@ export default async function QuizQuestion({ index, chapter, quiz }: QuizQuestio
   }
   const { body } = getQuizPartsFromFile(text.toString());
   return (
-    <div className="mx-2.5 mt-2.5 bg-card rounded p-2.5">
+    <div className="mx-2.5 bg-card rounded p-2.5">
       <h4 className="mx-2.5 mb-0">{index}</h4>
       <MdxDocument
         className="p-2.5"

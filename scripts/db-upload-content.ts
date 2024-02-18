@@ -36,6 +36,13 @@ showExecutionTime(async () => {
     process.exit(0);
   }
 
+  const revalidate = async (idjpath: string) => {
+    const res = await fetch(`http://localhost:3000/api/revalidate/${idjpath}`);
+    if (!res.ok) {
+      console.error(`Failed to revalidate ${idjpath}`);
+    }
+  };
+
   const walkFilesIfChanged = async function (idpath: string[], func: WalkFunc) {
     const filesPiece = await filesBackend.getPieceWithChildren(idpath);
     if (!filesPiece) {
@@ -58,6 +65,11 @@ showExecutionTime(async () => {
     await db.insertPiece(piece);
     await db.insertPieceHashmap(piece);
     await db.insertFiles(piece);
+
+    // Revalidate all paths for piece
+    for (const slug of ["doc", "quiz", "exc", "slides"]) {
+      revalidate([...piece.idpath, slug].join("/"));
+    }
 
     const answers = await collectAnswersForPiece(piece);
     await db.insertQuizAnswers(answers);

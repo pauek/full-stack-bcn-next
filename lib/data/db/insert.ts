@@ -146,6 +146,8 @@ export const insertFiles = async (piece: ContentPiece) => {
       console.error(e.stack);
     }
   }
+
+  return allFiles;
 };
 
 export const insertQuizAnswers = async (answers: Map<Hash, string>) => {

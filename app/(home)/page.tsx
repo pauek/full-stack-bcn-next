@@ -1,11 +1,14 @@
 import Part from "@/components/Part";
 import data from "@/lib/data";
 import { env } from "@/lib/env.mjs";
+import { unstable_cache } from "next/cache";
 
 import { notFound } from "next/navigation";
 
+const cachedGetContentTree = unstable_cache(data.getContentTree, ["contentTree"]);
+
 export default async function Home() {
-  const course = await data.getContentTree([env.COURSE_ID], { level: 2 });
+  const course = await cachedGetContentTree([env.COURSE_ID], { level: 2 });
   if (course === null) {
     notFound();
   }

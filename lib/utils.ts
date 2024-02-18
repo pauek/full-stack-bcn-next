@@ -18,6 +18,13 @@ export const base64ToBytes = (base64: string) => {
   return Uint8Array.from(binString);
 };
 
+export const base64ToString = (base64: string) => {
+  const binString = Buffer.from(base64, "base64");
+  const bytes = Uint8Array.from(binString);
+  const buffer = Buffer.from(bytes);
+  return buffer.toString("utf8");
+}
+
 export const bytesToBase64 = (bytes: Uint8Array) => {
   const buf = Buffer.from(bytes);
   return buf.toString("base64");

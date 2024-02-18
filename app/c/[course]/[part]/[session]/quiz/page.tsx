@@ -7,20 +7,16 @@ import { FileReference } from "@/lib/data/data-backend";
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
   const chapterAttachments = await getAttachments(piece, FileType.quiz);
+  const allQuestions = chapterAttachments.flatMap(({ attachments: questions, chapter }) =>
+    questions.map((quiz) => ({ chapter, quiz }))
+  );
   return (
     <div className="w-full flex flex-col gap-4">
-      {chapterAttachments.map(
-        ({ chapter, attachments: questions }) =>
-          questions.length > 0 && (
-            <div key={chapter.hash}>
-              {questions.map(async (quiz, index) => (
-                <ErrorBoundary key={quiz.hash} fallback={<QuestionError quiz={quiz} />}>
-                  <QuizQuestion index={index + 1} chapter={chapter} quiz={quiz} />
-                </ErrorBoundary>
-              ))}
-            </div>
-          )
-      )}
+      {allQuestions.map(async ({ chapter, quiz }, index) => (
+        <ErrorBoundary key={quiz.hash} fallback={<QuestionError quiz={quiz} />}>
+          <QuizQuestion index={index + 1} chapter={chapter} quiz={quiz} />
+        </ErrorBoundary>
+      ))}
     </div>
   );
 }
