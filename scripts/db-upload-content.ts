@@ -22,13 +22,13 @@ showExecutionTime(async () => {
   // Get root (user can select one)
   let root: ContentPiece | null = null;
   if (idjpath) {
-    root = await dbBackend.getPiece(idjpath.split("/"));
+    root = await filesBackend.getPiece(idjpath.split("/"));
     if (!root) {
       console.error(`Piece "${idjpath}" not found.`);
       process.exit(1);
     }
   } else {
-    root = await getRoot(dbBackend);
+    root = await getRoot(filesBackend);
   }
 
   if (!forcedUpload && (await db.pieceExists(root))) {
