@@ -37,7 +37,7 @@ showExecutionTime(async () => {
   }
 
   const revalidate = async (idjpath: string) => {
-    const res = await fetch(`http://localhost:3000/api/revalidate/${idjpath}`);
+    const res = await fetch(`http://full-stack-bcn.dev/api/revalidate/${idjpath}`);
     if (!res.ok) {
       console.error(`Failed to revalidate ${idjpath}`);
     }
