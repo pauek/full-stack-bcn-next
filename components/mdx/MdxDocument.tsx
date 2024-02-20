@@ -12,14 +12,14 @@ import { MDXComponents } from "mdx/types";
 type _Props = {
   className?: string;
   text: string;
-  imageMap?: Map<string, FileReference>;
+  imageMap: Map<string, FileReference>;
   components?: MDXComponents;
   syntaxHighlighting?: boolean;
 };
 export default async function MdxDocument({
   className = "",
   text,
-  imageMap = new Map(),
+  imageMap,
   components: propsComponents,
   syntaxHighlighting = true,
 }: _Props) {

@@ -1,4 +1,5 @@
 import MdxDocument from "@/components/mdx/MdxDocument";
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import { FileReference } from "@/lib/data/data-backend";
@@ -11,6 +12,9 @@ type ExerciseProps = {
 };
 export default async function Exercise({ index, chapter, exercise }: ExerciseProps) {
   const text = await data.getAttachmentBytes(chapter, exercise);
+  const images = await data.getPieceAttachmentList(chapter, FileType.image);
+  const imageMap = new Map(images.map((ref) => [ref.filename, ref]));
+
 
   return (
     text && (
@@ -25,7 +29,7 @@ export default async function Exercise({ index, chapter, exercise }: ExercisePro
           {index}
         </div>
         <div className="flex-1">
-          <MdxDocument className="p-2.5" text={text?.toString()} />
+          <MdxDocument className="p-2.5" text={text?.toString()} imageMap={imageMap}/>
         </div>
       </div>
     )
