@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 
+export const runtime = "edge";
+
 export default function Loading() {
   return (
     <div className="w-full flex flex-col items-center blur-xs">
