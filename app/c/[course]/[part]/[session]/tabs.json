@@ -18,5 +18,10 @@
     "name": "Quiz",
     "filetype": "quiz",
     "slug": "quiz"
+  },
+  {
+    "name": "Videos",
+    "filetype": "video",
+    "slug": "videos"
   }
 ]

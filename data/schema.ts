@@ -54,6 +54,7 @@ export enum FileType {
   cover = "cover",
   exercise = "exercise",
   quiz = "quiz",
+  video = "video",
   other = "other",
 }
 export const AllAttachmentTypes = [

@@ -1,4 +1,5 @@
 import {
+  HeadObjectCommand,
   ListObjectsV2Command,
   ListObjectsV2CommandOutput,
   PutObjectCommand,
@@ -42,6 +43,22 @@ export class R2Client {
       console.log(`${key}`);
     } catch (e) {
       console.error(`CloudflareClient.uploadFile: ${e}`);
+    }
+  }
+
+  async fileExists(key: string) {
+    try {
+      const command = new HeadObjectCommand({
+        Bucket: process.env.R2_BUCKET,
+        Key: key,
+      });
+      await this.s3client.send(command);
+      return true;
+    } catch (e: any) {
+      if (e.name !== "NotFound") {
+        console.error(`CloudflareClient.fileExists: ${e}`);
+      }
+      return false;
     }
   }
 
