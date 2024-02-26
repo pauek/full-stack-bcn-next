@@ -13,7 +13,6 @@ import {
 import { readFile } from "fs/promises";
 import { extname, join } from "path";
 import { mimeTypes } from "../mime-types";
-import { delay } from "../utils";
 
 type ImageUploaderOptions = {
   parallelRequests: number;
