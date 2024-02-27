@@ -43,6 +43,7 @@ export const fileTypeInfo: Record<FileType, FileTypeInfo> = {
   image: { predicate: isImage, subdir: "images" },
   exercise: { predicate: isExercise, subdir: "exercises" },
   quiz: { predicate: isQuiz, subdir: "quiz" },
+  video: { predicate: () => false, subdir: "<none>" },
   other: { predicate: () => false, subdir: "" },
 };
 
