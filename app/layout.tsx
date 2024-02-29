@@ -1,7 +1,7 @@
 import DarkModeAwareRoot from "@/components/DarkModeAwareBody";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-
+import { Analytics } from "@vercel/analytics/react";
 import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -36,6 +36,7 @@ export default async function RootLayout({ children }: Props) {
             <Footer />
           </main>
         </div>
+        <Analytics />
       </body>
     </DarkModeAwareRoot>
   );
