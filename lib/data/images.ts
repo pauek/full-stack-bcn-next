@@ -12,7 +12,9 @@ import {
 } from "@aws-sdk/client-s3";
 import { readFile } from "fs/promises";
 import { extname, join } from "path";
-import { mimeTypes } from "../mime-types";
+import mimeTypeTable from "./mime-types.json";
+
+const mimeTypes: Record<string, string> = mimeTypeTable;
 
 type ImageUploaderOptions = {
   parallelRequests: number;
