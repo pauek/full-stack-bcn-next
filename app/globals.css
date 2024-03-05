@@ -124,7 +124,9 @@
   }
   h1 + p,
   h2 + p,
-  h3 + p {
+  h3 + p,
+  h4 + p,
+  h5 + p {
     @apply mt-1;
   }
   .warning {
@@ -185,7 +187,8 @@
     @apply bg-accent-foreground text-background;
   }
   /* Links to MDN */
-  a[href^="https://developer.mozilla.org"] {
+  a[href^="https://developer.mozilla.org"]
+  {
     font-weight: 500;
   }
   a[href^="https://developer.mozilla.org"]::after
@@ -211,7 +214,7 @@
   pre + p {
     @apply mt-2;
   }
-  * + h3 {
+  h3, h4, h5 {
     margin-top: 1.4em;
   }
   p + ol {
