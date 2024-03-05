@@ -1,6 +1,5 @@
 import { FileType } from "@/data/schema";
-import data from "@/lib/data";
-import { fileTypeInfo } from "@/lib/data/files";
+import { fileTypeInfo, filesBackend } from "@/lib/data/files";
 import { hashAny } from "@/lib/data/hashing";
 
 import { env } from "@/lib/env.mjs";
@@ -80,20 +79,21 @@ class ImageUploader {
       console.log(`${imageKey}`);
 
       return true;
-    } catch (err) {
+    } catch (err: any) {
+      console.log(JSON.stringify(err));
       console.log(`Error! ${err}`);
       return false;
     }
   }
 
   async uploadAllFilesOfType(filetype: FileType, existing: Set<string>) {
-    const imagePaths = await data.getAllAttachmentPaths([env.COURSE_ID], filetype);
+    const imagePaths = await filesBackend.getAllAttachmentPaths([env.COURSE_ID], filetype);
 
     const _uploadOne = async (index: number) => {
       const path = imagePaths[index];
       const idpath = path.slice(0, path.length - 1);
       const imageFilename = path.slice(-1)[0];
-      const piece = await data.getPiece(idpath);
+      const piece = await filesBackend.getPiece(idpath);
       if (!piece) {
         throw new Error(`Piece not found: ${idpath}`);
       }
