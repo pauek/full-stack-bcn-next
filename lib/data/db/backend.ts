@@ -58,6 +58,9 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   };
   const children: ContentPiece[] = [];
   for (const { child } of dbPiece.children) {
+    if (child.metadata.hidden) {
+      continue;
+    }
     const result = await db.query.hashmap.findFirst({
       where: eq(schema.hashmap.pieceHash, child.pieceHash),
     });

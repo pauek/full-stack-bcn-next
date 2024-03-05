@@ -23,7 +23,9 @@ const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
       const childPath = join(parent.diskpath, ent.name);
       const child = await utils.readPieceAtSubdir(childPath, parent.idpath);
       child.idpath = [...idpath, child.id];
-      children.push(child);
+      if (!child.metadata.hidden) {
+        children.push(child);
+      }
     }
   }
   children.sort((a, b) => a.diskpath.localeCompare(b.diskpath));
