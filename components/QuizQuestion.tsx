@@ -22,10 +22,10 @@ export default async function QuizQuestion({ index, chapter, quiz }: QuizQuestio
   }
   const { body } = getQuizPartsFromFile(text.toString());
   return (
-    <div className="mx-2.5 bg-card rounded p-2.5">
+    <div className="mx-2.5 bg-card rounded p-5 min-h-[25em] flex flex-col justify-center items-start">
       <h4 className="mx-2.5 mb-0">{index}</h4>
       <MdxDocument
-        className="p-2.5"
+        className="p-2.5 w-full"
         text={body}
         syntaxHighlighting={false}
         components={{ pre: Pre }}

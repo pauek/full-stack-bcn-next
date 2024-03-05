@@ -25,10 +25,10 @@ export default async function Page({ params }: SessionPageProps) {
   );
   return (
     <div className="w-full flex flex-row justify-center">
-      <Carousel className="w-full max-w-[38em] max-h-[20em] pt-[1em] sm:max-w-md" orientation="horizontal" opts={{ loop: true, duration: 15 }}>
+      <Carousel className="w-full max-w-[38em] max-h-[20em] pt-[1em]" orientation="horizontal" opts={{ loop: true, duration: 15 }}>
         <CarouselContent>
           {allQuestions.map(async ({ chapter, quiz }, index) => (
-            <CarouselItem key={quiz.hash}>
+            <CarouselItem key={quiz.hash} className="h-full">
               <ErrorBoundary fallback={<QuestionError quiz={quiz} />}>
                 <QuizQuestion index={index + 1} chapter={chapter} quiz={quiz} />
               </ErrorBoundary>
