@@ -11,7 +11,7 @@ export async function actionCheckAnswer(_prev: FormState, formData: FormData) {
   const hash = hashData.valueOf() as string;
   const quizAnswer = await data.getQuizAnswerForHash(hash);
   if (!quizAnswer) {
-    return { error: true, message: "No answer found!" };
+    return { error: true, message: "ERROR: Answer not found in DB!" };
   }
   const formAnswer = formData.get("answer");
   if (!formAnswer) {

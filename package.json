@@ -43,6 +43,7 @@
     "dotenv": "^16.4.1",
     "dotenv-expand": "^10.0.0",
     "drizzle-orm": "^0.29.3",
+    "embla-carousel-react": "^8.0.0",
     "next": "latest",
     "next-mdx-remote": "^4.4.1",
     "pg": "^8.11.3",

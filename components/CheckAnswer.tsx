@@ -25,7 +25,7 @@ type Props = {
 export default function CheckAnswer({ quizHash }: Props) {
   const [state, formAction] = useFormState<FormState, FormData>(actionCheckAnswer, initialState);
   return (
-    <form action={formAction} className="flex flex-row gap-2 p-2.5">
+    <form action={formAction} className="flex flex-wrap gap-2 p-2.5">
       <Input
         type="text"
         name="answer"
@@ -37,7 +37,7 @@ export default function CheckAnswer({ quizHash }: Props) {
       {state.correct !== undefined && (
         <div
           className={cn(
-            "ml-4 flex justify-center items-center px-2 rounded gap-1",
+            "md:ml-4 flex py-2 justify-center items-center px-2 rounded gap-1",
             state.correct ? "bg-green-200 text-green-600" : "bg-red-200 text-red-600"
           )}
         >
@@ -45,7 +45,9 @@ export default function CheckAnswer({ quizHash }: Props) {
           <p aria-live="polite">{state?.message}</p>
         </div>
       )}
-      {state.error && <p className="text-red-600 flex justify-center items-center">{state.message}</p>}
+      {state.error && (
+        <p className="text-red-600 flex justify-center items-center">{state.message}</p>
+      )}
     </form>
   );
 }

@@ -1,9 +1,21 @@
 import QuizQuestion from "@/components/QuizQuestion";
 import { FileType } from "@/data/schema";
 import { ErrorBoundary } from "react-error-boundary";
-import { SessionPageProps, getAllChapterAttachments, getPieceWithChildrenOrNotFound } from "../common";
+import {
+  SessionPageProps,
+  getAllChapterAttachments,
+  getPieceWithChildrenOrNotFound,
+} from "../common";
 import { FileReference } from "@/lib/data/data-backend";
 import { generateStaticParamsCommon } from "../static-params";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default async function Page({ params }: SessionPageProps) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
@@ -12,12 +24,22 @@ export default async function Page({ params }: SessionPageProps) {
     questions.map((quiz) => ({ chapter, quiz }))
   );
   return (
-    <div className="w-full flex flex-col gap-4">
-      {allQuestions.map(async ({ chapter, quiz }, index) => (
-        <ErrorBoundary key={quiz.hash} fallback={<QuestionError quiz={quiz} />}>
-          <QuizQuestion index={index + 1} chapter={chapter} quiz={quiz} />
-        </ErrorBoundary>
-      ))}
+    <div className="w-full flex flex-row justify-center">
+      <Carousel className="w-full max-w-[38em] max-h-[20em] pt-[1em] sm:max-w-md" orientation="horizontal" opts={{ loop: true, duration: 15 }}>
+        <CarouselContent>
+          {allQuestions.map(async ({ chapter, quiz }, index) => (
+            <CarouselItem key={quiz.hash}>
+              <ErrorBoundary fallback={<QuestionError quiz={quiz} />}>
+                <QuizQuestion index={index + 1} chapter={chapter} quiz={quiz} />
+              </ErrorBoundary>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="hidden md:block">
+          <CarouselPrevious />
+          <CarouselNext />
+        </div>
+      </Carousel>
     </div>
   );
 }
