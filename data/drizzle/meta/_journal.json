@@ -36,6 +36,13 @@
       "when": 1708950086598,
       "tag": "0004_slow_winter_soldier",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1709652400419,
+      "tag": "0005_slow_sway",
+      "breakpoints": true
     }
   ]
 }

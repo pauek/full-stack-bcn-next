@@ -77,6 +77,7 @@ export const files = pgTable("files", {
 });
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
+  answers: many(quizAnswers),
 }));
 
 // Attachments
@@ -142,7 +143,15 @@ export const hashmapRelations = relations(hashmap, ({ one }) => ({
 // This is a collection of all answers to quizzes which we want
 // to isolate in the server
 
-export const quizAnswers = pgTable("quiz_answers", {
-  hash: text("hash").primaryKey(),
-  answer: text("answer").notNull(),
-});
+export const quizAnswers = pgTable(
+  "quiz_answers",
+  {
+    hash: text("hash").notNull().references(() => files.hash),
+    answer: text("answer").notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.hash, table.answer],
+    }),
+  })
+);
