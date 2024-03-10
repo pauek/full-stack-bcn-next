@@ -192,7 +192,7 @@ export const getAllAttachmentPaths = async (
   return result;
 };
 
-export const getQuizAnswerForHash = async (hash: Hash) => {
+export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
   const answers = await readAnswers();
-  return answers.get(hash) || null;
+  return answers.get(hash) || [];
 }

@@ -294,8 +294,7 @@ export const getPieceAttachmentList = async (
   return results;
 };
 
-
-export const getQuizAnswerForHash = async (hash: Hash) => {
-  const result = await db.query.quizAnswers.findFirst({ where: eq(schema.quizAnswers.hash, hash) });
-  return result?.answer || null;
-}
+export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
+  const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) });
+  return results.map(r => r.answer);
+};

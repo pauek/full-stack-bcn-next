@@ -150,11 +150,14 @@ export const insertFiles = async (piece: ContentPiece) => {
   return allFiles;
 };
 
-export const insertQuizAnswers = async (answers: Map<Hash, string>) => {
-  if (answers.size > 0) {
-    await db
-      .insert(schema.quizAnswers)
-      .values([...answers.entries()].map(([hash, answer]) => ({ hash, answer })))
-      .onConflictDoNothing();
+export const insertQuizAnswers = async (quizAnswers: Map<Hash, string[]>) => {
+  const flatAnswers: { hash: string; answer: string }[] = [];
+  for (const [hash, answers] of quizAnswers) {
+    for (const answer of answers) {
+      flatAnswers.push({ hash, answer });
+    }
+  }
+  if (flatAnswers.length > 0) {
+    await db.insert(schema.quizAnswers).values(flatAnswers).onConflictDoNothing();
   }
 };

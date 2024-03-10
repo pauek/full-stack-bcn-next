@@ -23,7 +23,7 @@ export const base64ToString = (base64: string) => {
   const bytes = Uint8Array.from(binString);
   const buffer = Buffer.from(bytes);
   return buffer.toString("utf8");
-}
+};
 
 export const bytesToBase64 = (bytes: Uint8Array) => {
   const buf = Buffer.from(bytes);
@@ -79,7 +79,7 @@ const logFile =
     const line = `  ${_hash} ${_filetype} ${_filename}`;
 
     const nspaces = process.stdout.columns - 1 - line.length;
-    let space ="";
+    let space = "";
     if (nspaces > 0) {
       space = " ".repeat(nspaces);
     }
@@ -107,9 +107,13 @@ export const getQuizPartsFromFile = (text: string) => {
   if (!preamble) {
     throw new Error("Question missing preamble");
   }
-  const { answer } = JSON.parse(preamble);
-  if (!answer) {
+  const { answers }: { answers: string[] } = JSON.parse(preamble);
+  if (!answers) {
+    console.log(text);
     throw new Error("Question missing answer");
   }
-  return { answer, body };
-}
+  if (!Array.isArray(answers)) {
+    throw new Error("Answer should be an array!");
+  }
+  return { answers, body };
+};

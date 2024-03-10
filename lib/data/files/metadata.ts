@@ -53,14 +53,14 @@ export const courseUpdateMetadata = async (
 ) => {
   let currPartIndex = 1;
   let currSessionIndex = 1;
-  const allAnswers: Map<Hash, string> = new Map();
+  const allAnswers: Map<Hash, string[]> = new Map();
 
   await backend.walkContentPieces(course, async (piece, children) => {
     const level = piece.idpath.length - 1; // 1-part, 2-session, 3-chapter
 
     // Collect answers for quiz questions
-    const pieceAnswers: Map<Hash, string> = await collectAnswersForPiece(piece);
-    pieceAnswers.forEach((value, key) => allAnswers.set(key, value));
+    const pieceAnswers: Map<Hash, string[]> = await collectAnswersForPiece(piece);
+    pieceAnswers.forEach((values, key) => allAnswers.set(key, values));
 
     await updateMetadata(piece.diskpath, async (metadata: any) => {
       // hasDoc
