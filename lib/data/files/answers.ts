@@ -10,7 +10,7 @@ import { listPieceSubdir } from "./utils";
 const ANSWERS_FILE = join(env.CONTENT_ROOT, "./answers.json");
 
 export const writeAnswers = async (answers: Map<Hash, string[]>) => {
-  const json = JSON.stringify([...answers.entries()]);
+  const json = JSON.stringify([...answers.entries()], null, 2);
   await writeFile(ANSWERS_FILE, json);
 };
 
