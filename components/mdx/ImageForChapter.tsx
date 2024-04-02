@@ -7,6 +7,7 @@ import NextImage from "next/image";
 type _ImageProps = {
   border?: boolean;
   zoomable?: boolean;
+  bgColor?: string;
 };
 
 export default function ImageForChapter(imageMap: Map<string, FileReference>) {
@@ -21,14 +22,14 @@ export default function ImageForChapter(imageMap: Map<string, FileReference>) {
       throw new Error(`Image "${props.src}" not found in imageMap!`);
     }
 
-    const { zoomable = true, border = true } = props;
+    const { zoomable = true, border = true, bgColor } = props;
 
     const Identity = ({ children }: { children: React.ReactNode }) => children;
     const MaybeZoomable = zoomable ? Zoomable : Identity;
 
     return (
       <div className={cn(border ? "border" : "", "my-4 flex justify-center items-center")}>
-        <MaybeZoomable>
+        <MaybeZoomable bgColor={bgColor}>
           <NextImage
             src={attachmentUrl(fileref)}
             alt={props.alt || "image"}

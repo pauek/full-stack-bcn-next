@@ -1,6 +1,6 @@
 "use client";
 
-import { KeyExportOptions } from "crypto";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 // https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
@@ -53,9 +53,10 @@ const makeScrollEnablerDisabler = () => {
 };
 
 type _Props = {
+  bgColor?: string;
   children: React.ReactNode;
 };
-export default function Zoomable({ children }: _Props) {
+export default function Zoomable({ bgColor, children }: _Props) {
   const [zoomed, setZoomed] = useState<boolean>(false);
   const toggleZoom = () => setZoomed((z) => !z);
 
@@ -79,14 +80,19 @@ export default function Zoomable({ children }: _Props) {
 
   return (
     <div className="cursor-pointer zoomable" onClick={toggleZoom}>
-      {zoomed ? <_ZoomedVersion>{children}</_ZoomedVersion> : children}
+      {zoomed ? <_ZoomedVersion bgColor={bgColor}>{children}</_ZoomedVersion> : children}
     </div>
   );
 }
 
-const _ZoomedVersion = ({ children }: _Props) => {
+const _ZoomedVersion = ({ bgColor, children }: _Props) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center">
+    <div
+      className={cn(
+        bgColor ? `bg-${bgColor}` : `bg-red-500`,
+        "fixed inset-0 bg-opacity-[.98] z-50 flex items-center justify-center"
+      )}
+    >
       {children}
     </div>
   );
