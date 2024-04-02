@@ -26,7 +26,6 @@ export default async function RootLayout({ children }: Props) {
     <DarkModeAwareRoot lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="css" href="/stackoverflow-dark.css" />
       </head>
       <body className={cn(inter.className, "h-screen flex flex-col")}>
         <div className="w-full h-full pt-12 flex flex-col">
