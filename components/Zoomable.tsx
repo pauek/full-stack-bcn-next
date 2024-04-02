@@ -89,7 +89,7 @@ const _ZoomedVersion = ({ bgColor, children }: _Props) => {
   return (
     <div
       className={cn(
-        bgColor ? `bg-${bgColor}` : `bg-red-500`,
+        bgColor ? `bg-${bgColor}` : `bg-black`,
         "fixed inset-0 bg-opacity-[.98] z-50 flex items-center justify-center"
       )}
     >
