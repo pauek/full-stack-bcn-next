@@ -30,10 +30,7 @@ export default function ImageForChapter(imageMap: Map<string, FileReference>) {
 
     return (
       <div
-        className={cn(
-          border ? "border" : "",
-          "my-4 flex justify-center items-center"
-        )}
+        className={cn(border ? "border" : "", "my-4 flex justify-center items-center")}
         style={{ padding }}
       >
         <MaybeZoomable bgColor={bgColor}>
