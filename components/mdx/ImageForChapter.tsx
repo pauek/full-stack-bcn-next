@@ -8,6 +8,7 @@ type _ImageProps = {
   border?: boolean;
   zoomable?: boolean;
   bgColor?: string;
+  padding?: string;
 };
 
 export default function ImageForChapter(imageMap: Map<string, FileReference>) {
@@ -22,13 +23,19 @@ export default function ImageForChapter(imageMap: Map<string, FileReference>) {
       throw new Error(`Image "${props.src}" not found in imageMap!`);
     }
 
-    const { zoomable = true, border = true, bgColor } = props;
+    const { zoomable = true, border = true, bgColor, padding } = props;
 
     const Identity = ({ children }: { children: React.ReactNode }) => children;
     const MaybeZoomable = zoomable ? Zoomable : Identity;
 
     return (
-      <div className={cn(border ? "border" : "", "my-4 flex justify-center items-center")}>
+      <div
+        className={cn(
+          border ? "border" : "",
+          "my-4 flex justify-center items-center"
+        )}
+        style={{ padding }}
+      >
         <MaybeZoomable bgColor={bgColor}>
           <NextImage
             src={attachmentUrl(fileref)}
