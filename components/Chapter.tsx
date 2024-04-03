@@ -5,18 +5,16 @@ import ChapterHeader from "./ChapterHeader";
 import { FileType } from "@/data/schema";
 
 type ChapterProps = {
-  index: number;
   chapter: ContentPiece;
 };
-export default async function Chapter({ index, chapter }: ChapterProps) {
+export default async function Chapter({ chapter }: ChapterProps) {
   const doc = await data.getPieceDocument(chapter);
   const images = await data.getPieceAttachmentList(chapter, FileType.image);
   const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]));
-
   return (
     <div key={chapter.hash} className="bg-card rounded relative">
       <div className="absolute -top-[3.2em]" id={chapter.id} />
-      <ChapterHeader name={chapter.name} index={index + 1} />
+      <ChapterHeader chapter={chapter} />
       {doc && (
         <div className="mx-5 pt-2 pb-5">
           <MdxDocument
