@@ -88,7 +88,7 @@ export default function CheckAnswer({ quizHash }: Props) {
   return (
     <form
       action={formAction}
-      className="w-full h-9 flex flex-col sm:flex-row sm:items-center gap-2"
+      className="w-full sm:h-9 flex flex-col sm:flex-row sm:items-center gap-2"
     >
       <AnswerBox />
       <input type="hidden" name="quizHash" value={quizHash} className="hidden" />

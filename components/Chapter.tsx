@@ -13,10 +13,9 @@ export default async function Chapter({ chapter }: ChapterProps) {
   const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]));
   return (
     <div key={chapter.hash} className="bg-card rounded relative">
-      <div className="absolute -top-[3.2em]" id={chapter.id} />
-      <ChapterHeader chapter={chapter} />
+      {/* <ChapterHeader chapter={chapter} /> */}
       {doc && (
-        <div className="mx-5 pt-2 pb-5">
+        <div className="mx-5 py-5">
           <MdxDocument
             text={doc.buffer.toString()}
             imageMap={chapterImageMap}

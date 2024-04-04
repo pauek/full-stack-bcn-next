@@ -1,7 +1,7 @@
 import { pieceUrlPath } from "@/lib/urls";
-import TabButton from "../../../../../../components/TabButton";
+import TabButton from "@/components/TabButton";
 import { SessionPageProps, getPieceWithChildrenOrNotFound } from "./common";
-import tabStaticInfo from "../tabs.json";
+import tabStaticInfo from "./tabs.json";
 import data from "@/lib/data";
 import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
