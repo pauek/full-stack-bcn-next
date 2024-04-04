@@ -1,3 +1,5 @@
+import { FileType } from "@/data/schema";
+import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
@@ -22,4 +24,11 @@ export const getChapterOrNotFound = async ({ params }: ChapterPageProps) => {
     notFound();
   }
   return piece;
+};
+
+export const getChapterAttachments = async (chapter: ContentPiece, filetype: FileType) => {
+  return unstable_cache(
+    async () => data.getPieceAttachmentList(chapter, filetype),
+    [`${chapter.hash}/chapter-attachments/${filetype}`]
+  )();
 };

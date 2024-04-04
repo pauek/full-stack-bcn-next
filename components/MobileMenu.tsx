@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { pieceUrl } from "@/lib/urls";
+import { pieceUrlPath } from "@/lib/urls";
 import { CrumbData } from "@/lib/data/data-backend";
 
 type Props = {
@@ -44,7 +44,7 @@ export default function MobileMenu({ crumbs }: Props) {
                         isCurrent ? "bg-accent" : "",
                       )}
                       onSelect={() =>
-                        router.push(pieceUrl(sib.idpath))
+                        router.push(pieceUrlPath(sib.idpath))
                       }
                     >
                       {sib.name}

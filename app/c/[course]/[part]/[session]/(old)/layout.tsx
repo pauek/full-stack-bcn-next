@@ -1,7 +1,7 @@
-import { pieceUrl } from "@/lib/urls";
-import TabButton from "./TabButton";
+import { pieceUrlPath } from "@/lib/urls";
+import TabButton from "../../../../../../components/TabButton";
 import { SessionPageProps, getPieceWithChildrenOrNotFound } from "./common";
-import tabStaticInfo from "./tabs.json";
+import tabStaticInfo from "../tabs.json";
 import data from "@/lib/data";
 import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
@@ -21,7 +21,7 @@ type _Props = SessionPageProps & {
 };
 export default async function Layout({ children, params }: _Props) {
   const piece = await getPieceWithChildrenOrNotFound({ params });
-  const path = pieceUrl(piece.idpath);
+  const path = pieceUrlPath(piece.idpath);
   const tabs = await getTabs(piece);
   return (
     <div id="top" className="w-full h-full flex flex-col">

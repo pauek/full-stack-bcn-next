@@ -4,7 +4,7 @@ import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Collapsible, CollapsibleTrigger } from "./ui/collapsible";
 import { CollapsibleContent } from "@radix-ui/react-collapsible";
 import Link from "next/link";
-import { pieceUrl } from "@/lib/urls";
+import { pieceUrlPath } from "@/lib/urls";
 import { ContentPiece } from "@/lib/adt";
 
 type Props = {
@@ -26,7 +26,7 @@ export default function SiblingsDropdown({ siblings }: Props) {
       <CollapsibleContent>
         <div className="min-w-[10rem] bg-white rounded border px-2 py-1 flex flex-col shadow-md">
           {siblings.map((sib) => (
-            <Link key={sib.name} className="p-1" href={pieceUrl(sib.idpath)}>
+            <Link key={sib.name} className="p-1" href={pieceUrlPath(sib.idpath)}>
               {sib.name}
             </Link>
           ))}

@@ -1,7 +1,7 @@
 import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
-import { attachmentUrl, pieceUrl } from "@/lib/urls";
+import { attachmentUrl, pieceUrlPath } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +18,7 @@ export default async function SessionCard({ session }: _Props) {
   const numSlides = session.children?.reduce((a, b) => a + b.metadata.numSlides, 0);
 
   return (
-    <Link href={pieceUrl(idpath)} className="w-1/3 aspect-[7/6]">
+    <Link href={pieceUrlPath(idpath)} className="w-1/3 aspect-[7/6]">
       <div
         className={cn(
           "h-full text-xs sm:text-sm",

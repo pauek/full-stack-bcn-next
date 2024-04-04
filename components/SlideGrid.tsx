@@ -33,18 +33,18 @@ export default function SlideGrid({ slides }: Props) {
           onPrev={prevSlide}
         />
       )}
-      <div className="max-w-[54em] m-auto pb-4">
+      <div className="max-w-[54em] m-auto">
         <div
           className={
             `mx-5 grid xl:grid-cols-8 lg:grid-cols-6 ` +
-            `md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2 pt-4`
+            `md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2`
           }
         >
           {slides &&
             slides.map((url, i: number) => (
               <Image
                 key={url}
-                className="border-2 rounded shadow-md hover:border-stone-400"
+                className="border-2 rounded shadow-md hover:border-stone-400 cursor-pointer"
                 src={url}
                 alt="Slide"
                 width={400}

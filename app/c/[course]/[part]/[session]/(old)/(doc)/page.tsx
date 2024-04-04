@@ -8,8 +8,7 @@ export default async function Page({ params }: SessionPageProps) {
   return (
     <div className="w-full max-w-[54em] flex flex-col gap-6">
       {chapters.map(
-        (chapter, index) =>
-          chapter.metadata.hidden || <Chapter key={chapter.hash} chapter={chapter} index={index} />
+        (chapter) => chapter.metadata.hidden || <Chapter key={chapter.hash} chapter={chapter} />
       )}
     </div>
   );

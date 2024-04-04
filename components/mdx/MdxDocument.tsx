@@ -34,7 +34,7 @@ export default async function MdxDocument({
 
   return (
     <div className={cn(className, "m-auto max-w-[54em] mdx-document")}>
-      <div className="bg-background text-sm rounded-md">
+      <div className="text-sm rounded-md">
         <div className="max-w-[40em] min-w-0 relative">
           <ErrorBoundary fallback={<RenderError />}>
             <Suspense>

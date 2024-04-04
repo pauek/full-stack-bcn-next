@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
 import CheckMark from "./icons/CheckMark";
-import { pieceUrl } from "@/lib/urls";
+import { pieceUrlPath } from "@/lib/urls";
 import { CrumbData } from "@/lib/data/data-backend";
 
 type Props = {
@@ -31,7 +31,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
               {i > 0 && <BreadCrumbsSlash />}
               {crumb.siblings && crumb.siblings.length === 1 && (
                 <Link
-                  href={pieceUrl(crumb.idpath)}
+                  href={pieceUrlPath(crumb.idpath)}
                   className={
                     "block text-sm select-none space-y-1 rounded-md " +
                     "p-3 px-4 leading-none no-underline outline-none " +
@@ -56,7 +56,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                           <NavigationMenuLink key={sib.idpath.join(":")} asChild>
                             <li>
                               <Link
-                                href={pieceUrl(sib.idpath)}
+                                href={pieceUrlPath(sib.idpath)}
                                 className={cn(
                                   "flex flex-row items-center text-sm select-none " +
                                     "space-y-1 rounded-md p-3 leading-none " +
