@@ -11,7 +11,7 @@ export default async function Layout({ children, params }: _Props) {
       <div className="hidden lg:block flex-1 relative">
         <ChapterLocalLinks session={piece} chapters={piece.children || []} />
       </div>
-      <div className="w-full max-w-[54em] m-auto">{children}</div>
+      <div className="w-full max-w-[54rem] m-auto">{children}</div>
       <div className="hidden lg:block flex-1"></div>
     </>
   );

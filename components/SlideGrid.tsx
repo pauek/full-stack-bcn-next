@@ -33,7 +33,7 @@ export default function SlideGrid({ slides }: Props) {
           onPrev={prevSlide}
         />
       )}
-      <div className="max-w-[54em] m-auto">
+      <div className="max-w-[54rem] m-auto">
         <div
           className={
             `mx-5 grid xl:grid-cols-8 lg:grid-cols-6 ` +

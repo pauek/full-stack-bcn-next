@@ -6,7 +6,7 @@ export default function Loading() {
   return (
     <div className="w-full flex flex-col items-center blur-xs">
       <div className="w-full border-skeleton border-b mx-4 mb-6">
-        <div className="max-w-[54em] m-auto">
+        <div className="max-w-[54rem] m-auto">
           <div className="max-w-[40em]">
             <div className="pt-[1.4em] m-auto mx-4">
               <div className="w-[15em] h-10 bg-skeleton mt-2.5 mb-2.5"></div>
@@ -23,7 +23,7 @@ export default function Loading() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-[54em] m-auto">
+      <div className="w-full max-w-[54rem] m-auto">
         <div className="max-w-[38em]">
           <div className="mx-6 h-6 w-[20em] bg-skeleton"></div>
           <Paragraph lines={3} />
