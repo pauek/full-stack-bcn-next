@@ -6,13 +6,13 @@ type _Props = SessionPageProps & {
 };
 export default async function Layout({ children, params }: _Props) {
   const session = await getSessionWithChaptersOrNotFound({ params });
+
   const Header = () => (
-    <>
-      <div className="mx-5 flex flex-row items-end">
+    <div className="px-5 flex flex-row justify-center border-b w-full">
+      <div className="h-full flex flex-row max-w-[54rem] w-full">
         <HeaderTitle title={session.name} subtitle={`SESSION ${session.metadata.index}`} />
       </div>
-      <div className="border-b"></div>
-    </>
+    </div>
   );
 
   const Page = () => (
