@@ -218,7 +218,7 @@
   }
   p + pre,
   pre + p {
-    @apply mt-2;
+    @apply mt-1;
   }
   h3,
   h4,
@@ -237,6 +237,13 @@
   .quiz-question em {
     margin-top: 1em !important;
   }
+  .mdx-document ol li + ol li {
+    margin-top: 1.6em;
+  }
+  .mdx-document li pre:last-child {
+    margin-bottom: 1.6em;
+  }
+
 
   /* spinner! https://tobiasahlin.com/spinkit/ */
   .spinner {
