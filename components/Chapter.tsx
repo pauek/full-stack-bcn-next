@@ -1,8 +1,7 @@
+import { FileType } from "@/data/schema";
 import { ContentPiece } from "@/lib/adt";
 import data from "@/lib/data";
 import MdxDocument from "./mdx/MdxDocument";
-import ChapterHeader from "./ChapterHeader";
-import { FileType } from "@/data/schema";
 
 type ChapterProps = {
   chapter: ContentPiece;
