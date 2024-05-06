@@ -28,3 +28,11 @@ export default async function Layout({ children, params }: _Props) {
     </div>
   );
 }
+
+export async function generateMetadata({ params }: SessionPageProps) {
+  const session = await getSessionWithChaptersOrNotFound({ params });
+  return {
+    title: `${session.name} - Full-stack Web Technologies`,
+
+  }
+}

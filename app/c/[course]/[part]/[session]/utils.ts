@@ -22,3 +22,16 @@ export const getSessionWithChaptersOrNotFound = async ({ params }: SessionPagePr
   }
   return piece;
 };
+
+export const getSessionOrNotFound = async ({ params }: SessionPageProps) => {
+  const { course, part, session } = params;
+  const idpath = [course, part, session];
+  const piece = await unstable_cache(
+    async () => await data.getPiece(idpath),
+    ["piece-with-children", idpath.join("/")]
+  )();
+  if (piece === null || piece.metadata.hidden) {
+    notFound();
+  }
+  return piece;
+};

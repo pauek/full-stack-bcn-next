@@ -21,6 +21,16 @@ import { FileReference } from "@/lib/data/data-backend";
 import QuizQuestion from "@/components/QuizQuestion";
 import FullScreen from "@/components/FullScreen";
 import { QuizIcon } from "@/components/icons/QuizIcon";
+import { getSessionOrNotFound } from "../utils";
+
+export async function generateMetadata({ params }: ChapterPageProps) {
+  const session = await getSessionOrNotFound({ params });
+  const chapter = await getChapterOrNotFound({ params });
+  return {
+    title: `${chapter.name} - ${session.name} - Full-stack Web Technologies`,
+    
+  }
+}
 
 export default async function Page({ params }: ChapterPageProps) {
   const chapter = await getChapterOrNotFound({ params });
