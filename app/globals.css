@@ -207,6 +207,10 @@
   div.aside + p {
     margin-top: 1em;
   }
+  p + .note {
+    margin-top: 1.5em;
+  }
+  
   .debug {
     @apply border-2 border-red-500;
   }
