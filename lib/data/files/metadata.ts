@@ -53,6 +53,7 @@ export const courseUpdateMetadata = async (
 ) => {
   let currPartIndex = 1;
   let currSessionIndex = 1;
+  let chapterIndex = 1;
   const allAnswers: Map<Hash, string[]> = new Map();
 
   await backend.walkContentPieces(course, async (piece, children) => {
@@ -78,9 +79,11 @@ export const courseUpdateMetadata = async (
         // index (for sessions), we assume that the walk is *ordered by filenames*
         metadata.index = currSessionIndex;
         currSessionIndex++;
+        chapterIndex = 1;
       } else {
         // walkContentPieces might set the index (the child index), so we copy it here.
-        metadata.index = piece.metadata.index;
+        metadata.index = chapterIndex;
+        chapterIndex++;
       }
 
       if (logFunc) {
