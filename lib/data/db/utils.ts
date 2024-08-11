@@ -2,7 +2,6 @@ import * as schema from "@/data/schema";
 import { FileType } from "@/data/schema";
 import { and, eq } from "drizzle-orm";
 import { db } from "./db";
-import { ContentPiece } from "@/lib/adt";
 
 // export const fromDbPiece = (idpath: string[], dbPiece: DBPiece): ContentPiece => {
 //   return {

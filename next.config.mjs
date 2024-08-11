@@ -1,10 +1,9 @@
 import mdx from "@next/mdx";
-import chalk from "chalk";
-import { PHASE_PRODUCTION_BUILD, PHASE_DEVELOPMENT_SERVER } from "next/constants.js";
-
 import { env } from "./lib/env.mjs"; // <--- IMPORTANT: Validate variables at build time
 
-const withMDX = mdx({});
+const withMDX = mdx({
+  // no options
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -29,27 +28,12 @@ const nextConfig = {
 
 export default async (phase, { defaultConfig }) => {
   const config = { ...nextConfig };
-  const dbUrl = env.DB_URL || "files";
 
-  let backend;
-  switch (dbUrl) {
-    case "files":
-      backend = "<< FILES >>";
-      break;
-    default: {
-      const { hostname } = new URL(dbUrl);
-      backend = `DB: ${hostname}`;
-    }
-  }
-
-  switch (phase) {
-    case PHASE_DEVELOPMENT_SERVER:
-      console.info(`--> Dev server [${chalk.yellow(backend)}]`);
-      break;
-    case PHASE_PRODUCTION_BUILD:
-      console.info(`--> Production build [${chalk.yellow(backend)}]`);
-      break;
-  }
+  console.log(`-----------------------------------`);
+  console.log("PHASE:      ", phase);
+  console.log("BACKEND:    ", env.BACKEND);
+  console.log("TURSO_URL:  ", env.TURSO_URL);
+  console.log(`-----------------------------------`);
 
   return withMDX(config);
 };

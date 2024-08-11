@@ -1,15 +1,17 @@
-import { relations } from "drizzle-orm";
-import { date, index, json, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
+import { index, sqliteTable, primaryKey, text, integer, blob } from "drizzle-orm/sqlite-core";
 
 // Pieces
 
-export const pieces = pgTable("pieces", {
+export const pieces = sqliteTable("pieces", {
   pieceHash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
   diskpath: text("diskpath").notNull(),
-  createdAt: date("created_at", { mode: "date" }).notNull().defaultNow(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(current_timestamp)`),
 
-  metadata: json("metadata").notNull().$type<Record<string, any>>(),
+  metadata: text("metadata", { mode: "json" }).notNull().$type<Record<string, any>>(),
 });
 export const piecesRelations = relations(pieces, ({ many }) => ({
   parents: many(relatedPieces, { relationName: "parent_relation" }),
@@ -20,7 +22,7 @@ export type DBPiece = typeof pieces.$inferSelect;
 
 // HAS-A Relation
 
-export const relatedPieces = pgTable(
+export const relatedPieces = sqliteTable(
   "related_pieces",
   {
     parentHash: text("parent")
@@ -67,13 +69,40 @@ export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType)
   FileType,
   ...FileType[]
 ];
-export const FileTypePg = pgEnum("filetype", FileTypeValues);
+
+const FileTypes: [string, ...string[]] = FileTypeValues.map((type) => String(type)) as [
+  string,
+  ...string[]
+];
+
+export const fileTypeFromString = (filetype: string): FileType => {
+  switch (filetype) {
+    case "image":
+      return FileType.image;
+    case "slide":
+      return FileType.slide;
+    case "doc":
+      return FileType.doc;
+    case "cover":
+      return FileType.cover;
+    case "exercise":
+      return FileType.exercise;
+    case "quiz":
+      return FileType.quiz;
+    case "video":
+      return FileType.video;
+    case "other":
+      return FileType.other;
+    default:
+      throw new Error(`Unknown filetype: ${filetype}`);
+  }
+};
 
 // Files
 
-export const files = pgTable("files", {
+export const files = sqliteTable("files", {
   hash: text("file_hash").primaryKey(),
-  data: jsonb("data").$type<string>().notNull(),
+  data: blob("data", { mode: "json" }).$type<string>().notNull(),
 });
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
@@ -82,7 +111,7 @@ export const filesRelations = relations(files, ({ many }) => ({
 
 // Attachments
 
-export const attachments = pgTable(
+export const attachments = sqliteTable(
   "attachments",
   {
     pieceHash: text("piece_hash")
@@ -91,7 +120,7 @@ export const attachments = pgTable(
     fileHash: text("file_hash")
       .notNull()
       .references(() => files.hash),
-    filetype: FileTypePg("filetype").notNull(),
+    filetype: text("filetype", { enum: FileTypes }).notNull(),
     filename: text("filename").notNull(),
   },
   (table) => ({
@@ -118,7 +147,7 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
 // With this we can locate any piece given an idjpath.
 // Idjpaths give a good name to the hashes which are the true identifiers.
 
-export const hashmap = pgTable(
+export const hashmap = sqliteTable(
   "hashmap",
   {
     idjpath: text("idjpath").primaryKey(),
@@ -143,10 +172,12 @@ export const hashmapRelations = relations(hashmap, ({ one }) => ({
 // This is a collection of all answers to quizzes which we want
 // to isolate in the server
 
-export const quizAnswers = pgTable(
+export const quizAnswers = sqliteTable(
   "quiz_answers",
   {
-    hash: text("hash").notNull().references(() => files.hash),
+    hash: text("hash")
+      .notNull()
+      .references(() => files.hash),
     answer: text("answer").notNull(),
   },
   (table) => ({

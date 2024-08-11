@@ -1,15 +1,16 @@
 import * as schema from "@/data/schema";
 import { env } from "@/lib/env.mjs";
 
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
 
-neonConfig.useSecureWebSocket = true;
+const client = createClient({
+  url: env.TURSO_URL,
+  authToken: env.TURSO_TOKEN,
+});
 
-const isClient = typeof window !== "undefined";
-const pool = new Pool({ connectionString: isClient ? env.NEXT_PUBLIC_DB_URL : env.DB_URL });
-export const db = drizzle(pool, { schema });
+export const db = drizzle(client, { schema });
 
 export const closeConnection = async () => {
-  await pool.end();
+  client.close();
 };

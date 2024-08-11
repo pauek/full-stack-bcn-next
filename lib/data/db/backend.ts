@@ -146,7 +146,10 @@ export const __getFileListByFiletype =
     if (!results) {
       return [];
     }
-    return results;
+    return results.map((result) => ({
+      ...result,
+      filetype: schema.fileTypeFromString(result.filetype),
+    }));
   };
 
 export const getPieceImageList = __getFileListByFiletype(FileType.image);
@@ -291,10 +294,13 @@ export const getPieceAttachmentList = async (
   if (!results) {
     return [];
   }
-  return results;
+  return results.map((result) => ({
+    ...result,
+    filetype: schema.fileTypeFromString(result.filetype),
+  }));
 };
 
 export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
   const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) });
-  return results.map(r => r.answer);
+  return results.map((r) => r.answer);
 };

@@ -7,17 +7,8 @@ export * from "./backend";
 export * from "./db";
 export * from "./utils";
 
-const extractHost = (url: string) => {
-  const match = url.match(/^postgres(?:ql)?:\/\/([^:]+):([^@]+)\@([^\/]+)(\/.*)$/);
-  if (!match) {
-    return "";
-  }
-  const [_0, _1, _2, host, _4] = match;
-  return host;
-};
-
 export const backend: DataBackendBase = {
-  getInfo: () => `DB: ${extractHost(env.DB_URL)}`,
+  getInfo: () => `DB: ${env.TURSO_URL}`,
   ..._backend,
 };
 
