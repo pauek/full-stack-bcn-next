@@ -3,6 +3,7 @@
 import { actionLoadRectangles, actionRectangleUpdate } from "@/actions/positions";
 import { MapPosition } from "@/data/schema";
 import { CanvasController } from "@/lib/canvas-controller";
+import { MapPositionWithPiece } from "@/lib/data/db/positions";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -11,32 +12,54 @@ type MapSize = {
   height: number;
 };
 
-type Controller = CanvasController<MapPosition>;
+type Item = MapPositionWithPiece
+type Controller = CanvasController<Item>;
 
-const savePositions = (positions: MapPosition[]) => {
-  actionRectangleUpdate(positions)
-    .then(
-      () => console.log("Updated:", positions) // TODO: better message
-    )
-    .catch((e) => {
-      console.error(`Error updating positions: `, e); // TODO: show user
-    });
-};
+const MapPositionsAdapter = {
+  saveItems(positions: Item[]) {
+    actionRectangleUpdate(positions)
+      .then(
+        () => console.log("Updated:", positions) // TODO: better message
+      )
+      .catch((e) => {
+        console.error(`Error updating positions: `, e); // TODO: show user
+      });
+  },
+  async loadItems() {
+    return await actionLoadRectangles();
+  },
+  paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
+    if (controller.scale < 0.2) {
+      return controller.paintRectMinimal(ctx, 0, item);
+    }
 
-const loadPositions = async () => await actionLoadRectangles();
+    const { left, top, width, height, color } = item;
+    ctx.fillStyle = color || "gray";
+    ctx.beginPath();
+    ctx.roundRect(left, top, width, height, 5);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.font = "12px monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "black";
+    ctx.fillText(`${item.piece.name}`, left + width / 2, top + height / 2);
+  }
+}
+
+
 
 export default function Map() {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const stateRef = useRef<Controller>(new CanvasController(canvasRef, pathname, savePositions));
+  const stateRef = useRef<Controller>(new CanvasController(canvasRef, pathname, MapPositionsAdapter));
 
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 });
   const { current: state } = stateRef;
 
   useEffect(() => {
-    loadPositions().then((positions) => {
-      state.setItems(positions);
-    });
+    state.loadItems()
     if (pathname === "/") {
       const pageBox = document.getElementById("page-box");
       if (!pageBox) {

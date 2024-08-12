@@ -17,9 +17,20 @@ import { clamp, snap } from "./utils";
 export const MAP_MAX_WIDTH = 10000;
 export const MAP_MAX_HEIGHT = 10000;
 
+interface CanvasAdapter<ItemType extends IRectangle> {
+  loadItems: () => Promise<ItemType[]>;
+  saveItems: (items: ItemType[]) => void;
+  paintItem: (
+    ctrl: CanvasController<ItemType>,
+    ctx: CanvasRenderingContext2D,
+    item: ItemType
+  ) => void;
+}
+
 export class CanvasController<ItemType extends IRectangle> {
   mode: "view" | "edit" = "view";
 
+  adapter: CanvasAdapter<ItemType>;
   canvasRef: RefObject<HTMLCanvasElement>;
   items: ItemType[];
 
@@ -42,9 +53,12 @@ export class CanvasController<ItemType extends IRectangle> {
 
   debug: boolean = false;
 
-  saveItems: (items: ItemType[]) => void;
-
-  constructor(ref: RefObject<HTMLCanvasElement>, urlPath: string, saveItems: (items: ItemType[]) => void) {
+  constructor(
+    ref: RefObject<HTMLCanvasElement>,
+    urlPath: string,
+    adapter: CanvasAdapter<ItemType>
+  ) {
+    this.adapter = adapter;
     this.canvasRef = ref;
     this.items = [];
 
@@ -56,8 +70,6 @@ export class CanvasController<ItemType extends IRectangle> {
 
     this.mouse = { x: 0, y: 0 };
     this.panning = null;
-
-    this.saveItems = saveItems;
   }
 
   scaleToUrl() {
@@ -115,8 +127,8 @@ export class CanvasController<ItemType extends IRectangle> {
     this.origin = { x, y };
   }
 
-  async setItems(items: ItemType[]) {
-    this.items = items
+  async loadItems() {
+    this.items = await this.adapter.loadItems();
     this.paint();
   }
 
@@ -168,16 +180,6 @@ export class CanvasController<ItemType extends IRectangle> {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "black";
     ctx.fillText(`${i}`, left + width / 2, top + height / 2);
-
-    return false;
-  }
-
-  paintRect(ctx: CanvasRenderingContext2D, i: number, rect: ItemType) {
-    if (this.scale < 0.2) {
-      return this.paintRectMinimal(ctx, i, rect);
-    } else {
-      return this.paintRectFull(ctx, i, rect);
-    }
   }
 
   paintGrid(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
@@ -323,11 +325,11 @@ export class CanvasController<ItemType extends IRectangle> {
     );
   }
 
-  paintRectangles(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
+  paintItems(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
     for (let i = 0; i < this.items.length; i++) {
       const rect = this.items[i];
       if (withinBounds(rect, bounds)) {
-        this.paintRect(ctx, i, this.items[i]);
+        this.adapter.paintItem(this, ctx, this.items[i]);
       }
     }
   }
@@ -358,7 +360,7 @@ export class CanvasController<ItemType extends IRectangle> {
       this.paintGrid(ctx, bounds);
     }
 
-    this.paintRectangles(ctx, bounds);
+    this.paintItems(ctx, bounds);
 
     if (this.selected.length > 0) {
       for (const rect of this.selected) {
@@ -384,8 +386,6 @@ export class CanvasController<ItemType extends IRectangle> {
       this.paintDebugInfo(ctx);
     }
   }
-
-
 
   // Panning
 
@@ -467,7 +467,7 @@ export class CanvasController<ItemType extends IRectangle> {
 
   endDragging() {
     if (!this.dragging || !this.selected) return;
-    this.saveItems(this.selected);
+    this.adapter.saveItems(this.selected);
     this.dragging = null;
   }
 
@@ -514,7 +514,7 @@ export class CanvasController<ItemType extends IRectangle> {
 
   endResizing() {
     if (!this.resizing) return;
-    this.saveItems([this.resizing.item]);
+    this.adapter.saveItems([this.resizing.item]);
     this.resizing = null;
   }
 
