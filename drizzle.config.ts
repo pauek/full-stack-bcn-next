@@ -15,6 +15,7 @@ export default {
   schema: "./data/schema.ts",
   out: "./data/drizzle",
   driver: "turso",
+  dialect: "sqlite",
   dbCredentials: {
     url: TURSO_URL,
     authToken: TURSO_TOKEN,
