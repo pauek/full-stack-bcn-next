@@ -14,8 +14,8 @@ import {
 import { RefObject } from "react";
 import { clamp, snap } from "./utils";
 
-export const MAP_MAX_WIDTH = 10000;
-export const MAP_MAX_HEIGHT = 10000;
+export const MAP_MAX_WIDTH = 5000;
+export const MAP_MAX_HEIGHT = 5000;
 
 interface CanvasAdapter<ItemType extends IRectangle> {
   loadItems: () => Promise<ItemType[]>;
