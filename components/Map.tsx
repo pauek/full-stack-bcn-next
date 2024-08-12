@@ -1,62 +1,78 @@
-"use client"
+"use client";
 
-import { CanvasController } from "@/lib/canvas-controller"
-import { usePathname } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { actionLoadRectangles, actionRectangleUpdate } from "@/actions/positions";
+import { MapPosition } from "@/data/schema";
+import { CanvasController } from "@/lib/canvas-controller";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 type MapSize = {
-  width: number
-  height: number
-}
+  width: number;
+  height: number;
+};
+
+type Controller = CanvasController<MapPosition>;
+
+const savePositions = (positions: MapPosition[]) => {
+  actionRectangleUpdate(positions)
+    .then(
+      () => console.log("Updated:", positions) // TODO: better message
+    )
+    .catch((e) => {
+      console.error(`Error updating positions: `, e); // TODO: show user
+    });
+};
+
+const loadPositions = async () => await actionLoadRectangles();
 
 export default function Map() {
-  const pathname = usePathname()
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const stateRef = useRef<CanvasController>(
-    new CanvasController(canvasRef, pathname)
-  )
+  const pathname = usePathname();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stateRef = useRef<Controller>(new CanvasController(canvasRef, pathname, savePositions));
 
-  const [size, setSize] = useState<MapSize>({ width: 0, height: 0 })
-  const { current: state } = stateRef
+  const [size, setSize] = useState<MapSize>({ width: 0, height: 0 });
+  const { current: state } = stateRef;
 
   useEffect(() => {
-    state.loadPositions()
+    loadPositions().then((positions) => {
+      state.setItems(positions);
+    });
     if (pathname === "/") {
-      const pageBox = document.getElementById("page-box")
+      const pageBox = document.getElementById("page-box");
       if (!pageBox) {
-        throw new Error("page-box not found")
+        throw new Error("page-box not found");
       }
-      const { width, height } = pageBox.getBoundingClientRect()
-      state.resetScale(width, height)
+      const { width, height } = pageBox.getBoundingClientRect();
+      state.resetScale(width, height);
     }
-  }, [size, state, pathname])
+  }, [size, state, pathname]);
 
   useEffect(() => {
     const resize = () => {
-      setSize({ width: window.innerWidth, height: window.innerHeight })
-    }
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    };
 
-    resize()
+    resize();
 
-    window.addEventListener("resize", resize)
+    window.addEventListener("resize", resize);
     return () => {
-      window.removeEventListener("resize", resize)
-    }
-  }, [state])
+      window.removeEventListener("resize", resize);
+    };
+  }, [state]);
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => state.onKeyDown(e)
-    window.addEventListener("keydown", onKeyDown)
+    const onKeyDown = (e: KeyboardEvent) => state.onKeyDown(e);
+    window.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [state])
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [state]);
 
   useEffect(() => {
     if (size.width !== 0 && size.height !== 0) {
-      state.paint()
+      state.paint();
     }
-  }, [size, state])
+  }, [size, state]);
 
   return (
     <canvas
@@ -67,5 +83,5 @@ export default function Map() {
       onMouseUp={() => state.onMouseUp(window)}
       onWheel={(e) => state.onWheel(e)}
     ></canvas>
-  )
+  );
 }

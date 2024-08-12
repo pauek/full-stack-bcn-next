@@ -1,4 +1,3 @@
-import { actionLoadRectangles, actionRectangleUpdate } from "@/actions/positions";
 import {
   eventPoint,
   getKnobPositions,
@@ -14,16 +13,15 @@ import {
 } from "@/lib/geometry";
 import { RefObject } from "react";
 import { clamp, snap } from "./utils";
-import { MapPosition } from "@/data/schema";
 
 export const MAP_MAX_WIDTH = 10000;
 export const MAP_MAX_HEIGHT = 10000;
 
-export class CanvasController {
+export class CanvasController<ItemType extends IRectangle> {
   mode: "view" | "edit" = "view";
 
   canvasRef: RefObject<HTMLCanvasElement>;
-  positions: MapPosition[];
+  items: ItemType[];
 
   mouse: Point;
   scale: number;
@@ -33,20 +31,22 @@ export class CanvasController {
   dragging: null | { click: Point; origins: Point[] } = null;
   resizing: null | {
     click: Point;
-    initial: MapPosition;
-    rect: MapPosition;
+    initial: ItemType;
+    item: ItemType;
     knob: number;
   } = null;
   rubberbanding: null | { click: Point; rect: IRectangle } = null;
 
-  overRect: MapPosition | null = null;
-  selected: MapPosition[] = [];
+  overRect: ItemType | null = null;
+  selected: ItemType[] = [];
 
   debug: boolean = false;
 
-  constructor(ref: RefObject<HTMLCanvasElement>, urlPath: string) {
+  saveItems: (items: ItemType[]) => void;
+
+  constructor(ref: RefObject<HTMLCanvasElement>, urlPath: string, saveItems: (items: ItemType[]) => void) {
     this.canvasRef = ref;
-    this.positions = [];
+    this.items = [];
 
     // default values
     this.scale = 1;
@@ -56,6 +56,8 @@ export class CanvasController {
 
     this.mouse = { x: 0, y: 0 };
     this.panning = null;
+
+    this.saveItems = saveItems;
   }
 
   scaleToUrl() {
@@ -113,9 +115,8 @@ export class CanvasController {
     this.origin = { x, y };
   }
 
-  async loadPositions() {
-    this.positions = await actionLoadRectangles();
-    console.log("positions", this.positions);
+  async setItems(items: ItemType[]) {
+    this.items = items
     this.paint();
   }
 
@@ -143,7 +144,7 @@ export class CanvasController {
     return { left, top, width: right - left, height: bottom - top };
   }
 
-  paintRectMinimal(ctx: CanvasRenderingContext2D, _: number, rect: MapPosition) {
+  paintRectMinimal(ctx: CanvasRenderingContext2D, _: number, rect: ItemType) {
     const { left, top, width, height, color } = rect;
     const over = pointWithinRect(this.mouse, { left, top, width, height });
     ctx.fillStyle = color || "gray";
@@ -154,7 +155,7 @@ export class CanvasController {
     return over;
   }
 
-  paintRectFull(ctx: CanvasRenderingContext2D, i: number, rect: MapPosition) {
+  paintRectFull(ctx: CanvasRenderingContext2D, i: number, rect: ItemType) {
     const { left, top, width, height, color } = rect;
     ctx.fillStyle = color || "gray";
     ctx.beginPath();
@@ -171,7 +172,7 @@ export class CanvasController {
     return false;
   }
 
-  paintRect(ctx: CanvasRenderingContext2D, i: number, rect: MapPosition) {
+  paintRect(ctx: CanvasRenderingContext2D, i: number, rect: ItemType) {
     if (this.scale < 0.2) {
       return this.paintRectMinimal(ctx, i, rect);
     } else {
@@ -202,7 +203,7 @@ export class CanvasController {
     }
   }
 
-  mouseWithinKnob(rect: MapPosition): number {
+  mouseWithinKnob(rect: ItemType): number {
     const knobPositions = getKnobPositions(rect);
     for (let i = 0; i < knobPositions.length; i++) {
       const { x, y } = knobPositions[i];
@@ -213,7 +214,7 @@ export class CanvasController {
     return -1;
   }
 
-  paintSelected(ctx: CanvasRenderingContext2D, rect: MapPosition) {
+  paintSelected(ctx: CanvasRenderingContext2D, rect: ItemType) {
     const { left, top, width, height } = rect;
     if (this.scale < 0.2) {
       ctx.fillStyle = "white";
@@ -228,7 +229,7 @@ export class CanvasController {
     }
   }
 
-  paintKnobs(ctx: CanvasRenderingContext2D, rect: MapPosition) {
+  paintKnobs(ctx: CanvasRenderingContext2D, rect: ItemType) {
     const paintKnob = (x: number, y: number, knob: number) => {
       const knobWidth = 8;
 
@@ -263,7 +264,7 @@ export class CanvasController {
     }
   }
 
-  paintOverRect(ctx: CanvasRenderingContext2D, rect: MapPosition) {
+  paintOverRect(ctx: CanvasRenderingContext2D, rect: ItemType) {
     const { left, top, width, height } = rect;
     if (this.scale < 0.2) {
       ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
@@ -323,10 +324,10 @@ export class CanvasController {
   }
 
   paintRectangles(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
-    for (let i = 0; i < this.positions.length; i++) {
-      const rect = this.positions[i];
+    for (let i = 0; i < this.items.length; i++) {
+      const rect = this.items[i];
       if (withinBounds(rect, bounds)) {
-        this.paintRect(ctx, i, this.positions[i]);
+        this.paintRect(ctx, i, this.items[i]);
       }
     }
   }
@@ -384,15 +385,7 @@ export class CanvasController {
     }
   }
 
-  saveRectangleList(rectangles: MapPosition[]) {
-    actionRectangleUpdate(rectangles)
-      .then(
-        () => console.log("Updated:", rectangles) // TODO: better message
-      )
-      .catch((e) => {
-        console.error(`Error updating rectangles: `, e); // TODO: show user
-      });
-  }
+
 
   // Panning
 
@@ -474,7 +467,7 @@ export class CanvasController {
 
   endDragging() {
     if (!this.dragging || !this.selected) return;
-    this.saveRectangleList(this.selected);
+    this.saveItems(this.selected);
     this.dragging = null;
   }
 
@@ -483,13 +476,13 @@ export class CanvasController {
   startResizing(click: Point, knob: number) {
     if (!this.selected) return;
     const rect = this.selected[0];
-    this.resizing = { click, initial: { ...rect }, rect, knob };
+    this.resizing = { click, initial: { ...rect }, item: rect, knob };
   }
 
   resizeRectangle(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     if (!this.resizing) return;
 
-    const { click, initial, rect, knob } = this.resizing;
+    const { click, initial, item: rect, knob } = this.resizing;
     const p = eventPoint(event);
     const clientDiff = ptSub(p, click);
     const modelDiff = ptMul(clientDiff, 1 / this.scale);
@@ -521,7 +514,7 @@ export class CanvasController {
 
   endResizing() {
     if (!this.resizing) return;
-    this.saveRectangleList([this.resizing.rect]);
+    this.saveItems([this.resizing.item]);
     this.resizing = null;
   }
 
@@ -547,14 +540,14 @@ export class CanvasController {
       height: Math.abs(y1 - y2),
     };
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
-    this.selected = this.positions.filter((rect) => withinBounds(rect, rubberbandModel));
+    this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));
   }
 
   endRubberbanding() {
     if (!this.rubberbanding) return;
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
-    this.selected = this.positions.filter((rect) => withinBounds(rect, rubberbandModel));
+    this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));
     this.rubberbanding = null;
   }
 
@@ -604,7 +597,7 @@ export class CanvasController {
     } else if (this.panning) {
       this.doPanning(event);
     } else {
-      this.overRect = this.positions.find((rect) => pointWithinRect(this.mouse, rect)) || null;
+      this.overRect = this.items.find((rect) => pointWithinRect(this.mouse, rect)) || null;
     }
 
     this.mouse = this.clientToModel(eventPoint(event));
@@ -624,7 +617,7 @@ export class CanvasController {
     } else if (this.panning) {
       this.panning = null;
       this.scaleToUrl();
-      this.overRect = this.positions.find((rect) => pointWithinRect(this.mouse, rect)) || null;
+      this.overRect = this.items.find((rect) => pointWithinRect(this.mouse, rect)) || null;
     }
     this.paint();
   }
