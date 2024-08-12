@@ -16,6 +16,9 @@ import { RefObject } from "react";
 import { clamp, snap } from "./utils";
 import { MapPosition } from "@/data/schema";
 
+export const MAP_MAX_WIDTH = 10000;
+export const MAP_MAX_HEIGHT = 10000;
+
 export class CanvasController {
   mode: "view" | "edit" = "view";
 
@@ -76,14 +79,14 @@ export class CanvasController {
     return this.rectModelToClient({
       left: 0,
       top: 0,
-      width: 65535,
-      height: 65535,
+      width: MAP_MAX_WIDTH,
+      height: MAP_MAX_HEIGHT,
     });
   }
 
   resetScale(width: number, height: number) {
-    const xscale = width / 65535;
-    const yscale = height / 65535;
+    const xscale = width / MAP_MAX_WIDTH;
+    const yscale = height / MAP_MAX_HEIGHT;
     this.scale = Math.min(xscale, yscale);
     this.scaleToUrl();
   }
@@ -304,7 +307,7 @@ export class CanvasController {
 
   paintBackground(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "#020202";
-    ctx.fillRect(0, 0, 65535, 65535);
+    ctx.fillRect(0, 0, MAP_MAX_WIDTH, MAP_MAX_HEIGHT);
   }
 
   paintEditMode(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
