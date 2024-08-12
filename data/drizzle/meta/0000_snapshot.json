@@ -1,36 +1,39 @@
 {
-  "id": "d77a7292-088d-4501-a284-97b844af42a8",
-  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
-  "dialect": "pg",
+  "dialect": "sqlite",
+  "id": "9f81c9ac-d8ab-4a36-84d4-2657af667114",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "attachments": {
       "name": "attachments",
-      "schema": "",
       "columns": {
         "piece_hash": {
           "name": "piece_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "file_hash": {
           "name": "file_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "filetype": {
           "name": "filetype",
-          "type": "filetype",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "filename": {
           "name": "filename",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -64,31 +67,32 @@
       },
       "compositePrimaryKeys": {
         "attachments_piece_hash_file_hash_filetype_pk": {
-          "name": "attachments_piece_hash_file_hash_filetype_pk",
           "columns": [
-            "piece_hash",
             "file_hash",
-            "filetype"
-          ]
+            "filetype",
+            "piece_hash"
+          ],
+          "name": "attachments_piece_hash_file_hash_filetype_pk"
         }
       },
       "uniqueConstraints": {}
     },
     "files": {
       "name": "files",
-      "schema": "",
       "columns": {
         "file_hash": {
           "name": "file_hash",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "data": {
           "name": "data",
-          "type": "jsonb",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -98,19 +102,20 @@
     },
     "hashmap": {
       "name": "hashmap",
-      "schema": "",
       "columns": {
         "idjpath": {
           "name": "idjpath",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "piece_hash": {
           "name": "piece_hash",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -140,40 +145,109 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "map_positions": {
+      "name": "map_positions",
+      "columns": {
+        "piece_hash": {
+          "name": "piece_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "left": {
+          "name": "left",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "top": {
+          "name": "top",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "width": {
+          "name": "width",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "height": {
+          "name": "height",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "map_positions_piece_hash_pieces_piece_hash_fk": {
+          "name": "map_positions_piece_hash_pieces_piece_hash_fk",
+          "tableFrom": "map_positions",
+          "tableTo": "pieces",
+          "columnsFrom": [
+            "piece_hash"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "pieces": {
       "name": "pieces",
-      "schema": "",
       "columns": {
         "piece_hash": {
           "name": "piece_hash",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "diskpath": {
           "name": "diskpath",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "date",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "autoincrement": false,
+          "default": "(current_timestamp)"
         },
         "metadata": {
           "name": "metadata",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -181,21 +255,67 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "quiz_answers": {
+      "name": "quiz_answers",
+      "columns": {
+        "hash": {
+          "name": "hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "answer": {
+          "name": "answer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "quiz_answers_hash_files_file_hash_fk": {
+          "name": "quiz_answers_hash_files_file_hash_fk",
+          "tableFrom": "quiz_answers",
+          "tableTo": "files",
+          "columnsFrom": [
+            "hash"
+          ],
+          "columnsTo": [
+            "file_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "quiz_answers_hash_answer_pk": {
+          "columns": [
+            "answer",
+            "hash"
+          ],
+          "name": "quiz_answers_hash_answer_pk"
+        }
+      },
+      "uniqueConstraints": {}
+    },
     "related_pieces": {
       "name": "related_pieces",
-      "schema": "",
       "columns": {
         "parent": {
           "name": "parent",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "child": {
           "name": "child",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -229,32 +349,20 @@
       },
       "compositePrimaryKeys": {
         "related_pieces_parent_child_pk": {
-          "name": "related_pieces_parent_child_pk",
           "columns": [
-            "parent",
-            "child"
-          ]
+            "child",
+            "parent"
+          ],
+          "name": "related_pieces_parent_child_pk"
         }
       },
       "uniqueConstraints": {}
     }
   },
-  "enums": {
-    "filetype": {
-      "name": "filetype",
-      "values": {
-        "doc": "doc",
-        "image": "image",
-        "slide": "slide",
-        "cover": "cover",
-        "other": "other"
-      }
-    }
-  },
-  "schemas": {},
+  "enums": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
   }
 }

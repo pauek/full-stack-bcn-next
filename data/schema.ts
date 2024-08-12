@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { index, sqliteTable, primaryKey, text, integer, blob } from "drizzle-orm/sqlite-core";
+import { index, sqliteTable, primaryKey, text, integer, blob, real } from "drizzle-orm/sqlite-core";
 
 // Pieces
 
@@ -13,12 +13,26 @@ export const pieces = sqliteTable("pieces", {
 
   metadata: text("metadata", { mode: "json" }).notNull().$type<Record<string, any>>(),
 });
-export const piecesRelations = relations(pieces, ({ many }) => ({
+export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parents: many(relatedPieces, { relationName: "parent_relation" }),
   children: many(relatedPieces, { relationName: "child_relation" }),
   attachments: many(attachments, { relationName: "piece_attachments" }),
+  position: one(mapPositions),
 }));
 export type DBPiece = typeof pieces.$inferSelect;
+
+// Map Positions
+
+export const mapPositions = sqliteTable("map_positions", {
+  pieceHash: text("piece_hash")
+    .notNull()
+    .references(() => pieces.pieceHash),
+  left: real("left").notNull(),
+  top: real("top").notNull(),
+  width: real("width").notNull(),
+  height: real("height").notNull(),
+  color: text("color").notNull(),
+});
 
 // HAS-A Relation
 

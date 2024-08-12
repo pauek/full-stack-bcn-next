@@ -1,47 +1,12 @@
 {
   "version": "5",
-  "dialect": "pg",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1707061279057,
-      "tag": "0000_perfect_lethal_legion",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1707325973222,
-      "tag": "0001_sour_daimon_hellstrom",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1708170927103,
-      "tag": "0002_first_frank_castle",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1708250208128,
-      "tag": "0003_funny_jack_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1708950086598,
-      "tag": "0004_slow_winter_soldier",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1709652400419,
-      "tag": "0005_slow_sway",
+      "when": 1723457201727,
+      "tag": "0000_exotic_freak",
       "breakpoints": true
     }
   ]

@@ -1,1 +1,0 @@
-ALTER TYPE "filetype" ADD VALUE 'video';
