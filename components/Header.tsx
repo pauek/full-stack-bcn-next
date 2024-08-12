@@ -15,10 +15,11 @@ export default function Header({ course }: { course: ContentPiece }) {
         "flex-row items-center justify-between border-b z-20 shadow-sm overflow-visible"
       }
     >
-      <div></div>
       <Link href="/" className="font-bold ml-5 overflow-ellipsis">
         {course.name}
       </Link>
+
+      <Link href="/m">Map</Link>
 
       <DarkModeSwitch className="mr-5" />
     </header>

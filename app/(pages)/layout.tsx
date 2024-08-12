@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { Analytics } from "@vercel/analytics/react";
 import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
-import "./globals.css";
+import "../globals.css";
 import data from "@/lib/data";
 import { env } from "@/lib/env.mjs";
 import { notFound } from "next/navigation";
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: Props) {
         <div className="w-full h-full pt-12 flex flex-col">
           <Header course={course} />
           <main className="min-h-full w-full flex flex-col items-center">
-            <div className="flex-1 w-full">{children}</div>
+            <div id="page-box" className="flex-1 w-full relative">{children}</div>
             <Footer />
           </main>
         </div>

@@ -117,3 +117,8 @@ export const getQuizPartsFromFile = (text: string) => {
   }
   return { answers, body };
 };
+
+export const clamp = (value: number, min: number, max: number): number =>
+  Math.min(Math.max(value, min), max);
+
+export const snap = (value: number, step: number): number => Math.round(value / step) * step;

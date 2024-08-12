@@ -34,6 +34,8 @@ export const mapPositions = sqliteTable("map_positions", {
   color: text("color").notNull(),
 });
 
+export type MapPosition = typeof mapPositions.$inferSelect;
+
 // HAS-A Relation
 
 export const relatedPieces = sqliteTable(
