@@ -33,6 +33,13 @@ export const mapPositions = sqliteTable("map_positions", {
   height: real("height").notNull(),
   color: text("color").notNull(),
 });
+export const mapPositionsRelations = relations(mapPositions, ({ one }) => ({
+  piece: one(pieces, {
+    fields: [mapPositions.pieceHash],
+    references: [pieces.pieceHash],
+    relationName: "position",
+  }),
+}));
 
 export type MapPosition = typeof mapPositions.$inferSelect;
 
@@ -122,7 +129,7 @@ export const files = sqliteTable("files", {
 });
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
-  answers: many(quizAnswers),
+  answers: many(quizAnswers, { relationName: "quiz_answers" }),
 }));
 
 // Attachments
@@ -202,3 +209,10 @@ export const quizAnswers = sqliteTable(
     }),
   })
 );
+export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
+  file: one(files, {
+    fields: [quizAnswers.hash],
+    references: [files.hash],
+    relationName: "quiz_answers",
+  }),
+}));
