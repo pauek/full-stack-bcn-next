@@ -1,7 +1,7 @@
 {
-  "version": "5",
+  "version": "6",
   "dialect": "sqlite",
-  "id": "9f81c9ac-d8ab-4a36-84d4-2657af667114",
+  "id": "09bc966f-1063-4989-b2f5-9a63a63349fb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "attachments": {
@@ -68,9 +68,9 @@
       "compositePrimaryKeys": {
         "attachments_piece_hash_file_hash_filetype_pk": {
           "columns": [
+            "piece_hash",
             "file_hash",
-            "filetype",
-            "piece_hash"
+            "filetype"
           ],
           "name": "attachments_piece_hash_file_hash_filetype_pk"
         }
@@ -151,7 +151,7 @@
         "piece_hash": {
           "name": "piece_hash",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
@@ -182,6 +182,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "z": {
+          "name": "z",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "color": {
           "name": "color",
@@ -292,8 +300,8 @@
       "compositePrimaryKeys": {
         "quiz_answers_hash_answer_pk": {
           "columns": [
-            "answer",
-            "hash"
+            "hash",
+            "answer"
           ],
           "name": "quiz_answers_hash_answer_pk"
         }
@@ -350,8 +358,8 @@
       "compositePrimaryKeys": {
         "related_pieces_parent_child_pk": {
           "columns": [
-            "child",
-            "parent"
+            "parent",
+            "child"
           ],
           "name": "related_pieces_parent_child_pk"
         }
@@ -364,5 +372,8 @@
     "schemas": {},
     "tables": {},
     "columns": {}
+  },
+  "internal": {
+    "indexes": {}
   }
 }

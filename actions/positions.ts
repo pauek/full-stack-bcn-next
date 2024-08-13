@@ -1,12 +1,12 @@
 "use server";
 
 import { MapPosition } from "@/data/schema";
-import { dbPositionsGetAll, dbPositionsUpdate } from "@/lib/data/db/positions";
+import { dbMapPositionsGetAll, dbMapPositionsUpdate } from "@/lib/data/db/positions";
 
-export async function actionLoadRectangles() {
-  return await dbPositionsGetAll();
+export async function actionLoadMapPositions() {
+  return await dbMapPositionsGetAll();
 }
 
-export async function actionRectangleUpdate(rectlist: MapPosition[]) {
-  await dbPositionsUpdate(rectlist);
+export async function actionMapPositionsUpdate(rectlist: MapPosition[]) {
+  await dbMapPositionsUpdate(rectlist);
 }

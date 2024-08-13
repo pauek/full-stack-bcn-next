@@ -3,7 +3,7 @@ CREATE TABLE `attachments` (
 	`file_hash` text NOT NULL,
 	`filetype` text NOT NULL,
 	`filename` text NOT NULL,
-	PRIMARY KEY(`file_hash`, `filetype`, `piece_hash`),
+	PRIMARY KEY(`piece_hash`, `file_hash`, `filetype`),
 	FOREIGN KEY (`piece_hash`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`file_hash`) REFERENCES `files`(`file_hash`) ON UPDATE no action ON DELETE no action
 );
@@ -20,11 +20,12 @@ CREATE TABLE `hashmap` (
 );
 --> statement-breakpoint
 CREATE TABLE `map_positions` (
-	`piece_hash` text NOT NULL,
+	`piece_hash` text PRIMARY KEY NOT NULL,
 	`left` real NOT NULL,
 	`top` real NOT NULL,
 	`width` real NOT NULL,
 	`height` real NOT NULL,
+	`z` integer DEFAULT 0 NOT NULL,
 	`color` text NOT NULL,
 	FOREIGN KEY (`piece_hash`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action
 );
@@ -40,14 +41,14 @@ CREATE TABLE `pieces` (
 CREATE TABLE `quiz_answers` (
 	`hash` text NOT NULL,
 	`answer` text NOT NULL,
-	PRIMARY KEY(`answer`, `hash`),
+	PRIMARY KEY(`hash`, `answer`),
 	FOREIGN KEY (`hash`) REFERENCES `files`(`file_hash`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `related_pieces` (
 	`parent` text NOT NULL,
 	`child` text NOT NULL,
-	PRIMARY KEY(`child`, `parent`),
+	PRIMARY KEY(`parent`, `child`),
 	FOREIGN KEY (`parent`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`child`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action
 );

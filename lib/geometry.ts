@@ -47,6 +47,7 @@ export interface IRectangle {
   top: number;
   width: number;
   height: number;
+  z: number;
   color?: string;
 }
 export const pointWithinRect = (p: Point, rect: IRectangle): boolean =>

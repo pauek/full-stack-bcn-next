@@ -1,7 +1,6 @@
 "use client";
 
-import { actionLoadRectangles, actionRectangleUpdate } from "@/actions/positions";
-import { MapPosition } from "@/data/schema";
+import { actionLoadMapPositions, actionMapPositionsUpdate } from "@/actions/positions";
 import { CanvasController } from "@/lib/canvas-controller";
 import { MapPositionWithPiece } from "@/lib/data/db/positions";
 import { usePathname } from "next/navigation";
@@ -12,12 +11,12 @@ type MapSize = {
   height: number;
 };
 
-type Item = MapPositionWithPiece
+type Item = MapPositionWithPiece;
 type Controller = CanvasController<Item>;
 
 const MapPositionsAdapter = {
   saveItems(positions: Item[]) {
-    actionRectangleUpdate(positions)
+    actionMapPositionsUpdate(positions)
       .then(
         () => console.log("Updated:", positions) // TODO: better message
       )
@@ -26,7 +25,7 @@ const MapPositionsAdapter = {
       });
   },
   async loadItems() {
-    return await actionLoadRectangles();
+    return await actionLoadMapPositions();
   },
   paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
     if (controller.scale < 0.2) {
@@ -45,21 +44,21 @@ const MapPositionsAdapter = {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "black";
     ctx.fillText(`${item.piece.name}`, left + width / 2, top + height / 2);
-  }
-}
-
-
+  },
+};
 
 export default function Map() {
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const stateRef = useRef<Controller>(new CanvasController(canvasRef, pathname, MapPositionsAdapter));
+  const stateRef = useRef<Controller>(
+    new CanvasController(canvasRef, pathname, MapPositionsAdapter)
+  );
 
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 });
   const { current: state } = stateRef;
 
   useEffect(() => {
-    state.loadItems()
+    state.loadItems();
     if (pathname === "/") {
       const pageBox = document.getElementById("page-box");
       if (!pageBox) {

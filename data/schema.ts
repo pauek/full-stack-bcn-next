@@ -25,12 +25,13 @@ export type DBPiece = typeof pieces.$inferSelect;
 
 export const mapPositions = sqliteTable("map_positions", {
   pieceHash: text("piece_hash")
-    .notNull()
+    .primaryKey()
     .references(() => pieces.pieceHash),
   left: real("left").notNull(),
   top: real("top").notNull(),
   width: real("width").notNull(),
   height: real("height").notNull(),
+  z: integer("z").notNull().default(0),
   color: text("color").notNull(),
 });
 export const mapPositionsRelations = relations(mapPositions, ({ one }) => ({

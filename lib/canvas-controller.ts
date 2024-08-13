@@ -86,7 +86,7 @@ export class CanvasController<ItemType extends IRectangle> {
 
   getModelBounds() {
     const { width, height } = this.getCanvas();
-    return this.rectClientToModel({ left: 0, top: 0, width, height });
+    return this.rectClientToModel({ left: 0, top: 0, width, height, z: 0 });
   }
 
   getClientBounds() {
@@ -95,6 +95,7 @@ export class CanvasController<ItemType extends IRectangle> {
       top: 0,
       width: MAP_MAX_WIDTH,
       height: MAP_MAX_HEIGHT,
+      z: 0
     });
   }
 
@@ -140,12 +141,12 @@ export class CanvasController<ItemType extends IRectangle> {
     return ptAdd(ptMul(pmodel, this.scale), this.origin);
   }
 
-  rectClientToModel(pos: IRectangle): IRectangle {
-    const tl = { x: pos.left, y: pos.top };
-    const br = { x: pos.left + pos.width, y: pos.top + pos.height };
+  rectClientToModel(rect: IRectangle): IRectangle {
+    const tl = { x: rect.left, y: rect.top };
+    const br = { x: rect.left + rect.width, y: rect.top + rect.height };
     const { x: left, y: top } = this.clientToModel(tl);
     const { x: right, y: bottom } = this.clientToModel(br);
-    return { left, top, width: right - left, height: bottom - top };
+    return { ...rect, left, top, width: right - left, height: bottom - top };
   }
 
   rectModelToClient(rect: IRectangle): IRectangle {
@@ -153,12 +154,16 @@ export class CanvasController<ItemType extends IRectangle> {
     const br = { x: rect.left + rect.width, y: rect.top + rect.height };
     const { x: left, y: top } = this.modelToClient(tl);
     const { x: right, y: bottom } = this.modelToClient(br);
-    return { left, top, width: right - left, height: bottom - top };
+    return { ...rect, left, top, width: right - left, height: bottom - top };
+  }
+
+  updateOver() {
+    this.overRect = this.items.findLast((rect) => pointWithinRect(this.mouse, rect)) || null;
   }
 
   paintRectMinimal(ctx: CanvasRenderingContext2D, _: number, rect: ItemType) {
-    const { left, top, width, height, color } = rect;
-    const over = pointWithinRect(this.mouse, { left, top, width, height });
+    const { left, top, width, height, z, color } = rect;
+    const over = pointWithinRect(this.mouse, { left, top, width, height, z, color });
     ctx.fillStyle = color || "gray";
     if (this.mode === "edit" && over) {
       ctx.fillStyle = "white";
@@ -248,7 +253,7 @@ export class CanvasController<ItemType extends IRectangle> {
         width *= 3;
       }
 
-      const knobRect = { left, top, width, height };
+      const knobRect = { left, top, width, height, z: 0 };
       const mouseInside = pointWithinRect(this.mouse, knobRect);
       const dragging = this.resizing && this.resizing.knob === knob;
 
@@ -326,6 +331,7 @@ export class CanvasController<ItemType extends IRectangle> {
   }
 
   paintItems(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
+    this.items.sort((a, b) => a.z - b.z);
     for (let i = 0; i < this.items.length; i++) {
       const rect = this.items[i];
       if (withinBounds(rect, bounds)) {
@@ -524,7 +530,7 @@ export class CanvasController<ItemType extends IRectangle> {
     const { x, y } = eventPoint(event);
     this.rubberbanding = {
       click: { x, y },
-      rect: { left: x, top: y, width: 0, height: 0 },
+      rect: { left: x, top: y, width: 0, height: 0, z: 0 },
     };
   }
 
@@ -538,6 +544,7 @@ export class CanvasController<ItemType extends IRectangle> {
       top: Math.min(y1, y2),
       width: Math.abs(x1 - x2),
       height: Math.abs(y1 - y2),
+      z: 0
     };
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
     this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));
@@ -597,7 +604,7 @@ export class CanvasController<ItemType extends IRectangle> {
     } else if (this.panning) {
       this.doPanning(event);
     } else {
-      this.overRect = this.items.find((rect) => pointWithinRect(this.mouse, rect)) || null;
+      this.updateOver();
     }
 
     this.mouse = this.clientToModel(eventPoint(event));
@@ -617,7 +624,7 @@ export class CanvasController<ItemType extends IRectangle> {
     } else if (this.panning) {
       this.panning = null;
       this.scaleToUrl();
-      this.overRect = this.items.find((rect) => pointWithinRect(this.mouse, rect)) || null;
+      this.updateOver();
     }
     this.paint();
   }
