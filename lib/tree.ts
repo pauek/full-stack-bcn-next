@@ -67,15 +67,14 @@ const updatePos = async (
   left: number,
   top: number,
   width: number,
-  height: number,
-  color: string,
+  height: number
 ) => {
   await db
     .insert(mapPositions)
-    .values({ pieceHash: hash, left, top, width, height, color })
+    .values({ pieceHash: hash, left, top, width, height })
     .onConflictDoUpdate({
       target: mapPositions.pieceHash,
-      set: { left, top, width, height, color },
+      set: { left, top, width, height },
     })
 }
 
@@ -93,17 +92,17 @@ const assignPosition = async (node: TreeNode) => {
     for (const session of part.children) {
       let x = 20
       for (const chapter of session.children) {
-        updatePos(chapter.hash, x, y + 20, 200, 50, "red")
+        updatePos(chapter.hash, x, y + 20, 200, 50)
         x += 210
       }
       const sessionWidth = Math.max(x, 220)
-      updatePos(session.hash, 10, y + 10, sessionWidth, 70, "green")
+      updatePos(session.hash, 10, y + 10, sessionWidth, 70)
       y += 90
       partHeight += 90
       maxSessionWidth = Math.max(maxSessionWidth, sessionWidth)
     }
     const width = Math.max(maxSessionWidth + 20, 200)
-    updatePos(part.hash, 0, y - partHeight, width, partHeight, "blue")
+    updatePos(part.hash, 0, y - partHeight, width, partHeight)
     y += 80
   }
 }
