@@ -162,6 +162,7 @@ export class CanvasController<ItemType extends IRectangle> {
     this.overRect = this.items.findLast((rect) => pointWithinRect(this.mouse, rect)) || null;
   }
 
+
   paintGrid(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
     const left = bounds.left - (bounds.left % 10);
     for (let _x = 0; _x <= bounds.width; _x += 10) {
@@ -199,10 +200,10 @@ export class CanvasController<ItemType extends IRectangle> {
   paintSelected(ctx: CanvasRenderingContext2D, rect: ItemType) {
     const { left, top, width, height } = rect;
     if (this.scale < 0.2) {
-      ctx.fillStyle = "white";
+      ctx.fillStyle = "blue";
       ctx.fillRect(left, top, width, height);
     } else {
-      ctx.strokeStyle = "white";
+      ctx.strokeStyle = "blue";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.roundRect(left, top, width, height, 5);
@@ -235,7 +236,7 @@ export class CanvasController<ItemType extends IRectangle> {
       ctx.beginPath();
       ctx.roundRect(left, top, width, height, knobWidth / 2);
       ctx.closePath();
-      ctx.fillStyle = dragging || mouseInside ? "blue" : "white";
+      ctx.fillStyle = dragging || mouseInside ? "white" : "blue";
       ctx.fill();
     };
 
@@ -249,10 +250,10 @@ export class CanvasController<ItemType extends IRectangle> {
   paintOverRect(ctx: CanvasRenderingContext2D, rect: ItemType) {
     const { left, top, width, height } = rect;
     if (this.scale < 0.2) {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.fillStyle = "rgba(0, 0, 255, 0.6)";
       ctx.fillRect(left, top, width, height);
     } else {
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+      ctx.strokeStyle = "rgba(0, 0, 255, 0.6)";
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.roundRect(left, top, width, height, 5);
@@ -306,7 +307,7 @@ export class CanvasController<ItemType extends IRectangle> {
   }
 
   paintItems(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
-    this.items.sort((a, b) => a.z - b.z);
+    this.items.sort((a, b) => b.z - a.z);
     for (let i = 0; i < this.items.length; i++) {
       const rect = this.items[i];
       if (withinBounds(rect, bounds)) {

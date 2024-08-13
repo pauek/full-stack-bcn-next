@@ -32,7 +32,6 @@ export const dbMapPositionsGetAll = async () => {
       width,
       height,
       color,
-      z,
       pieceHash,
       piece: { name, hashmapEntry, children },
     } = result;
@@ -43,7 +42,7 @@ export const dbMapPositionsGetAll = async () => {
       width,
       height,
       color,
-      z,
+      z: hashmapEntry?.level || -10,
       name,
       pieceHash,
       idjpath: hashmapEntry?.idjpath,

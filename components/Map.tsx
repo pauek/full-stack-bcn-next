@@ -38,21 +38,20 @@ class MapPositionsAdapter {
     return await actionLoadMapPositions();
   }
 
-  paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
-    if (controller.scale < 0.2) {
-      const { left, top, width, height, z } = item;
-      const over = pointWithinRect(controller.mouse, { left, top, width, height, z });
-      if (controller.mode === "edit" && over) {
-        ctx.fillStyle = "lightblue";
-      } else if (item.level === 0) {
-        ctx.fillStyle = "white";
-      } else {
-        ctx.fillStyle = "darkgray";
-      }
-      ctx.fillRect(left, top, width, height);
-      return
+  paintMinimal(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
+    const { left, top, width, height, z } = item;
+    const over = pointWithinRect(controller.mouse, { left, top, width, height, z });
+    if (controller.mode === "edit" && over) {
+      ctx.fillStyle = "lightblue";
+    } else if (item.level === 0) {
+      ctx.fillStyle = "white";
+    } else {
+      ctx.fillStyle = "darkgray";
     }
+    ctx.fillRect(left, top, width, height);
+  }
 
+  paintLevel0(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item;
     if (item.level === 0) {
       ctx.fillStyle = "white";
@@ -69,6 +68,32 @@ class MapPositionsAdapter {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "black";
     ctx.fillText(`${item.name}`, left + width / 2, top + height / 2);
+  }
+
+  paintLevelHigher(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
+    const { left, top, width, height } = item;
+    ctx.strokeStyle = "lightgray";
+    ctx.beginPath();
+    ctx.roundRect(left, top, width, height, 5);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.font = "12px Inter";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "white";
+    ctx.fillText(`${item.name}`, left + width / 2, top + 12);
+  }
+
+  paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
+    if (controller.scale < 0.2) {
+      return this.paintMinimal(controller, ctx, item);
+    }
+    if (item.level === 0) {
+      return this.paintLevel0(controller, ctx, item);
+    } else {
+      return this.paintLevelHigher(controller, ctx, item);
+    }
   }
 
   clickItem(item: Item) {
