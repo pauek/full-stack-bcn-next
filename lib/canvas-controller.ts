@@ -188,10 +188,16 @@ export class CanvasController<ItemType extends RectangularItem> {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i]
       if (item.level > 0) {
-        const { left, top, width, height } = rectangleEnlarge(
+        const outline = rectangleEnlarge(
           rectangleListUnion(item.children.map(({ index }) => this.items[index])),
           10
         )
+
+        // Space for the title
+        outline.top -= 16; 
+        outline.height += 16;
+        
+        const { left, top, width, height } = outline
         if (
           item.left !== left ||
           item.top !== top ||
