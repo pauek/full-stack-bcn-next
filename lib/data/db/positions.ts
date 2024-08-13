@@ -1,16 +1,23 @@
+import { MapPosition, mapPositions } from "@/data/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
-import { MapPosition, mapPositions, pieces } from "@/data/schema";
 
 export const dbMapPositionsGetAll = async () => {
   return await db.query.mapPositions.findMany({
     with: {
-      piece: { columns: { name: true } },
+      piece: {
+        columns: { name: true },
+        with: {
+          hashmapEntry: {
+            columns: { idjpath: true },
+          },
+        },
+      },
     },
   });
 };
 
-export type MapPositionWithPiece = MapPosition & { piece: { name: string } };
+export type MapPositionWithPiece = Awaited<ReturnType<typeof dbMapPositionsGetAll>>[number];
 
 export const dbMapPositionsUpdate = async (positionList: MapPosition[]) => {
   for (const position of positionList) {

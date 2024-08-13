@@ -18,6 +18,7 @@ export const piecesRelations = relations(pieces, ({ one, many }) => ({
   children: many(relatedPieces, { relationName: "child_relation" }),
   attachments: many(attachments, { relationName: "piece_attachments" }),
   position: one(mapPositions),
+  hashmapEntry: one(hashmap)
 }));
 export type DBPiece = typeof pieces.$inferSelect;
 

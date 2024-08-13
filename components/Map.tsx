@@ -3,7 +3,7 @@
 import { actionLoadMapPositions, actionMapPositionsUpdate } from "@/actions/positions";
 import { CanvasController } from "@/lib/canvas-controller";
 import { MapPositionWithPiece } from "@/lib/data/db/positions";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type MapSize = {
@@ -14,7 +14,15 @@ type MapSize = {
 type Item = MapPositionWithPiece;
 type Controller = CanvasController<Item>;
 
-const MapPositionsAdapter = {
+type Router = ReturnType<typeof useRouter>;
+
+class MapPositionsAdapter {
+  router: Router;
+
+  constructor(router: any) {
+    this.router = router;
+  }
+
   saveItems(positions: Item[]) {
     actionMapPositionsUpdate(positions)
       .then(
@@ -23,10 +31,12 @@ const MapPositionsAdapter = {
       .catch((e) => {
         console.error(`Error updating positions: `, e); // TODO: show user
       });
-  },
+  }
+
   async loadItems() {
     return await actionLoadMapPositions();
-  },
+  }
+
   paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
     if (controller.scale < 0.2) {
       return controller.paintRectMinimal(ctx, 0, item);
@@ -44,14 +54,22 @@ const MapPositionsAdapter = {
     ctx.textBaseline = "middle";
     ctx.fillStyle = "black";
     ctx.fillText(`${item.piece.name}`, left + width / 2, top + height / 2);
-  },
+  }
+
+  clickItem(item: Item) {
+    const { hashmapEntry } = item.piece;
+    if (hashmapEntry) {
+      this.router.push(`/c/${hashmapEntry.idjpath}`)
+    }
+  }
 };
 
 export default function Map() {
+  const router = useRouter();
   const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<Controller>(
-    new CanvasController(canvasRef, pathname, MapPositionsAdapter)
+    new CanvasController(canvasRef, pathname, new MapPositionsAdapter(router))
   );
 
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 });

@@ -25,6 +25,7 @@ interface CanvasAdapter<ItemType extends IRectangle> {
     ctx: CanvasRenderingContext2D,
     item: ItemType
   ) => void;
+  clickItem(item: ItemType): void;
 }
 
 export class CanvasController<ItemType extends IRectangle> {
@@ -95,7 +96,7 @@ export class CanvasController<ItemType extends IRectangle> {
       top: 0,
       width: MAP_MAX_WIDTH,
       height: MAP_MAX_HEIGHT,
-      z: 0
+      z: 0,
     });
   }
 
@@ -544,7 +545,7 @@ export class CanvasController<ItemType extends IRectangle> {
       top: Math.min(y1, y2),
       width: Math.abs(x1 - x2),
       height: Math.abs(y1 - y2),
-      z: 0
+      z: 0,
     };
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
     this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));
@@ -582,7 +583,7 @@ export class CanvasController<ItemType extends IRectangle> {
         this.selected = [this.overRect];
         this.startDragging(eventPoint(event));
       } else {
-        this.startPanning(event);
+        this.adapter.clickItem(this.overRect);
       }
     } else {
       if (this.mode === "view") {
