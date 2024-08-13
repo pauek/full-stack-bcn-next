@@ -1,0 +1,1 @@
+ALTER TABLE `hashmap` ADD `level` integer NOT NULL DEFAULT -1;

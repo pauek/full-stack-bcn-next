@@ -162,32 +162,6 @@ export class CanvasController<ItemType extends IRectangle> {
     this.overRect = this.items.findLast((rect) => pointWithinRect(this.mouse, rect)) || null;
   }
 
-  paintRectMinimal(ctx: CanvasRenderingContext2D, _: number, rect: ItemType) {
-    const { left, top, width, height, z, color } = rect;
-    const over = pointWithinRect(this.mouse, { left, top, width, height, z, color });
-    ctx.fillStyle = color || "gray";
-    if (this.mode === "edit" && over) {
-      ctx.fillStyle = "white";
-    }
-    ctx.fillRect(left, top, width, height);
-    return over;
-  }
-
-  paintRectFull(ctx: CanvasRenderingContext2D, i: number, rect: ItemType) {
-    const { left, top, width, height, color } = rect;
-    ctx.fillStyle = color || "gray";
-    ctx.beginPath();
-    ctx.roundRect(left, top, width, height, 5);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.font = "12px monospace";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "black";
-    ctx.fillText(`${i}`, left + width / 2, top + height / 2);
-  }
-
   paintGrid(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
     const left = bounds.left - (bounds.left % 10);
     for (let _x = 0; _x <= bounds.width; _x += 10) {

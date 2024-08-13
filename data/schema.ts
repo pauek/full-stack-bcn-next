@@ -179,6 +179,7 @@ export const hashmap = sqliteTable(
     pieceHash: text("piece_hash")
       .notNull()
       .references(() => pieces.pieceHash),
+    level: integer("level").notNull(), // This level is the depth of the piece in the tree
   },
   (table) => ({
     hashIdx: index("hash_idx").on(table.pieceHash),

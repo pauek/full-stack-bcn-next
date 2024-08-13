@@ -3,14 +3,11 @@ import { db } from "@/lib/data/db";
 import { env } from "@/lib/env.mjs";
 import { eq } from "drizzle-orm";
 
-const pieceLevel = (piece: HashWithPiece) => piece.idjpath.split("/").length;
-
 const getAllHashes = async () =>
   await db.query.hashmap.findMany({
     with: {
       piece: {
         columns: {
-          name: true,
           metadata: true,
         },
       },
@@ -19,11 +16,10 @@ const getAllHashes = async () =>
 
 type HashWithPiece = Awaited<ReturnType<typeof getAllHashes>>[number];
 
-type TreeNode = {
+export type TreeNode = {
   hash: string;
   id: string;
   level: number;
-  name: string;
   children: TreeNode[];
 };
 
@@ -59,9 +55,8 @@ const insertIntoTree = (tree: TreeNode, hashmap: HashWithPiece) => {
   }
   node.children.push({
     id,
-    level: pieceLevel(hashmap),
+    level: -1,
     hash: hashmap.pieceHash,
-    name: hashmap.piece.name,
     children: [],
   });
   // TODO: more stuff
@@ -114,44 +109,62 @@ const assignPosition = async (node: TreeNode) => {
   }
 };
 
-const rootPiece = await db.query.hashmap.findFirst({
-  where: eq(hashmap.idjpath, env.COURSE_ID),
-  with: {
-    piece: {
-      columns: {
-        name: true,
-        metadata: true,
+export const constructTree = async () => {
+  const rootPiece = await db.query.hashmap.findFirst({
+    where: eq(hashmap.idjpath, env.COURSE_ID),
+    with: {
+      piece: {
+        columns: {
+          name: true,
+          metadata: true,
+        },
       },
     },
-  },
-});
+  });
 
-if (!rootPiece) {
-  console.error(`No piece found for ID = ${env.COURSE_ID}`);
-  process.exit(1);
-}
+  if (!rootPiece) {
+    console.error(`No piece found for ID = ${env.COURSE_ID}`);
+    process.exit(1);
+  }
 
-const root: TreeNode = {
-  id: "",
-  level: 0,
-  hash: "",
-  name: "<root>",
-  children: [
-    {
-      id: env.COURSE_ID,
-      level: 1,
-      hash: rootPiece.pieceHash,
-      name: rootPiece.piece.name,
-      children: [],
-    },
-  ],
+  const root: TreeNode = {
+    id: "<root>",
+    level: -1,
+    hash: "",
+    children: [
+      {
+        id: env.COURSE_ID,
+        level: 1,
+        hash: rootPiece.pieceHash,
+        children: [],
+      },
+    ],
+  };
+
+  const pieces = await getAllHashes();
+  pieces.sort((a, b) => {
+    const adepth = a.idjpath.split("/").length;
+    const bdepth = b.idjpath.split("/").length;
+    return adepth - bdepth;
+  })
+  for (const hashmap of pieces.slice(1)) {
+    insertIntoTree(root, hashmap);
+  }
+
+  return root.children[0];
 };
 
-const pieces = await getAllHashes();
-pieces.sort((a, b) => pieceLevel(a) - pieceLevel(b));
+export const assignLevels = async (tree: TreeNode) => {
+  const assign = (node: TreeNode): number => {
+    if (node.children.length === 0) {
+      node.level = 0;
+      return 0;
+    }
+    const childrenLevels = node.children.map(assign);
+    const level = Math.max(...childrenLevels) + 1;
+    node.level = level;
+    return level;
+  }
 
-for (const hashmap of pieces.slice(1)) {
-  insertIntoTree(root, hashmap);
+  assign(tree);
 }
-
-assignPosition(root.children[0]);

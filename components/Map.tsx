@@ -3,6 +3,7 @@
 import { actionLoadMapPositions, actionMapPositionsUpdate } from "@/actions/positions";
 import { CanvasController } from "@/lib/canvas-controller";
 import { MapPositionWithPiece } from "@/lib/data/db/positions";
+import { pointWithinRect } from "@/lib/geometry";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -39,30 +40,43 @@ class MapPositionsAdapter {
 
   paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
     if (controller.scale < 0.2) {
-      return controller.paintRectMinimal(ctx, 0, item);
+      const { left, top, width, height, z } = item;
+      const over = pointWithinRect(controller.mouse, { left, top, width, height, z });
+      if (controller.mode === "edit" && over) {
+        ctx.fillStyle = "lightblue";
+      } else if (item.level === 0) {
+        ctx.fillStyle = "white";
+      } else {
+        ctx.fillStyle = "darkgray";
+      }
+      ctx.fillRect(left, top, width, height);
+      return
     }
 
-    const { left, top, width, height, color } = item;
-    ctx.fillStyle = color || "gray";
+    const { left, top, width, height } = item;
+    if (item.level === 0) {
+      ctx.fillStyle = "white";
+    } else {
+      ctx.fillStyle = "darkgray";
+    }
     ctx.beginPath();
     ctx.roundRect(left, top, width, height, 5);
     ctx.closePath();
     ctx.fill();
 
-    ctx.font = "12px monospace";
+    ctx.font = "12px Inter";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "black";
-    ctx.fillText(`${item.piece.name}`, left + width / 2, top + height / 2);
+    ctx.fillText(`${item.name}`, left + width / 2, top + height / 2);
   }
 
   clickItem(item: Item) {
-    const { hashmapEntry } = item.piece;
-    if (hashmapEntry) {
-      this.router.push(`/c/${hashmapEntry.idjpath}`)
+    if (item.idjpath) {
+      this.router.push(`/c/${item.idjpath}`);
     }
   }
-};
+}
 
 export default function Map() {
   const router = useRouter();

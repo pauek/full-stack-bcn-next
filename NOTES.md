@@ -1,4 +1,7 @@
-- Hay que linkar desde el texto al mapa y al revés.
+- Cuando mueves un tema que tiene hijos, éstos se mueven con él!
+  Que me lleva a pensar que el rectángulo de una sesión o una parte se calcula por los hijos, directamente... incluso la silueta!!!
+
+- Calcular el "level" de un piece según lo lejos que está de las hojas del árbol? Si un piece tiene "level" > 0 (o sea es un grupo), entonces 
 
 - Hay que poder representar las dependencias:
   - Crear links entre pieces.

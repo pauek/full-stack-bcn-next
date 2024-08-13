@@ -1,19 +1,55 @@
 import { MapPosition, mapPositions } from "@/data/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
+import { assignLevels } from "@/lib/tree";
 
 export const dbMapPositionsGetAll = async () => {
-  return await db.query.mapPositions.findMany({
+  const results = await db.query.mapPositions.findMany({
     with: {
       piece: {
         columns: { name: true },
         with: {
+          children: {
+            columns: {
+              childHash: true,
+            },
+          },
           hashmapEntry: {
-            columns: { idjpath: true },
+            columns: {
+              idjpath: true,
+              level: true,
+            },
           },
         },
       },
     },
+  });
+
+  return results.map((result) => {
+    const {
+      left,
+      top,
+      width,
+      height,
+      color,
+      z,
+      pieceHash,
+      piece: { name, hashmapEntry, children },
+    } = result;
+
+    return {
+      left,
+      top,
+      width,
+      height,
+      color,
+      z,
+      name,
+      pieceHash,
+      idjpath: hashmapEntry?.idjpath,
+      level: hashmapEntry?.level,
+      children: children.map((child) => child.childHash),
+    };
   });
 };
 
