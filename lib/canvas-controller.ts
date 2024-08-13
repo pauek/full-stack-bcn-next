@@ -14,7 +14,7 @@ import {
   rectIntersectsRect,
 } from "@/lib/geometry"
 import { RefObject } from "react"
-import { clamp, snap } from "./utils"
+import { clamp, setUnion, snap } from "./utils"
 
 export const MAP_MAX_WIDTH = 5000
 export const MAP_MAX_HEIGHT = 5000
@@ -25,7 +25,7 @@ interface CanvasAdapter<ItemType extends RectangularItem> {
   paintItem: (
     ctrl: CanvasController<ItemType>,
     ctx: CanvasRenderingContext2D,
-    item: ItemType,
+    item: ItemType
   ) => void
   clickItem(item: ItemType): void
 }
@@ -78,7 +78,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   constructor(
     ref: RefObject<HTMLCanvasElement>,
     urlPath: string,
-    adapter: CanvasAdapter<ItemType>,
+    adapter: CanvasAdapter<ItemType>
   ) {
     this.adapter = adapter
     this.canvasRef = ref
@@ -190,7 +190,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       if (item.level > 0) {
         const { left, top, width, height } = rectangleEnlarge(
           rectangleListUnion(item.children.map(({ index }) => this.items[index])),
-          10,
+          10
         )
         if (
           item.left !== left ||
@@ -325,7 +325,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       ctx,
       `bounds:   ${left.toFixed(0)}, ${top.toFixed(0)}, ${width.toFixed(0)}, ${height.toFixed(0)}`,
       4,
-      0,
+      0
     )
   }
 
@@ -492,7 +492,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
 
     const updated = this.updateParents()
-    this.dragging.updatedIndices = this.dragging.updatedIndices.union(new Set(updated))
+    this.dragging.updatedIndices = setUnion(this.dragging.updatedIndices, updated)
   }
 
   endDragging() {
@@ -500,7 +500,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       return
     }
     const updatedIndices = this.updateParents()
-    this.dragging.updatedIndices = this.dragging.updatedIndices.union(new Set(updatedIndices))
+    this.dragging.updatedIndices = setUnion(this.dragging.updatedIndices, updatedIndices)
     const updated: ItemType[] = []
     for (const index of this.dragging.updatedIndices) {
       updated.push(this.items[index])
@@ -560,7 +560,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
 
     const updated = this.updateParents()
-    this.resizing.updatedIndices = this.resizing.updatedIndices.union(new Set(updated))
+    this.resizing.updatedIndices = setUnion(this.resizing.updatedIndices, updated)
   }
 
   endResizing() {
@@ -568,7 +568,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       return
     }
     const updatedIndices = this.updateParents()
-    this.resizing.updatedIndices = this.resizing.updatedIndices.union(new Set(updatedIndices))
+    this.resizing.updatedIndices = setUnion(this.resizing.updatedIndices, updatedIndices)
     const updated: ItemType[] = []
     for (const index of this.resizing.updatedIndices) {
       updated.push(this.items[index])
@@ -601,7 +601,9 @@ export class CanvasController<ItemType extends RectangularItem> {
       height: Math.abs(y1 - y2),
     }
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = this.items.filter((item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel))
+    this.selected = this.items.filter(
+      (item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel)
+    )
   }
 
   endRubberbanding() {
@@ -610,7 +612,9 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = this.items.filter((item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel))
+    this.selected = this.items.filter(
+      (item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel)
+    )
     this.rubberbanding = null
   }
 
