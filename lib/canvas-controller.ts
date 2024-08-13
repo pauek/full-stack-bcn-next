@@ -495,7 +495,9 @@ export class CanvasController<ItemType extends RectangularItem> {
       item.left = snap(origin.x + clientDiff.x / this.scale, 10);
       item.top = snap(origin.y + clientDiff.y / this.scale, 10);
     }
-    const updatedIndices = this.updateParents();
+    
+    const updated = this.updateParents();
+    this.dragging.updatedIndices = this.dragging.updatedIndices.union(new Set(updated));
   }
 
   endDragging() {
