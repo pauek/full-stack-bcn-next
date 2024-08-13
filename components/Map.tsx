@@ -3,7 +3,7 @@
 import { actionLoadMapPositions, actionMapPositionsUpdate } from "@/actions/positions";
 import { CanvasController } from "@/lib/canvas-controller";
 import { MapPositionWithPiece } from "@/lib/data/db/positions";
-import { pointWithinRect } from "@/lib/geometry";
+import { pointWithinRect, rectangleEnlarge, rectangleListUnion } from "@/lib/geometry";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -39,19 +39,17 @@ class MapPositionsAdapter {
   }
 
   paintMinimal(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height, z } = item;
-    const over = pointWithinRect(controller.mouse, { left, top, width, height, z });
+    const { left, top, width, height } = item;
+    const over = pointWithinRect(controller.mouse, { left, top, width, height });
     if (controller.mode === "edit" && over) {
       ctx.fillStyle = "lightblue";
     } else if (item.level === 0) {
       ctx.fillStyle = "white";
-    } else {
-      ctx.fillStyle = "darkgray";
+      ctx.fillRect(left, top, width, height);
     }
-    ctx.fillRect(left, top, width, height);
   }
 
-  paintLevel0(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
+  paintLevel0(ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item;
     if (item.level === 0) {
       ctx.fillStyle = "white";
@@ -70,8 +68,10 @@ class MapPositionsAdapter {
     ctx.fillText(`${item.name}`, left + width / 2, top + height / 2);
   }
 
-  paintLevelHigher(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height } = item;
+  paintLevelHigher(ctx: CanvasRenderingContext2D, item: Item) {
+    const outline = rectangleListUnion(item.children)
+    const enlargedOutline = rectangleEnlarge(outline, 10);
+    const { left, top, width, height } = enlargedOutline;
     ctx.strokeStyle = "lightgray";
     ctx.beginPath();
     ctx.roundRect(left, top, width, height, 5);
@@ -82,17 +82,18 @@ class MapPositionsAdapter {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "white";
-    ctx.fillText(`${item.name}`, left + width / 2, top + 12);
+    ctx.fillText(`${item.name} - ${item.children.length}`, left + width / 2, top + 12);
   }
 
   paintItem(controller: Controller, ctx: CanvasRenderingContext2D, item: Item) {
     if (controller.scale < 0.2) {
-      return this.paintMinimal(controller, ctx, item);
-    }
-    if (item.level === 0) {
-      return this.paintLevel0(controller, ctx, item);
+      this.paintMinimal(controller, ctx, item);
     } else {
-      return this.paintLevelHigher(controller, ctx, item);
+      if (item.level === 0) {
+        this.paintLevel0(ctx, item);
+      } else {
+        this.paintLevelHigher(ctx, item);
+      }
     }
   }
 

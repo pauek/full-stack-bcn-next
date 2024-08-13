@@ -54,7 +54,11 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
 export const insertPieceHashmap = async (piece: ContentPiece) => {
   await db
     .insert(schema.hashmap)
-    .values({ pieceHash: piece.hash, idjpath: piece.idpath.join("/") })
+    .values({
+      pieceHash: piece.hash,
+      idjpath: piece.idpath.join("/"),
+      level: -1 /* This has to be computed later... */,
+    })
     .onConflictDoUpdate({
       target: schema.hashmap.idjpath,
       set: { pieceHash: piece.hash },

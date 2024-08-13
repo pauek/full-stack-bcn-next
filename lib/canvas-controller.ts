@@ -17,7 +17,7 @@ import { clamp, snap } from "./utils";
 export const MAP_MAX_WIDTH = 5000;
 export const MAP_MAX_HEIGHT = 5000;
 
-interface CanvasAdapter<ItemType extends IRectangle> {
+interface CanvasAdapter<ItemType extends RectangularItem> {
   loadItems: () => Promise<ItemType[]>;
   saveItems: (items: ItemType[]) => void;
   paintItem: (
@@ -28,7 +28,11 @@ interface CanvasAdapter<ItemType extends IRectangle> {
   clickItem(item: ItemType): void;
 }
 
-export class CanvasController<ItemType extends IRectangle> {
+interface RectangularItem extends IRectangle {
+  level: number
+}
+
+export class CanvasController<ItemType extends RectangularItem> {
   mode: "view" | "edit" = "view";
 
   adapter: CanvasAdapter<ItemType>;
@@ -87,7 +91,7 @@ export class CanvasController<ItemType extends IRectangle> {
 
   getModelBounds() {
     const { width, height } = this.getCanvas();
-    return this.rectClientToModel({ left: 0, top: 0, width, height, z: 0 });
+    return this.rectClientToModel({ left: 0, top: 0, width, height });
   }
 
   getClientBounds() {
@@ -96,7 +100,6 @@ export class CanvasController<ItemType extends IRectangle> {
       top: 0,
       width: MAP_MAX_WIDTH,
       height: MAP_MAX_HEIGHT,
-      z: 0,
     });
   }
 
@@ -229,7 +232,7 @@ export class CanvasController<ItemType extends IRectangle> {
         width *= 3;
       }
 
-      const knobRect = { left, top, width, height, z: 0 };
+      const knobRect = { left, top, width, height };
       const mouseInside = pointWithinRect(this.mouse, knobRect);
       const dragging = this.resizing && this.resizing.knob === knob;
 
@@ -307,7 +310,7 @@ export class CanvasController<ItemType extends IRectangle> {
   }
 
   paintItems(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
-    this.items.sort((a, b) => b.z - a.z);
+    this.items.sort((a, b) => b.level - a.level);
     for (let i = 0; i < this.items.length; i++) {
       const rect = this.items[i];
       if (withinBounds(rect, bounds)) {
@@ -506,7 +509,7 @@ export class CanvasController<ItemType extends IRectangle> {
     const { x, y } = eventPoint(event);
     this.rubberbanding = {
       click: { x, y },
-      rect: { left: x, top: y, width: 0, height: 0, z: 0 },
+      rect: { left: x, top: y, width: 0, height: 0 },
     };
   }
 
@@ -520,7 +523,6 @@ export class CanvasController<ItemType extends IRectangle> {
       top: Math.min(y1, y2),
       width: Math.abs(x1 - x2),
       height: Math.abs(y1 - y2),
-      z: 0,
     };
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
     this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));

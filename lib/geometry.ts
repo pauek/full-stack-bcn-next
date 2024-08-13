@@ -47,8 +47,6 @@ export interface IRectangle {
   top: number;
   width: number;
   height: number;
-  z: number;
-  color?: string;
 }
 export const pointWithinRect = (p: Point, rect: IRectangle): boolean =>
   p.x >= rect.left &&
@@ -78,3 +76,29 @@ export const getKnobPositions = (rect: IRectangle): Point[] => {
     { x: left + width / 2, y: top + height }, // bottom
   ];
 };
+
+export const rectangleUnion = (a: IRectangle, b: IRectangle): IRectangle => {
+  const left = Math.min(a.left, b.left);
+  const top = Math.min(a.top, b.top);
+  const right = Math.max(a.left + a.width, b.left + b.width);
+  const bottom = Math.max(a.top + a.height, b.top + b.height);
+  return {
+    left,
+    top,
+    width: right - left,
+    height: bottom - top,
+  }; 
+}
+
+export const rectangleListUnion = (rects: IRectangle[]): IRectangle => {
+  return rects.reduce(rectangleUnion);
+}
+
+export const rectangleEnlarge = (rect: IRectangle, amount: number): IRectangle => {
+  return {
+    left: rect.left - amount,
+    top: rect.top - amount,
+    width: rect.width + 2 * amount,
+    height: rect.height + 2 * amount,
+  };
+}

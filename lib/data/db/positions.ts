@@ -2,6 +2,7 @@ import { MapPosition, mapPositions } from "@/data/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { assignLevels } from "@/lib/tree";
+import { hash } from "bun";
 
 export const dbMapPositionsGetAll = async () => {
   const results = await db.query.mapPositions.findMany({
@@ -25,6 +26,14 @@ export const dbMapPositionsGetAll = async () => {
     },
   });
 
+  const _find = (hash: string) => {
+    const result = results.find((result) => result.pieceHash === hash);
+    if (!result) {
+      throw new Error(`Could not find piece with hash ${hash}`);
+    }
+    return result;
+  }
+
   return results.map((result) => {
     const {
       left,
@@ -42,12 +51,11 @@ export const dbMapPositionsGetAll = async () => {
       width,
       height,
       color,
-      z: hashmapEntry?.level || -10,
       name,
       pieceHash,
       idjpath: hashmapEntry?.idjpath,
-      level: hashmapEntry?.level,
-      children: children.map((child) => child.childHash),
+      level: hashmapEntry?.level || -1,
+      children: children.map((child) => _find(child.childHash)),
     };
   });
 };
