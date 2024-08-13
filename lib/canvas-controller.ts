@@ -601,7 +601,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       height: Math.abs(y1 - y2),
     }
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = this.items.filter((rect) => rectIntersectsRect(rect, rubberbandModel))
+    this.selected = this.items.filter((item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel))
   }
 
   endRubberbanding() {
@@ -610,7 +610,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = this.items.filter((rect) => rectIntersectsRect(rect, rubberbandModel))
+    this.selected = this.items.filter((item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel))
     this.rubberbanding = null
   }
 
