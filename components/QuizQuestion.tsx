@@ -34,7 +34,6 @@ export default async function QuizQuestion({ index, chapter, quiz }: QuizQuestio
       Error in question: 
       Chapter ${chapter.name}, index ${index}, file ${quiz.filename}
     `
-    console.log(msg)
     quizText = msg
   }
 
