@@ -32,7 +32,6 @@ export const mapPositions = sqliteTable("map_positions", {
   top: real("top").notNull(),
   width: real("width").notNull(),
   height: real("height").notNull(),
-  color: text("color").notNull(),
 });
 export const mapPositionsRelations = relations(mapPositions, ({ one }) => ({
   piece: one(pieces, {

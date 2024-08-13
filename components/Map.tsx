@@ -3,7 +3,7 @@
 import { actionLoadMapPositions, actionMapPositionsUpdate } from "@/actions/positions";
 import { CanvasController } from "@/lib/canvas-controller";
 import { MapPositionWithPiece } from "@/lib/data/db/positions";
-import { pointWithinRect, rectangleEnlarge, rectangleListUnion } from "@/lib/geometry";
+import { pointWithinRect } from "@/lib/geometry";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -69,9 +69,7 @@ class MapPositionsAdapter {
   }
 
   paintLevelHigher(ctx: CanvasRenderingContext2D, item: Item) {
-    const outline = rectangleListUnion(item.children)
-    const enlargedOutline = rectangleEnlarge(outline, 10);
-    const { left, top, width, height } = enlargedOutline;
+    const { left, top, width, height } = item;
     ctx.strokeStyle = "lightgray";
     ctx.beginPath();
     ctx.roundRect(left, top, width, height, 5);

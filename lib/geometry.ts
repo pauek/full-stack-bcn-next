@@ -57,14 +57,13 @@ export const pointWithinRect = (p: Point, rect: IRectangle): boolean =>
 export const pointWithinCircle = (p: Point, center: Point, radius: number): boolean =>
   (p.x - center.x) ** 2 + (p.y - center.y) ** 2 <= radius * radius;
 
-export const withinBounds = (rect: IRectangle, bounds: IRectangle): boolean => {
-  const corners = [
-    { x: rect.left, y: rect.top },
-    { x: rect.left, y: rect.top + rect.height },
-    { x: rect.left + rect.width, y: rect.top },
-    { x: rect.left + rect.width, y: rect.top + rect.height },
-  ];
-  return corners.some((corner) => pointWithinRect(corner, bounds));
+export const rectIntersectsRect = (rect: IRectangle, bounds: IRectangle): boolean => {
+  return (
+    rect.left < bounds.left + bounds.width &&
+    rect.left + rect.width > bounds.left &&
+    rect.top < bounds.top + bounds.height &&
+    rect.top + rect.height > bounds.top
+  );
 };
 
 export const getKnobPositions = (rect: IRectangle): Point[] => {
@@ -87,12 +86,16 @@ export const rectangleUnion = (a: IRectangle, b: IRectangle): IRectangle => {
     top,
     width: right - left,
     height: bottom - top,
-  }; 
-}
+  };
+};
 
 export const rectangleListUnion = (rects: IRectangle[]): IRectangle => {
-  return rects.reduce(rectangleUnion);
-}
+  if (rects.length === 0) {
+    return { left: 0, top: 0, width: 0, height: 0 };
+  } else {
+    return rects.reduce(rectangleUnion);
+  }
+};
 
 export const rectangleEnlarge = (rect: IRectangle, amount: number): IRectangle => {
   return {
@@ -101,4 +104,4 @@ export const rectangleEnlarge = (rect: IRectangle, amount: number): IRectangle =
     width: rect.width + 2 * amount,
     height: rect.height + 2 * amount,
   };
-}
+};

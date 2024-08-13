@@ -9,7 +9,9 @@ import {
   ptAdd,
   ptMul,
   ptSub,
-  withinBounds,
+  rectangleEnlarge,
+  rectangleListUnion,
+  rectIntersectsRect,
 } from "@/lib/geometry";
 import { RefObject } from "react";
 import { clamp, snap } from "./utils";
@@ -29,7 +31,8 @@ interface CanvasAdapter<ItemType extends RectangularItem> {
 }
 
 interface RectangularItem extends IRectangle {
-  level: number
+  level: number;
+  children: { hash: string; index: number }[];
 }
 
 export class CanvasController<ItemType extends RectangularItem> {
@@ -43,15 +46,29 @@ export class CanvasController<ItemType extends RectangularItem> {
   scale: number;
   origin: Point;
 
-  panning: null | { click: Point; origin: Point } = null;
-  dragging: null | { click: Point; origins: Point[] } = null;
+  panning: null | {
+    click: Point;
+    origin: Point;
+  } = null;
+
+  rubberbanding: null | {
+    click: Point;
+    rect: IRectangle;
+  } = null;
+
+  dragging: null | {
+    click: Point;
+    origins: Point[];
+    updatedIndices: Set<number>;
+  } = null;
+
   resizing: null | {
     click: Point;
     initial: ItemType;
     item: ItemType;
     knob: number;
+    updatedIndices: Set<number>;
   } = null;
-  rubberbanding: null | { click: Point; rect: IRectangle } = null;
 
   overRect: ItemType | null = null;
   selected: ItemType[] = [];
@@ -162,9 +179,35 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   updateOver() {
-    this.overRect = this.items.findLast((rect) => pointWithinRect(this.mouse, rect)) || null;
+    this.overRect =
+      this.items.findLast((item) => item.level === 0 && pointWithinRect(this.mouse, item)) || null;
   }
 
+  updateParents(): number[] {
+    const updated: number[] = [];
+    for (let i = 0; i < this.items.length; i++) {
+      const item = this.items[i];
+      if (item.level > 0) {
+        const { left, top, width, height } = rectangleEnlarge(
+          rectangleListUnion(item.children.map(({ index }) => this.items[index])),
+          10
+        );
+        if (
+          item.left !== left ||
+          item.top !== top ||
+          item.width !== width ||
+          item.height !== height
+        ) {
+          item.left = left;
+          item.top = top;
+          item.width = width;
+          item.height = height;
+          updated.push(i);
+        }
+      }
+    }
+    return updated;
+  }
 
   paintGrid(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
     const left = bounds.left - (bounds.left % 10);
@@ -310,10 +353,9 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   paintItems(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
-    this.items.sort((a, b) => b.level - a.level);
     for (let i = 0; i < this.items.length; i++) {
       const rect = this.items[i];
-      if (withinBounds(rect, bounds)) {
+      if (rectIntersectsRect(rect, bounds)) {
         this.adapter.paintItem(this, ctx, this.items[i]);
       }
     }
@@ -414,7 +456,9 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   doPanning(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-    if (!this.panning) return;
+    if (!this.panning) {
+      return;
+    }
 
     this.overRect = null;
     const { click, origin } = this.panning;
@@ -431,41 +475,63 @@ export class CanvasController<ItemType extends RectangularItem> {
       this.dragging = {
         click,
         origins: this.selected.map((rect) => ({ x: rect.left, y: rect.top })),
+        updatedIndices: new Set<number>(),
       };
     }
   }
 
-  dragRectangle(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-    if (!this.dragging || !this.selected) return;
+  doDragging(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    if (!this.dragging || this.selected.length === 0) {
+      return;
+    }
 
     const { click, origins } = this.dragging;
     const p = eventPoint(event);
     const clientDiff = ptSub(p, click);
 
     for (let i = 0; i < this.selected.length; i++) {
-      const rect = this.selected[i];
+      const item = this.selected[i];
       const origin = origins[i];
-      rect.left = snap(origin.x + clientDiff.x / this.scale, 10);
-      rect.top = snap(origin.y + clientDiff.y / this.scale, 10);
+      item.left = snap(origin.x + clientDiff.x / this.scale, 10);
+      item.top = snap(origin.y + clientDiff.y / this.scale, 10);
     }
+    const updatedIndices = this.updateParents();
   }
 
   endDragging() {
-    if (!this.dragging || !this.selected) return;
-    this.adapter.saveItems(this.selected);
+    if (!this.dragging || this.selected.length === 0) {
+      return;
+    }
+    const updatedIndices = this.updateParents();
+    this.dragging.updatedIndices = this.dragging.updatedIndices.union(new Set(updatedIndices));
+    const updated: ItemType[] = [];
+    for (const index of this.dragging.updatedIndices) {
+      updated.push(this.items[index]);
+    }
+    this.adapter.saveItems([...this.selected, ...updated]);
     this.dragging = null;
   }
 
   // Resizing
 
   startResizing(click: Point, knob: number) {
-    if (!this.selected) return;
+    if (this.selected.length === 0) {
+      return;
+    }
     const rect = this.selected[0];
-    this.resizing = { click, initial: { ...rect }, item: rect, knob };
+    this.resizing = {
+      click,
+      initial: { ...rect },
+      item: rect,
+      knob,
+      updatedIndices: new Set<number>(),
+    };
   }
 
-  resizeRectangle(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-    if (!this.resizing) return;
+  doResizing(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    if (!this.resizing) {
+      return;
+    }
 
     const { click, initial, item: rect, knob } = this.resizing;
     const p = eventPoint(event);
@@ -495,11 +561,22 @@ export class CanvasController<ItemType extends RectangularItem> {
         break;
       }
     }
+
+    const updated = this.updateParents();
+    this.resizing.updatedIndices = this.resizing.updatedIndices.union(new Set(updated));
   }
 
   endResizing() {
-    if (!this.resizing) return;
-    this.adapter.saveItems([this.resizing.item]);
+    if (!this.resizing) {
+      return;
+    }
+    const updatedIndices = this.updateParents();
+    this.resizing.updatedIndices = this.resizing.updatedIndices.union(new Set(updatedIndices));
+    const updated: ItemType[] = [];
+    for (const index of this.resizing.updatedIndices) {
+      updated.push(this.items[index]);
+    }
+    this.adapter.saveItems([this.resizing.item, ...updated]);
     this.resizing = null;
   }
 
@@ -514,7 +591,9 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   doRubberbanding(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-    if (!this.rubberbanding) return;
+    if (!this.rubberbanding) {
+      return;
+    }
 
     const { x: x1, y: y1 } = this.rubberbanding.click;
     const { x: x2, y: y2 } = eventPoint(event);
@@ -525,14 +604,16 @@ export class CanvasController<ItemType extends RectangularItem> {
       height: Math.abs(y1 - y2),
     };
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
-    this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));
+    this.selected = this.items.filter((rect) => rectIntersectsRect(rect, rubberbandModel));
   }
 
   endRubberbanding() {
-    if (!this.rubberbanding) return;
+    if (!this.rubberbanding) {
+      return;
+    }
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect);
-    this.selected = this.items.filter((rect) => withinBounds(rect, rubberbandModel));
+    this.selected = this.items.filter((rect) => rectIntersectsRect(rect, rubberbandModel));
     this.rubberbanding = null;
   }
 
@@ -576,9 +657,9 @@ export class CanvasController<ItemType extends RectangularItem> {
     if (this.rubberbanding) {
       this.doRubberbanding(event);
     } else if (this.resizing) {
-      this.resizeRectangle(event);
+      this.doResizing(event);
     } else if (this.dragging) {
-      this.dragRectangle(event);
+      this.doDragging(event);
     } else if (this.panning) {
       this.doPanning(event);
     } else {
