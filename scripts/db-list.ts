@@ -1,39 +1,39 @@
-import { FileType, FileTypeValues } from "@/data/schema";
-import { ContentPiece } from "@/lib/adt";
-import { dbBackend } from "@/lib/data/db";
-import { closeConnection, getPieceFilesByFiletype } from "@/lib/data/db";
-import { getRoot } from "@/lib/data/root";
-import { showExecutionTime } from "@/lib/utils";
-import chalk from "chalk";
+import { FileType, FileTypeValues } from "@/data/schema"
+import { ContentPiece } from "@/lib/adt"
+import { dbBackend } from "@/lib/data/db"
+import { closeConnection, getPieceFilesByFiletype } from "@/lib/data/db"
+import { getRoot } from "@/lib/data/root"
+import { showExecutionTime } from "@/lib/utils"
+import chalk from "chalk"
 
 const {
   argv: [_bun, _script, idjpath],
-} = process;
+} = process
 
 showExecutionTime(async () => {
-  const info = dbBackend.getInfo();
-  console.log(chalk.gray(`[${info}]`));
+  const info = dbBackend.getInfo()
+  console.log(chalk.gray(`[${info}]`))
 
-  let root: ContentPiece | null = null;
+  let root: ContentPiece | null = null
   if (idjpath) {
-    root = await dbBackend.getPiece(idjpath.split("/"));
+    root = await dbBackend.getPiece(idjpath.split("/"))
     if (!root) {
-      console.error(`Piece "${idjpath}" not found.`);
-      process.exit(1);
+      console.error(`Piece "${idjpath}" not found.`)
+      process.exit(1)
     }
   } else {
-    root = await getRoot(dbBackend);
+    root = await getRoot(dbBackend)
   }
 
   await dbBackend.walkContentPieces(root, async (piece, _children) => {
-    console.log(piece.hash, piece.idpath.join("/"));
+    console.log(piece.hash, piece.idpath.join("/"))
     for (const filetype of FileTypeValues) {
-      const files = await getPieceFilesByFiletype(piece.hash, filetype as FileType);
+      const files = await getPieceFilesByFiletype(piece.hash, filetype as FileType)
       for (const file of files || []) {
-        console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.filename}`));
+        console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.filename}`))
       }
     }
-  });
+  })
 
-  await closeConnection();
-});
+  await closeConnection()
+})

@@ -1,7 +1,7 @@
-import * as schema from "@/data/schema";
-import { FileType } from "@/data/schema";
-import { and, eq } from "drizzle-orm";
-import { db } from "./db";
+import * as schema from "@/data/schema"
+import { FileType } from "@/data/schema"
+import { and, eq } from "drizzle-orm"
+import { db } from "./db"
 
 // export const fromDbPiece = (idpath: string[], dbPiece: DBPiece): ContentPiece => {
 //   return {
@@ -18,7 +18,7 @@ import { db } from "./db";
 export const getPieceFilesByFiletype = async (
   pieceHash: string,
   filetype: FileType,
-  options?: { limit: number }
+  options?: { limit: number },
 ) => {
   // find file starting with cover associated with piece
   const result = await db
@@ -32,22 +32,22 @@ export const getPieceFilesByFiletype = async (
     .innerJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
     .where(and(eq(schema.pieces.pieceHash, pieceHash), eq(schema.attachments.filetype, filetype)))
     .orderBy(schema.pieces.diskpath)
-    .limit(options?.limit ? options.limit : 1000);
-  return result;
-};
+    .limit(options?.limit ? options.limit : 1000)
+  return result
+}
 
 export const getFileData = async (fileHash: string) => {
   const [result] = await db
     .select({ data: schema.files.data })
     .from(schema.files)
     .where(eq(schema.files.hash, fileHash))
-    .limit(1);
+    .limit(1)
 
   if (!result) {
-    return null;
+    return null
   }
-  return result.data;
-};
+  return result.data
+}
 
 export const pieceHasFiletype = async (pieceHash: string, filetype: FileType): Promise<boolean> =>
-  (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0;
+  (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0

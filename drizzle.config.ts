@@ -1,14 +1,14 @@
-import dotenv from "dotenv";
-import type { Config } from "drizzle-kit";
+import dotenv from "dotenv"
+import type { Config } from "drizzle-kit"
 
-const NODE_ENV = process.env.NODE_ENV || "development";
-console.log("NODE_ENV =", NODE_ENV);
+const NODE_ENV = process.env.NODE_ENV || "development"
+console.log("NODE_ENV =", NODE_ENV)
 
-dotenv.config({ path: [`./.env.${NODE_ENV}.local`, `.env.local`] });
+dotenv.config({ path: [`./.env.${NODE_ENV}.local`, `.env.local`] })
 
-const { TURSO_TOKEN, TURSO_URL } = process.env;
+const { TURSO_TOKEN, TURSO_URL } = process.env
 if (!TURSO_TOKEN || !TURSO_URL) {
-  throw new Error("Missing TURSO_TOKEN or TURSO_URL in environment");
+  throw new Error("Missing TURSO_TOKEN or TURSO_URL in environment")
 }
 
 export default {
@@ -21,4 +21,4 @@ export default {
     authToken: TURSO_TOKEN,
   },
   verbose: true,
-} as Config;
+} as Config

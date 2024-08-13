@@ -1,42 +1,41 @@
-import Chapter from "@/components/Chapter";
-import Exercise from "@/components/Exercise";
-import SlideGrid from "@/components/SlideGrid";
-import { FileType } from "@/data/schema";
-import data from "@/lib/data";
-import { env } from "@/lib/env.mjs";
-import { attachmentUrl } from "@/lib/urls";
-import { ChapterPageProps, getChapterAttachments, getChapterOrNotFound } from "./utils";
-import CollapsibleSection from "@/components/Collapsible";
-import SlideShow from "@/components/icons/SlideShow";
-import { ExerciseIcon } from "@/components/icons/ExerciseIcon";
+import Chapter from "@/components/Chapter"
+import Exercise from "@/components/Exercise"
+import SlideGrid from "@/components/SlideGrid"
+import { FileType } from "@/data/schema"
+import data from "@/lib/data"
+import { env } from "@/lib/env.mjs"
+import { attachmentUrl } from "@/lib/urls"
+import { ChapterPageProps, getChapterAttachments, getChapterOrNotFound } from "./utils"
+import CollapsibleSection from "@/components/Collapsible"
+import SlideShow from "@/components/icons/SlideShow"
+import { ExerciseIcon } from "@/components/icons/ExerciseIcon"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
-import { ErrorBoundary } from "react-error-boundary";
-import { FileReference } from "@/lib/data/data-backend";
-import QuizQuestion from "@/components/QuizQuestion";
-import FullScreen from "@/components/FullScreen";
-import { QuizIcon } from "@/components/icons/QuizIcon";
-import { getSessionOrNotFound } from "../utils";
+} from "@/components/ui/carousel"
+import { ErrorBoundary } from "react-error-boundary"
+import { FileReference } from "@/lib/data/data-backend"
+import QuizQuestion from "@/components/QuizQuestion"
+import FullScreen from "@/components/FullScreen"
+import { QuizIcon } from "@/components/icons/QuizIcon"
+import { getSessionOrNotFound } from "../utils"
 
 export async function generateMetadata({ params }: ChapterPageProps) {
-  const session = await getSessionOrNotFound({ params });
-  const chapter = await getChapterOrNotFound({ params });
+  const session = await getSessionOrNotFound({ params })
+  const chapter = await getChapterOrNotFound({ params })
   return {
     title: `${chapter.name} - ${session.name} - Full-stack Web Technologies`,
-    
   }
 }
 
 export default async function Page({ params }: ChapterPageProps) {
-  const chapter = await getChapterOrNotFound({ params });
-  const slides = await getChapterAttachments(chapter, FileType.slide);
-  const exercises = await getChapterAttachments(chapter, FileType.exercise);
-  const questions = await getChapterAttachments(chapter, FileType.quiz);
+  const chapter = await getChapterOrNotFound({ params })
+  const slides = await getChapterAttachments(chapter, FileType.slide)
+  const exercises = await getChapterAttachments(chapter, FileType.exercise)
+  const questions = await getChapterAttachments(chapter, FileType.quiz)
 
   const Slides = () =>
     slides.length > 0 && (
@@ -47,13 +46,13 @@ export default async function Page({ params }: ChapterPageProps) {
       >
         <SlideGrid slides={slides.map(attachmentUrl)} />
       </CollapsibleSection>
-    );
+    )
 
   const Document = () => (
     <div className="flex flex-col justify-start">
       <Chapter chapter={chapter} />
     </div>
-  );
+  )
 
   const Exercises = () =>
     exercises.length > 0 && (
@@ -66,7 +65,7 @@ export default async function Page({ params }: ChapterPageProps) {
           <Exercise key={exercise.hash} index={index + 1} chapter={chapter} exercise={exercise} />
         ))}
       </CollapsibleSection>
-    );
+    )
 
   const Quiz = () =>
     questions.length > 0 && (
@@ -93,7 +92,7 @@ export default async function Page({ params }: ChapterPageProps) {
           </Carousel>
         </div>
       </FullScreen>
-    );
+    )
 
   return (
     <div className="flex flex-col gap-4 pt-2">
@@ -102,7 +101,7 @@ export default async function Page({ params }: ChapterPageProps) {
       <Document />
       <Exercises />
     </div>
-  );
+  )
 }
 
 const QuestionError = ({ quiz }: { quiz: FileReference }) => {
@@ -112,15 +111,15 @@ const QuestionError = ({ quiz }: { quiz: FileReference }) => {
       <span className="text-yellow-400 font-bold">{quiz.filename}</span>&quot;{" "}
       <div className="text-gray-900">{quiz.hash}</div>
     </div>
-  );
-};
+  )
+}
 
 export const generateStaticParams = async () => {
-  const course = await data.getPiece([env.COURSE_ID]);
+  const course = await data.getPiece([env.COURSE_ID])
   if (!course) {
-    return [];
+    return []
   }
   return (await data.getAllIdpaths(course.idpath))
     .filter((path) => path.length === 4)
-    .map(([course, part, session, chapter]) => ({ course, part, session, chapter }));
-};
+    .map(([course, part, session, chapter]) => ({ course, part, session, chapter }))
+}

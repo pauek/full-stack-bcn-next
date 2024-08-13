@@ -29,7 +29,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "bun-types",
-    "lib/env.mjs"
-, "app/c/[course]/[part]/[session]/loading.tsx", "app/c/[course]/[part]/[session]/page.tsx__"  ],
+    "lib/env.mjs",
+    "app/c/[course]/[part]/[session]/loading.tsx",
+    "app/c/[course]/[part]/[session]/page.tsx__"
+  ],
   "exclude": ["node_modules"]
 }

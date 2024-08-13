@@ -1,21 +1,21 @@
-import { FileReference } from "@/lib/data/data-backend";
-import { cn } from "@/lib/utils";
-import { MDXRemote } from "next-mdx-remote/rsc";
-import { Suspense } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
-import ImageForChapter from "./ImageForChapter";
-import mdxStandardComponents from "./mdx-standard-components";
-import { MDXComponents } from "mdx/types";
+import { FileReference } from "@/lib/data/data-backend"
+import { cn } from "@/lib/utils"
+import { MDXRemote } from "next-mdx-remote/rsc"
+import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
+import rehypeHighlight from "rehype-highlight"
+import remarkGfm from "remark-gfm"
+import ImageForChapter from "./ImageForChapter"
+import mdxStandardComponents from "./mdx-standard-components"
+import { MDXComponents } from "mdx/types"
 
 type _Props = {
-  className?: string;
-  text: string;
-  imageMap: Map<string, FileReference>;
-  components?: MDXComponents;
-  syntaxHighlighting?: boolean;
-};
+  className?: string
+  text: string
+  imageMap: Map<string, FileReference>
+  components?: MDXComponents
+  syntaxHighlighting?: boolean
+}
 export default async function MdxDocument({
   className = "",
   text,
@@ -29,8 +29,8 @@ export default async function MdxDocument({
         Error rendering MDX Document
         <pre>{text.split("\n").slice(0, 10).join("\n")}</pre>
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div className={cn(className, "m-auto max-w-[54rem] mdx-document")}>
@@ -59,5 +59,5 @@ export default async function MdxDocument({
         </div>
       </div>
     </div>
-  );
+  )
 }

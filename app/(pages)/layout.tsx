@@ -1,26 +1,26 @@
-import DarkModeAwareRoot from "@/components/DarkModeAwareBody";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-import { Analytics } from "@vercel/analytics/react";
-import { inter } from "@/lib/fonts";
-import { cn } from "@/lib/utils";
-import "../globals.css";
-import data from "@/lib/data";
-import { env } from "@/lib/env.mjs";
-import { notFound } from "next/navigation";
+import DarkModeAwareRoot from "@/components/DarkModeAwareBody"
+import Footer from "@/components/Footer"
+import Header from "@/components/Header"
+import { Analytics } from "@vercel/analytics/react"
+import { inter } from "@/lib/fonts"
+import { cn } from "@/lib/utils"
+import "../globals.css"
+import data from "@/lib/data"
+import { env } from "@/lib/env.mjs"
+import { notFound } from "next/navigation"
 
 export const metadata = {
   title: "Full-stack Web Technologies",
   description: "Posgrado en Tecnologías Web de UPC School",
-};
+}
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 export default async function RootLayout({ children }: Props) {
-  const course = await data.getPiece([env.COURSE_ID]);
+  const course = await data.getPiece([env.COURSE_ID])
   if (!course) {
-    notFound();
+    notFound()
   }
   return (
     <DarkModeAwareRoot lang="en">
@@ -31,12 +31,14 @@ export default async function RootLayout({ children }: Props) {
         <div className="w-full h-full pt-12 flex flex-col">
           <Header course={course} />
           <main className="min-h-full w-full flex flex-col items-center">
-            <div id="page-box" className="flex-1 w-full relative">{children}</div>
+            <div id="page-box" className="flex-1 w-full relative">
+              {children}
+            </div>
             <Footer />
           </main>
         </div>
         <Analytics />
       </body>
     </DarkModeAwareRoot>
-  );
+  )
 }

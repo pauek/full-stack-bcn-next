@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
 import {
   NavigationMenu,
@@ -9,17 +9,17 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import BreadCrumbsSlash from "./icons/BreadCrumbsSlash";
-import CheckMark from "./icons/CheckMark";
-import { pieceUrlPath } from "@/lib/urls";
-import { CrumbData } from "@/lib/data/data-backend";
+} from "@/components/ui/navigation-menu"
+import { cn } from "@/lib/utils"
+import Link from "next/link"
+import BreadCrumbsSlash from "./icons/BreadCrumbsSlash"
+import CheckMark from "./icons/CheckMark"
+import { pieceUrlPath } from "@/lib/urls"
+import { CrumbData } from "@/lib/data/data-backend"
 
 type Props = {
-  crumbs: CrumbData[];
-};
+  crumbs: CrumbData[]
+}
 export function HeaderNavigationMenu({ crumbs }: Props) {
   return (
     <>
@@ -51,7 +51,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                   <NavigationMenuContent>
                     <ul className="flex flex-col gap-0 w-[20em] list-none p-1 py-2 pr-3 m-0">
                       {crumb.siblings.map((sib, i) => {
-                        const isCurrent = sib.idpath.join("/") === crumb.idpath.join("/");
+                        const isCurrent = sib.idpath.join("/") === crumb.idpath.join("/")
                         return (
                           <NavigationMenuLink key={sib.idpath.join(":")} asChild>
                             <li>
@@ -63,7 +63,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                                     "no-underline outline-none transition-colors " +
                                     "hover:bg-accent hover:text-accent-foreground " +
                                     "focus:bg-accent focus:text-accent-foreground",
-                                  isCurrent ? "bg-accent" : ""
+                                  isCurrent ? "bg-accent" : "",
                                 )}
                               >
                                 {sib.name}
@@ -71,7 +71,7 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
                               </Link>
                             </li>
                           </NavigationMenuLink>
-                        );
+                        )
                       })}
                     </ul>
                   </NavigationMenuContent>
@@ -82,5 +82,5 @@ export function HeaderNavigationMenu({ crumbs }: Props) {
         </NavigationMenuList>
       </NavigationMenu>
     </>
-  );
+  )
 }

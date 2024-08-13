@@ -1,14 +1,14 @@
-import { ContentPiece } from "@/lib/adt";
-import PartHeader from "./PartHeader";
-import SessionCard from "./SessionCard";
+import { ContentPiece } from "@/lib/adt"
+import PartHeader from "./PartHeader"
+import SessionCard from "./SessionCard"
 
 type CoursePartProps = {
-  part: ContentPiece;
-};
+  part: ContentPiece
+}
 export default async function Part({ part }: CoursePartProps) {
-  const { metadata, children } = part;
+  const { metadata, children } = part
   if (metadata.hidden || !children) {
-    return <></>;
+    return <></>
   }
   return (
     <div id={part.id} className="w-full pt-3 pb-5">
@@ -23,15 +23,15 @@ export default async function Part({ part }: CoursePartProps) {
         </div>
       ))}
     </div>
-  );
+  )
 }
 
 const computeRows = (sessions: ContentPiece[]) => {
-  const rows: ContentPiece[][] = [];
+  const rows: ContentPiece[][] = []
   for (const session of sessions) {
-    const i = session.metadata.row || 0;
-    const row = rows[i] || [];
-    rows[i] = [...row, session];
+    const i = session.metadata.row || 0
+    const row = rows[i] || []
+    rows[i] = [...row, session]
   }
-  return rows;
-};
+  return rows
+}

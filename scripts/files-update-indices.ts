@@ -1,41 +1,41 @@
-import { ContentPiece } from "@/lib/adt";
-import { filesBackend } from "@/lib/data/files";
-import { getSessionSequence, updateMetadata } from "@/lib/data/files";
-import { env } from "@/lib/env.mjs";
+import { ContentPiece } from "@/lib/adt"
+import { filesBackend } from "@/lib/data/files"
+import { getSessionSequence, updateMetadata } from "@/lib/data/files"
+import { env } from "@/lib/env.mjs"
 
-import { showExecutionTime } from "@/lib/utils";
+import { showExecutionTime } from "@/lib/utils"
 
 const updateSessionChildren = async (session: ContentPiece) => {
   // Chapters have an index with respect to the session
-  const { idpath } = session;
-  const sessionFull = await filesBackend.getPieceWithChildren(idpath);
+  const { idpath } = session
+  const sessionFull = await filesBackend.getPieceWithChildren(idpath)
   if (!sessionFull) {
-    throw `Session "${idpath.join("/")}" not found!`;
+    throw `Session "${idpath.join("/")}" not found!`
   }
   if (!sessionFull.children) {
-    return;
+    return
   }
   for (let j = 0; j < sessionFull.children.length; j++) {
-    const child = sessionFull.children[j];
+    const child = sessionFull.children[j]
     await updateMetadata(child.diskpath, async (metadata) => {
-      metadata.index = j + 1;
-    });
+      metadata.index = j + 1
+    })
   }
-};
+}
 
 const updateSession = async (session: ContentPiece, index: number) => {
   // Sessions have an index with respect to the course (not parts)
   await updateMetadata(session.diskpath, async (metadata) => {
-    console.log(`${index.toString().padStart(3)} - ${session.idpath.join("/")}`);
-    metadata.index = index;
-  });
-};
+    console.log(`${index.toString().padStart(3)} - ${session.idpath.join("/")}`)
+    metadata.index = index
+  })
+}
 
 showExecutionTime(async () => {
-  const sessions = await getSessionSequence(env.COURSE_ID);
+  const sessions = await getSessionSequence(env.COURSE_ID)
   for (let i = 0; i < sessions.length; i++) {
-    const session = sessions[i];
-    await updateSession(session, i + 1);
-    await updateSessionChildren(session);
+    const session = sessions[i]
+    await updateSession(session, i + 1)
+    await updateSessionChildren(session)
   }
-});
+})

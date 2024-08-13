@@ -1,30 +1,30 @@
-import { FileType } from "@/data/schema";
-import { fileTypeInfo, filesBackend } from "@/lib/data/files";
-import { hashAny } from "@/lib/data/hashing";
+import { FileType } from "@/data/schema"
+import { fileTypeInfo, filesBackend } from "@/lib/data/files"
+import { hashAny } from "@/lib/data/hashing"
 
-import { env } from "@/lib/env.mjs";
+import { env } from "@/lib/env.mjs"
 import {
   ListObjectsV2Command,
   ListObjectsV2CommandOutput,
   PutObjectCommand,
   S3Client,
-} from "@aws-sdk/client-s3";
-import { readFile } from "fs/promises";
-import { extname, join } from "path";
-import mimeTypeTable from "./mime-types.json";
+} from "@aws-sdk/client-s3"
+import { readFile } from "fs/promises"
+import { extname, join } from "path"
+import mimeTypeTable from "./mime-types.json"
 
-const mimeTypes: Record<string, string> = mimeTypeTable;
+const mimeTypes: Record<string, string> = mimeTypeTable
 
 type ImageUploaderOptions = {
-  parallelRequests: number;
-};
+  parallelRequests: number
+}
 
 class ImageUploader {
-  parallelRequests: number;
-  s3client: S3Client;
+  parallelRequests: number
+  s3client: S3Client
 
   constructor(options?: ImageUploaderOptions) {
-    this.parallelRequests = options?.parallelRequests || 1;
+    this.parallelRequests = options?.parallelRequests || 1
     this.s3client = new S3Client({
       region: env.R2_REGION,
       credentials: {
@@ -33,38 +33,33 @@ class ImageUploader {
       },
       endpoint: env.R2_ENDPOINT,
       // logger: console,
-    });
+    })
   }
 
   destroy() {
-    this.client.destroy();
+    this.client.destroy()
   }
 
   get client() {
     if (!this.s3client) {
-      throw new Error(`S3 Client not initialized!?!?!`);
+      throw new Error(`S3 Client not initialized!?!?!`)
     }
-    return this.s3client;
+    return this.s3client
   }
 
-  async uploadImage(
-    dirpath: string,
-    filename: string,
-    filetype: FileType,
-    existing: Set<string>
-  ) {
+  async uploadImage(dirpath: string, filename: string, filetype: FileType, existing: Set<string>) {
     try {
-      const { subdir } = fileTypeInfo[filetype];
-      const filePath = join(dirpath, subdir, filename);
-      const content = await readFile(filePath);
-      const hash = hashAny(content);
-      const ext = extname(filename);
-      const imageKey = `${hash}${ext}`;
+      const { subdir } = fileTypeInfo[filetype]
+      const filePath = join(dirpath, subdir, filename)
+      const content = await readFile(filePath)
+      const hash = hashAny(content)
+      const ext = extname(filename)
+      const imageKey = `${hash}${ext}`
 
       if (existing.has(imageKey)) {
-        const space = " ".repeat(process.stdout.columns - imageKey.length - 1);
-        process.stdout.write(`${imageKey}${space}\r`);
-        return;
+        const space = " ".repeat(process.stdout.columns - imageKey.length - 1)
+        process.stdout.write(`${imageKey}${space}\r`)
+        return
       }
 
       const command = new PutObjectCommand({
@@ -73,90 +68,90 @@ class ImageUploader {
         Body: content,
         ACL: "public-read",
         ContentType: mimeTypes[ext],
-      });
+      })
 
-      await this.client.send(command);
-      console.log(`${imageKey}`);
+      await this.client.send(command)
+      console.log(`${imageKey}`)
 
-      return true;
+      return true
     } catch (err: any) {
-      console.log(JSON.stringify(err));
-      console.log(`Error! ${err}`);
-      return false;
+      console.log(JSON.stringify(err))
+      console.log(`Error! ${err}`)
+      return false
     }
   }
 
   async uploadAllFilesOfType(filetype: FileType, existing: Set<string>) {
-    const imagePaths = await filesBackend.getAllAttachmentPaths([env.COURSE_ID], filetype);
+    const imagePaths = await filesBackend.getAllAttachmentPaths([env.COURSE_ID], filetype)
 
     const _uploadOne = async (index: number) => {
-      const path = imagePaths[index];
-      const idpath = path.slice(0, path.length - 1);
-      const imageFilename = path.slice(-1)[0];
-      const piece = await filesBackend.getPiece(idpath);
+      const path = imagePaths[index]
+      const idpath = path.slice(0, path.length - 1)
+      const imageFilename = path.slice(-1)[0]
+      const piece = await filesBackend.getPiece(idpath)
       if (!piece) {
-        throw new Error(`Piece not found: ${idpath}`);
+        throw new Error(`Piece not found: ${idpath}`)
       }
-      await this.uploadImage(piece.diskpath, imageFilename, filetype, existing);
-    };
+      await this.uploadImage(piece.diskpath, imageFilename, filetype, existing)
+    }
 
     const _uploadAllWithOffset = async (offset: number) => {
       for (let i = offset; i < imagePaths.length; i += this.parallelRequests) {
-        await _uploadOne(i);
+        await _uploadOne(i)
       }
-    };
+    }
 
     await Promise.allSettled(
       Array.from({ length: this.parallelRequests }).map((_, i) => {
-        return _uploadAllWithOffset(i);
-      })
-    );
+        return _uploadAllWithOffset(i)
+      }),
+    )
 
     // Erase last line if necessary
-    const space = " ".repeat(process.stdout.columns - 1);
-    process.stdout.write(`${space}\r`);
+    const space = " ".repeat(process.stdout.columns - 1)
+    process.stdout.write(`${space}\r`)
   }
 
   async listAllFiles() {
-    process.stdout.write("Listing images");
+    process.stdout.write("Listing images")
     try {
-      let isTruncated = true;
-      let contToken: string | undefined = undefined;
-      let fileList: { name: string; size: number }[] = [];
+      let isTruncated = true
+      let contToken: string | undefined = undefined
+      let fileList: { name: string; size: number }[] = []
       while (isTruncated) {
-        process.stdout.write(".");
+        process.stdout.write(".")
         const result: ListObjectsV2CommandOutput = await this.client.send(
           new ListObjectsV2Command({
             Bucket: process.env.R2_BUCKET,
             ContinuationToken: contToken,
             MaxKeys: 200,
-          })
-        );
+          }),
+        )
         if (result.Contents) {
           for (const { Key: name, Size: size } of result.Contents) {
             if (name && size) {
-              fileList.push({ name, size });
+              fileList.push({ name, size })
             }
           }
         }
-        contToken = result.NextContinuationToken;
-        isTruncated = result.IsTruncated || false;
+        contToken = result.NextContinuationToken
+        isTruncated = result.IsTruncated || false
       }
-      process.stdout.write(`${fileList.length} images\n`);
-      return fileList;
+      process.stdout.write(`${fileList.length} images\n`)
+      return fileList
     } catch (e) {
-      console.error(`Error Listing Images:\n${e}`);
-      return [];
+      console.error(`Error Listing Images:\n${e}`)
+      return []
     }
   }
 }
 
 export const withImageUploader = async (
   options: ImageUploaderOptions,
-  func: (uploader: ImageUploader) => Promise<void>
+  func: (uploader: ImageUploader) => Promise<void>,
 ) => {
-  const uploader = new ImageUploader(options);
+  const uploader = new ImageUploader(options)
   // await delay(1000);
-  await func(uploader);
-  uploader.destroy();
-};
+  await func(uploader)
+  uploader.destroy()
+}

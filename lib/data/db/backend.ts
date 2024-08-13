@@ -1,15 +1,15 @@
-import * as schema from "@/data/schema";
-import { ContentPiece } from "@/lib/adt";
-import { base64ToBytes, lastItem } from "@/lib/utils";
-import { and, eq, like } from "drizzle-orm";
-import { FileBuffer, FileReference } from "../data-backend";
-import { Hash } from "../hashing";
-import { db } from "./db";
-import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils";
-import { FileType } from "@/data/schema";
+import * as schema from "@/data/schema"
+import { ContentPiece } from "@/lib/adt"
+import { base64ToBytes, lastItem } from "@/lib/utils"
+import { and, eq, like } from "drizzle-orm"
+import { FileBuffer, FileReference } from "../data-backend"
+import { Hash } from "../hashing"
+import { db } from "./db"
+import { getFileData, getPieceFilesByFiletype, pieceHasFiletype } from "./utils"
+import { FileType } from "@/data/schema"
 
-export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.cover);
-export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.doc);
+export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.cover)
+export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.doc)
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const result = await db.query.hashmap.findFirst({
@@ -24,10 +24,10 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
         },
       },
     },
-  });
+  })
   if (!result) {
-    console.log(`getPiece: piece not found for idpath "${idpath.join("/")}"`);
-    return null;
+    console.log(`getPiece: piece not found for idpath "${idpath.join("/")}"`)
+    return null
   }
 
   return {
@@ -36,18 +36,18 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
     id: lastItem(idpath),
     idpath,
     children: [],
-  };
-};
+  }
+}
 
 export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPiece | null> => {
   const result = await db.query.hashmap.findFirst({
     where: eq(schema.hashmap.idjpath, idpath.join("/")),
     with: { piece: { with: { children: { with: { child: true } } } } },
-  });
+  })
   if (!result) {
-    return null;
+    return null
   }
-  const { piece: dbPiece } = result;
+  const { piece: dbPiece } = result
   const piece: ContentPiece = {
     ...dbPiece,
     hash: dbPiece.pieceHash,
@@ -55,123 +55,123 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     id: lastItem(idpath),
     children: [],
     metadata: dbPiece.metadata,
-  };
-  const children: ContentPiece[] = [];
+  }
+  const children: ContentPiece[] = []
   for (const { child } of dbPiece.children) {
     if (child.metadata.hidden) {
-      continue;
+      continue
     }
     const result = await db.query.hashmap.findFirst({
       where: eq(schema.hashmap.pieceHash, child.pieceHash),
-    });
+    })
     if (!result) {
-      throw Error(`getPieceWithChildren: ijdpath for child hash not found "${child.pieceHash}"`);
+      throw Error(`getPieceWithChildren: ijdpath for child hash not found "${child.pieceHash}"`)
     }
-    const { idjpath } = result;
-    const idpath = idjpath.split("/");
+    const { idjpath } = result
+    const idpath = idjpath.split("/")
     children.push({
       ...child,
       hash: child.pieceHash,
       id: idpath.slice(-1)[0],
       idpath,
       metadata: child.metadata,
-    });
+    })
   }
-  piece.children = children;
-  return piece;
-};
+  piece.children = children
+  return piece
+}
 
 export const pathToHash = async (idpath: string[]): Promise<Hash | null> => {
   const mapItem = await db.query.hashmap.findFirst({
     where: eq(schema.hashmap.idjpath, idpath.join("/")),
-  });
+  })
   if (!mapItem) {
-    return null;
+    return null
   }
-  const { pieceHash: hash } = mapItem;
-  return hash;
-};
+  const { pieceHash: hash } = mapItem
+  return hash
+}
 
 export const hashToPath = async (hash: string): Promise<string[] | null> => {
   const mapItem = await db.query.hashmap.findFirst({
     where: eq(schema.hashmap.pieceHash, hash),
-  });
+  })
   if (!mapItem) {
-    return null;
+    return null
   }
-  const { idjpath } = mapItem;
-  return idjpath.split("/");
-};
+  const { idjpath } = mapItem
+  return idjpath.split("/")
+}
 
 export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const hash = await pathToHash(piece.idpath);
+  const hash = await pathToHash(piece.idpath)
   if (!hash) {
-    return null;
+    return null
   }
-  const [result] = await getPieceFilesByFiletype(hash, FileType.doc);
+  const [result] = await getPieceFilesByFiletype(hash, FileType.doc)
   if (!result) {
-    return null;
+    return null
   }
-  const data = await getFileData(result.hash);
+  const data = await getFileData(result.hash)
   if (data === null) {
     console.warn(`Content piece "${piece.idpath.join("/")}" [${hash}] has a dangling document!
     [file_hash = ${result.hash}]
     [pieceHash = ${hash}]
-`);
-    return null;
+`)
+    return null
   }
-  return { name: result.filename, buffer: Buffer.from(base64ToBytes(data)) };
-};
+  return { name: result.filename, buffer: Buffer.from(base64ToBytes(data)) }
+}
 
 export const getAttachmentBytes = async (_piece: ContentPiece, fileref: FileReference) => {
-  return getAttachmentBytesByHash(fileref.hash);
-};
+  return getAttachmentBytesByHash(fileref.hash)
+}
 
 const getAttachmentBytesByHash = async (hash: string): Promise<Buffer | null> => {
   try {
-    const data = await getFileData(hash);
+    const data = await getFileData(hash)
     if (!data) {
-      return null;
+      return null
     }
-    return Buffer.from(base64ToBytes(data));
+    return Buffer.from(base64ToBytes(data))
   } catch (e) {
-    return null;
+    return null
   }
-};
+}
 
 export const __getFileListByFiletype =
   (filetype: schema.FileType) =>
   async (piece: ContentPiece): Promise<FileReference[]> => {
-    const results = await getPieceFilesByFiletype(piece.hash, filetype);
+    const results = await getPieceFilesByFiletype(piece.hash, filetype)
     if (!results) {
-      return [];
+      return []
     }
     return results.map((result) => ({
       ...result,
       filetype: schema.fileTypeFromString(result.filetype),
-    }));
-  };
+    }))
+  }
 
-export const getPieceImageList = __getFileListByFiletype(FileType.image);
-export const getPieceSlideList = __getFileListByFiletype(FileType.slide);
+export const getPieceImageList = __getFileListByFiletype(FileType.image)
+export const getPieceSlideList = __getFileListByFiletype(FileType.slide)
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const [file] = await getPieceFilesByFiletype(piece.hash, FileType.cover, { limit: 1 });
+  const [file] = await getPieceFilesByFiletype(piece.hash, FileType.cover, { limit: 1 })
   if (!file) {
-    return null;
+    return null
   }
-  const base64 = await getFileData(file.hash);
+  const base64 = await getFileData(file.hash)
   if (!base64) {
-    return null;
+    return null
   }
-  const buffer = Buffer.from(base64ToBytes(base64));
-  return { buffer, name: file.filename };
-};
+  const buffer = Buffer.from(base64ToBytes(base64))
+  return { buffer, name: file.filename }
+}
 
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<Buffer | null> => {
   const [result] = await db
     .select({ data: schema.files.data })
@@ -182,28 +182,28 @@ export const getPieceFileData = async (
       and(
         eq(schema.pieces.pieceHash, piece.hash),
         eq(schema.attachments.filename, filename),
-        eq(schema.attachments.filetype, filetype)
-      )
+        eq(schema.attachments.filetype, filetype),
+      ),
     )
-    .limit(1);
+    .limit(1)
   if (!result || !result.data) {
-    return null;
+    return null
   }
-  return Buffer.from(base64ToBytes(result.data));
-};
+  return Buffer.from(base64ToBytes(result.data))
+}
 
 export const getContentTree = async (
   idpath: string[],
-  { level }: { level: number }
+  { level }: { level: number },
 ): Promise<ContentPiece | null> => {
-  const hash = await pathToHash(idpath);
+  const hash = await pathToHash(idpath)
   if (!hash) {
-    return null;
+    return null
   }
 
   // TODO: Implement other levels??
   if (level !== 2) {
-    throw Error(`Unimplemented tree with level != 2 (level = ${level})`);
+    throw Error(`Unimplemented tree with level != 2 (level = ${level})`)
   }
 
   const result = await db.query.pieces.findFirst({
@@ -223,21 +223,21 @@ export const getContentTree = async (
         },
       },
     },
-  });
+  })
   if (!result) {
-    return null;
+    return null
   }
 
-  type Result = schema.DBPiece & { children?: { child: Result }[] };
+  type Result = schema.DBPiece & { children?: { child: Result }[] }
 
   const __convert = async (res: Result): Promise<ContentPiece> => {
-    const idpath = await hashToPath(res.pieceHash);
+    const idpath = await hashToPath(res.pieceHash)
     if (!idpath) {
-      throw Error(`getContentTree: path not found for "${res.pieceHash}"?!?`);
+      throw Error(`getContentTree: path not found for "${res.pieceHash}"?!?`)
     }
-    const children: ContentPiece[] = [];
+    const children: ContentPiece[] = []
     for (const { child } of res.children || []) {
-      children.push(await __convert(child));
+      children.push(await __convert(child))
     }
     const piece: ContentPiece = {
       ...res,
@@ -245,24 +245,24 @@ export const getContentTree = async (
       id: lastItem(idpath),
       idpath,
       children,
-    };
-    return piece;
-  };
+    }
+    return piece
+  }
 
-  return await __convert(result);
-};
+  return await __convert(result)
+}
 
 export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {
   const result = await db.query.hashmap.findMany({
     where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
     columns: { idjpath: true },
-  });
-  return result.map(({ idjpath }) => idjpath.split("/"));
-};
+  })
+  return result.map(({ idjpath }) => idjpath.split("/"))
+}
 
 export const getAllAttachmentPaths = async (
   rootIdpath: string[],
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<string[][]> => {
   const results = await db.query.hashmap.findMany({
     where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
@@ -276,31 +276,31 @@ export const getAllAttachmentPaths = async (
         },
       },
     },
-  });
-  const idpaths: string[][] = [];
+  })
+  const idpaths: string[][] = []
   for (const { idjpath, piece } of results) {
     for (const { filename } of piece.attachments) {
-      idpaths.push([...idjpath.split("/"), filename]);
+      idpaths.push([...idjpath.split("/"), filename])
     }
   }
-  return idpaths;
-};
+  return idpaths
+}
 
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<FileReference[]> => {
-  const results = await getPieceFilesByFiletype(piece.hash, filetype);
+  const results = await getPieceFilesByFiletype(piece.hash, filetype)
   if (!results) {
-    return [];
+    return []
   }
   return results.map((result) => ({
     ...result,
     filetype: schema.fileTypeFromString(result.filetype),
-  }));
-};
+  }))
+}
 
 export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
-  const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) });
-  return results.map((r) => r.answer);
-};
+  const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) })
+  return results.map((r) => r.answer)
+}

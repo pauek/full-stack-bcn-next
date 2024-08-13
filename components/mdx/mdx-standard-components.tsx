@@ -1,14 +1,14 @@
-import Aside from "./Aside";
-import Code from "./Code";
-import CopyableCode from "./CopyableCode";
-import * as dom from "./dom";
-import Focus from "./Focus";
-import Note from "./Note";
-import { CopyablePre } from "./Pre";
-import Ref from "./Ref";
-import Row from "./Row";
-import { Table, Td, Th } from "./Table";
-import Warn from "./Warn";
+import Aside from "./Aside"
+import Code from "./Code"
+import CopyableCode from "./CopyableCode"
+import * as dom from "./dom"
+import Focus from "./Focus"
+import Note from "./Note"
+import { CopyablePre } from "./Pre"
+import Ref from "./Ref"
+import Row from "./Row"
+import { Table, Td, Th } from "./Table"
+import Warn from "./Warn"
 
 const components = {
   h1: dom.H1,
@@ -32,6 +32,6 @@ const components = {
   pre: CopyablePre,
   Focus,
   Note,
-};
+}
 
-export default components;
+export default components

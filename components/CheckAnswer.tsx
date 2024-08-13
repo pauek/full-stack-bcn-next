@@ -1,48 +1,42 @@
-"use client";
+"use client"
 
-import { actionCheckAnswer } from "@/actions/actionCheckAnswer";
-import { Hash } from "@/lib/data/hashing";
-import { Button } from "./ui/button";
-import { useFormState, useFormStatus } from "react-dom";
-import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
-import CheckMark from "./icons/CheckMark";
-import { CancelIcon } from "./icons/CancelIcon";
-import Spinner from "./Spinner";
+import { actionCheckAnswer } from "@/actions/actionCheckAnswer"
+import { Hash } from "@/lib/data/hashing"
+import { Button } from "./ui/button"
+import { useFormState, useFormStatus } from "react-dom"
+import { Input } from "./ui/input"
+import { cn } from "@/lib/utils"
+import CheckMark from "./icons/CheckMark"
+import { CancelIcon } from "./icons/CancelIcon"
+import Spinner from "./Spinner"
 
 export type FormState = {
-  error?: boolean;
-  correct?: boolean;
-  message: string;
-};
+  error?: boolean
+  correct?: boolean
+  message: string
+}
 
 const initialState: FormState = {
   message: "",
-};
+}
 
 const VeredictBox = ({ children, className }: { children: React.ReactNode; className: string }) => {
   return (
-    <div
-      className={cn(
-        "w-9 h-9 rounded",
-        "flex flex-col justify-center items-center",
-        className
-      )}
-    >
+    <div className={cn("w-9 h-9 rounded", "flex flex-col justify-center items-center", className)}>
       {children}
     </div>
-  );
-};
+  )
+}
 
 const ShowVeredict = ({ state }: { state: FormState }) => {
-  const { pending } = useFormStatus();
+  const { pending } = useFormStatus()
 
   if (pending) {
     return (
       <VeredictBox className="bg-gray-100">
         <Spinner />
       </VeredictBox>
-    );
+    )
   }
   if (state.correct !== undefined) {
     return (
@@ -51,14 +45,14 @@ const ShowVeredict = ({ state }: { state: FormState }) => {
       >
         {state.correct ? <CheckMark size={20} /> : <CancelIcon size={20} />}
       </VeredictBox>
-    );
+    )
   }
 
-  return <></>;
-};
+  return <></>
+}
 
 const AnswerBox = () => {
-  const { pending } = useFormStatus();
+  const { pending } = useFormStatus()
   return (
     <Input
       type="text"
@@ -67,23 +61,23 @@ const AnswerBox = () => {
       className="font-mono rounded border sm:flex-1"
       disabled={pending}
     />
-  );
-};
+  )
+}
 
 const CheckButton = () => {
-  const { pending } = useFormStatus();
+  const { pending } = useFormStatus()
   return (
     <Button type="submit" disabled={pending}>
       Check
     </Button>
-  );
-};
+  )
+}
 
 type Props = {
-  quizHash: Hash;
-};
+  quizHash: Hash
+}
 export default function CheckAnswer({ quizHash }: Props) {
-  const [state, formAction] = useFormState<FormState, FormData>(actionCheckAnswer, initialState);
+  const [state, formAction] = useFormState<FormState, FormData>(actionCheckAnswer, initialState)
 
   return (
     <form
@@ -97,5 +91,5 @@ export default function CheckAnswer({ quizHash }: Props) {
         <ShowVeredict state={state} />
       </div>
     </form>
-  );
+  )
 }

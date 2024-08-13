@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
-import ClipboardCopy from "./icons/ClipboardCopy";
-import CheckMark from "./icons/CheckMark";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react"
+import ClipboardCopy from "./icons/ClipboardCopy"
+import CheckMark from "./icons/CheckMark"
+import { cn } from "@/lib/utils"
 
 type Props = {
-  className: string;
-  size: number;
-  onClick: () => void;
-};
+  className: string
+  size: number
+  onClick: () => void
+}
 export default function ClipboardCopyButton({ className, size, onClick }: Props) {
-  const [showCopied, setShowCopied] = useState(false);
+  const [showCopied, setShowCopied] = useState(false)
 
   useEffect(() => {
     if (showCopied) {
-      const timeout = setTimeout(() => setShowCopied(false), 500);
-      return () => clearTimeout(timeout);
+      const timeout = setTimeout(() => setShowCopied(false), 500)
+      return () => clearTimeout(timeout)
     }
-  }, [showCopied]);
+  }, [showCopied])
 
   return (
     <div
@@ -28,8 +28,8 @@ export default function ClipboardCopyButton({ className, size, onClick }: Props)
         showCopied ? "opacity-100" : "opacity-40",
       )}
       onClick={() => {
-        setShowCopied(true);
-        onClick();
+        setShowCopied(true)
+        onClick()
       }}
     >
       {showCopied ? (
@@ -38,5 +38,5 @@ export default function ClipboardCopyButton({ className, size, onClick }: Props)
         <ClipboardCopy size={size} />
       )}
     </div>
-  );
+  )
 }

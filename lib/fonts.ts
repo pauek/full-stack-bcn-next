@@ -1,7 +1,7 @@
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google"
+import localFont from "next/font/local"
 
-export const inter = Inter({ subsets: ["latin"] });
+export const inter = Inter({ subsets: ["latin"] })
 export const iosevka = localFont({
   src: [
     {
@@ -20,4 +20,4 @@ export const iosevka = localFont({
       style: "normal",
     },
   ],
-});
+})

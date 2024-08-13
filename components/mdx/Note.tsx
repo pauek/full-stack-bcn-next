@@ -1,4 +1,4 @@
-import { AttachmentIcon } from "../icons/AttachmentIcon";
+import { AttachmentIcon } from "../icons/AttachmentIcon"
 
 export default function Warn({ children }: React.ComponentProps<"div">) {
   return (
@@ -6,5 +6,5 @@ export default function Warn({ children }: React.ComponentProps<"div">) {
       <AttachmentIcon className="text-green-600 text-lg" />
       <div className="text-stone-900">{children}</div>
     </div>
-  );
+  )
 }

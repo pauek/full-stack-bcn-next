@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { ContentPiece } from "@/lib/adt";
-import Link from "next/link";
-import { useSelectedLayoutSegments } from "next/navigation";
-import DarkModeSwitch from "./DarkModeSwitch";
+import { ContentPiece } from "@/lib/adt"
+import Link from "next/link"
+import { useSelectedLayoutSegments } from "next/navigation"
+import DarkModeSwitch from "./DarkModeSwitch"
 
 export default function Header({ course }: { course: ContentPiece }) {
-  const [_c, _courseId] = useSelectedLayoutSegments();
+  const [_c, _courseId] = useSelectedLayoutSegments()
 
   return (
     <header
@@ -23,5 +23,5 @@ export default function Header({ course }: { course: ContentPiece }) {
 
       <DarkModeSwitch className="mr-5" />
     </header>
-  );
+  )
 }

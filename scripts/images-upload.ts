@@ -1,6 +1,6 @@
-import { showExecutionTime } from "@/lib/utils";
-import { uploadImages } from "./lib";
+import { showExecutionTime } from "@/lib/utils"
+import { uploadImages } from "./lib"
 
-await showExecutionTime(uploadImages);
+await showExecutionTime(uploadImages)
 
-process.exit(0); // Force exit to avoid waiting
+process.exit(0) // Force exit to avoid waiting

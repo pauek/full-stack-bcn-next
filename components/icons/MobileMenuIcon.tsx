@@ -1,6 +1,6 @@
 type Props = {
-  size: number;
-};
+  size: number
+}
 export default function MobileMenuIcon({ size }: Props) {
   return (
     <div className="bg-background">
@@ -10,5 +10,5 @@ export default function MobileMenuIcon({ size }: Props) {
         <path d="M0 90L100 90" stroke="currentColor" strokeWidth={10}></path>
       </svg>
     </div>
-  );
+  )
 }

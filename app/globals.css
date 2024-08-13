@@ -210,7 +210,7 @@
   p + .note {
     margin-top: 1.5em;
   }
-  
+
   .debug {
     @apply border-2 border-red-500;
   }
@@ -247,7 +247,6 @@
   .mdx-document li pre:last-child {
     margin-bottom: 1.6em;
   }
-
 
   /* spinner! https://tobiasahlin.com/spinkit/ */
   .spinner {

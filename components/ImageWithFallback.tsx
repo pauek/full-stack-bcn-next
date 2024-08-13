@@ -1,24 +1,21 @@
-"use client";
+"use client"
 
-import Image, { ImageProps } from "next/image";
-import { useEffect, useState } from "react";
+import Image, { ImageProps } from "next/image"
+import { useEffect, useState } from "react"
 
 interface Props extends ImageProps {
-  fallback?: ImageProps["src"];
+  fallback?: ImageProps["src"]
 }
 
 export default function ImageWithFallback({ alt, src, ...props }: Props) {
-  const [error, setError] = useState<React.SyntheticEvent<
-    HTMLImageElement,
-    Event
-  > | null>(null);
+  const [error, setError] = useState<React.SyntheticEvent<HTMLImageElement, Event> | null>(null)
 
   useEffect(() => {
-    setError(null);
-  }, [src]);
+    setError(null)
+  }, [src])
 
   if (error) {
-    return <></>;
+    return <></>
   }
-  return <Image alt={alt} onError={setError} src={src} {...props} />;
+  return <Image alt={alt} onError={setError} src={src} {...props} />
 }

@@ -1,16 +1,13 @@
-import { ContentPiece } from "@/lib/adt";
-import { pieceUrlPath } from "@/lib/urls";
-import Link from "next/link";
+import { ContentPiece } from "@/lib/adt"
+import { pieceUrlPath } from "@/lib/urls"
+import Link from "next/link"
 
 type ChapterItemProps = {
-  index: number;
-  chapter: ContentPiece;
-};
-export default async function ChapterItem({
-  index,
-  chapter,
-}: ChapterItemProps) {
-  const chapterUrl = pieceUrlPath(chapter.idpath);
+  index: number
+  chapter: ContentPiece
+}
+export default async function ChapterItem({ index, chapter }: ChapterItemProps) {
+  const chapterUrl = pieceUrlPath(chapter.idpath)
   return (
     <div className="flex flex-col items-baseline">
       <div className="mr-2 text-stone-400 text-xs">CHAPTER {index}</div>
@@ -18,5 +15,5 @@ export default async function ChapterItem({
         <h3>{chapter.name}</h3>
       </Link>
     </div>
-  );
+  )
 }

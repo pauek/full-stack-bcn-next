@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { useRef } from "react";
-import ClipboardCopyButton from "../ClipboardCopyButton";
+import { useRef } from "react"
+import ClipboardCopyButton from "../ClipboardCopyButton"
 
 type Props = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 export default function CopyableCode({ children }: Props) {
-  const ref = useRef<HTMLPreElement>(null);
+  const ref = useRef<HTMLPreElement>(null)
   return (
     <pre className="relative" ref={ref}>
       {children}
@@ -17,5 +17,5 @@ export default function CopyableCode({ children }: Props) {
         onClick={() => navigator.clipboard.writeText(ref.current?.textContent ?? "")}
       />
     </pre>
-  );
+  )
 }

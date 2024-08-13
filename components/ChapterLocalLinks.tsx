@@ -1,11 +1,11 @@
-import { ContentPiece } from "@/lib/adt";
-import { pieceUrlPath } from "@/lib/urls";
-import Link from "next/link";
+import { ContentPiece } from "@/lib/adt"
+import { pieceUrlPath } from "@/lib/urls"
+import Link from "next/link"
 
 type Props = {
-  session: ContentPiece;
-  chapters: ContentPiece[];
-};
+  session: ContentPiece
+  chapters: ContentPiece[]
+}
 export default function ChapterLocalLinks({ session, chapters }: Props) {
   return (
     <div className="hidden sticky z-10 top-[3rem] right-0 p-3 pr-8 md:flex md:flex-row justify-end">
@@ -21,9 +21,9 @@ export default function ChapterLocalLinks({ session, chapters }: Props) {
               >
                 {chapter.metadata.index}. {chapter.name.toUpperCase()}
               </Link>
-            )
+            ),
         )}
       </div>
     </div>
-  );
+  )
 }

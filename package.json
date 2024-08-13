@@ -19,7 +19,8 @@
     "files:metadata": "bun run scripts/files-update-metadata.ts",
     "files:hashes": "bun run scripts/files-write-hashes.ts",
     "files:changes": "bun run scripts/files-show-changes.ts",
-    "sync": "bun run scripts/sync.ts"
+    "sync": "bun run scripts/sync.ts",
+    "format": "bunx prettier --write ."
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.504.0",

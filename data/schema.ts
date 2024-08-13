@@ -1,5 +1,5 @@
-import { relations, sql } from "drizzle-orm";
-import { index, sqliteTable, primaryKey, text, integer, blob, real } from "drizzle-orm/sqlite-core";
+import { relations, sql } from "drizzle-orm"
+import { index, sqliteTable, primaryKey, text, integer, blob, real } from "drizzle-orm/sqlite-core"
 
 // Pieces
 
@@ -12,15 +12,15 @@ export const pieces = sqliteTable("pieces", {
     .default(sql`(current_timestamp)`),
 
   metadata: text("metadata", { mode: "json" }).notNull().$type<Record<string, any>>(),
-});
+})
 export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parents: many(relatedPieces, { relationName: "parent_relation" }),
   children: many(relatedPieces, { relationName: "child_relation" }),
   attachments: many(attachments, { relationName: "piece_attachments" }),
   position: one(mapPositions),
-  hashmapEntry: one(hashmap)
-}));
-export type DBPiece = typeof pieces.$inferSelect;
+  hashmapEntry: one(hashmap),
+}))
+export type DBPiece = typeof pieces.$inferSelect
 
 // Map Positions
 
@@ -32,16 +32,16 @@ export const mapPositions = sqliteTable("map_positions", {
   top: real("top").notNull(),
   width: real("width").notNull(),
   height: real("height").notNull(),
-});
+})
 export const mapPositionsRelations = relations(mapPositions, ({ one }) => ({
   piece: one(pieces, {
     fields: [mapPositions.pieceHash],
     references: [pieces.pieceHash],
     relationName: "position",
   }),
-}));
+}))
 
-export type MapPosition = typeof mapPositions.$inferSelect;
+export type MapPosition = typeof mapPositions.$inferSelect
 
 // HAS-A Relation
 
@@ -57,8 +57,8 @@ export const relatedPieces = sqliteTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.parentHash, table.childHash] }),
-  })
-);
+  }),
+)
 export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
   parent: one(pieces, {
     fields: [relatedPieces.parentHash],
@@ -70,7 +70,7 @@ export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
     references: [pieces.pieceHash],
     relationName: "parent_relation",
   }),
-}));
+}))
 
 export enum FileType {
   doc = "doc",
@@ -82,55 +82,50 @@ export enum FileType {
   video = "video",
   other = "other",
 }
-export const AllAttachmentTypes = [
-  FileType.image,
-  FileType.slide,
-  FileType.exercise,
-  FileType.quiz,
-];
+export const AllAttachmentTypes = [FileType.image, FileType.slide, FileType.exercise, FileType.quiz]
 export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType) as [
   FileType,
-  ...FileType[]
-];
+  ...FileType[],
+]
 
 const FileTypes: [string, ...string[]] = FileTypeValues.map((type) => String(type)) as [
   string,
-  ...string[]
-];
+  ...string[],
+]
 
 export const fileTypeFromString = (filetype: string): FileType => {
   switch (filetype) {
     case "image":
-      return FileType.image;
+      return FileType.image
     case "slide":
-      return FileType.slide;
+      return FileType.slide
     case "doc":
-      return FileType.doc;
+      return FileType.doc
     case "cover":
-      return FileType.cover;
+      return FileType.cover
     case "exercise":
-      return FileType.exercise;
+      return FileType.exercise
     case "quiz":
-      return FileType.quiz;
+      return FileType.quiz
     case "video":
-      return FileType.video;
+      return FileType.video
     case "other":
-      return FileType.other;
+      return FileType.other
     default:
-      throw new Error(`Unknown filetype: ${filetype}`);
+      throw new Error(`Unknown filetype: ${filetype}`)
   }
-};
+}
 
 // Files
 
 export const files = sqliteTable("files", {
   hash: text("file_hash").primaryKey(),
   data: blob("data", { mode: "json" }).$type<string>().notNull(),
-});
+})
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
   answers: many(quizAnswers, { relationName: "quiz_answers" }),
-}));
+}))
 
 // Attachments
 
@@ -150,8 +145,8 @@ export const attachments = sqliteTable(
     pk: primaryKey({
       columns: [table.pieceHash, table.fileHash, table.filetype],
     }),
-  })
-);
+  }),
+)
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
     fields: [attachments.pieceHash],
@@ -163,7 +158,7 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
     references: [files.hash],
     relationName: "file_attachments",
   }),
-}));
+}))
 
 // Hashmap
 
@@ -181,15 +176,15 @@ export const hashmap = sqliteTable(
   },
   (table) => ({
     hashIdx: index("hash_idx").on(table.pieceHash),
-  })
-);
+  }),
+)
 export const hashmapRelations = relations(hashmap, ({ one }) => ({
   piece: one(pieces, {
     fields: [hashmap.pieceHash],
     references: [pieces.pieceHash],
     relationName: "hashmap_piece",
   }),
-}));
+}))
 
 // Answers
 
@@ -208,12 +203,12 @@ export const quizAnswers = sqliteTable(
     pk: primaryKey({
       columns: [table.hash, table.answer],
     }),
-  })
-);
+  }),
+)
 export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
   file: one(files, {
     fields: [quizAnswers.hash],
     references: [files.hash],
     relationName: "quiz_answers",
   }),
-}));
+}))

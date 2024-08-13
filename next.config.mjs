@@ -1,9 +1,9 @@
-import mdx from "@next/mdx";
-import { env } from "./lib/env.mjs"; // <--- IMPORTANT: Validate variables at build time
+import mdx from "@next/mdx"
+import { env } from "./lib/env.mjs" // <--- IMPORTANT: Validate variables at build time
 
 const withMDX = mdx({
   // no options
-});
+})
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -24,16 +24,16 @@ const nextConfig = {
     ],
   },
   poweredByHeader: false,
-};
+}
 
 export default async (phase, { defaultConfig }) => {
-  const config = { ...nextConfig };
+  const config = { ...nextConfig }
 
-  console.log(`-----------------------------------`);
-  console.log("PHASE:      ", phase);
-  console.log("BACKEND:    ", env.BACKEND);
-  console.log("TURSO_URL:  ", env.TURSO_URL);
-  console.log(`-----------------------------------`);
+  console.log(`-----------------------------------`)
+  console.log("PHASE:      ", phase)
+  console.log("BACKEND:    ", env.BACKEND)
+  console.log("TURSO_URL:  ", env.TURSO_URL)
+  console.log(`-----------------------------------`)
 
-  return withMDX(config);
-};
+  return withMDX(config)
+}

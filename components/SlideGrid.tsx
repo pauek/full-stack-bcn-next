@@ -1,27 +1,27 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import { useState } from "react";
-import SlideViewer from "./SlideViewer";
+import Image from "next/image"
+import { useState } from "react"
+import SlideViewer from "./SlideViewer"
 
 type Props = {
-  slides: Array<string>;
-};
+  slides: Array<string>
+}
 export default function SlideGrid({ slides }: Props) {
-  const [currentSlide, setCurrentSlide] = useState<number>(-1);
+  const [currentSlide, setCurrentSlide] = useState<number>(-1)
 
   if (slides.length === 0) {
-    return <></>;
+    return <></>
   }
 
-  const closeSlideViewer = () => setCurrentSlide(-1);
+  const closeSlideViewer = () => setCurrentSlide(-1)
 
   const nextSlide = () => {
-    setCurrentSlide((x) => Math.min(x + 1, slides.length - 1));
-  };
+    setCurrentSlide((x) => Math.min(x + 1, slides.length - 1))
+  }
   const prevSlide = () => {
-    setCurrentSlide((x) => Math.max(x - 1, 0));
-  };
+    setCurrentSlide((x) => Math.max(x - 1, 0))
+  }
 
   return (
     <>
@@ -55,5 +55,5 @@ export default function SlideGrid({ slides }: Props) {
         </div>
       </div>
     </>
-  );
+  )
 }

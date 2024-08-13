@@ -1,8 +1,8 @@
 type RowProps = {
-  href: string;
-  keyword: string;
-  children: any;
-};
+  href: string
+  keyword: string
+  children: any
+}
 export default function Row({ href, keyword, children }: RowProps) {
   return (
     <tr>
@@ -21,5 +21,5 @@ export default function Row({ href, keyword, children }: RowProps) {
       </td>
       <td>{children}</td>
     </tr>
-  );
+  )
 }

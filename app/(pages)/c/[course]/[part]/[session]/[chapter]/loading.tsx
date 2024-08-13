@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-export const runtime = "edge";
+export const runtime = "edge"
 
 export default function Loading() {
   return (
@@ -43,7 +43,7 @@ export default function Loading() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 const Paragraph = ({ lines }: { lines: number }) => {
@@ -56,5 +56,5 @@ const Paragraph = ({ lines }: { lines: number }) => {
         ></div>
       ))}
     </div>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { SVGProps } from "react";
+import { SVGProps } from "react"
 
 export function ExerciseIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -8,5 +8,5 @@ export function ExerciseIcon(props: SVGProps<SVGSVGElement>) {
         d="M3 21v-4.25L17.625 2.175L21.8 6.45L7.25 21zM17.6 7.8L19 6.4L17.6 5l-1.4 1.4z"
       ></path>
     </svg>
-  );
+  )
 }

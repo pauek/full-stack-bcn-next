@@ -6,12 +6,12 @@ export default function Loading() {
       <PartSkeleton numCards={7} />
       <PartSkeleton numCards={4} />
     </div>
-  );
+  )
 }
 
 const PartSkeleton = ({ numCards }: { numCards: number }) => {
-  const rows = Array.from({ length: numCards / 3 }).map((_) => 3);
-  if (numCards % 3 !== 0) rows.push(numCards % 3);
+  const rows = Array.from({ length: numCards / 3 }).map((_) => 3)
+  if (numCards % 3 !== 0) rows.push(numCards % 3)
 
   return (
     <div className="blur-xs">
@@ -26,11 +26,11 @@ const PartSkeleton = ({ numCards }: { numCards: number }) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
 const CardSkeleton = () => (
   <div className="w-1/3 flex flex-col relative items-stretch bg-skeleton rounded-md m-1">
     <div className="flex-1 relative w-full aspect-[7/6]"></div>
   </div>
-);
+)
