@@ -36,7 +36,7 @@ export const hashToDiskpath = async (hash: string) => {
     mapRead = true
   }
   const index = globalHashMaps.byHash.get(hash)
-  if (!index) {
+  if (index === undefined) {
     return undefined
   }
   return globalHashMaps.info[index]?.diskpath
