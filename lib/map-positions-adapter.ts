@@ -31,7 +31,7 @@ export class MapPositionsAdapter {
 
   paintMinimal(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item
-    const over = pointWithinRect(controller.mouse, { left, top, width, height })
+    const over = pointWithinRect(controller.pointer, { left, top, width, height })
     if (controller.mode === "edit" && over) {
       ctx.fillStyle = "lightblue"
     } else if (item.level === 0) {

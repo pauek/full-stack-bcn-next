@@ -46,7 +46,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   canvasRef: RefObject<HTMLCanvasElement>
   items: ItemType[]
 
-  mouse: Point
+  pointer: Point
   scale: number
   origin: Point
 
@@ -98,7 +98,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
     this.parseUrlPath(urlPath)
 
-    this.mouse = { x: 0, y: 0 }
+    this.pointer = { x: 0, y: 0 }
     this.panning = null
   }
 
@@ -191,7 +191,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   updateOver() {
     this.overRect =
-      this.items.findLast((item) => item.level === 0 && pointWithinRect(this.mouse, item)) || null
+      this.items.findLast((item) => item.level === 0 && pointWithinRect(this.pointer, item)) || null
   }
 
   updateParents(): number[] {
@@ -258,7 +258,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     const knobPositions = getKnobPositions(rect)
     for (let i = 0; i < knobPositions.length; i++) {
       const { x, y } = knobPositions[i]
-      if (pointWithinCircle(this.mouse, { x, y }, 10)) {
+      if (pointWithinCircle(this.pointer, { x, y }, 10)) {
         return i + 1
       }
     }
@@ -298,7 +298,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       }
 
       const knobRect = { left, top, width, height }
-      const mouseInside = pointWithinRect(this.mouse, knobRect)
+      const mouseInside = pointWithinRect(this.pointer, knobRect)
       const dragging = this.resizing && this.resizing.knob === knob
 
       ctx.beginPath()
@@ -345,7 +345,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     showText(ctx, `mode:     ${this.mode}`, 0, 0)
     showText(ctx, `scale:    ${this.scale.toFixed(6)}`, 1, 0)
     showText(ctx, `origin:   ${pointToString(this.origin)}`, 2, 0)
-    showText(ctx, `mouse:    ${pointToString(this.mouse)}`, 3, 0)
+    showText(ctx, `mouse:    ${pointToString(this.pointer)}`, 3, 0)
 
     const { left, top, width, height } = this.getClientBounds()
     showText(
@@ -647,7 +647,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       const knob = this.mouseWithinKnob(this.selected[0])
       if (knob != -1) {
         this.startResizing(point, knob)
-      } else if (this.selected.some((rect) => pointWithinRect(this.mouse, rect))) {
+      } else if (this.selected.some((rect) => pointWithinRect(this.pointer, rect))) {
         this.startDragging(point)
       } else if (this.overRect) {
         if (shiftKey) {
@@ -688,7 +688,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     } else {
       this.updateOver()
     }
-    this.mouse = this.clientToModel(point)
+    this.pointer = this.clientToModel(point)
     if (this.canvasRef.current) {
       this.canvasRef.current.style.cursor = this.overRect ? "pointer" : "auto"
     }
@@ -728,7 +728,7 @@ export class CanvasController<ItemType extends RectangularItem> {
      using the number of touch points and the distance between them */
 
   onTouchStart(event: React.TouchEvent<HTMLCanvasElement>) {
-    console.log("onTouchStart", event)
+    this.updateOver()
     if (event.touches.length === 1) {
       this.onMouseOrTouchDown(eventPoint(event.touches[0]), false)
     } else if (event.touches.length === 2) {
@@ -741,7 +741,6 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   onTouchMove(event: React.TouchEvent<HTMLCanvasElement>) {
-    console.log("onTouchMove", event)
     if (this.zooming) {
       if (event.touches.length === 2) {
         const f1 = event.touches[0]
@@ -756,7 +755,6 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   onTouchEnd(event: React.TouchEvent<HTMLCanvasElement>) {
-    console.log("onTouchEnd", event)
     this.onMouseOrTouchUp()
     this.zooming = null
   }
