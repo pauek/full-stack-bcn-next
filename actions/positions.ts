@@ -1,10 +1,11 @@
 "use server"
 
 import { MapPosition } from "@/data/schema"
-import { dbMapPositionsGetAll, dbMapPositionsUpdate } from "@/lib/data/db/positions"
+import { dbMapPositionsUpdate } from "@/lib/data/db/positions"
+import { filesMapPositionsGetAll } from "@/lib/data/files/positions"
 
 export async function actionLoadMapPositions() {
-  return await dbMapPositionsGetAll()
+  return await filesMapPositionsGetAll()
 }
 
 export async function actionMapPositionsUpdate(rectlist: MapPosition[]) {
