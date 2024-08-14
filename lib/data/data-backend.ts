@@ -1,7 +1,6 @@
 import { FileType, MapPosition } from "@/data/schema"
 import { ContentPiece } from "../adt"
 import { Hash } from "./hashing"
-import { Point } from "../geometry"
 
 export type ImgData = {
   data: Buffer
