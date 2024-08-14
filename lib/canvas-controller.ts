@@ -203,8 +203,8 @@ export class CanvasController<ItemType extends RectangularItem> {
           outline.top -= 16; 
           outline.height += 16;
         } else if (item.level === 2) {
-          outline.top -= 24; 
-          outline.height += 24;
+          outline.top -= 32; 
+          outline.height += 32;
         }
         
         const { left, top, width, height } = outline

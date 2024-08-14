@@ -91,11 +91,11 @@ export class MapPositionsAdapter {
     ctx.closePath()
     ctx.stroke()
 
-    ctx.font = "bold 16px Inter"
+    ctx.font = "bold 20px Inter"
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "black"
-    ctx.fillText(`${item.name}`, left + width / 2, top + 16)
+    ctx.fillStyle = "#aaa"
+    ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + 22)
   }
 
   paintItem(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
