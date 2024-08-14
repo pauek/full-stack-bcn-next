@@ -26,7 +26,7 @@ export default function Map() {
 
   useEffect(() => {
     state.loadItems()
-    if (pathname === "/") {
+    if (pathname === "/m") {
       const pageBox = document.getElementById("page-box")
       if (!pageBox) {
         throw new Error("page-box not found")

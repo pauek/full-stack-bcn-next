@@ -124,6 +124,9 @@ export class CanvasController<ItemType extends RectangularItem> {
     const xscale = width / MAP_MAX_WIDTH
     const yscale = height / MAP_MAX_HEIGHT
     this.scale = Math.min(xscale, yscale)
+    const xwidth = MAP_MAX_WIDTH * this.scale
+    const xheight = MAP_MAX_HEIGHT * this.scale
+    this.origin = { x: (width - xwidth) / 2, y: (height - xheight) / 2 }
     this.scaleToUrl()
   }
 
