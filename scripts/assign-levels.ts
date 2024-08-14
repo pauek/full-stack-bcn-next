@@ -1,6 +1,6 @@
 import { hashmap } from "@/data/schema"
-import { db } from "@/lib/data/db"
-import { filesBackend, updateMetadata } from "@/lib/data/files"
+import { db } from "@/lib/data/db/db"
+import { updateMetadata } from "@/lib/data/files/metadata"
 import { hashToDiskpath } from "@/lib/data/hash-maps"
 import { assignLevels, constructTree, TreeNode } from "@/lib/tree"
 import { eq } from "drizzle-orm"

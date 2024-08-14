@@ -1,4 +1,5 @@
 import { FileType } from "@/data/schema"
+import { env } from "@/lib/env.mjs"
 import { ContentPiece } from "../adt"
 import { CrumbData, DataBackend, DataBackendBase, WalkFunc } from "./data-backend"
 

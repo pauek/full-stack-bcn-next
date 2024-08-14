@@ -29,11 +29,8 @@ const nextConfig = {
 export default async (phase, { defaultConfig }) => {
   const config = { ...nextConfig }
 
-  console.log(`-----------------------------------`)
-  console.log("PHASE:      ", phase)
-  console.log("BACKEND:    ", env.BACKEND)
-  console.log("TURSO_URL:  ", env.TURSO_URL)
-  console.log(`-----------------------------------`)
+  console.log("PHASE =", phase)
+  console.log("TURSO_URL =", env.TURSO_URL)
 
   return withMDX(config)
 }

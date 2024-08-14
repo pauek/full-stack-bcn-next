@@ -1,5 +1,5 @@
 import { FileType } from "@/data/schema"
-import { fileTypeInfo, filesBackend } from "@/lib/data/files"
+import { getAllAttachmentPaths, getPiece } from "@/lib/data/files/backend"
 import { hashAny } from "@/lib/data/hashing"
 
 import { env } from "@/lib/env.mjs"
@@ -11,7 +11,8 @@ import {
 } from "@aws-sdk/client-s3"
 import { readFile } from "fs/promises"
 import { extname, join } from "path"
-import mimeTypeTable from "./mime-types.json"
+import mimeTypeTable from "../../lib/data/mime-types.json"
+import { fileTypeInfo } from "../../lib/data/files/utils"
 
 const mimeTypes: Record<string, string> = mimeTypeTable
 
@@ -82,13 +83,13 @@ class ImageUploader {
   }
 
   async uploadAllFilesOfType(filetype: FileType, existing: Set<string>) {
-    const imagePaths = await filesBackend.getAllAttachmentPaths([env.COURSE_ID], filetype)
+    const imagePaths = await getAllAttachmentPaths([env.COURSE_ID], filetype)
 
     const _uploadOne = async (index: number) => {
       const path = imagePaths[index]
       const idpath = path.slice(0, path.length - 1)
       const imageFilename = path.slice(-1)[0]
-      const piece = await filesBackend.getPiece(idpath)
+      const piece = await getPiece(idpath)
       if (!piece) {
         throw new Error(`Piece not found: ${idpath}`)
       }
@@ -104,7 +105,7 @@ class ImageUploader {
     await Promise.allSettled(
       Array.from({ length: this.parallelRequests }).map((_, i) => {
         return _uploadAllWithOffset(i)
-      }),
+      })
     )
 
     // Erase last line if necessary
@@ -125,7 +126,7 @@ class ImageUploader {
             Bucket: process.env.R2_BUCKET,
             ContinuationToken: contToken,
             MaxKeys: 200,
-          }),
+          })
         )
         if (result.Contents) {
           for (const { Key: name, Size: size } of result.Contents) {
@@ -148,7 +149,7 @@ class ImageUploader {
 
 export const withImageUploader = async (
   options: ImageUploaderOptions,
-  func: (uploader: ImageUploader) => Promise<void>,
+  func: (uploader: ImageUploader) => Promise<void>
 ) => {
   const uploader = new ImageUploader(options)
   // await delay(1000);

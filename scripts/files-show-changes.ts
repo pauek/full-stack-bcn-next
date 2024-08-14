@@ -1,6 +1,6 @@
-import { filesBackend } from "@/lib/data/files"
+import { filesBackend } from "@/lib/data"
 import { getChangedPieces } from "@/lib/data/changes"
-import { courseUpdateMetadata } from "@/lib/data/files"
+import { courseUpdateMetadata } from "@/lib/data/files/metadata"
 import { getRoot } from "@/lib/data/root"
 import { showExecutionTime } from "@/lib/utils"
 

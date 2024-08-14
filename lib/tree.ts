@@ -1,7 +1,7 @@
-import { hashmap, mapPositions } from "@/data/schema"
-import { db } from "@/lib/data/db"
+import { hashmap } from "@/data/schema"
 import { env } from "@/lib/env.mjs"
 import { eq } from "drizzle-orm"
+import { db } from "./data/db/db"
 
 const getAllHashes = async () =>
   await db.query.hashmap.findMany({
@@ -62,50 +62,7 @@ const insertIntoTree = (tree: TreeNode, hashmap: HashWithPiece) => {
   // TODO: more stuff
 }
 
-const updatePos = async (
-  hash: string,
-  left: number,
-  top: number,
-  width: number,
-  height: number
-) => {
-  await db
-    .insert(mapPositions)
-    .values({ pieceHash: hash, left, top, width, height })
-    .onConflictDoUpdate({
-      target: mapPositions.pieceHash,
-      set: { left, top, width, height },
-    })
-}
 
-const assignPosition = async (node: TreeNode) => {
-  const { level } = node
-  if (level !== 1) {
-    throw new Error(`Expected level 1, got ${level}`)
-  }
-
-  let y = 10
-  for (const part of node.children) {
-    // Assign parts
-    let partHeight = 0
-    let maxSessionWidth = 0
-    for (const session of part.children) {
-      let x = 20
-      for (const chapter of session.children) {
-        updatePos(chapter.hash, x, y + 20, 200, 50)
-        x += 210
-      }
-      const sessionWidth = Math.max(x, 220)
-      updatePos(session.hash, 10, y + 10, sessionWidth, 70)
-      y += 90
-      partHeight += 90
-      maxSessionWidth = Math.max(maxSessionWidth, sessionWidth)
-    }
-    const width = Math.max(maxSessionWidth + 20, 200)
-    updatePos(part.hash, 0, y - partHeight, width, partHeight)
-    y += 80
-  }
-}
 
 export const constructTree = async () => {
   const rootPiece = await db.query.hashmap.findFirst({

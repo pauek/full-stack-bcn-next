@@ -1,15 +1,13 @@
-import dotenv from "dotenv"
+import "@/lib/env-config"
 import type { Config } from "drizzle-kit"
-
-const NODE_ENV = process.env.NODE_ENV || "development"
-console.log("NODE_ENV =", NODE_ENV)
-
-dotenv.config({ path: [`./.env.${NODE_ENV}.local`, `.env.local`] })
+import chalk from "chalk"
 
 const { TURSO_TOKEN, TURSO_URL } = process.env
 if (!TURSO_TOKEN || !TURSO_URL) {
   throw new Error("Missing TURSO_TOKEN or TURSO_URL in environment")
 }
+
+console.log(`TURSO_URL = ${chalk.yellow(TURSO_URL)}`)
 
 export default {
   schema: "./data/schema.ts",

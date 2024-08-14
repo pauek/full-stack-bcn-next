@@ -3,16 +3,19 @@ import { pointWithinRect } from "./geometry"
 import { MapPositionWithPiece } from "./data/db/positions"
 import { CanvasController } from "./canvas-controller"
 import { useRouter } from "next/navigation"
+import { MapPositionExtended } from "@/data/schema"
 
-type Item = MapPositionWithPiece
+type Item = MapPositionExtended
 
 type Router = ReturnType<typeof useRouter>
 
 export class MapPositionsAdapter {
   router: Router
+  items: Item[]
 
-  constructor(router: any) {
+  constructor(router: any, items: Item[]) {
     this.router = router
+    this.items = items
   }
 
   saveItems(positions: Item[]) {
@@ -26,7 +29,8 @@ export class MapPositionsAdapter {
   }
 
   async loadItems() {
-    return await actionLoadMapPositions()
+    return this.items;
+    // return await actionLoadMapPositions()
   }
 
   paintMinimal(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {

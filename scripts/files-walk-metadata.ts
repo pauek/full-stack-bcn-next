@@ -1,5 +1,5 @@
-import { filesBackend } from "@/lib/data/files"
-import { updateMetadata } from "@/lib/data/files"
+import { filesBackend } from "@/lib/data"
+import { updateMetadata } from "@/lib/data/files/metadata"
 import { getRoot } from "@/lib/data/root"
 import { showExecutionTime } from "@/lib/utils"
 

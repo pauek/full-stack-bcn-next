@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "09bc966f-1063-4989-b2f5-9a63a63349fb",
+  "id": "485f7245-ddbe-4ed4-bcf7-4b4b65448c40",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "attachments": {
@@ -42,8 +42,12 @@
           "name": "attachments_piece_hash_pieces_piece_hash_fk",
           "tableFrom": "attachments",
           "tableTo": "pieces",
-          "columnsFrom": ["piece_hash"],
-          "columnsTo": ["piece_hash"],
+          "columnsFrom": [
+            "piece_hash"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -51,15 +55,23 @@
           "name": "attachments_file_hash_files_file_hash_fk",
           "tableFrom": "attachments",
           "tableTo": "files",
-          "columnsFrom": ["file_hash"],
-          "columnsTo": ["file_hash"],
+          "columnsFrom": [
+            "file_hash"
+          ],
+          "columnsTo": [
+            "file_hash"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "attachments_piece_hash_file_hash_filetype_pk": {
-          "columns": ["piece_hash", "file_hash", "filetype"],
+          "columns": [
+            "piece_hash",
+            "file_hash",
+            "filetype"
+          ],
           "name": "attachments_piece_hash_file_hash_filetype_pk"
         }
       },
@@ -104,12 +116,21 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "level": {
+          "name": "level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {
         "hash_idx": {
           "name": "hash_idx",
-          "columns": ["piece_hash"],
+          "columns": [
+            "piece_hash"
+          ],
           "isUnique": false
         }
       },
@@ -118,77 +139,12 @@
           "name": "hashmap_piece_hash_pieces_piece_hash_fk",
           "tableFrom": "hashmap",
           "tableTo": "pieces",
-          "columnsFrom": ["piece_hash"],
-          "columnsTo": ["piece_hash"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "map_positions": {
-      "name": "map_positions",
-      "columns": {
-        "piece_hash": {
-          "name": "piece_hash",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "left": {
-          "name": "left",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "top": {
-          "name": "top",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "width": {
-          "name": "width",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "height": {
-          "name": "height",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "z": {
-          "name": "z",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "map_positions_piece_hash_pieces_piece_hash_fk": {
-          "name": "map_positions_piece_hash_pieces_piece_hash_fk",
-          "tableFrom": "map_positions",
-          "tableTo": "pieces",
-          "columnsFrom": ["piece_hash"],
-          "columnsTo": ["piece_hash"],
+          "columnsFrom": [
+            "piece_hash"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -265,15 +221,22 @@
           "name": "quiz_answers_hash_files_file_hash_fk",
           "tableFrom": "quiz_answers",
           "tableTo": "files",
-          "columnsFrom": ["hash"],
-          "columnsTo": ["file_hash"],
+          "columnsFrom": [
+            "hash"
+          ],
+          "columnsTo": [
+            "file_hash"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "quiz_answers_hash_answer_pk": {
-          "columns": ["hash", "answer"],
+          "columns": [
+            "hash",
+            "answer"
+          ],
           "name": "quiz_answers_hash_answer_pk"
         }
       },
@@ -303,8 +266,12 @@
           "name": "related_pieces_parent_pieces_piece_hash_fk",
           "tableFrom": "related_pieces",
           "tableTo": "pieces",
-          "columnsFrom": ["parent"],
-          "columnsTo": ["piece_hash"],
+          "columnsFrom": [
+            "parent"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -312,15 +279,22 @@
           "name": "related_pieces_child_pieces_piece_hash_fk",
           "tableFrom": "related_pieces",
           "tableTo": "pieces",
-          "columnsFrom": ["child"],
-          "columnsTo": ["piece_hash"],
+          "columnsFrom": [
+            "child"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "related_pieces_parent_child_pk": {
-          "columns": ["parent", "child"],
+          "columns": [
+            "parent",
+            "child"
+          ],
           "name": "related_pieces_parent_child_pk"
         }
       },

@@ -17,31 +17,25 @@ export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parents: many(relatedPieces, { relationName: "parent_relation" }),
   children: many(relatedPieces, { relationName: "child_relation" }),
   attachments: many(attachments, { relationName: "piece_attachments" }),
-  position: one(mapPositions),
   hashmapEntry: one(hashmap),
 }))
 export type DBPiece = typeof pieces.$inferSelect
 
 // Map Positions
 
-export const mapPositions = sqliteTable("map_positions", {
-  pieceHash: text("piece_hash")
-    .primaryKey()
-    .references(() => pieces.pieceHash),
-  left: real("left").notNull(),
-  top: real("top").notNull(),
-  width: real("width").notNull(),
-  height: real("height").notNull(),
-})
-export const mapPositionsRelations = relations(mapPositions, ({ one }) => ({
-  piece: one(pieces, {
-    fields: [mapPositions.pieceHash],
-    references: [pieces.pieceHash],
-    relationName: "position",
-  }),
-}))
-
-export type MapPosition = typeof mapPositions.$inferSelect
+export type MapPosition = {
+  pieceHash: string,
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+}
+export type MapPositionExtended = MapPosition & {
+  name: string
+  idjpath: string
+  level: number
+  children: number[]
+}
 
 // HAS-A Relation
 
@@ -57,7 +51,7 @@ export const relatedPieces = sqliteTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.parentHash, table.childHash] }),
-  }),
+  })
 )
 export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
   parent: one(pieces, {
@@ -85,12 +79,12 @@ export enum FileType {
 export const AllAttachmentTypes = [FileType.image, FileType.slide, FileType.exercise, FileType.quiz]
 export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType) as [
   FileType,
-  ...FileType[],
+  ...FileType[]
 ]
 
 const FileTypes: [string, ...string[]] = FileTypeValues.map((type) => String(type)) as [
   string,
-  ...string[],
+  ...string[]
 ]
 
 export const fileTypeFromString = (filetype: string): FileType => {
@@ -145,7 +139,7 @@ export const attachments = sqliteTable(
     pk: primaryKey({
       columns: [table.pieceHash, table.fileHash, table.filetype],
     }),
-  }),
+  })
 )
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
@@ -176,7 +170,7 @@ export const hashmap = sqliteTable(
   },
   (table) => ({
     hashIdx: index("hash_idx").on(table.pieceHash),
-  }),
+  })
 )
 export const hashmapRelations = relations(hashmap, ({ one }) => ({
   piece: one(pieces, {
@@ -203,7 +197,7 @@ export const quizAnswers = sqliteTable(
     pk: primaryKey({
       columns: [table.hash, table.answer],
     }),
-  }),
+  })
 )
 export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
   file: one(files, {

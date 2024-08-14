@@ -1,18 +1,51 @@
 import { env } from "@/lib/env.mjs"
-import { commonBackend } from "../common"
-import { DataBackend, DataBackendBase } from "../data-backend"
-import * as _backend from "./backend"
+import { DataBackendBase } from "../data-backend"
 
-export * from "./backend"
-export * from "./db"
-export * from "./utils"
+import { getAllIdpaths } from "./idpaths"
+
+import {
+  getPiece,
+  getPieceDocument,
+  getPieceWithChildren,
+  pieceHasCover,
+  pieceHasDoc,
+} from "./pieces"
+
+import {
+  getAttachmentBytes,
+  getPieceAttachmentList,
+  getPieceFileData,
+  getPieceImageList,
+  getPieceSlideList,
+  getQuizAnswerForHash,
+} from "./attachments"
+
+import { getContentTree } from "./tree"
+
+import { getMapPositions, getMapPositionsExtended, updateMapPositions } from "./positions"
 
 export const backend: DataBackendBase = {
   getInfo: () => `DB: ${env.TURSO_URL}`,
-  ..._backend,
+
+  getAllIdpaths,
+
+  getPiece,
+  getPieceDocument,
+  getPieceWithChildren,
+  pieceHasCover,
+  pieceHasDoc,
+
+  getPieceAttachmentList,
+  getAttachmentBytes,
+  getPieceImageList,
+  getPieceSlideList,
+  getPieceFileData,
+  getQuizAnswerForHash,
+
+  getContentTree,
+
+  getMapPositions,
+  getMapPositionsExtended,
+  updateMapPositions,
 }
 
-export const dbBackend: DataBackend = {
-  ...backend,
-  ...commonBackend,
-}

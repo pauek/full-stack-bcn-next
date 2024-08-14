@@ -1,4 +1,5 @@
 import {
+  checkRectangle,
   eventPoint,
   getKnobPositions,
   IRectangle,
@@ -36,7 +37,7 @@ interface CanvasAdapter<ItemType extends RectangularItem> {
 
 interface RectangularItem extends IRectangle {
   level: number
-  children: { hash: string; index: number }[]
+  children: number[]
 }
 
 export class CanvasController<ItemType extends RectangularItem> {
@@ -198,11 +199,9 @@ export class CanvasController<ItemType extends RectangularItem> {
     const updated: number[] = []
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i]
-      if (item.level > 0) {
-        const outline = rectangleEnlarge(
-          rectangleListUnion(item.children.map(({ index }) => this.items[index])),
-          10
-        )
+      if (item.level > 0 && checkRectangle(item)) {
+        const childrenRects = item.children.map((index) => this.items[index]).filter(checkRectangle)
+        const outline = rectangleEnlarge(rectangleListUnion(childrenRects), 10)
 
         // Space for the title
         if (item.level === 1) {

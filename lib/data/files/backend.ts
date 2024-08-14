@@ -3,14 +3,12 @@ import { ContentPiece } from "@/lib/adt"
 import { env } from "@/lib/env.mjs"
 import { readFile } from "fs/promises"
 import { basename, join, join as pathJoin } from "path"
-import { filesBackend, readMetadata } from "."
 import { FileBuffer, FileReference, WalkFunc } from "../data-backend"
 import { Hash } from "../hashing"
-import { getRoot } from "../root"
 import { readAnswers } from "./answers"
+import { readMetadata } from "./metadata"
 import * as utils from "./utils"
-
-export { findCoverImageFilename } from "./utils"
+import { filesWalkContentPieces } from "./utils"
 
 export const pieceHasCover = async (piece: ContentPiece) =>
   (await utils.findCoverImageFilename(piece)) !== null
@@ -20,11 +18,23 @@ export const pieceHasDoc = async (piece: ContentPiece) =>
 
 const __getPieceChildren = async (parent: ContentPiece, idpath: string[]) => {
   const children = []
+  const idToPath: Map<string, string> = new Map() // Check that no IDs in children are repeated
   for (const ent of await utils.readDirWithFileTypes(parent.diskpath)) {
     if (utils.isContentPiece(ent)) {
       const childPath = join(parent.diskpath, ent.name)
       const child = await utils.readPieceAtSubdir(childPath, parent.idpath)
       child.idpath = [...idpath, child.id]
+
+      const existingPath = idToPath.get(child.id)
+      if (existingPath) {
+        throw new Error(
+          `INCONSISTENCY ERROR: children of ${parent.idpath.join("/")}` +
+            ` the same ID: "${child.id}"!\n` +
+            `["${existingPath}" <=> "${childPath}"]\n`
+        )
+      }
+
+      idToPath.set(child.id, childPath)
       if (!child.metadata.hidden) {
         children.push(child)
       }
@@ -200,9 +210,13 @@ export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
 }
 
 export const getMapPositions = async () => {
-  const root = await getRoot(filesBackend)
+  const rootId = env.COURSE_ID
+  const root = await getPiece([rootId])
+  if (!root) {
+    throw `Course "${rootId}" not found!`
+  }
   const result: MapPosition[] = []
-  await filesBackend.walkContentPieces(root, async (piece) => {
+  await filesWalkContentPieces(root, async (piece) => {
     const metadata = await readMetadata(piece.diskpath)
     if (metadata.mapPosition) {
       // Check mapPosition has the fields that we expect
@@ -213,5 +227,5 @@ export const getMapPositions = async () => {
       result.push({ pieceHash: piece.hash, left, top, width, height })
     }
   })
-  return result;
+  return result
 }

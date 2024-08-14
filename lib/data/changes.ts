@@ -3,7 +3,7 @@ import { readStoredHash, writeStoredHash } from "./files/hashes"
 import { hashPiece } from "./hashing"
 import { removeNullElements } from "../utils"
 import { readHashMapFile, writeHashMapFile } from "./hash-maps"
-import { filesBackend } from "./files"
+import backend from "."
 
 export type Changes = {
   oldHash: string | null
@@ -16,9 +16,9 @@ export type Changes = {
 export const getChangedPieces = async (course: ContentPiece): Promise<Changes> => {
   const changes: Changes = []
 
-  await filesBackend.walkContentPieces(course, async (piece, children) => {
+  await backend.walkContentPieces(course, async (piece, children) => {
     const oldHash = await readStoredHash(piece.diskpath)
-    const newHash = await hashPiece(filesBackend, piece, children)
+    const newHash = await hashPiece(backend, piece, children)
     if (oldHash === null || oldHash !== newHash.hash) {
       changes.push({
         oldHash,

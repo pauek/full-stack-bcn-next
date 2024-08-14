@@ -1,5 +1,16 @@
 import { env } from "@/lib/env.mjs"
-import { dbBackend } from "./db"
-import { filesBackend } from "./files"
+import { backend as dbBackendBase } from "./db"
+import { backend as filesBackendBase } from "./files"
+import { commonBackend } from "./common"
+
+export const dbBackend = {
+  ...commonBackend,
+  ...dbBackendBase,
+}
+
+export const filesBackend = {
+  ...commonBackend,
+  ...filesBackendBase,
+}
 
 export default env.BACKEND === "files" ? filesBackend : dbBackend

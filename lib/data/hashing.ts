@@ -6,7 +6,7 @@ import { basename } from "path"
 import { readFile } from "fs/promises"
 import crypto from "crypto"
 import { FileType } from "@/data/schema"
-import { fileTypeInfo } from "./files"
+import { fileTypeInfo } from "./files/utils"
 
 export type Hash = string
 

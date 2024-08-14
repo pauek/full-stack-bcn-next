@@ -1,4 +1,4 @@
-import { filesBackend } from "@/lib/data/files"
+import { filesBackend } from "@/lib/data"
 import { hashPiece } from "@/lib/data/hashing"
 import { getRoot } from "@/lib/data/root"
 import { showExecutionTime } from "@/lib/utils"

@@ -4,10 +4,11 @@ import { env } from "@/lib/env.mjs"
 import { Dirent } from "fs"
 import { readdir } from "fs/promises"
 import { basename, extname, join } from "path"
-import { FileReference } from "../data-backend"
+import { FileReference, WalkFunc } from "../data-backend"
 import { hashFile } from "../hashing"
 import { readStoredHashOrThrow } from "./hashes"
 import { readMetadata } from "./metadata"
+import { getPiece, getPieceWithChildren } from "./backend"
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true })
 
@@ -82,7 +83,7 @@ export const findCoverImageFilename = async ({ diskpath }: ContentPiece) => {
 
 export const listPieceSubdir = async (
   diskpath: string,
-  filetype: FileType,
+  filetype: FileType
 ): Promise<Array<FileReference>> => {
   try {
     const typeInfo = fileTypeInfo[filetype]
@@ -112,7 +113,7 @@ export const okToSkipMissingHashes = async (func: (...args: any[]) => Promise<an
 
 export const readPieceAtSubdir = async (
   subdir: string,
-  parentIdpath: string[],
+  parentIdpath: string[]
 ): Promise<ContentPiece> => {
   const dirname = basename(subdir)
   const name = dirNameToTitle(dirname)
@@ -143,4 +144,25 @@ export const readPieceAtSubdir = async (
     hash,
     metadata,
   }
+}
+
+export const filesWalkContentPieces = async function (piece: ContentPiece, func: WalkFunc) {
+  const dbPiece = await getPieceWithChildren(piece.idpath)
+  if (!dbPiece) {
+    throw `Piece not found in database: ${piece.idpath.join("/")}`
+  }
+  const children: any[] = []
+  for (const child of dbPiece.children || []) {
+    children.push(await filesWalkContentPieces(child, func))
+  }
+  return await func(dbPiece, children)
+}
+
+export const filesGetRoot = async (): Promise<ContentPiece> => {
+  const rootId = env.COURSE_ID
+  const course = await getPiece([rootId])
+  if (!course) {
+    throw `Course "${rootId}" not found!`
+  }
+  return course
 }

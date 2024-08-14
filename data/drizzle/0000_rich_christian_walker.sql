@@ -16,17 +16,7 @@ CREATE TABLE `files` (
 CREATE TABLE `hashmap` (
 	`idjpath` text PRIMARY KEY NOT NULL,
 	`piece_hash` text NOT NULL,
-	FOREIGN KEY (`piece_hash`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action
-);
---> statement-breakpoint
-CREATE TABLE `map_positions` (
-	`piece_hash` text PRIMARY KEY NOT NULL,
-	`left` real NOT NULL,
-	`top` real NOT NULL,
-	`width` real NOT NULL,
-	`height` real NOT NULL,
-	`z` integer DEFAULT 0 NOT NULL,
-	`color` text NOT NULL,
+	`level` integer NOT NULL,
 	FOREIGN KEY (`piece_hash`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint

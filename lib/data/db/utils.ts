@@ -2,6 +2,7 @@ import * as schema from "@/data/schema"
 import { FileType } from "@/data/schema"
 import { and, eq } from "drizzle-orm"
 import { db } from "./db"
+import { Hash } from "../hashing"
 
 // export const fromDbPiece = (idpath: string[], dbPiece: DBPiece): ContentPiece => {
 //   return {
@@ -18,7 +19,7 @@ import { db } from "./db"
 export const getPieceFilesByFiletype = async (
   pieceHash: string,
   filetype: FileType,
-  options?: { limit: number },
+  options?: { limit: number }
 ) => {
   // find file starting with cover associated with piece
   const result = await db
@@ -51,3 +52,25 @@ export const getFileData = async (fileHash: string) => {
 
 export const pieceHasFiletype = async (pieceHash: string, filetype: FileType): Promise<boolean> =>
   (await getPieceFilesByFiletype(pieceHash, filetype)).length > 0
+
+export const pathToHash = async (idpath: string[]): Promise<Hash | null> => {
+  const mapItem = await db.query.hashmap.findFirst({
+    where: eq(schema.hashmap.idjpath, idpath.join("/")),
+  })
+  if (!mapItem) {
+    return null
+  }
+  const { pieceHash: hash } = mapItem
+  return hash
+}
+
+export const hashToPath = async (hash: string): Promise<string[] | null> => {
+  const mapItem = await db.query.hashmap.findFirst({
+    where: eq(schema.hashmap.pieceHash, hash),
+  })
+  if (!mapItem) {
+    return null
+  }
+  const { idjpath } = mapItem
+  return idjpath.split("/")
+}

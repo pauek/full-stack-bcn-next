@@ -1,4 +1,4 @@
-import { FileType, MapPosition } from "@/data/schema"
+import { FileType, MapPosition, MapPositionExtended } from "@/data/schema"
 import { ContentPiece } from "../adt"
 import { Hash } from "./hashing"
 
@@ -47,9 +47,10 @@ export interface DataBackendBase {
   pieceHasDoc: (piece: ContentPiece) => Promise<boolean>
 
   getAllIdpaths: (rootIdpath: string[]) => Promise<string[][]>
-  getAllAttachmentPaths: (rootIdpath: string[], filetype: FileType) => Promise<string[][]>
 
   getMapPositions(): Promise<MapPosition[]>
+  getMapPositionsExtended(): Promise<MapPositionExtended[]>
+  updateMapPositions: (positions: MapPosition[]) => Promise<void>
 }
 
 export interface DataBackend extends DataBackendBase {

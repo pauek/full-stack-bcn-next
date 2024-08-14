@@ -1,13 +1,12 @@
 "use server"
 
 import { MapPosition } from "@/data/schema"
-import { dbMapPositionsUpdate } from "@/lib/data/db/positions"
-import { filesMapPositionsGetAll } from "@/lib/data/files/positions"
+import data from "@/lib/data"
 
 export async function actionLoadMapPositions() {
-  return await filesMapPositionsGetAll()
+  return await data.getMapPositionsExtended()
 }
 
-export async function actionMapPositionsUpdate(rectlist: MapPosition[]) {
-  await dbMapPositionsUpdate(rectlist)
+export const actionMapPositionsUpdate = async (mapPositions: MapPosition[]) => {
+  await data.updateMapPositions(mapPositions)
 }

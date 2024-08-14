@@ -1,7 +1,9 @@
-import { courseUpdateMetadata, filesBackend, okToSkipMissingHashes } from "@/lib/data/files"
+import { filesBackend } from "@/lib/data"
 import { getRoot } from "@/lib/data/root"
 import { showExecutionTime } from "@/lib/utils"
-import { insertPieceWalker, uploadImages, walkFilesIfChanged, writeHashes } from "./lib"
+import { insertPieceWalker, uploadImages, walkFilesIfChanged, writeHashes } from "./lib/lib"
+import { okToSkipMissingHashes } from "@/lib/data/files/utils"
+import { courseUpdateMetadata } from "@/lib/data/files/metadata"
 
 await showExecutionTime(async () => {
   const root = await getRoot(filesBackend)

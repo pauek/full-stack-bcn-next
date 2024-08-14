@@ -1,17 +1,20 @@
-import "@/lib/env.mjs"
+import "@/lib/env-config"
 
-import { closeConnection, dbBackend } from "@/lib/data/db"
+import { dbBackend } from "@/lib/data"
+import { closeConnection } from "@/lib/data/db/db"
 import * as db from "@/lib/data/db/insert"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
-import { getSelectedRoot, insertPieceWalker, walkFilesIfChanged } from "./lib"
+import { getSelectedRoot, insertPieceWalker, walkFilesIfChanged } from "./lib/lib"
 
 const {
-  argv: [_bun, _script, idjpath],
+  argv: [_bun, _script, ...args],
 } = process
 
 showExecutionTime(async () => {
-  const forcedUpload = process.argv.includes("--force")
+  const forcedUpload = args.includes("--force")
+  const idjpath = args.filter((arg) => !arg.startsWith("--"))[0]
+  
   console.log(chalk.gray(`[${dbBackend.getInfo()}]`))
   console.log(chalk.gray(`[forcedUpload = ${forcedUpload}]`))
 
@@ -23,6 +26,5 @@ showExecutionTime(async () => {
   }
 
   await walkFilesIfChanged(forcedUpload, root.idpath, insertPieceWalker)
-
   await closeConnection()
 })

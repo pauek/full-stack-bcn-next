@@ -1,5 +1,5 @@
 import { showExecutionTime } from "@/lib/utils"
-import { uploadImages } from "./lib"
+import { uploadImages } from "./lib/lib"
 
 await showExecutionTime(uploadImages)
 

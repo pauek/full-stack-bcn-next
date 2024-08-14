@@ -1,6 +1,7 @@
 import { ContentPiece } from "@/lib/adt"
-import { filesBackend } from "@/lib/data/files"
-import { getSessionSequence, updateMetadata } from "@/lib/data/files"
+import { filesBackend } from "@/lib/data"
+import { getSessionSequence } from "@/lib/data/files/backend"
+import { updateMetadata } from "@/lib/data/files/metadata"
 import { env } from "@/lib/env.mjs"
 
 import { showExecutionTime } from "@/lib/utils"

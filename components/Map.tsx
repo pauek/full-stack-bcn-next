@@ -1,7 +1,7 @@
 "use client"
 
+import { MapPositionExtended } from "@/data/schema"
 import { CanvasController } from "@/lib/canvas-controller"
-import { MapPositionWithPiece } from "@/lib/data/db/positions"
 import { MapPositionsAdapter } from "@/lib/map-positions-adapter"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -11,14 +11,17 @@ type MapSize = {
   height: number
 }
 
-type Controller = CanvasController<MapPositionWithPiece>
+type Controller = CanvasController<MapPositionExtended>
 
-export default function Map() {
+interface Props {
+  mapPositions: MapPositionExtended[]
+}
+export default function Map({ mapPositions }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef<Controller>(
-    new CanvasController(canvasRef, pathname, new MapPositionsAdapter(router)),
+    new CanvasController(canvasRef, pathname, new MapPositionsAdapter(router, mapPositions))
   )
 
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 })

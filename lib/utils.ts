@@ -69,10 +69,10 @@ export const isFulfilled = function <T>(
 type LogFileOptions = { preserve?: boolean; color?: boolean }
 
 const logFile =
-  (options?: LogFileOptions) => (hash: string, filetype: FileType, filename: string) => {
+  (options?: LogFileOptions) => (filehash: string, filetype: FileType, filename: string) => {
     const { preserve = false, color = false } = options || {}
 
-    const _hash = color ? chalk.gray(hash) : hash
+    const _hash = color ? chalk.gray(filehash) : filehash
     const _filetype = color ? chalk.green(filetype) : filetype
     const _filename = color ? chalk.yellow(filename) : filename
 

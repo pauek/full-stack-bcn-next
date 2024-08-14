@@ -1,12 +1,9 @@
 import * as schema from "@/data/schema"
-import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import * as files from "@/lib/data/files"
 import { Hash, hashAny } from "@/lib/data/hashing"
 import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { readFile } from "fs/promises"
-import { basename, join } from "path"
 import { db } from "./db"
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
@@ -29,6 +26,21 @@ export const fileExists = async (hash: string) => {
   return found !== undefined
 }
 
+export const attachmentExists = async (
+  pieceHash: string,
+  fileHash: string,
+  filetype: schema.FileType
+) => {
+  const found = await db.query.attachments.findFirst({
+    where: and(
+      eq(schema.attachments.pieceHash, pieceHash),
+      eq(schema.attachments.fileHash, fileHash),
+      eq(schema.attachments.filetype, filetype)
+    ),
+  })
+  return found !== undefined
+}
+
 export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
   if (await pieceExists(piece)) {
     return false // it was not inserted
@@ -47,7 +59,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
     })
     return true // it was inserted
   } catch (e: any) {
-    console.log(`Inserting ${piece.diskpath} [${JSON.stringify(dbPiece)}]: ${e.toString()}`)
+    console.error(`Inserting ${piece.diskpath} [${JSON.stringify(dbPiece)}]: ${e.toString()}`)
   }
 }
 
@@ -55,8 +67,8 @@ export const insertPieceHashmap = async (piece: ContentPiece) => {
   await db
     .insert(schema.hashmap)
     .values({
-      pieceHash: piece.hash,
       idjpath: piece.idpath.join("/"),
+      pieceHash: piece.hash,
       level: -1 /* This has to be computed later... */,
     })
     .onConflictDoUpdate({
@@ -72,86 +84,36 @@ type FileInfo = {
 }
 export const insertFile = async (
   piece: ContentPiece,
-  { filename, filetype, diskpath }: FileInfo,
+  { filename, filetype, diskpath }: FileInfo
 ) => {
-  const bytes = await readFile(diskpath)
-  const hash = await hashAny(bytes)
+  try {
+    const bytes = await readFile(diskpath)
+    const filehash = hashAny(bytes)
 
-  if (!(await fileExists(hash))) {
-    logUploadedFile(hash, filetype, filename)
-
-    await db
-      .insert(schema.files)
-      .values({
-        hash,
+    const exists = await fileExists(filehash)
+    if (exists) {
+      logPresentFile(filehash, filetype, filename)
+    } else {
+      await db.insert(schema.files).values({
+        hash: filehash,
         data: bytesToBase64(bytes),
       })
-      .onConflictDoNothing()
-  } else {
-    logPresentFile(hash, filetype, filename)
-  }
-
-  await db
-    .insert(schema.attachments)
-    .values({
-      fileHash: hash,
-      pieceHash: piece.hash,
-      filetype,
-      filename,
-    })
-    .onConflictDoNothing()
-}
-
-type FileInsertion = {
-  filename: string
-  filetype: schema.FileType
-  diskpath: string
-}
-
-export const insertFiles = async (piece: ContentPiece) => {
-  const fullpath =
-    (dir: string, filetype: schema.FileType) =>
-    ({ filename }: { filename: string }): FileInsertion => ({
-      filename,
-      filetype,
-      diskpath: join(piece.diskpath, dir, filename),
-    })
-
-  let allFiles: FileInsertion[] = []
-  for (const filetype of schema.AllAttachmentTypes) {
-    allFiles = allFiles.concat(
-      (await files.getPieceAttachmentList(piece, filetype)).map(
-        fullpath(files.fileTypeInfo[filetype].subdir, filetype),
-      ),
-    )
-  }
-  const doc = await files.findDocFilename(piece.diskpath)
-  if (doc) {
-    allFiles.push({
-      filename: doc,
-      filetype: FileType.doc,
-      diskpath: join(piece.diskpath, doc),
-    })
-  }
-  const cover = await files.findCoverImageFilename(piece)
-  if (cover) {
-    allFiles.push({
-      filename: basename(cover),
-      filetype: FileType.cover,
-      diskpath: cover,
-    })
-  }
-
-  for (const file of allFiles) {
-    try {
-      await insertFile(piece, file)
-    } catch (e: any) {
-      console.error(`Cannot insert ${file.filename}: ${e.toString()}`)
-      console.error(e.stack)
+      logUploadedFile(filehash, filetype, filename)
     }
-  }
 
-  return allFiles
+    const existsAttachment = await attachmentExists(piece.hash, filehash, filetype)
+    if (!existsAttachment) {
+      await db.insert(schema.attachments).values({
+        fileHash: filehash,
+        pieceHash: piece.hash,
+        filetype,
+        filename,
+      })
+    }
+
+  } catch (e: any) {
+    console.error(`Cannot insert ${filename} (${filetype}, ${diskpath})`, e)
+  }
 }
 
 export const insertQuizAnswers = async (quizAnswers: Map<Hash, string[]>) => {
