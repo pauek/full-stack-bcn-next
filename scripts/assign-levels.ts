@@ -1,5 +1,7 @@
 import { hashmap } from "@/data/schema"
 import { db } from "@/lib/data/db"
+import { filesBackend, updateMetadata } from "@/lib/data/files"
+import { hashToDiskpath } from "@/lib/data/hash-maps"
 import { assignLevels, constructTree, TreeNode } from "@/lib/tree"
 import { eq } from "drizzle-orm"
 
@@ -17,9 +19,24 @@ const printLevel = (tree: TreeNode) => {
   print(tree, 0)
 }
 
+const dbUpdateLevel = async (tree: TreeNode) => {
+  await db.update(hashmap).set({ level: tree.level }).where(eq(hashmap.pieceHash, tree.hash))
+}
+
+const filesUpdateLevel = async (tree: TreeNode) => {
+  const diskpath = await hashToDiskpath(tree.hash)
+  if (!diskpath) {
+    throw new Error(`Diskpath not found for hash ${tree.hash}`)
+  }
+  await updateMetadata(diskpath, async (metadata) => {
+    metadata.level = tree.level
+  })
+}
+
 const updateLevel = async (tree: TreeNode) => {
   const update = async (tree: TreeNode) => {
-    await db.update(hashmap).set({ level: tree.level }).where(eq(hashmap.pieceHash, tree.hash))
+    await dbUpdateLevel(tree)
+    await filesUpdateLevel(tree)
     for (const child of tree.children) {
       await update(child)
     }
