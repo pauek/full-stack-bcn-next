@@ -18,6 +18,8 @@ import { clamp, setUnion, snap } from "./utils"
 
 export const MAP_MAX_WIDTH = 5000
 export const MAP_MAX_HEIGHT = 5000
+export const MIN_SCALE = 0.2
+export const MAX_SCALE = 2
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
   loadItems: () => Promise<ItemType[]>
@@ -223,7 +225,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     for (let _x = 0; _x <= bounds.width; _x += 10) {
       const x = _x + left
       ctx.lineWidth = 0.2
-      ctx.strokeStyle = "rgba(20, 20, 20, 0.5)"
+      ctx.strokeStyle = "rgba(20, 20, 20, 0.1)"
       ctx.beginPath()
       ctx.moveTo(x, bounds.top)
       ctx.lineTo(x, bounds.top + bounds.height)
@@ -233,7 +235,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     for (let _y = 0; _y < bounds.height; _y += 10) {
       const y = _y + top
       ctx.lineWidth = 0.2
-      ctx.strokeStyle = "rgba(20, 20, 20, 0.5)"
+      ctx.strokeStyle = "rgba(20, 20, 20, 0.1)"
       ctx.beginPath()
       ctx.moveTo(bounds.left, y)
       ctx.lineTo(bounds.left + bounds.width, y)
@@ -340,12 +342,12 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   clearBackground(ctx: CanvasRenderingContext2D) {
     const { width, height } = ctx.canvas
-    ctx.fillStyle = "black"
+    ctx.fillStyle = "white"
     ctx.fillRect(0, 0, width, height)
   }
 
   paintBackground(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "#020202"
+    ctx.fillStyle = "#fafafa"
     ctx.fillRect(0, 0, MAP_MAX_WIDTH, MAP_MAX_HEIGHT)
   }
 
@@ -387,7 +389,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
     const bounds = this.getModelBounds()
 
-    if (scale > 1) {
+    if (scale > 1 && this.mode === "edit") {
       this.paintGrid(ctx, bounds)
     }
 
@@ -700,7 +702,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   onWheel(event: React.WheelEvent<HTMLCanvasElement>) {
     let dscale = 1 - event.deltaY / 1000
-    let newScale = clamp(this.scale * dscale, 0.015, 5)
+    let newScale = clamp(this.scale * dscale, MIN_SCALE, MAX_SCALE)
     dscale = newScale / this.scale
 
     const clientZoomCenter = eventPoint(event)

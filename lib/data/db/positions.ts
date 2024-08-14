@@ -31,7 +31,7 @@ export const dbMapPositionsGetAll = async () => {
   results.sort((a, b) => {
     const alev = a.piece.hashmapEntry?.level || -1
     const blev = b.piece.hashmapEntry?.level || -1
-    return alev - blev
+    return blev - alev
   })
 
   const mustFind = (hash: string) => {
