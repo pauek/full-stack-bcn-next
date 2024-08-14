@@ -199,8 +199,13 @@ export class CanvasController<ItemType extends RectangularItem> {
         )
 
         // Space for the title
-        outline.top -= 16; 
-        outline.height += 16;
+        if (item.level === 1) {
+          outline.top -= 16; 
+          outline.height += 16;
+        } else if (item.level === 2) {
+          outline.top -= 24; 
+          outline.height += 24;
+        }
         
         const { left, top, width, height } = outline
         if (
