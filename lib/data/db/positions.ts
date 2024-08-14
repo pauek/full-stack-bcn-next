@@ -34,10 +34,10 @@ export const dbMapPositionsGetAll = async () => {
     return blev - alev
   })
 
-  const mustFind = (hash: string) => {
+  const maybeFind = (hash: string) => {
     const index = results.findIndex((it) => it.pieceHash === hash)
     if (index === -1) {
-      throw new Error(`Could not find piece with hash ${hash}`)
+      return null
     }
     return { hash, index }
   }
@@ -57,7 +57,7 @@ export const dbMapPositionsGetAll = async () => {
       pieceHash: result.pieceHash,
       idjpath: result.piece.hashmapEntry.idjpath,
       level: result.piece.hashmapEntry.level,
-      children: result.piece.children.map((ch) => mustFind(ch.childHash)),
+      children: result.piece.children.map((ch) => maybeFind(ch.childHash)).filter(Boolean),
     }
   })
 
