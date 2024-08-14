@@ -57,7 +57,7 @@ export const dbMapPositionsGetAll = async () => {
       pieceHash: result.pieceHash,
       idjpath: result.piece.hashmapEntry.idjpath,
       level: result.piece.hashmapEntry.level,
-      children: result.piece.children.map((ch) => maybeFind(ch.childHash)).filter(Boolean),
+      children: result.piece.children.map((ch) => maybeFind(ch.childHash)).filter(ch => ch !== null),
     }
   })
 
