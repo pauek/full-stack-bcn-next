@@ -99,9 +99,6 @@ export class MapPositionsAdapter {
   }
 
   paintItem(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    if (controller.scale < 0.2) {
-      return this.paintMinimal(controller, ctx, item)
-    }
     switch (item.level) {
       case 0:
         this.paintLevel0(controller, ctx, item)

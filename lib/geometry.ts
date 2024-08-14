@@ -30,6 +30,10 @@ export const ptMul = (a: Point, s: number): Point => ({
   y: a.y * s,
 })
 
+export const ptMod = ({ x, y }: Point): number => Math.sqrt(x * x + y * y)
+
+export const ptDistance = (a: Point, b: Point): number => ptMod(ptSub(a, b))
+
 interface IMouseEvent {
   clientX: number
   clientY: number

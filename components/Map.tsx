@@ -69,7 +69,10 @@ export default function Map() {
       {...size}
       onMouseDown={(e) => state.onMouseDown(e)}
       onMouseMove={(e) => state.onMouseMove(e)}
-      onMouseUp={() => state.onMouseUp(window)}
+      onMouseUp={(e) => state.onMouseUp(e)}
+      onTouchStart={(e) => state.onTouchStart(e)}
+      onTouchMove={(e) => state.onTouchMove(e)}
+      onTouchEnd={(e) => state.onTouchEnd(e)}
       onWheel={(e) => state.onWheel(e)}
     ></canvas>
   )

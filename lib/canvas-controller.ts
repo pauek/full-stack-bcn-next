@@ -7,6 +7,8 @@ import {
   pointWithinCircle,
   pointWithinRect,
   ptAdd,
+  ptDistance,
+  ptMod,
   ptMul,
   ptSub,
   rectangleEnlarge,
@@ -16,9 +18,9 @@ import {
 import { RefObject } from "react"
 import { clamp, setUnion, snap } from "./utils"
 
-export const MAP_MAX_WIDTH = 5000
-export const MAP_MAX_HEIGHT = 5000
-export const MIN_SCALE = 0.2
+export const MAP_MAX_WIDTH = 4000
+export const MAP_MAX_HEIGHT = 4000
+export const MIN_SCALE = 0.24
 export const MAX_SCALE = 2
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
@@ -70,6 +72,10 @@ export class CanvasController<ItemType extends RectangularItem> {
     item: ItemType
     knob: number
     updatedIndices: Set<number>
+  } = null
+
+  zooming: null | {
+    distInitial: number
   } = null
 
   overRect: ItemType | null = null
@@ -200,13 +206,13 @@ export class CanvasController<ItemType extends RectangularItem> {
 
         // Space for the title
         if (item.level === 1) {
-          outline.top -= 16; 
-          outline.height += 16;
+          outline.top -= 16
+          outline.height += 16
         } else if (item.level === 2) {
-          outline.top -= 32; 
-          outline.height += 32;
+          outline.top -= 32
+          outline.height += 32
         }
-        
+
         const { left, top, width, height } = outline
         if (
           item.left !== left ||
@@ -315,8 +321,13 @@ export class CanvasController<ItemType extends RectangularItem> {
       ctx.fillStyle = "rgba(0, 0, 255, 0.6)"
       ctx.fillRect(left, top, width, height)
     } else {
-      ctx.strokeStyle = "rgba(0, 0, 255, 0.6)"
-      ctx.lineWidth = 3
+      if (this.mode === "edit") {
+        ctx.strokeStyle = "blue"
+        ctx.lineWidth = 2
+      } else {
+        ctx.strokeStyle = "black"
+        ctx.lineWidth = 1
+      }
       ctx.beginPath()
       ctx.roundRect(left, top, width, height, 5)
       ctx.closePath()
@@ -427,13 +438,10 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   // Panning
 
-  startPanning(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  startPanning(point: Point) {
     this.selected = []
     this.dragging = null
-    this.panning = {
-      click: eventPoint(event),
-      origin: { ...this.origin },
-    }
+    this.panning = { click: point, origin: { ...this.origin } }
   }
 
   clampOrigin() {
@@ -466,14 +474,14 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
-  doPanning(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  doPanning(point: Point) {
     if (!this.panning) {
       return
     }
 
     this.overRect = null
     const { click, origin } = this.panning
-    const diff = ptSub(eventPoint(event), click)
+    const diff = ptSub(point, click)
     this.origin = ptAdd(origin, diff)
     // this.clampOrigin();
   }
@@ -491,14 +499,13 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
-  doDragging(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  doDragging(point: Point) {
     if (!this.dragging || this.selected.length === 0) {
       return
     }
 
     const { click, origins } = this.dragging
-    const p = eventPoint(event)
-    const clientDiff = ptSub(p, click)
+    const clientDiff = ptSub(point, click)
 
     for (let i = 0; i < this.selected.length; i++) {
       const item = this.selected[i]
@@ -541,14 +548,13 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
-  doResizing(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  doResizing(point: Point) {
     if (!this.resizing) {
       return
     }
 
     const { click, initial, item: rect, knob } = this.resizing
-    const p = eventPoint(event)
-    const clientDiff = ptSub(p, click)
+    const clientDiff = ptSub(point, click)
     const modelDiff = ptMul(clientDiff, 1 / this.scale)
     switch (knob) {
       case 1: {
@@ -595,21 +601,21 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   // Rubberbanding
 
-  startRubberbanding(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-    const { x, y } = eventPoint(event)
+  startRubberbanding(point: Point) {
+    const { x, y } = point
     this.rubberbanding = {
       click: { x, y },
       rect: { left: x, top: y, width: 0, height: 0 },
     }
   }
 
-  doRubberbanding(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  doRubberbanding(point: Point) {
     if (!this.rubberbanding) {
       return
     }
 
     const { x: x1, y: y1 } = this.rubberbanding.click
-    const { x: x2, y: y2 } = eventPoint(event)
+    const { x: x2, y: y2 } = point
     this.rubberbanding.rect = {
       left: Math.min(x1, x2),
       top: Math.min(y1, y2),
@@ -634,63 +640,62 @@ export class CanvasController<ItemType extends RectangularItem> {
     this.rubberbanding = null
   }
 
-  // Mouse events
+  // Abstract Events
 
-  onMouseDown(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  onMouseOrTouchDown(point: Point, shiftKey: boolean) {
     if (this.selected.length > 0) {
       const knob = this.mouseWithinKnob(this.selected[0])
       if (knob != -1) {
-        this.startResizing(eventPoint(event), knob)
+        this.startResizing(point, knob)
       } else if (this.selected.some((rect) => pointWithinRect(this.mouse, rect))) {
-        this.startDragging(eventPoint(event))
+        this.startDragging(point)
       } else if (this.overRect) {
-        if (event.shiftKey) {
+        if (shiftKey) {
           this.selected.push(this.overRect)
         } else {
           this.selected = [this.overRect]
-          this.startDragging(eventPoint(event))
+          this.startDragging(point)
         }
       } else {
-        this.startRubberbanding(event)
+        this.startRubberbanding(point)
       }
     } else if (this.overRect) {
       if (this.mode === "edit") {
         this.selected = [this.overRect]
-        this.startDragging(eventPoint(event))
+        this.startDragging(point)
       } else {
         this.adapter.clickItem(this.overRect)
       }
     } else {
       if (this.mode === "view") {
-        this.startPanning(event)
+        this.startPanning(point)
       } else {
-        this.startRubberbanding(event)
+        this.startRubberbanding(point)
       }
     }
     this.paint()
   }
 
-  onMouseMove(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  onMouseOrTouchMove(point: Point) {
     if (this.rubberbanding) {
-      this.doRubberbanding(event)
+      this.doRubberbanding(point)
     } else if (this.resizing) {
-      this.doResizing(event)
+      this.doResizing(point)
     } else if (this.dragging) {
-      this.doDragging(event)
+      this.doDragging(point)
     } else if (this.panning) {
-      this.doPanning(event)
+      this.doPanning(point)
     } else {
       this.updateOver()
     }
-
-    this.mouse = this.clientToModel(eventPoint(event))
+    this.mouse = this.clientToModel(point)
     if (this.canvasRef.current) {
       this.canvasRef.current.style.cursor = this.overRect ? "pointer" : "auto"
     }
     this.paint()
   }
 
-  onMouseUp(window: Window) {
+  onMouseOrTouchUp() {
     if (this.rubberbanding) {
       this.endRubberbanding()
     } else if (this.resizing) {
@@ -704,6 +709,59 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
     this.paint()
   }
+
+  // Mouse events
+
+  onMouseDown(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    this.onMouseOrTouchDown(eventPoint(event), event.shiftKey)
+  }
+
+  onMouseMove(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    this.onMouseOrTouchMove(eventPoint(event))
+  }
+
+  onMouseUp(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    this.onMouseOrTouchUp()
+  }
+
+  /* We have to implement ourselves the pinch-to-zoom feature 
+     using the number of touch points and the distance between them */
+
+  onTouchStart(event: React.TouchEvent<HTMLCanvasElement>) {
+    console.log("onTouchStart", event)
+    if (event.touches.length === 1) {
+      this.onMouseOrTouchDown(eventPoint(event.touches[0]), false)
+    } else if (event.touches.length === 2) {
+      const f1 = event.touches[0] // finger 1
+      const f2 = event.touches[1]
+      this.zooming = {
+        distInitial: ptDistance(eventPoint(f1), eventPoint(f2)),
+      }
+    }
+  }
+
+  onTouchMove(event: React.TouchEvent<HTMLCanvasElement>) {
+    console.log("onTouchMove", event)
+    if (this.zooming) {
+      if (event.touches.length === 2) {
+        const f1 = event.touches[0]
+        const f2 = event.touches[1]
+        const dist = ptDistance(eventPoint(f1), eventPoint(f2))
+        const { distInitial } = this.zooming
+        this.scale = clamp(this.scale * (dist / distInitial), MIN_SCALE, MAX_SCALE)
+      }
+    } else if (event.touches.length === 1) {
+      this.onMouseOrTouchMove(eventPoint(event.touches[0]))
+    }
+  }
+
+  onTouchEnd(event: React.TouchEvent<HTMLCanvasElement>) {
+    console.log("onTouchEnd", event)
+    this.onMouseOrTouchUp()
+    this.zooming = null
+  }
+
+  // Mouse Wheel (zoom on desktop)
 
   onWheel(event: React.WheelEvent<HTMLCanvasElement>) {
     let dscale = 1 - event.deltaY / 1000
