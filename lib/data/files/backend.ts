@@ -1,12 +1,14 @@
-import { FileType } from "@/data/schema"
+import { FileType, MapPosition } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
+import { env } from "@/lib/env.mjs"
 import { readFile } from "fs/promises"
 import { basename, join, join as pathJoin } from "path"
+import { filesBackend, readMetadata } from "."
 import { FileBuffer, FileReference, WalkFunc } from "../data-backend"
-import * as utils from "./utils"
-import { env } from "@/lib/env.mjs"
 import { Hash } from "../hashing"
+import { getRoot } from "../root"
 import { readAnswers } from "./answers"
+import * as utils from "./utils"
 
 export { findCoverImageFilename } from "./utils"
 
@@ -146,7 +148,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: FileType,
+  filetype: FileType
 ): Promise<Buffer | null> => {
   const fileTypeInfo = utils.fileTypeInfo[filetype]
   const fulldiskpath = join(piece.diskpath, fileTypeInfo.subdir, filename)
@@ -180,7 +182,7 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
 
 export const getAllAttachmentPaths = async (
   rootIdpath: string[],
-  filetype: FileType,
+  filetype: FileType
 ): Promise<string[][]> => {
   const result: string[][] = []
   await __walkFiles(rootIdpath, async (piece) => {
@@ -195,4 +197,21 @@ export const getAllAttachmentPaths = async (
 export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
   const answers = await readAnswers()
   return answers.get(hash) || []
+}
+
+export const getMapPositions = async () => {
+  const root = await getRoot(filesBackend)
+  const result: MapPosition[] = []
+  await filesBackend.walkContentPieces(root, async (piece) => {
+    const metadata = await readMetadata(piece.diskpath)
+    if (metadata.mapPosition) {
+      // Check mapPosition has the fields that we expect
+      const { left, top, width, height } = metadata.mapPosition
+      if (!left || !top || !width || !height) {
+        throw new Error(`Invalid mapPosition for ${piece.idpath.join("/")}`)
+      }
+      result.push({ pieceHash: piece.hash, left, top, width, height })
+    }
+  })
+  return result;
 }

@@ -1,6 +1,7 @@
-import { FileType } from "@/data/schema"
+import { FileType, MapPosition } from "@/data/schema"
 import { ContentPiece } from "../adt"
 import { Hash } from "./hashing"
+import { Point } from "../geometry"
 
 export type ImgData = {
   data: Buffer
@@ -28,26 +29,28 @@ export type FileReference = {
 
 // prettier-ignore
 export interface DataBackendBase {
-  getInfo: () => string;
+  getInfo: () => string
 
-  getPiece: (idpath: string[]) => Promise<ContentPiece | null>;
-  getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>;
-  getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>;
+  getPiece: (idpath: string[]) => Promise<ContentPiece | null>
+  getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>
+  getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>
 
-  getPieceAttachmentList: (piece: ContentPiece, filetype: FileType) => Promise<FileReference[]>;
-  getAttachmentBytes: (piece: ContentPiece, fileref: FileReference) => Promise<Buffer | null>;
-  getQuizAnswerForHash: (hash: Hash) => Promise<string[]>;
+  getPieceAttachmentList: (piece: ContentPiece, filetype: FileType) => Promise<FileReference[]>
+  getAttachmentBytes: (piece: ContentPiece, fileref: FileReference) => Promise<Buffer | null>
+  getQuizAnswerForHash: (hash: Hash) => Promise<string[]>
   
-  getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>;
-  getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileType) => Promise<Buffer | null>;
-  getPieceImageList: (piece: ContentPiece) => Promise<FileReference[]>;
-  getPieceSlideList: (piece: ContentPiece) => Promise<FileReference[]>;
+  getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>
+  getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileType) => Promise<Buffer | null>
+  getPieceImageList: (piece: ContentPiece) => Promise<FileReference[]>
+  getPieceSlideList: (piece: ContentPiece) => Promise<FileReference[]>
 
-  pieceHasCover: (piece: ContentPiece) => Promise<boolean>;
-  pieceHasDoc: (piece: ContentPiece) => Promise<boolean>;
+  pieceHasCover: (piece: ContentPiece) => Promise<boolean>
+  pieceHasDoc: (piece: ContentPiece) => Promise<boolean>
 
-  getAllIdpaths: (rootIdpath: string[]) => Promise<string[][]>;
-  getAllAttachmentPaths: (rootIdpath: string[], filetype: FileType) => Promise<string[][]>;
+  getAllIdpaths: (rootIdpath: string[]) => Promise<string[][]>
+  getAllAttachmentPaths: (rootIdpath: string[], filetype: FileType) => Promise<string[][]>
+
+  getMapPositions(): Promise<MapPosition[]>
 }
 
 export interface DataBackend extends DataBackendBase {
