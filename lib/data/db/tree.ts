@@ -1,15 +1,23 @@
-
 import * as schema from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { lastItem } from "@/lib/utils"
+import { lastElement } from "@/lib/utils"
 import { eq } from "drizzle-orm"
 import { db } from "./db"
 import { hashToPath, pathToHash } from "./utils"
+import { getPiece } from "./pieces"
 
-export const getContentTree = async (
-  idpath: string[],
-  { level }: { level: number }
-): Promise<ContentPiece | null> => {
+type Options = {
+  level: number
+}
+export const getContentTree = async (idpath: string[], { level }: Options) => {
+
+  const _getContentTree = async (idpath: string[], level: number) => {
+    if (level === 0) {
+      return await getPiece(idpath)
+    }
+
+  }
+
   const hash = await pathToHash(idpath)
   if (!hash) {
     return null
@@ -56,7 +64,7 @@ export const getContentTree = async (
     const piece: ContentPiece = {
       ...res,
       hash: res.pieceHash,
-      id: lastItem(idpath),
+      id: lastElement(idpath),
       idpath,
       children,
     }

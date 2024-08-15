@@ -1,32 +1,36 @@
 import { ContentPiece } from "@/lib/adt"
-import { filesBackend } from "@/lib/data"
-import { getSessionSequence } from "@/lib/data/files/backend"
 import { updateMetadata } from "@/lib/data/files/metadata"
+import { getPieceWithChildren } from "@/lib/data/files/pieces"
+import { getSessionSequence } from "@/lib/data/files/tree"
+import { getDiskpathForPiece } from "@/lib/data/files/utils"
 import { env } from "@/lib/env.mjs"
 
 import { showExecutionTime } from "@/lib/utils"
 
-const updateSessionChildren = async (session: ContentPiece) => {
+const updateSessionChildren = async (parent: ContentPiece) => {
   // Chapters have an index with respect to the session
-  const { idpath } = session
-  const sessionFull = await filesBackend.getPieceWithChildren(idpath)
-  if (!sessionFull) {
+  const { idpath } = parent
+  const piece = await getPieceWithChildren(idpath)
+  if (!piece) {
     throw `Session "${idpath.join("/")}" not found!`
   }
-  if (!sessionFull.children) {
+  if (!piece.children) {
     return
   }
-  for (let j = 0; j < sessionFull.children.length; j++) {
-    const child = sessionFull.children[j]
-    await updateMetadata(child.diskpath, async (metadata) => {
+  for (let j = 0; j < piece.children.length; j++) {
+    const child = piece.children[j]
+    const diskpath = await getDiskpathForPiece(child)
+    await updateMetadata(diskpath, async (metadata) => {
       metadata.index = j + 1
     })
   }
 }
 
 const updateSession = async (session: ContentPiece, index: number) => {
+  const diskpath = await getDiskpathForPiece(session)
+
   // Sessions have an index with respect to the course (not parts)
-  await updateMetadata(session.diskpath, async (metadata) => {
+  await updateMetadata(diskpath, async (metadata) => {
     console.log(`${index.toString().padStart(3)} - ${session.idpath.join("/")}`)
     metadata.index = index
   })

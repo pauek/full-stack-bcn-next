@@ -1,6 +1,5 @@
-import { filesBackend } from "@/lib/data"
 import { courseUpdateMetadata, MetadataLogFunc } from "@/lib/data/files/metadata"
-import { getRoot } from "@/lib/data/root"
+import { filesGetRootIdpath } from "@/lib/data/files/utils"
 import { showExecutionTime } from "@/lib/utils"
 
 const logFunc: MetadataLogFunc = ({ idjpath, hasDoc, numSlides, index }) => {
@@ -10,6 +9,6 @@ const logFunc: MetadataLogFunc = ({ idjpath, hasDoc, numSlides, index }) => {
 }
 
 showExecutionTime(async () => {
-  const root = await getRoot(filesBackend)
-  await courseUpdateMetadata(filesBackend, root, logFunc)
+  const rootIdpath = await filesGetRootIdpath()
+  await courseUpdateMetadata(rootIdpath, logFunc)
 })

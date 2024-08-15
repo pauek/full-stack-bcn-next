@@ -4,11 +4,8 @@ import { db } from "./db"
 
 export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {
   const result = await db.query.hashmap.findMany({
-    where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
-    columns: { idjpath: true },
+    where: like(schema.hashmap.idpath, `${rootIdpath.join("/")}%`),
+    columns: { idpath: true },
   })
-  return result.map(({ idjpath }) => idjpath.split("/"))
+  return result.map(({ idpath }) => idpath)
 }
-
-
-

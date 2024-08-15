@@ -1,11 +1,9 @@
-import { ContentPiece } from "@/lib/adt"
-import { DataBackend, DataBackendBase } from "./data-backend"
-import { HashMapInfo } from "./hash-maps"
-import { METADATA_FILENAME } from "./files/metadata"
-import { basename } from "path"
-import { readFile } from "fs/promises"
-import crypto from "crypto"
 import { FileType } from "@/data/schema"
+import { ContentPiece } from "@/lib/adt"
+import crypto from "crypto"
+import { readFile } from "fs/promises"
+import { getPieceAttachmentList, getPieceDocument, getPieceFileData } from "./files/attachments"
+import { METADATA_FILENAME } from "./files/metadata"
 import { fileTypeInfo } from "./files/utils"
 
 export type Hash = string
@@ -32,7 +30,7 @@ export const hashAny = (x: any) => {
     hasher.update(
       Object.entries(x)
         .map(([field, value]) => hashAny(`${field}=${value}\n`))
-        .join(""),
+        .join("")
     )
   } else {
     throw `hash: Unsupported type ${typeof x}: ${JSON.stringify(x)}`
@@ -44,18 +42,13 @@ export const hashFile = async (diskpath: string) => {
   return hashAny(await readFile(diskpath))
 }
 
-type HashItem = {
+export type HashItem = {
   filename: string
   hash: string
 }
-
-export const hashPiece = async function (
-  backend: DataBackendBase,
-  piece: ContentPiece,
-  children: HashItem[],
-): Promise<HashItem> {
-  children.sort((a, b) => a.filename.localeCompare(b.filename))
-  const childrenHashes: HashItem[] = children.map(({ filename, hash }) => ({ filename, hash }))
+export const hashPiece = async function (piece: ContentPiece, childrenHashes: HashItem[]): Promise<Hash> {
+  //
+  childrenHashes.sort((a, b) => a.filename.localeCompare(b.filename))
 
   const hashes: HashItem[] = []
   const fields = Object.entries(piece.metadata).sort(([a], [b]) => a.localeCompare(b))
@@ -65,24 +58,24 @@ export const hashPiece = async function (
     hash: hashAny(strFields),
   })
 
-  const doc = await backend.getPieceDocument(piece)
+  const doc = await getPieceDocument(piece)
   if (doc !== null) {
     const { name, buffer } = doc
     hashes.push({ filename: name, hash: hashAny(buffer) })
   }
 
-  const [cover] = await backend.getPieceAttachmentList(piece, FileType.cover)
+  const [cover] = await getPieceAttachmentList(piece, FileType.cover)
   if (cover) {
     const { filename, hash } = cover
-    hashes.push({ filename: filename, hash })
+    hashes.push({ filename, hash })
   }
 
   // All kinds of attachments
   for (const filetype of [FileType.image, FileType.slide, FileType.exercise, FileType.quiz]) {
     const info = fileTypeInfo[filetype]
-    const attachmentList = await backend.getPieceAttachmentList(piece, filetype)
+    const attachmentList = await getPieceAttachmentList(piece, filetype)
     for (const { filename } of attachmentList) {
-      const fileData = await backend.getPieceFileData(piece, filename, filetype)
+      const fileData = await getPieceFileData(piece, filename, filetype)
       hashes.push({
         filename: `${info.subdir}/${filename}`,
         hash: hashAny(fileData),
@@ -101,23 +94,5 @@ export const hashPiece = async function (
   const allHashes = [...childrenHashes, ...hashes]
   const allHashesAsText = allHashes.map(({ filename: name, hash }) => `${hash} ${name}\n`).join("")
 
-  return {
-    filename: basename(piece.diskpath),
-    hash: hashAny(allHashesAsText),
-  }
-}
-
-export const hashAllContent = async function (backend: DataBackend, root: ContentPiece) {
-  const hashes: Map<string, HashMapInfo> = new Map()
-
-  // TODO: optimize with offset parallel async functions...
-
-  await backend.walkContentPieces(root, async (piece, children) => {
-    const { hash, filename } = await hashPiece(backend, piece, children)
-    const idjpath = piece.idpath.join("/")
-    hashes.set(idjpath, { hash, idjpath, diskpath: piece.diskpath })
-    return { hash, filename }
-  })
-
-  return hashes
+  return hashAny(allHashesAsText)
 }

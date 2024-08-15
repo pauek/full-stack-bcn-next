@@ -1,13 +1,12 @@
-import { filesBackend } from "@/lib/data"
 import { updateMetadata } from "@/lib/data/files/metadata"
-import { getRoot } from "@/lib/data/root"
+import { filesWalkContentPieces, filesGetRootIdpath } from "@/lib/data/files/utils"
 import { showExecutionTime } from "@/lib/utils"
 
 showExecutionTime(async () => {
-  const root = await getRoot(filesBackend)
+  const rootIdpath = await filesGetRootIdpath()
 
-  await filesBackend.walkContentPieces(root, async (piece, _) => {
-    await updateMetadata(piece.diskpath, async (metadata) => {
+  await filesWalkContentPieces(rootIdpath, async ({ piece, diskpath }) => {
+    await updateMetadata(diskpath, async (metadata) => {
       if ("slideHashes" in metadata) {
         console.log(piece.idpath.join("/"))
         delete metadata.slideHashes

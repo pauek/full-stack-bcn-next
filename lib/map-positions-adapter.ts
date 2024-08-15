@@ -1,9 +1,8 @@
-import { actionLoadMapPositions, actionMapPositionsUpdate } from "@/actions/positions"
-import { pointWithinRect } from "./geometry"
-import { MapPositionWithPiece } from "./data/db/positions"
-import { CanvasController } from "./canvas-controller"
-import { useRouter } from "next/navigation"
+import { actionMapPositionsUpdate } from "@/actions/positions"
 import { MapPositionExtended } from "@/data/schema"
+import { useRouter } from "next/navigation"
+import { CanvasController } from "./canvas-controller"
+import { pointWithinRect } from "./geometry"
 
 type Item = MapPositionExtended
 
@@ -30,7 +29,6 @@ export class MapPositionsAdapter {
 
   async loadItems() {
     return this.items;
-    // return await actionLoadMapPositions()
   }
 
   paintMinimal(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
@@ -117,8 +115,8 @@ export class MapPositionsAdapter {
   }
 
   clickItem(item: Item) {
-    if (item.idjpath) {
-      this.router.push(`/c/${item.idjpath}`)
+    if (item.idpath) {
+      this.router.push(`/c/${item.idpath.join("/")}`)
     }
   }
 }

@@ -1,20 +1,6 @@
-import { hashmap } from "@/data/schema"
-import { env } from "@/lib/env.mjs"
-import { eq } from "drizzle-orm"
+import { Hashmap, hashmap } from "@/data/schema"
+import { sql } from "drizzle-orm"
 import { db } from "./data/db/db"
-
-const getAllHashes = async () =>
-  await db.query.hashmap.findMany({
-    with: {
-      piece: {
-        columns: {
-          metadata: true,
-        },
-      },
-    },
-  })
-
-type HashWithPiece = Awaited<ReturnType<typeof getAllHashes>>[number]
 
 export type TreeNode = {
   hash: string
@@ -23,20 +9,11 @@ export type TreeNode = {
   children: TreeNode[]
 }
 
-const findChildById = (tree: TreeNode, id: string): TreeNode | null => {
-  for (const child of tree.children) {
-    if (child.id === id) {
-      return child
-    }
-  }
-  return null
-}
-
-const descendIdjpath = (tree: TreeNode, idpath: string[]): TreeNode | null => {
+const descendIdpath = (tree: TreeNode, idpath: string[]): TreeNode | null => {
   let curr: TreeNode = tree
   for (const id of idpath) {
-    const child = findChildById(curr, id)
-    if (child === null) {
+    const child = tree.children.find((c) => c.id === id)
+    if (child === undefined) {
       return null
     }
     curr = child
@@ -44,82 +21,43 @@ const descendIdjpath = (tree: TreeNode, idpath: string[]): TreeNode | null => {
   return curr
 }
 
-const insertIntoTree = (tree: TreeNode, hashmap: HashWithPiece) => {
-  const { idjpath } = hashmap
-  const parent = idjpath.split("/").slice(0, -1)
-  const [id] = idjpath.split("/").slice(-1)
+const insertIntoTree = (tree: TreeNode, hashmap: Hashmap) => {
+  const { idpath } = hashmap
+  const parentIdpath = idpath.slice(0, -1)
+  const [id] = idpath.slice(-1)
 
-  let node = descendIdjpath(tree, parent)
-  if (!node) {
-    throw new Error(`Could not find "${parent}"`)
+  let parent = descendIdpath(tree, parentIdpath)
+  if (!parent) {
+    throw new Error(`Could not find "${parentIdpath}"`)
   }
-  node.children.push({
-    id,
-    level: -1,
-    hash: hashmap.pieceHash,
-    children: [],
-  })
-  // TODO: more stuff
+  parent.children.push({ id, level: -1, hash: hashmap.pieceHash, children: [] })
 }
 
-
-
-export const constructTree = async () => {
-  const rootPiece = await db.query.hashmap.findFirst({
-    where: eq(hashmap.idjpath, env.COURSE_ID),
-    with: {
-      piece: {
-        columns: {
-          name: true,
-          metadata: true,
-        },
-      },
-    },
+export const dbConstructFullTree = async () => {
+  const tree: TreeNode = { id: "<root>", level: 0, hash: "", children: [] }
+  const pieces = await db.query.hashmap.findMany({
+    orderBy: sql`json_array_length(${hashmap.idpath})`,
   })
-
-  if (!rootPiece) {
-    console.error(`No piece found for ID = ${env.COURSE_ID}`)
-    process.exit(1)
+  for (const hashmap of pieces) {
+    insertIntoTree(tree, hashmap)
   }
-
-  const root: TreeNode = {
-    id: "<root>",
-    level: -1,
-    hash: "",
-    children: [
-      {
-        id: env.COURSE_ID,
-        level: 1,
-        hash: rootPiece.pieceHash,
-        children: [],
-      },
-    ],
+  if (tree.children[0].id !== "fullstack") {
+    throw new Error("Expected 'fullstack' course to be the root!")
   }
-
-  const pieces = await getAllHashes()
-  pieces.sort((a, b) => {
-    const adepth = a.idjpath.split("/").length
-    const bdepth = b.idjpath.split("/").length
-    return adepth - bdepth
-  })
-  for (const hashmap of pieces.slice(1)) {
-    insertIntoTree(root, hashmap)
-  }
-
-  return root.children[0]
+  return tree.children[0];
 }
 
-export const assignLevels = async (tree: TreeNode) => {
-  const assign = (node: TreeNode): number => {
+export const computeLevels = async (tree: TreeNode) => {
+  const _computeLevels = (node: TreeNode): number => {
     if (node.children.length === 0) {
       node.level = 0
       return 0
     }
-    const childrenLevels = node.children.map(assign)
-    const level = Math.max(...childrenLevels) + 1
+    const childrenLevels = node.children.map(_computeLevels)
+    const level = 1 + Math.max(...childrenLevels)
     node.level = level
     return level
   }
 
-  assign(tree)
+  _computeLevels(tree)
 }

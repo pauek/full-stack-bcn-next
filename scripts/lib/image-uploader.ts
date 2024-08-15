@@ -1,5 +1,5 @@
 import { FileType } from "@/data/schema"
-import { getAllAttachmentPaths, getPiece } from "@/lib/data/files/backend"
+import { getAllAttachmentPaths } from "@/lib/data/files/backend"
 import { hashAny } from "@/lib/data/hashing"
 
 import { env } from "@/lib/env.mjs"
@@ -11,8 +11,8 @@ import {
 } from "@aws-sdk/client-s3"
 import { readFile } from "fs/promises"
 import { extname, join } from "path"
+import { fileTypeInfo, findoutDiskpathFromIdpath } from "../../lib/data/files/utils"
 import mimeTypeTable from "../../lib/data/mime-types.json"
-import { fileTypeInfo } from "../../lib/data/files/utils"
 
 const mimeTypes: Record<string, string> = mimeTypeTable
 
@@ -89,11 +89,11 @@ class ImageUploader {
       const path = imagePaths[index]
       const idpath = path.slice(0, path.length - 1)
       const imageFilename = path.slice(-1)[0]
-      const piece = await getPiece(idpath)
-      if (!piece) {
-        throw new Error(`Piece not found: ${idpath}`)
+      const diskpath = await findoutDiskpathFromIdpath(idpath)
+      if (diskpath === null) {
+        throw new Error(`Diskpath not found for ${idpath.join("/")}`)
       }
-      await this.uploadImage(piece.diskpath, imageFilename, filetype, existing)
+      await this.uploadImage(diskpath, imageFilename, filetype, existing)
     }
 
     const _uploadAllWithOffset = async (offset: number) => {

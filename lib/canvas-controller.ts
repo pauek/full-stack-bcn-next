@@ -9,7 +9,6 @@ import {
   pointWithinRect,
   ptAdd,
   ptDistance,
-  ptMod,
   ptMul,
   ptSub,
   rectangleEnlarge,

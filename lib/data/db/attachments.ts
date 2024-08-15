@@ -1,12 +1,12 @@
 import * as schema from "@/data/schema"
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { base64ToBytes, lastItem } from "@/lib/utils"
-import { and, eq, like } from "drizzle-orm"
+import { base64ToBytes } from "@/lib/utils"
+import { and, eq } from "drizzle-orm"
 import { FileBuffer, FileReference } from "../data-backend"
 import { Hash } from "../hashing"
 import { db } from "./db"
-import { getFileData, getPieceFilesByFiletype, hashToPath, pathToHash } from "./utils"
+import { getFileData, getPieceFilesByFiletype } from "./utils"
 
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
@@ -68,58 +68,30 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 }
 
 export const getPieceFileData = async (
-    piece: ContentPiece,
-    filename: string,
-    filetype: schema.FileType
-  ): Promise<Buffer | null> => {
-    const [result] = await db
-      .select({ data: schema.files.data })
-      .from(schema.pieces)
-      .leftJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.pieceHash))
-      .leftJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
-      .where(
-        and(
-          eq(schema.pieces.pieceHash, piece.hash),
-          eq(schema.attachments.filename, filename),
-          eq(schema.attachments.filetype, filetype)
-        )
-      )
-      .limit(1)
-    if (!result || !result.data) {
-      return null
-    }
-    return Buffer.from(base64ToBytes(result.data))
-  }
-
-  export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
-    const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) })
-    return results.map((r) => r.answer)
-  }
-  
-  /*
-export const getAllAttachmentPaths = async (
-  rootIdpath: string[],
+  piece: ContentPiece,
+  filename: string,
   filetype: schema.FileType
-): Promise<string[][]> => {
-  const results = await db.query.hashmap.findMany({
-    where: like(schema.hashmap.idjpath, `${rootIdpath.join("/")}%`),
-    with: {
-      piece: {
-        with: {
-          attachments: {
-            where: eq(schema.attachments.filetype, filetype),
-            columns: { filename: true },
-          },
-        },
-      },
-    },
-  })
-  const idpaths: string[][] = []
-  for (const { idjpath, piece } of results) {
-    for (const { filename } of piece.attachments) {
-      idpaths.push([...idjpath.split("/"), filename])
-    }
+): Promise<Buffer | null> => {
+  const [result] = await db
+    .select({ data: schema.files.data })
+    .from(schema.pieces)
+    .leftJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.pieceHash))
+    .leftJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
+    .where(
+      and(
+        eq(schema.pieces.pieceHash, piece.hash),
+        eq(schema.attachments.filename, filename),
+        eq(schema.attachments.filetype, filetype)
+      )
+    )
+    .limit(1)
+  if (!result || !result.data) {
+    return null
   }
-  return idpaths
+  return Buffer.from(base64ToBytes(result.data))
 }
-*/
+
+export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
+  const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) })
+  return results.map((r) => r.answer)
+}

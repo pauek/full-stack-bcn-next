@@ -2,13 +2,14 @@ import type { MapPosition, MapPositionExtended } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { IRectangle } from "@/lib/geometry"
 import { TreeNode } from "@/lib/tree"
-import { hashToDiskpath } from "../hash-maps"
-import { getPieceWithChildren } from "./backend"
 import { readMetadata, updateMetadata } from "./metadata"
-import { filesGetRoot, filesWalkContentPieces } from "./utils"
+import { getPieceWithChildren } from "./pieces"
+import { filesGetRoot, filesGetRootIdpath, filesWalkContentPieces, getDiskpathForPiece } from "./utils"
+import { getDiskpathByHash } from "./hash-maps"
 
 export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
-  const metadata = await readMetadata(piece.diskpath)
+  const diskpath = await getDiskpathForPiece(piece)
+  const metadata = await readMetadata(diskpath)
   if (metadata.mapPosition) {
     // Check mapPosition has the fields that we expect
     const { left, top, width, height } = metadata.mapPosition
@@ -40,7 +41,7 @@ export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
       width,
       height,
       children,
-      idjpath: piece.idpath.join("/"),
+      idpath: piece.idpath,
       level: pieceWithChildren.metadata.level,
     }
   }
@@ -53,7 +54,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
 
   const root = await filesGetRoot()
   const positions: Position[] = []
-  await filesWalkContentPieces(root, async (piece) => {
+  await filesWalkContentPieces(root.idpath, async ({ piece }) => {
     const mapPos = await extendedMapPositionForPiece(piece)
     if (mapPos) {
       positions.push(mapPos)
@@ -87,7 +88,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
       height: pos.height,
       name: pos.name,
       pieceHash: pos.pieceHash,
-      idjpath: pos.idjpath,
+      idpath: pos.idpath,
       level: pos.level,
       children: childrenIndices,
     }
@@ -97,9 +98,9 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
 }
 
 export const updatePosition = async (hash: string, mapPosition: IRectangle) => {
-  const diskpath = await hashToDiskpath(hash)
-  if (!diskpath) {
-    throw new Error(`Could not find diskpath for hash ${hash}`)
+  const diskpath = await getDiskpathByHash(hash)
+  if (diskpath === null) {
+    throw new Error(`Diskpath not found for hash ${hash}`)
   }
   const { left, top, width, height } = mapPosition
   updateMetadata(diskpath, async (metadata) => {
@@ -146,4 +147,26 @@ export const assignPosition = async (node: TreeNode) => {
     updatePosition(part.hash, rect)
     y += 80
   }
+}
+
+export const getMapPositions = async () => {
+  const rootIdpath = await filesGetRootIdpath()
+  const result: MapPosition[] = []
+  await filesWalkContentPieces(rootIdpath, async ({ piece, diskpath }) => {
+    const metadata = await readMetadata(diskpath)
+    if (metadata.mapPosition) {
+      // Check mapPosition has the fields that we expect
+      const { left, top, width, height } = metadata.mapPosition
+      if (
+        typeof left !== "number" ||
+        typeof top !== "number" ||
+        typeof width !== "number" ||
+        typeof height !== "number"
+      ) {
+        throw new Error(`Invalid mapPosition for ${piece.idpath.join("/")}`)
+      }
+      result.push({ pieceHash: piece.hash, left, top, width, height })
+    }
+  })
+  return result
 }

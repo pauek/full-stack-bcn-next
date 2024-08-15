@@ -5,7 +5,7 @@ import { getQuizPartsFromFile } from "@/lib/utils"
 import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
-import { listPieceSubdir } from "./utils"
+import { getDiskpathForPiece, listPieceSubdir } from "./utils"
 
 const ANSWERS_FILE = join(env.CONTENT_ROOT, "./answers.json")
 
@@ -21,12 +21,18 @@ export const readAnswers = async (): Promise<Map<Hash, string[]>> => {
 }
 
 export const collectAnswersForPiece = async (piece: ContentPiece): Promise<Map<Hash, string[]>> => {
-  const quizList = await listPieceSubdir(piece.diskpath, FileType.quiz)
+  const diskpath = await getDiskpathForPiece(piece)
+  const quizList = await listPieceSubdir(diskpath, FileType.quiz)
   const quizAnswers = new Map<Hash, string[]>()
   for (const quiz of quizList) {
-    const content = await readFile(join(piece.diskpath, "quiz", quiz.filename))
+    const content = await readFile(join(diskpath, "quiz", quiz.filename))
     const { answers } = getQuizPartsFromFile(content.toString())
     quizAnswers.set(quiz.hash, answers)
   }
   return quizAnswers
+}
+
+export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
+  const answers = await readAnswers()
+  return answers.get(hash) || []
 }

@@ -14,7 +14,7 @@ CREATE TABLE `files` (
 );
 --> statement-breakpoint
 CREATE TABLE `hashmap` (
-	`idjpath` text PRIMARY KEY NOT NULL,
+	`idpath` text PRIMARY KEY NOT NULL,
 	`piece_hash` text NOT NULL,
 	`level` integer NOT NULL,
 	FOREIGN KEY (`piece_hash`) REFERENCES `pieces`(`piece_hash`) ON UPDATE no action ON DELETE no action

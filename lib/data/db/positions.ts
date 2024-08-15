@@ -18,7 +18,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
   //  Hay que devolver los items ordenados por nivel, para pintarlos en el orden correcto.
   const positions = await db.query.hashmap.findMany({
     columns: {
-      idjpath: true,
+      idpath: true,
       pieceHash: true,
       level: true,
     },
@@ -57,7 +57,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
         .filter((ch) => ch !== null)
 
       const {
-        idjpath,
+        idpath,
         pieceHash,
         level,
         piece: { name, metadata },
@@ -67,7 +67,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
         ...metadata.mapPosition,
         name,
         pieceHash,
-        idjpath,
+        idpath,
         level,
         children: childrenIndices,
       }

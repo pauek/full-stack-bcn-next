@@ -32,7 +32,6 @@ export const getPieceFilesByFiletype = async (
     .innerJoin(schema.attachments, eq(schema.pieces.pieceHash, schema.attachments.pieceHash))
     .innerJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
     .where(and(eq(schema.pieces.pieceHash, pieceHash), eq(schema.attachments.filetype, filetype)))
-    .orderBy(schema.pieces.diskpath)
     .limit(options?.limit ? options.limit : 1000)
   return result
 }
@@ -55,7 +54,7 @@ export const pieceHasFiletype = async (pieceHash: string, filetype: FileType): P
 
 export const pathToHash = async (idpath: string[]): Promise<Hash | null> => {
   const mapItem = await db.query.hashmap.findFirst({
-    where: eq(schema.hashmap.idjpath, idpath.join("/")),
+    where: eq(schema.hashmap.idpath, idpath),
   })
   if (!mapItem) {
     return null
@@ -71,6 +70,5 @@ export const hashToPath = async (hash: string): Promise<string[] | null> => {
   if (!mapItem) {
     return null
   }
-  const { idjpath } = mapItem
-  return idjpath.split("/")
+  return mapItem.idpath
 }

@@ -1,10 +1,10 @@
-import { ContentPiece } from "@/lib/adt"
 import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
-import { DataBackend } from "../data-backend"
-import { getPieceSlideList, pieceHasDoc } from "./backend"
 import { Hash } from "../hashing"
 import { collectAnswersForPiece, writeAnswers } from "./answers"
+import { getPieceSlideList } from "./attachments"
+import { pieceHasDoc } from "./pieces"
+import { filesWalkContentPieces } from "./utils"
 
 export const METADATA_FILENAME = ".meta.json"
 
@@ -46,24 +46,20 @@ type PieceStandardMetadata = {
 
 export type MetadataLogFunc = (metadata: PieceStandardMetadata) => void
 
-export const courseUpdateMetadata = async (
-  backend: DataBackend,
-  course: ContentPiece,
-  logFunc?: MetadataLogFunc,
-) => {
+export const courseUpdateMetadata = async (courseIdpath: string[], logFunc?: MetadataLogFunc) => {
   let currPartIndex = 1
   let currSessionIndex = 1
   let chapterIndex = 1
   const allAnswers: Map<Hash, string[]> = new Map()
 
-  await backend.walkContentPieces(course, async (piece, children) => {
+  await filesWalkContentPieces(courseIdpath, async ({ piece, diskpath }) => {
     const level = piece.idpath.length - 1 // 1-part, 2-session, 3-chapter
 
     // Collect answers for quiz questions
     const pieceAnswers: Map<Hash, string[]> = await collectAnswersForPiece(piece)
     pieceAnswers.forEach((values, key) => allAnswers.set(key, values))
 
-    await updateMetadata(piece.diskpath, async (metadata: any) => {
+    await updateMetadata(diskpath, async (metadata: any) => {
       // hasDoc
       metadata.hasDoc = await pieceHasDoc(piece)
 

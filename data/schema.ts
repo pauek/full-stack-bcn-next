@@ -1,12 +1,11 @@
 import { relations, sql } from "drizzle-orm"
-import { index, sqliteTable, primaryKey, text, integer, blob, real } from "drizzle-orm/sqlite-core"
+import { blob, index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 // Pieces
 
 export const pieces = sqliteTable("pieces", {
   pieceHash: text("piece_hash").primaryKey(),
   name: text("name").notNull(),
-  diskpath: text("diskpath").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(current_timestamp)`),
@@ -32,7 +31,7 @@ export type MapPosition = {
 }
 export type MapPositionExtended = MapPosition & {
   name: string
-  idjpath: string
+  idpath: string[]
   level: number
   children: number[]
 }
@@ -162,7 +161,7 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
 export const hashmap = sqliteTable(
   "hashmap",
   {
-    idjpath: text("idjpath").primaryKey(),
+    idpath: text("idpath", { mode: "json" }).primaryKey().$type<string[]>(),
     pieceHash: text("piece_hash")
       .notNull()
       .references(() => pieces.pieceHash),
@@ -179,6 +178,7 @@ export const hashmapRelations = relations(hashmap, ({ one }) => ({
     relationName: "hashmap_piece",
   }),
 }))
+export type Hashmap = typeof hashmap.$inferSelect
 
 // Answers
 

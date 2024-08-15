@@ -1,11 +1,12 @@
 export type ContentPiece = {
   id: string
-  hash: string
-  name: string
   idpath: string[]
-  diskpath: string
-  children?: ContentPiece[]
+  hash: string
+  // TODO: add level!
+  name: string
   metadata: Record<string, any>
+  children?: ContentPiece[]
+  diskpath?: string
 }
 
 export const isPieceFile = (filename: string) => {

@@ -17,7 +17,7 @@ const _pieceHashExists = async (hash: string) => {
   return found !== undefined
 }
 
-export const pieceExists = async (piece: ContentPiece) => _pieceHashExists(piece.hash)
+export const dbPieceExists = async (piece: ContentPiece) => _pieceHashExists(piece.hash)
 
 export const fileExists = async (hash: string) => {
   const found = await db.query.files.findFirst({
@@ -42,13 +42,12 @@ export const attachmentExists = async (
 }
 
 export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
-  if (await pieceExists(piece)) {
+  if (await dbPieceExists(piece)) {
     return false // it was not inserted
   }
   const dbPiece: schema.DBPiece = {
     pieceHash: piece.hash,
     name: piece.name,
-    diskpath: piece.diskpath,
     createdAt: new Date(),
     metadata: piece.metadata,
   }
@@ -59,20 +58,22 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
     })
     return true // it was inserted
   } catch (e: any) {
-    console.error(`Inserting ${piece.diskpath} [${JSON.stringify(dbPiece)}]: ${e.toString()}`)
+    console.error(
+      `Inserting "${piece.idpath.join("/")}" [${JSON.stringify(dbPiece)}]: ${e.toString()}`
+    )
   }
 }
 
-export const insertPieceHashmap = async (piece: ContentPiece) => {
+export const insertPieceHashmap = async (piece: ContentPiece, level: number = -1) => {
   await db
     .insert(schema.hashmap)
     .values({
-      idjpath: piece.idpath.join("/"),
+      idpath: piece.idpath,
       pieceHash: piece.hash,
-      level: -1 /* This has to be computed later... */,
+      level,
     })
     .onConflictDoUpdate({
-      target: schema.hashmap.idjpath,
+      target: schema.hashmap.idpath,
       set: { pieceHash: piece.hash },
     })
 }
@@ -110,20 +111,19 @@ export const insertFile = async (
         filename,
       })
     }
-
   } catch (e: any) {
     console.error(`Cannot insert ${filename} (${filetype}, ${diskpath})`, e)
   }
 }
 
 export const insertQuizAnswers = async (quizAnswers: Map<Hash, string[]>) => {
-  const flatAnswers: { hash: string; answer: string }[] = []
   for (const [hash, answers] of quizAnswers) {
     for (const answer of answers) {
-      flatAnswers.push({ hash, answer })
+      try {
+        await db.insert(schema.quizAnswers).values({ hash, answer })
+      } catch (e: any) {
+        // FIXME: Lots of errors here! Don't know why
+      }
     }
-  }
-  if (flatAnswers.length > 0) {
-    await db.insert(schema.quizAnswers).values(flatAnswers).onConflictDoNothing()
   }
 }

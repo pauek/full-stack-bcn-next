@@ -1,7 +1,6 @@
-import { filesBackend } from "@/lib/data"
-import { getChangedPieces } from "@/lib/data/changes"
+import { getChangedPieces } from "@/lib/data/files/hash-maps"
 import { courseUpdateMetadata } from "@/lib/data/files/metadata"
-import { getRoot } from "@/lib/data/root"
+import { filesGetRootIdpath } from "@/lib/data/files/utils"
 import { showExecutionTime } from "@/lib/utils"
 
 /*
@@ -13,9 +12,9 @@ Para cada cambio:
 */
 
 showExecutionTime(async () => {
-  const root = await getRoot(filesBackend)
-  await courseUpdateMetadata(filesBackend, root)
-  const changes = await getChangedPieces(root)
+  const rootIdpath = await filesGetRootIdpath()
+  await courseUpdateMetadata(rootIdpath)
+  const changes = await getChangedPieces(rootIdpath)
 
   if (changes.length === 0) {
     console.log("No changes.")

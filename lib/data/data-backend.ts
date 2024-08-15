@@ -15,6 +15,13 @@ export type CrumbData = {
 
 export type WalkFunc = (piece: ContentPiece, children: any[]) => Promise<any>
 
+export type FilesWalkFunc<T> = (data: {
+  index: number
+  piece: ContentPiece
+  diskpath: string
+  children: T[]
+}) => Promise<any>
+
 export type FileBuffer = {
   name: string
   buffer: Buffer
