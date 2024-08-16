@@ -106,9 +106,6 @@ export const updatePosition = async (hash: string, mapPosition: IRectangle) => {
   updateMetadata(diskpath, async (metadata) => {
     metadata.mapPosition = { left, top, width, height }
   })
-  console.log(
-    `Updated position for ${hash}: ${mapPosition.left}, ${mapPosition.top}, ${mapPosition.width}, ${mapPosition.height}`
-  )
 }
 
 export const updateMapPositions = async (rectlist: MapPosition[]) => {

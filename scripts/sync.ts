@@ -11,6 +11,7 @@ import {
   forEachHashmapEntry,
   hashmapAdd,
   hashmapRemove,
+  loadGlobalHashmap,
   writeGlobalHashmap,
 } from "@/lib/data/files/hashmaps"
 import { updateMetadata } from "@/lib/data/files/metadata"
@@ -20,10 +21,12 @@ import { Hash, HashItem, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { basename } from "path"
-import { insertFiles, uploadImages } from "./lib/lib"
+import { insertFiles } from "./lib/lib"
 
 const cliArgs = {
   forcedUpdate: false,
+  uploadQuizAnswers: false,
+  dryRun: false,
 }
 
 type HashItemLevel = HashItem & { level: number }
@@ -34,6 +37,9 @@ export const updatePiece = async (idpath: string[]) => {
   const piece = await getPiece(idpath)
   if (piece === null) {
     throw new Error(`Piece not found??? "${idpath.join("/")}"`)
+  }
+  if (piece.metadata.hidden) {
+    return
   }
   console.log(piece.hash, piece.idpath.join("/"))
   try {
@@ -62,14 +68,16 @@ export const updateFileTree = async function () {
       // New hash (potential new change)
       const oldHash = await readStoredHash(diskpath)
       const newHash = await hashPiece(piece, children)
-      await writeStoredHash(diskpath, newHash)
+      if (!cliArgs.dryRun) {
+        await writeStoredHash(diskpath, newHash)
+      }
 
       // Compute level, depth, ...
       const childrenLevels = children.map(({ level }) => level)
       const level = 1 + Math.max(-1, ...childrenLevels)
 
       // As soon as we can, we update the hashmap (since other funcs depend on it)
-      if (newHash !== oldHash) {
+      if (newHash !== oldHash && !piece.metadata.hidden) {
         hashmapRemove(oldHash)
         hashmapAdd({ hash: newHash, idpath: piece.idpath, diskpath, level })
       }
@@ -82,19 +90,26 @@ export const updateFileTree = async function () {
       // Update own metadata
       const depth = piece.idpath.length
       const slideList = await listPieceSubdir(diskpath, FileType.slide)
+
       updateMetadata(diskpath, async (M) => {
-        M.level = level
-        M.hasDoc = await pieceHasDoc(piece) // This uses the globalHashmap!
-        M.numSlides = slideList.length
-        M.index = index
-        if (depth === 3) {
-          M.index = sessionIndex++ // for sessions
+        if (!cliArgs.dryRun) {
+          M.level = level
+          M.hasDoc = await pieceHasDoc(piece) // This uses the globalHashmap!
+          M.numSlides = slideList.length
+          M.index = index
+          if (depth === 3) {
+            M.index = sessionIndex++ // for sessions
+          }
         }
       })
 
       return { hash: newHash, filename, level }
     }
   )
+
+  if (!cliArgs.dryRun) {
+    await writeGlobalHashmap() // a.s.a.p.
+  }
 }
 
 //
@@ -107,23 +122,50 @@ const uploadChanges = async () => {
 
   await forEachHashmapEntry(async ({ idpath, hash: filesHash }) => {
     const dbHash = dbMap.get(idpath.join("/"))
-    if (dbHash !== filesHash) {
-      await updatePiece(idpath)
+    if (dbHash !== filesHash || cliArgs.forcedUpdate) {
+      if (!cliArgs.dryRun) {
+        await updatePiece(idpath)
+      } else {
+        const piece = await getPiece(idpath)
+        console.log(piece!.hash, piece!.idpath.join("/"))
+      }
     }
   })
 }
 
-const [_bun, _script, arg1] = process.argv
+const step = async (message: string, func: () => Promise<void>) => {
+  process.stdout.write(chalk.green(`${message}\n`))
+  await func()
+}
+const [_bun, _script, ...args] = process.argv
+
+const parseOption = (long: string, short: string): boolean =>
+  args.includes(long) || args.includes(short)
+
 showExecutionTime(async () => {
-  cliArgs.forcedUpdate = arg1 === "--force"
+  cliArgs.dryRun = parseOption("--dry-run", "-n")
+  cliArgs.forcedUpdate = parseOption("--force", "-f")
+  cliArgs.uploadQuizAnswers = parseOption("--quiz", "-q")
+
   console.log(chalk.gray(`[${dbBackend.getInfo()}]`))
   console.log(chalk.gray(`[forcedUpdate = ${cliArgs.forcedUpdate}]`))
 
-  await updateFileTree()
-  await uploadChanges()
-  await writeAnswers(allAnswers)
-  await updateQuizAnswers(allAnswers)
-  await writeGlobalHashmap()
+  await loadGlobalHashmap()
+
+  await step("Checking file tree", updateFileTree)
+  await step("Processing changes", uploadChanges)
+  if (!cliArgs.dryRun) {
+    await step("Writing answers", () => writeAnswers(allAnswers))
+  }
+
+  if (!cliArgs.dryRun && cliArgs.uploadQuizAnswers) {
+    // FIXME: change quiz answers into files!!
+    await step("Updating quiz answers", () => updateQuizAnswers(allAnswers))
+  }
+
+  if (cliArgs.dryRun) {
+    console.log(chalk.bgYellow("DRY RUN: no changes were made."))
+  }
 
   await closeConnection()
 })

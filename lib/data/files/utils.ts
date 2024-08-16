@@ -226,7 +226,8 @@ export const getPieceAndPathWithChildren = async (
   if (diskpath === null) {
     return null
   }
-  let piece = await readPieceAtDiskpath(diskpath, idpath)
+  let parentIdPath = idpath.slice(0, -1)
+  let piece = await readPieceAtDiskpath(diskpath, parentIdPath)
   const children_diskpath = await getPieceChildren(piece, diskpath)
   piece.children = children_diskpath.map(({ piece }) => piece)
   return { piece, diskpath }

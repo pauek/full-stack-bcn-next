@@ -93,10 +93,10 @@ export const writeGlobalHashmap = async () => {
     }
   }
   await writeFile(diskpath, lines.join(`\n`) + `\n`)
-  console.log(`Wrote hashmap (${entries.length} entries)`)
+  // console.info(`Wrote hashmap (${entries.length} entries)`)
 }
 
-const loadGlobalHashmap = async () => {
+export const loadGlobalHashmap = async () => {
   if (globalHashmaps.loaded) {
     return
   }
@@ -108,7 +108,7 @@ const loadGlobalHashmap = async () => {
     console.warn(`Warning: could not read hashmap from file`)
   }
   if (globalHashmaps.loaded) {
-    console.info(`Loaded hashmap (${globalHashmaps.entries.length} entries)`)
+    // console.info(`Loaded hashmap (${globalHashmaps.entries.length} entries)`)
     return
   }
 
