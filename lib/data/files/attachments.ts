@@ -37,13 +37,13 @@ export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileRefer
 }
 
 export const getPieceSlideList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.hash, FileType.slide)
+  utils.listPieceSubdir(await utils.getDiskpathForPiece(piece), FileType.slide)
 
 export const getPieceImageList = async (piece: ContentPiece) =>
-  utils.listPieceSubdir(piece.hash, FileType.image)
+  utils.listPieceSubdir(await utils.getDiskpathForPiece(piece), FileType.image)
 
 export const getPieceAttachmentList = async (piece: ContentPiece, filetype: FileType) =>
-  utils.listPieceSubdir(piece.hash, filetype)
+  utils.listPieceSubdir(await utils.getDiskpathForPiece(piece), filetype)
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
   const coverFilename = await utils.findCoverImageFilename(piece)

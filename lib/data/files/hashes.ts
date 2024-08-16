@@ -3,7 +3,7 @@ import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
 
 const HASH_FILE = ".hash"
-export const HASH_MAP_FILE = join(env.CONTENT_ROOT, "./hashes.json")
+export const HASH_MAP_FILE = join(env.CONTENT_ROOT, "./hashmap.csv")
 
 export const readStoredHash = async (diskpath: string): Promise<string | null> => {
   try {

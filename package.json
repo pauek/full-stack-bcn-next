@@ -9,9 +9,10 @@
     "files:build": "BACKEND=files next build",
     "start": "next start",
     "lint": "next lint",
-    "db:upload": "bun run scripts/db-upload.ts",
-    "img:upload": "bun run scripts/images-upload.ts",
     "sync": "bun run scripts/sync.ts",
+    "sync:prod": "NODE_ENV=production bun run scripts/sync.ts",
+    "list": "bun run scripts/list.ts",
+    "list:prod": "NODE_ENV=production bun run scripts/list.ts",
     "format": "bunx prettier --write ."
   },
   "dependencies": {

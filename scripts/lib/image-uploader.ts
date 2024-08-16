@@ -48,7 +48,7 @@ class ImageUploader {
     return this.s3client
   }
 
-  async uploadImage(dirpath: string, filename: string, filetype: FileType, existing: Set<string>) {
+  async uploadImage(dirpath: string, filename: string, filetype: FileType) {
     try {
       const { subdir } = fileTypeInfo[filetype]
       const filePath = join(dirpath, subdir, filename)
@@ -56,12 +56,6 @@ class ImageUploader {
       const hash = hashAny(content)
       const ext = extname(filename)
       const imageKey = `${hash}${ext}`
-
-      if (existing.has(imageKey)) {
-        const space = " ".repeat(process.stdout.columns - imageKey.length - 1)
-        process.stdout.write(`${imageKey}${space}\r`)
-        return
-      }
 
       const command = new PutObjectCommand({
         Bucket: process.env.R2_BUCKET,
@@ -72,8 +66,6 @@ class ImageUploader {
       })
 
       await this.client.send(command)
-      console.log(`${imageKey}`)
-
       return true
     } catch (err: any) {
       console.log(JSON.stringify(err))
@@ -82,8 +74,8 @@ class ImageUploader {
     }
   }
 
-  async uploadAllFilesOfType(filetype: FileType, existing: Set<string>) {
-    const imagePaths = await getAllAttachmentPaths([env.COURSE_ID], filetype)
+  async uploadAllFilesOfType(idpath: string[], filetype: FileType) {
+    const imagePaths = await getAllAttachmentPaths(idpath, filetype)
 
     const _uploadOne = async (index: number) => {
       const path = imagePaths[index]
@@ -93,7 +85,7 @@ class ImageUploader {
       if (diskpath === null) {
         throw new Error(`Diskpath not found for ${idpath.join("/")}`)
       }
-      await this.uploadImage(diskpath, imageFilename, filetype, existing)
+      await this.uploadImage(diskpath, imageFilename, filetype)
     }
 
     const _uploadAllWithOffset = async (offset: number) => {

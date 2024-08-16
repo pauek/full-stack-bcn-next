@@ -1,51 +1,61 @@
 import "@/lib/env-config"
 
-import { ContentPiece } from "@/lib/adt"
+import { FileType } from "@/data/schema"
 import { dbBackend } from "@/lib/data"
 import { closeConnection } from "@/lib/data/db/db"
-import {
-  dbPieceExists,
-  insertPiece,
-  insertPieceHashmap,
-  insertQuizAnswers,
-} from "@/lib/data/db/insert"
+import { dbGetAllHashmaps } from "@/lib/data/db/hashmaps"
+import { insertPiece, insertPieceHashmap, updateQuizAnswers } from "@/lib/data/db/insert"
 import { collectAnswersForPiece, writeAnswers } from "@/lib/data/files/answers"
-import { getPieceSlideList } from "@/lib/data/files/attachments"
-import { HashmapChange, updateHashmapFile } from "@/lib/data/files/hash-maps"
 import { readStoredHash, writeStoredHash } from "@/lib/data/files/hashes"
+import {
+  forEachHashmapEntry,
+  hashmapAdd,
+  hashmapRemove,
+  writeGlobalHashmap,
+} from "@/lib/data/files/hashmaps"
 import { updateMetadata } from "@/lib/data/files/metadata"
-import { pieceHasDoc } from "@/lib/data/files/pieces"
-import { filesGetRoot, filesGetRootIdpath, filesWalkContentPieces } from "@/lib/data/files/utils"
+import { getPiece, pieceHasDoc } from "@/lib/data/files/pieces"
+import { filesGetRootIdpath, filesWalkContentPieces, listPieceSubdir } from "@/lib/data/files/utils"
 import { Hash, HashItem, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { basename } from "path"
 import { insertFiles, uploadImages } from "./lib/lib"
 
-export const updatePiece = async (piece: ContentPiece, level: number) => {
+const cliArgs = {
+  forcedUpdate: false,
+}
+
+type HashItemLevel = HashItem & { level: number }
+
+const allAnswers: Map<Hash, string[]> = new Map()
+
+export const updatePiece = async (idpath: string[]) => {
+  const piece = await getPiece(idpath)
+  if (piece === null) {
+    throw new Error(`Piece not found??? "${idpath.join("/")}"`)
+  }
   console.log(piece.hash, piece.idpath.join("/"))
   try {
     await Promise.allSettled([
       await insertPiece(piece),
-      await insertPieceHashmap(piece, level),
+      await insertPieceHashmap(piece),
       await insertFiles(piece),
+      // await uploadImages(piece),
     ])
   } catch (e) {
     console.error(`Error updating piece ${piece.idpath.join("/")}: ${e}`)
   }
 }
 
-export const updateFileTree = async function (fromScratch: boolean, idpath: string[]) {
-  const changes: HashmapChange[] = []
-  const changedPieces: (ContentPiece & { level: number })[] = []
-  const allAnswers: Map<Hash, string[]> = new Map()
+export const updateFileTree = async function () {
   let sessionIndex = 1
 
   // WARNING: The pieces have to be walked in order of filename!
   // Otherwise, the indices will be wrong.
 
-  await filesWalkContentPieces<HashItem & { level: number }>(
-    idpath,
+  await filesWalkContentPieces<HashItemLevel>(
+    filesGetRootIdpath(),
     async ({ index, piece, diskpath, children }) => {
       const filename = basename(diskpath)
 
@@ -56,9 +66,13 @@ export const updateFileTree = async function (fromScratch: boolean, idpath: stri
 
       // Compute level, depth, ...
       const childrenLevels = children.map(({ level }) => level)
-      const level = 1 + Math.max(0, ...childrenLevels)
-      const depth = piece.idpath.length
-      const slideList = await getPieceSlideList(piece)
+      const level = 1 + Math.max(-1, ...childrenLevels)
+
+      // As soon as we can, we update the hashmap (since other funcs depend on it)
+      if (newHash !== oldHash) {
+        hashmapRemove(oldHash)
+        hashmapAdd({ hash: newHash, idpath: piece.idpath, diskpath, level })
+      }
 
       // Collect quiz answers
       for (const [key, values] of await collectAnswersForPiece(piece)) {
@@ -66,62 +80,50 @@ export const updateFileTree = async function (fromScratch: boolean, idpath: stri
       }
 
       // Update own metadata
-      updateMetadata(diskpath, async (metadata) => {
-        metadata.level = level
-        metadata.hasDoc = await pieceHasDoc(piece)
-        metadata.numSlides = slideList.length
-        metadata.index = index
+      const depth = piece.idpath.length
+      const slideList = await listPieceSubdir(diskpath, FileType.slide)
+      updateMetadata(diskpath, async (M) => {
+        M.level = level
+        M.hasDoc = await pieceHasDoc(piece) // This uses the globalHashmap!
+        M.numSlides = slideList.length
+        M.index = index
         if (depth === 3) {
-          // Correlative order for sessions
-          metadata.index = sessionIndex
-          ++sessionIndex
+          M.index = sessionIndex++ // for sessions
         }
       })
-
-      if (newHash !== oldHash || fromScratch) {
-        changedPieces.push({ ...piece, level })
-        changes.push({
-          oldHash,
-          newHash,
-          idpath: piece.idpath,
-          diskpath,
-          children: children.map(({ hash }) => hash),
-        })
-      }
 
       return { hash: newHash, filename, level }
     }
   )
-
-  // Process changes
-  if (changedPieces.length > 0) {
-    for (const piece of changedPieces) {
-      await updatePiece(piece, piece.level)
-    }
-    await insertQuizAnswers(allAnswers)
-    await writeAnswers(allAnswers)
-    await updateHashmapFile(changes)
-    await uploadImages() // FIXME: Only update images that are from pieces that have changed!
-  } else {
-    console.log("No changes.")
-  }
 }
 
-const {
-  argv: [_bun, _script, ...args],
-} = process
+//
+// Check, for each entry in the local hashmap, if that hash is in the database.
+// Otherwise, upload the whole piece, including files, etc.
+//
+const uploadChanges = async () => {
+  const hashmaps = await dbGetAllHashmaps()
+  const dbMap = new Map(hashmaps.map((h) => [h.idpath.join("/"), h.pieceHash] as const))
 
+  await forEachHashmapEntry(async ({ idpath, hash: filesHash }) => {
+    const dbHash = dbMap.get(idpath.join("/"))
+    if (dbHash !== filesHash) {
+      await updatePiece(idpath)
+    }
+  })
+}
+
+const [_bun, _script, arg1] = process.argv
 showExecutionTime(async () => {
-  const force = args[0] === "--force"
+  cliArgs.forcedUpdate = arg1 === "--force"
   console.log(chalk.gray(`[${dbBackend.getInfo()}]`))
-  console.log(chalk.gray(`[forcedUpload = ${force}]`))
+  console.log(chalk.gray(`[forcedUpdate = ${cliArgs.forcedUpdate}]`))
 
-  try {
-    const rootIdpath = filesGetRootIdpath()
-    await updateFileTree(force, rootIdpath)
-  } catch (e) {
-    console.error(`Error updating file tree: ${e}`)
-  }
+  await updateFileTree()
+  await uploadChanges()
+  await writeAnswers(allAnswers)
+  await updateQuizAnswers(allAnswers)
+  await writeGlobalHashmap()
 
   await closeConnection()
 })

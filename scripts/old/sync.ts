@@ -2,7 +2,7 @@ import { ContentPiece } from "@/lib/adt"
 import {
   insertPiece,
   insertPieceHashmap,
-  insertQuizAnswers,
+  updateQuizAnswers,
   pieceSetParent,
 } from "@/lib/data/db/insert"
 import { collectAnswersForPiece } from "@/lib/data/files/answers"
@@ -28,7 +28,7 @@ await showExecutionTime(async () => {
     await insertFiles(piece)
 
     const answers = await collectAnswersForPiece(piece)
-    await insertQuizAnswers(answers)
+    await updateQuizAnswers(answers)
 
     for (const child of children) {
       await pieceSetParent(child.hash, piece.hash)

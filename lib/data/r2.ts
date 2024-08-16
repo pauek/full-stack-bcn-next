@@ -40,7 +40,6 @@ export class R2Client {
       })
 
       await this.s3client.send(command)
-      console.log(`${key}`)
     } catch (e) {
       console.error(`CloudflareClient.uploadFile: ${e}`)
     }

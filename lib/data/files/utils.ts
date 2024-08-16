@@ -6,7 +6,7 @@ import { readdir } from "fs/promises"
 import { basename, extname, join } from "path"
 import { FileReference, FilesWalkFunc } from "../data-backend"
 import { hashFile } from "../hashing"
-import { getDiskpathByHash, getDiskpathByIdpath } from "./hash-maps"
+import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readStoredHash } from "./hashes"
 import { readMetadata } from "./metadata"
 import { getPiece } from "./pieces"
@@ -181,14 +181,15 @@ export const getPieceChildren = async (
 
 export const getDiskpathForPiece = async (piece: ContentPiece): Promise<string> => {
   const d1 = await getDiskpathByHash(piece.hash)
-  if (d1) {
-    return d1
-  }
+  if (d1) return d1
+
   const d2 = await getDiskpathByIdpath(piece.idpath)
-  if (d2) {
-    return d2
-  }
-  throw new Error(`Could not find diskpath for "${piece.name}" ${piece.idpath.join("/")}`)
+  if (d2) return d2
+
+  const d3 = await findoutDiskpathFromIdpath(piece.idpath)
+  if (d3) return d3
+
+  throw new Error(`Could not find diskpath for "${piece.name}" ${piece.idpath.join("/")}????`)
 }
 
 export const findoutDiskpathFromIdpath = async (idpath: string[]): Promise<string | null> => {

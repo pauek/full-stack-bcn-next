@@ -5,7 +5,7 @@ import { TreeNode } from "@/lib/tree"
 import { readMetadata, updateMetadata } from "./metadata"
 import { getPieceWithChildren } from "./pieces"
 import { filesGetRoot, filesGetRootIdpath, filesWalkContentPieces, getDiskpathForPiece } from "./utils"
-import { getDiskpathByHash } from "./hash-maps"
+import { getDiskpathByHash } from "./hashmaps"
 
 export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
   const diskpath = await getDiskpathForPiece(piece)

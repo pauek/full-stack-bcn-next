@@ -64,7 +64,8 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
   }
 }
 
-export const insertPieceHashmap = async (piece: ContentPiece, level: number = -1) => {
+export const insertPieceHashmap = async (piece: ContentPiece) => {
+  const level = piece.metadata.level
   await db
     .insert(schema.hashmap)
     .values({
@@ -116,7 +117,7 @@ export const insertFile = async (
   }
 }
 
-export const insertQuizAnswers = async (quizAnswers: Map<Hash, string[]>) => {
+export const updateQuizAnswers = async (quizAnswers: Map<Hash, string[]>) => {
   for (const [hash, answers] of quizAnswers) {
     for (const answer of answers) {
       try {

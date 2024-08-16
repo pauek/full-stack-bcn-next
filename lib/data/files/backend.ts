@@ -1,6 +1,6 @@
 import { FileType } from "@/data/schema"
 import { getPieceAttachmentList } from "./attachments"
-import { getAllIdjpaths } from "./hash-maps"
+import { getAllIdjpaths } from "./hashmaps"
 import { filesWalkContentPieces } from "./utils"
 
 export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {

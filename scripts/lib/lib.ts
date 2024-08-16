@@ -2,16 +2,10 @@ import "@/lib/env.mjs"
 
 import { AllAttachmentTypes, FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { filesBackend } from "@/lib/data"
-import { insertFile, insertPiece, pieceSetParent } from "@/lib/data/db/insert"
+import { insertFile } from "@/lib/data/db/insert"
 import { getPieceAttachmentList } from "@/lib/data/files/attachments"
-import {
-  hashAllContent,
-  HashmapChange,
-  HashmapEntry,
-  writeGlobalHashmap,
-} from "@/lib/data/files/hash-maps"
 import { writeStoredHash } from "@/lib/data/files/hashes"
+import { hashAllContent, HashmapEntry, writeGlobalHashmap } from "@/lib/data/files/hashmaps"
 import {
   filesGetRootIdpath,
   fileTypeInfo,
@@ -93,34 +87,14 @@ export const rewriteAllHashes = async (options?: { log?: boolean }) => {
       console.log(hash, idjpath)
     }
   }
-  await writeGlobalHashmap(entries)
+  await writeGlobalHashmap()
 }
 
-export const uploadImages = async () => {
+export const uploadImages = async (piece: ContentPiece) => {
   await withImageUploader({ parallelRequests: 20 }, async (uploader) => {
-    const existing = new Set<string>()
-    for (const { name } of await uploader.listAllFiles()) {
-      if (name) existing.add(name)
-    }
     const types: FileType[] = [FileType.image, FileType.slide, FileType.cover]
     for (const ty of types) {
-      await uploader.uploadAllFilesOfType(ty as FileType, existing)
+      await uploader.uploadAllFilesOfType(piece.idpath, ty as FileType)
     }
   })
-}
-
-// Apply updates to the database
-export const applyChangesToDatabase = async (changes: HashmapChange[]) => {
-  for (const change of changes) {
-    const piece = await filesBackend.getPiece(change.idpath)
-    if (!piece) {
-      console.error(`Error: now I don't find a piece that was there??`)
-      continue
-    }
-    await insertPiece(piece)
-    await insertFiles(piece)
-    for (const childHash of change.children) {
-      await pieceSetParent(childHash, piece.hash)
-    }
-  }
 }
