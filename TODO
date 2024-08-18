@@ -1,9 +1,4 @@
-[ ] Quitar el `diskpath` de `pieces`
 [ ] QuizAnswers no tiene que ser una tabla aparte!!!
-
 [ ] BIG: Mejorar el workflow de edición con ficheros
-
-
-
 
 [ ] Implementar login con Authjs

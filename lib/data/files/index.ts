@@ -11,7 +11,7 @@ import {
   getPieceSlideList,
 } from "./attachments"
 
-import { getQuizAnswerForHash } from "./answers"
+import { getQuizAnswersForHash } from "./answers"
 import { getAllIdpaths } from "./backend"
 import { getMapPositions, getMapPositionsExtended, updateMapPositions } from "./positions"
 import { getContentTree } from "./tree"
@@ -33,7 +33,7 @@ export const backend: DataBackendBase = {
   getPieceImageList,
   getPieceSlideList,
 
-  getQuizAnswerForHash,
+  getQuizAnswersForHash,
 
   getMapPositions,
 

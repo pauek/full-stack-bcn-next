@@ -32,7 +32,7 @@ export const collectAnswersForPiece = async (piece: ContentPiece): Promise<Map<H
   return quizAnswers
 }
 
-export const getQuizAnswerForHash = async (hash: Hash): Promise<string[]> => {
+export const getQuizAnswersForHash = async (hash: Hash): Promise<string[]> => {
   const answers = await readAnswers()
   return answers.get(hash) || []
 }

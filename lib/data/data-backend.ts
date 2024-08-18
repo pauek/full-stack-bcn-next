@@ -43,7 +43,7 @@ export interface DataBackendBase {
 
   getPieceAttachmentList: (piece: ContentPiece, filetype: FileType) => Promise<FileReference[]>
   getAttachmentBytes: (piece: ContentPiece, fileref: FileReference) => Promise<Buffer | null>
-  getQuizAnswerForHash: (hash: Hash) => Promise<string[]>
+  getQuizAnswersForHash: (hash: Hash) => Promise<string[]>
   
   getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>
   getPieceFileData: (piece: ContentPiece, filename: string, filetype: FileType) => Promise<Buffer | null>

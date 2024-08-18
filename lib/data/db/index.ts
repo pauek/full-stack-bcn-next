@@ -17,7 +17,7 @@ import {
   getPieceFileData,
   getPieceImageList,
   getPieceSlideList,
-  getQuizAnswerForHash,
+  getQuizAnswersForHash,
 } from "./attachments"
 
 import { getContentTree } from "./tree"
@@ -40,7 +40,7 @@ export const backend: DataBackendBase = {
   getPieceImageList,
   getPieceSlideList,
   getPieceFileData,
-  getQuizAnswerForHash,
+  getQuizAnswersForHash,
 
   getContentTree,
 
