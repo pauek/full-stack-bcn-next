@@ -26,11 +26,15 @@ const nextConfig = {
   poweredByHeader: false,
 }
 
-export default async (phase, { defaultConfig }) => {
+const makeNextConfig = async (phase, { defaultConfig }) => {
   const config = { ...nextConfig }
 
-  // console.log("PHASE =", phase)
-  // console.log("TURSO_URL =", env.TURSO_URL)
+  if (process.env.NODE_ENV === "development" && env.BACKEND !== "files") {
+    console.error(`Don't do development with BACKEND != "files"!`)
+    process.exit(1)
+  }
 
   return withMDX(config)
 }
+
+export default makeNextConfig
