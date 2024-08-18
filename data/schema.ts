@@ -1,5 +1,6 @@
 import { relations, sql } from "drizzle-orm"
 import { blob, index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { z } from "zod"
 
 // Pieces
 
@@ -114,11 +115,17 @@ export const fileTypeFromString = (filetype: string): FileType => {
 export const files = sqliteTable("files", {
   hash: text("file_hash").primaryKey(),
   data: blob("data", { mode: "json" }).$type<string>().notNull(),
+
+  // NOTE(pauek): Metadata stores quiz answers now
+  metadata: text("metadata", { mode: "json" }).$type<Record<string, any>>(),
 })
 export const filesRelations = relations(files, ({ many }) => ({
   attachments: many(attachments, { relationName: "file_attachments" }),
-  answers: many(quizAnswers, { relationName: "quiz_answers" }),
 }))
+
+export const zfilesMetadata = z.object({
+  quizAnswers: z.array(z.string()),
+})
 
 // Attachments
 
@@ -180,29 +187,3 @@ export const hashmapRelations = relations(hashmap, ({ one }) => ({
 }))
 export type Hashmap = typeof hashmap.$inferSelect
 
-// Answers
-
-// This is a collection of all answers to quizzes which we want
-// to isolate in the server
-
-export const quizAnswers = sqliteTable(
-  "quiz_answers",
-  {
-    hash: text("hash")
-      .notNull()
-      .references(() => files.hash),
-    answer: text("answer").notNull(),
-  },
-  (table) => ({
-    pk: primaryKey({
-      columns: [table.hash, table.answer],
-    }),
-  })
-)
-export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
-  file: one(files, {
-    fields: [quizAnswers.hash],
-    references: [files.hash],
-    relationName: "quiz_answers",
-  }),
-}))

@@ -61,7 +61,7 @@ export const chunkArray = (array: Array<any>, chunkSize: number) => {
 
 // https://stackoverflow.com/questions/64928212/how-to-use-promise-allsettled-with-typescript
 export const isFulfilled = function <T>(
-  input: PromiseSettledResult<T>,
+  input: PromiseSettledResult<T>
 ): input is PromiseFulfilledResult<T> {
   return input.status === "fulfilled"
 }
@@ -88,35 +88,6 @@ const logFile =
 
 export const logUploadedFile = logFile({ preserve: true, color: true })
 export const logPresentFile = logFile()
-
-export const splitMarkdownPreamble = (text: string) => {
-  const lines = text.split("\n")
-  if (lines[0] === "---") {
-    const preambleEnd = lines.indexOf("---", 1)
-    if (preambleEnd !== -1) {
-      const preamble = lines.slice(1, preambleEnd).join("\n")
-      const body = lines.slice(preambleEnd + 1).join("\n")
-      return { preamble, body }
-    }
-  }
-  return { preamble: "", body: text }
-}
-
-export const getQuizPartsFromFile = (text: string) => {
-  const { preamble, body } = splitMarkdownPreamble(text)
-  if (!preamble) {
-    throw new Error("Question missing preamble")
-  }
-  const { answers }: { answers: string[] } = JSON.parse(preamble)
-  if (!answers) {
-    console.log(text)
-    throw new Error("Question missing answer")
-  }
-  if (!Array.isArray(answers)) {
-    throw new Error("Answer should be an array!")
-  }
-  return { answers, body }
-}
 
 export const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max)

@@ -86,7 +86,7 @@ export const findCoverImageFilename = async (piece: ContentPiece) => {
 export const listPieceSubdir = async (
   diskpath: string,
   filetype: FileType
-): Promise<Array<FileReference>> => {
+): Promise<FileReference[]> => {
   try {
     const typeInfo = fileTypeInfo[filetype]
     const abspath = join(diskpath, typeInfo.subdir)

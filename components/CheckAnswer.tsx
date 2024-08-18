@@ -74,9 +74,10 @@ const CheckButton = () => {
 }
 
 type Props = {
+  idpath: string[]
   quizHash: Hash
 }
-export default function CheckAnswer({ quizHash }: Props) {
+export default function CheckAnswer({ idpath, quizHash }: Props) {
   const [state, formAction] = useFormState<FormState, FormData>(actionCheckAnswer, initialState)
 
   return (
@@ -86,6 +87,7 @@ export default function CheckAnswer({ quizHash }: Props) {
     >
       <AnswerBox />
       <input type="hidden" name="quizHash" value={quizHash} className="hidden" />
+      <input type="hidden" name="idjpath" value={idpath.join("/")} className="hidden" />
       <CheckButton />
       <div className="h-full aspect-1">
         <ShowVeredict state={state} />

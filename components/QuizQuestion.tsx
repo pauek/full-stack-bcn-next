@@ -2,10 +2,10 @@ import MdxDocument from "@/components/mdx/MdxDocument"
 import { ContentPiece } from "@/lib/adt"
 import data from "@/lib/data"
 import { FileReference } from "@/lib/data/data-backend"
-import { getQuizPartsFromFile } from "@/lib/utils"
 import CheckAnswer from "./CheckAnswer"
 import { Pre } from "./mdx/Pre"
 import { FileType } from "@/data/schema"
+import { getQuizPartsFromFile } from "@/lib/data/files/quiz"
 
 const Note = ({ children }: { children: React.ReactNode }) => {
   return <div className="mt-4 text-xs opacity-70 italic">{children}</div>
@@ -47,7 +47,7 @@ export default async function QuizQuestion({ index, chapter, quiz }: QuizQuestio
         components={{ pre: Pre, Note }}
         imageMap={imageMap}
       />
-      <CheckAnswer quizHash={quiz.hash} />
+      <CheckAnswer idpath={chapter.idpath} quizHash={quiz.hash} />
     </div>
   )
 }

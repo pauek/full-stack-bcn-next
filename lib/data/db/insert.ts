@@ -1,9 +1,10 @@
 import * as schema from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { Hash, hashAny } from "@/lib/data/hashing"
+import { hashAny } from "@/lib/data/hashing"
 import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils"
 import { and, eq } from "drizzle-orm"
 import { readFile } from "fs/promises"
+import { getQuizPartsFromFile } from "../files/quiz"
 import { db } from "./db"
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
@@ -90,23 +91,32 @@ export const insertFile = async (
 ) => {
   try {
     const bytes = await readFile(diskpath)
-    const filehash = hashAny(bytes)
-
-    const exists = await fileExists(filehash)
-    if (exists) {
-      logPresentFile(filehash, filetype, filename)
-    } else {
-      await db.insert(schema.files).values({
-        hash: filehash,
-        data: bytesToBase64(bytes),
-      })
-      logUploadedFile(filehash, filetype, filename)
+    const fileHash = hashAny(bytes)
+    let data: string = bytesToBase64(bytes)
+    let metadata: Record<string, any> | null = null
+    if (filetype === schema.FileType.quiz) {
+      const { body, answers } = getQuizPartsFromFile(bytes.toString())
+      //
+      // NOTE(pauek): the fileHash is for the whole file (including the Markdown preamble),
+      //   but we store only the body so if you try to check the hash with only the data, 
+      //   it will not match.
+      //
+      data = body
+      metadata = { quizAnswers: answers }
     }
 
-    const existsAttachment = await attachmentExists(piece.hash, filehash, filetype)
+    const exists = await fileExists(fileHash)
+    if (exists) {
+      logPresentFile(fileHash, filetype, filename)
+    } else {
+      await db.insert(schema.files).values({ hash: fileHash, data, metadata })
+      logUploadedFile(fileHash, filetype, filename)
+    }
+
+    const existsAttachment = await attachmentExists(piece.hash, fileHash, filetype)
     if (!existsAttachment) {
       await db.insert(schema.attachments).values({
-        fileHash: filehash,
+        fileHash: fileHash,
         pieceHash: piece.hash,
         filetype,
         filename,
@@ -114,17 +124,5 @@ export const insertFile = async (
     }
   } catch (e: any) {
     console.error(`Cannot insert ${filename} (${filetype}, ${diskpath})`, e)
-  }
-}
-
-export const updateQuizAnswers = async (quizAnswers: Map<Hash, string[]>) => {
-  for (const [hash, answers] of quizAnswers) {
-    for (const answer of answers) {
-      try {
-        await db.insert(schema.quizAnswers).values({ hash, answer })
-      } catch (e: any) {
-        // FIXME: Lots of errors here! Don't know why
-      }
-    }
   }
 }

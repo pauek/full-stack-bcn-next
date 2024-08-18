@@ -1,0 +1,268 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "069b0838-a424-4044-92a2-e7128a5bfd58",
+  "prevId": "46472b6c-505b-4939-b751-9a5a49d2917f",
+  "tables": {
+    "attachments": {
+      "name": "attachments",
+      "columns": {
+        "piece_hash": {
+          "name": "piece_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "file_hash": {
+          "name": "file_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "filetype": {
+          "name": "filetype",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "filename": {
+          "name": "filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "attachments_piece_hash_pieces_piece_hash_fk": {
+          "name": "attachments_piece_hash_pieces_piece_hash_fk",
+          "tableFrom": "attachments",
+          "tableTo": "pieces",
+          "columnsFrom": [
+            "piece_hash"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attachments_file_hash_files_file_hash_fk": {
+          "name": "attachments_file_hash_files_file_hash_fk",
+          "tableFrom": "attachments",
+          "tableTo": "files",
+          "columnsFrom": [
+            "file_hash"
+          ],
+          "columnsTo": [
+            "file_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "attachments_piece_hash_file_hash_filetype_pk": {
+          "columns": [
+            "piece_hash",
+            "file_hash",
+            "filetype"
+          ],
+          "name": "attachments_piece_hash_file_hash_filetype_pk"
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "files": {
+      "name": "files",
+      "columns": {
+        "file_hash": {
+          "name": "file_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "data": {
+          "name": "data",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "hashmap": {
+      "name": "hashmap",
+      "columns": {
+        "idpath": {
+          "name": "idpath",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "piece_hash": {
+          "name": "piece_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "level": {
+          "name": "level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "hash_idx": {
+          "name": "hash_idx",
+          "columns": [
+            "piece_hash"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "hashmap_piece_hash_pieces_piece_hash_fk": {
+          "name": "hashmap_piece_hash_pieces_piece_hash_fk",
+          "tableFrom": "hashmap",
+          "tableTo": "pieces",
+          "columnsFrom": [
+            "piece_hash"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "pieces": {
+      "name": "pieces",
+      "columns": {
+        "piece_hash": {
+          "name": "piece_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "related_pieces": {
+      "name": "related_pieces",
+      "columns": {
+        "parent": {
+          "name": "parent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "child": {
+          "name": "child",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "related_pieces_parent_pieces_piece_hash_fk": {
+          "name": "related_pieces_parent_pieces_piece_hash_fk",
+          "tableFrom": "related_pieces",
+          "tableTo": "pieces",
+          "columnsFrom": [
+            "parent"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "related_pieces_child_pieces_piece_hash_fk": {
+          "name": "related_pieces_child_pieces_piece_hash_fk",
+          "tableFrom": "related_pieces",
+          "tableTo": "pieces",
+          "columnsFrom": [
+            "child"
+          ],
+          "columnsTo": [
+            "piece_hash"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "related_pieces_parent_child_pk": {
+          "columns": [
+            "parent",
+            "child"
+          ],
+          "name": "related_pieces_parent_child_pk"
+        }
+      },
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

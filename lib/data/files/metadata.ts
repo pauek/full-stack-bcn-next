@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
-import { collectAnswersForPiece, writeAnswers } from "./answers"
+import { collectAnswersForPiece, writeAnswers } from "./quiz"
 import { getPieceSlideList } from "./attachments"
 import { pieceHasDoc } from "./pieces"
 import { filesWalkContentPieces } from "./utils"

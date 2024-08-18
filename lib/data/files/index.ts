@@ -11,7 +11,7 @@ import {
   getPieceSlideList,
 } from "./attachments"
 
-import { getQuizAnswersForHash } from "./answers"
+import { getQuizAnswersForHash } from "./quiz"
 import { getAllIdpaths } from "./backend"
 import { getMapPositions, getMapPositionsExtended, updateMapPositions } from "./positions"
 import { getContentTree } from "./tree"

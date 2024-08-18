@@ -10,8 +10,20 @@ export async function actionCheckAnswer(_prev: FormState, formData: FormData) {
   if (!hashData) {
     return { error: true, message: "No such question!" }
   }
+  const idjpathData = formData.get("idjpath")
+  if (!idjpathData) {
+    console.error("Missing chapter?")
+    return { error: true, message: "Internal Error (Missing chapter?)" }
+  }
+
   const hash = hashData.valueOf() as string
-  const quizAnswers = await data.getQuizAnswersForHash(hash)
+  const idjpath = idjpathData.valueOf() as string
+
+  const idpath = idjpath.split("/")
+  const quizAnswers = await data.getQuizAnswersForHash(idpath, hash)
+
+  console.log(`Answers for ${hash} in ${idpath}: ${quizAnswers}`)
+
   if (quizAnswers.length === 0) {
     return { error: true, message: "ERROR: No answers found in DB!" }
   }

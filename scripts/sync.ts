@@ -4,8 +4,8 @@ import { FileType } from "@/data/schema"
 import { dbBackend } from "@/lib/data"
 import { closeConnection } from "@/lib/data/db/db"
 import { dbGetAllHashmaps } from "@/lib/data/db/hashmaps"
-import { insertPiece, insertPieceHashmap, updateQuizAnswers } from "@/lib/data/db/insert"
-import { collectAnswersForPiece, writeAnswers } from "@/lib/data/files/answers"
+import { insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
+import { collectAnswersForPiece, writeAnswers } from "@/lib/data/files/quiz"
 import { readStoredHash, writeStoredHash } from "@/lib/data/files/hashes"
 import {
   forEachHashmapEntry,
@@ -25,7 +25,6 @@ import { insertFiles } from "./lib/lib"
 
 const cliArgs = {
   forcedUpdate: false,
-  uploadQuizAnswers: false,
   dryRun: false,
 }
 
@@ -145,7 +144,6 @@ const parseOption = (long: string, short: string): boolean =>
 showExecutionTime(async () => {
   cliArgs.dryRun = parseOption("--dry-run", "-n")
   cliArgs.forcedUpdate = parseOption("--force", "-f")
-  cliArgs.uploadQuizAnswers = parseOption("--quiz", "-q")
 
   console.log(chalk.gray(`[${dbBackend.getInfo()}]`))
   console.log(chalk.gray(`[forcedUpdate = ${cliArgs.forcedUpdate}]`))
@@ -156,11 +154,6 @@ showExecutionTime(async () => {
   await step("Processing changes", uploadChanges)
   if (!cliArgs.dryRun) {
     await step("Writing answers", () => writeAnswers(allAnswers))
-  }
-
-  if (!cliArgs.dryRun && cliArgs.uploadQuizAnswers) {
-    // FIXME: change quiz answers into files!!
-    await step("Updating quiz answers", () => updateQuizAnswers(allAnswers))
   }
 
   if (cliArgs.dryRun) {

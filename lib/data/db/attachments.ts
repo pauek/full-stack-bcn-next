@@ -91,7 +91,14 @@ export const getPieceFileData = async (
   return Buffer.from(base64ToBytes(result.data))
 }
 
-export const getQuizAnswersForHash = async (hash: Hash): Promise<string[]> => {
-  const results = await db.query.quizAnswers.findMany({ where: eq(schema.quizAnswers.hash, hash) })
-  return results.map((r) => r.answer)
+export const getQuizAnswersForHash = async (_: string[], hash: Hash): Promise<string[]> => {
+  const results = await db.query.files.findFirst({
+    where: eq(schema.files.hash, hash),
+    columns: { metadata: true },
+  })
+  if (results === undefined || results.metadata === null) {
+    return []
+  }
+  const { quizAnswers } = schema.zfilesMetadata.parse(results.metadata)
+  return quizAnswers
 }
