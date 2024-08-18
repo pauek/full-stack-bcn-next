@@ -21,9 +21,6 @@ export async function actionCheckAnswer(_prev: FormState, formData: FormData) {
 
   const idpath = idjpath.split("/")
   const quizAnswers = await data.getQuizAnswersForHash(idpath, hash)
-
-  console.log(`Answers for ${hash} in ${idpath}: ${quizAnswers}`)
-
   if (quizAnswers.length === 0) {
     return { error: true, message: "ERROR: No answers found in DB!" }
   }
