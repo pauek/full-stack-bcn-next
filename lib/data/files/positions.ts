@@ -1,33 +1,44 @@
-import type { MapPosition, MapPositionExtended } from "@/data/schema"
+import { AllAttachmentTypes, type MapPosition, type MapPositionExtended } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { IRectangle } from "@/lib/geometry"
 import { TreeNode } from "@/lib/tree"
+import { readFile } from "fs/promises"
+import { join } from "path"
+import { getPieceAttachmentList } from "./attachments"
+import { getDiskpathByHash } from "./hashmaps"
 import { readMetadata, updateMetadata } from "./metadata"
 import { getPieceWithChildren } from "./pieces"
 import {
   filesGetRoot,
   filesGetRootIdpath,
   filesWalkContentPieces,
+  fileTypeInfo,
   getDiskpathForPiece,
+  readAttachmentMetadata,
 } from "./utils"
-import { getDiskpathByHash } from "./hashmaps"
+
+const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) => {
+  // Check mapPosition has the fields that we expect
+  const { left, top, width, height } = metadata.mapPosition
+  if (
+    typeof left !== "number" ||
+    typeof top !== "number" ||
+    typeof width !== "number" ||
+    typeof height !== "number"
+  ) {
+    throw new Error(
+      `Invalid mapPosition for ${piece.idpath.join("/")}: ${JSON.stringify(metadata.mapPosition)}`
+    )
+  }
+  return { left, top, width, height }
+}
 
 export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
   const diskpath = await getDiskpathForPiece(piece)
   const metadata = await readMetadata(diskpath)
   if (metadata.mapPosition) {
-    // Check mapPosition has the fields that we expect
-    const { left, top, width, height } = metadata.mapPosition
-    if (
-      typeof left !== "number" ||
-      typeof top !== "number" ||
-      typeof width !== "number" ||
-      typeof height !== "number"
-    ) {
-      throw new Error(
-        `Invalid mapPosition for ${piece.idpath.join("/")}: ${JSON.stringify(metadata.mapPosition)}`,
-      )
-    }
+    const { left, top, width, height } = checkMapPosition(metadata, piece)
+
     // Get children
     const pieceWithChildren = await getPieceWithChildren(piece.idpath)
     if (!pieceWithChildren) {
@@ -39,7 +50,7 @@ export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
     }
 
     return {
-      pieceHash: piece.hash,
+      hash: piece.hash,
       name: piece.name,
       left,
       top,
@@ -49,7 +60,37 @@ export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
       idpath: piece.idpath,
       level: pieceWithChildren.metadata.level,
     }
+  } else {
+    return null
   }
+}
+
+const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
+  const positions: Position[] = []
+  for (const type of AllAttachmentTypes) {
+    const info = fileTypeInfo[type]
+    const exercises = await getPieceAttachmentList(piece, type)
+    for (const exercise of exercises) {
+      const diskpath = await getDiskpathForPiece(piece)
+      const bytes = await readFile(join(diskpath, info.subdir, exercise.filename))
+      const metadata = await readAttachmentMetadata(type, bytes)
+      if (metadata && metadata.mapPosition) {
+        const { left, top, width, height } = checkMapPosition(metadata, piece)
+        positions.push({
+          hash: exercise.hash,
+          name: exercise.filename,
+          left,
+          top,
+          width,
+          height,
+          children: [],
+          idpath: [...piece.idpath, "exercise", exercise.filename],
+          level: 0,
+        })
+      }
+    }
+  }
+  return positions
 }
 
 type Position = NonNullable<Awaited<ReturnType<typeof extendedMapPositionForPiece>>>
@@ -64,6 +105,10 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
     if (mapPos) {
       positions.push(mapPos)
     }
+    const attachmentPositions = await extendedMapPositionForAttachments(piece)
+    for (const position of attachmentPositions) {
+      positions.push(position)
+    }
   })
 
   // We sort the results here, instead of in the query (can't do it in Drizzle??)
@@ -74,7 +119,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
   })
 
   const maybeFind = (hash: string) => {
-    const index = positions.findIndex((it) => it.pieceHash === hash)
+    const index = positions.findIndex((it) => it.hash === hash)
     if (index === -1) {
       return null
     }
@@ -92,7 +137,7 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
       width: pos.width,
       height: pos.height,
       name: pos.name,
-      pieceHash: pos.pieceHash,
+      hash: pos.hash,
       idpath: pos.idpath,
       level: pos.level,
       children: childrenIndices,
@@ -115,7 +160,7 @@ export const updatePosition = async (hash: string, mapPosition: IRectangle) => {
 
 export const updateMapPositions = async (rectlist: MapPosition[]) => {
   for (const rect of rectlist) {
-    await updatePosition(rect.pieceHash, rect)
+    await updatePosition(rect.hash, rect)
   }
 }
 
@@ -167,7 +212,7 @@ export const getMapPositions = async () => {
       ) {
         throw new Error(`Invalid mapPosition for ${piece.idpath.join("/")}`)
       }
-      result.push({ pieceHash: piece.hash, left, top, width, height })
+      result.push({ hash: piece.hash, left, top, width, height })
     }
   })
   return result
