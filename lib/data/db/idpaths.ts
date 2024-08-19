@@ -1,5 +1,3 @@
-import * as schema from "@/data/schema"
-import { eq, like } from "drizzle-orm"
 import { db } from "./db"
 
 export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {
