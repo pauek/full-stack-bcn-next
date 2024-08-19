@@ -1,5 +1,5 @@
 import { actionMapPositionsUpdate } from "@/actions/positions"
-import { MapPosition } from "@/data/schema"
+import { FileType, MapPosition } from "@/data/schema"
 import { useRouter } from "next/navigation"
 import { CanvasController } from "./canvas-controller"
 import { pointWithinRect } from "./geometry"
@@ -49,7 +49,14 @@ export class MapPositionsAdapter {
     ctx.roundRect(left, top, width, height, 5)
     ctx.closePath()
     ctx.save()
-    ctx.fillStyle = "white"
+
+    // Fillstyle
+    let fillStyle = "white"
+    if (item.kind === "exercise") {
+      fillStyle = "lightblue"
+    }
+    ctx.fillStyle = fillStyle
+    
     ctx.shadowColor = "rgba(0, 0, 0, 0.1)"
     ctx.shadowBlur = 3 * controller.scale
     ctx.shadowOffsetX = 0
@@ -61,7 +68,12 @@ export class MapPositionsAdapter {
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
     ctx.fillStyle = "black"
-    ctx.fillText(`${item.name}`, left + width / 2, top + height / 2)
+
+    let name = item.name
+    if (item.kind === FileType.exercise) {
+      name =  `${item.idpath.slice(-1).join("/")} -- ${item.name}`
+    }
+    ctx.fillText(`${name}`, left + width / 2, top + height / 2)
   }
 
   paintLevel1(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {

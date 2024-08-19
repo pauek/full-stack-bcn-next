@@ -48,7 +48,7 @@ export const relatedPieces = sqliteTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.parentHash, table.childHash] }),
-  }),
+  })
 )
 export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
   parent: one(pieces, {
@@ -73,15 +73,22 @@ export enum FileType {
   video = "video",
   other = "other",
 }
-export const AllAttachmentTypes = [FileType.image, FileType.slide, FileType.exercise, FileType.quiz]
+export const AllAttachmentTypes = [
+  FileType.doc,
+  FileType.image,
+  FileType.slide,
+  FileType.exercise,
+  FileType.quiz,
+]
+
 export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType) as [
   FileType,
-  ...FileType[],
+  ...FileType[]
 ]
 
 const FileTypes: [string, ...string[]] = FileTypeValues.map((type) => String(type)) as [
   string,
-  ...string[],
+  ...string[]
 ]
 
 export const fileTypeFromString = (filetype: string): FileType => {
@@ -142,7 +149,7 @@ export const attachments = sqliteTable(
     pk: primaryKey({
       columns: [table.pieceHash, table.fileHash, table.filetype],
     }),
-  }),
+  })
 )
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
@@ -173,7 +180,7 @@ export const hashmap = sqliteTable(
   },
   (table) => ({
     hashIdx: index("hash_idx").on(table.pieceHash),
-  }),
+  })
 )
 export const hashmapRelations = relations(hashmap, ({ one }) => ({
   piece: one(pieces, {

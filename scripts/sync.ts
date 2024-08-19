@@ -22,6 +22,7 @@ import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { basename } from "path"
 import { insertFiles } from "./lib/lib"
+import { getAllPieceAttachments, getPieceAttachmentList } from "@/lib/data/files/attachments"
 
 const cliArgs = {
   forcedUpdate: false,
@@ -73,6 +74,12 @@ export const updateFileTree = async function () {
 
       // Compute level, depth, ...
       const childrenLevels = children.map(({ level }) => level)
+      const attachments = await getAllPieceAttachments(piece)
+      // Attachments count as level 0
+      if (attachments.length > 0) {
+        childrenLevels.push(0)
+      }
+
       const level = 1 + Math.max(-1, ...childrenLevels)
 
       // As soon as we can, we update the hashmap (since other funcs depend on it)
@@ -103,7 +110,7 @@ export const updateFileTree = async function () {
       })
 
       return { hash: newHash, filename, level }
-    },
+    }
   )
 
   if (!cliArgs.dryRun) {

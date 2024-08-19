@@ -12,6 +12,7 @@ import { readMetadata } from "./metadata"
 import { getPiece } from "./pieces"
 import { readFile } from "fs/promises"
 import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
+import { ConsoleLogWriter } from "drizzle-orm"
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true })
 
@@ -41,8 +42,8 @@ type FileTypeInfo = {
 }
 
 export const fileTypeInfo: Record<FileType, FileTypeInfo> = {
-  doc: { typeMatch: isDoc, subdir: "" },
-  cover: { typeMatch: isCover, subdir: "" },
+  doc: { typeMatch: isDoc, subdir: "." },
+  cover: { typeMatch: isCover, subdir: "." },
   slide: { typeMatch: isSlide, subdir: "slides" },
   image: { typeMatch: isImage, subdir: "images" },
   exercise: { typeMatch: isExercise, subdir: "exercises" },
@@ -86,17 +87,20 @@ export const findCoverImageFilename = async (piece: ContentPiece) => {
 }
 
 export const readAttachmentMetadata = async (
-  fileType: FileType,
+  idpath: string[],
+  filename: string,
   bytes: Buffer
 ): Promise<Record<string, any> | null> => {
-  if (fileType !== FileType.exercise) {
-    return null
-  }
-  const { preamble } = splitMarkdownPreamble(bytes.toString())
-  if (preamble.length > 0) {
-    return getMetadataFromMarkdownPreamble(preamble)
-  } else {
-    // FIXME(pauek): Unimplemented
+  try {
+    const { preamble } = splitMarkdownPreamble(bytes.toString())
+    if (preamble.length > 0) {
+      return getMetadataFromMarkdownPreamble(preamble)
+    } else {
+      // FIXME(pauek): Unimplemented
+      return null
+    }
+  } catch (e) {
+    console.warn(`Error reading metadata from attachment ${idpath.join("/")} (${filename}): ${e}`)
     return null
   }
 }

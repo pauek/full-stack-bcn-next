@@ -22,6 +22,7 @@ export const MAP_MAX_WIDTH = 4000
 export const MAP_MAX_HEIGHT = 4000
 export const MIN_SCALE = 0.24
 export const MAX_SCALE = 2
+const KNOB_WIDTH = 8
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
   loadItems: () => Promise<ItemType[]>
@@ -69,7 +70,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   resizing: null | {
     click: Point
-    initial: ItemType
+    initial: IRectangle
     item: ItemType
     knob: number
     updatedIndices: Set<number>
@@ -202,10 +203,16 @@ export class CanvasController<ItemType extends RectangularItem> {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i]
       if (item.level > 0 && checkRectangle(item.rectangle)) {
+        // Do not update if there are no children
+        if (!item.children || item.children.length === 0) {
+          continue
+        }
+
         const childrenRects = item.children
-          ?.map((index) => this.items[index].rectangle)
+          .map((index) => this.items[index].rectangle)
           .filter(checkRectangle)
-        const outline = rectangleEnlarge(rectangleListUnion(childrenRects || []), 10)
+
+        const outline = rectangleEnlarge(rectangleListUnion(childrenRects), 10)
 
         // Space for the title
         if (item.level === 1) {
@@ -254,11 +261,30 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
+  knobRectangle(x: number, y: number, knob: number): IRectangle {
+    let left = x - KNOB_WIDTH / 2
+    let top = y - KNOB_WIDTH / 2
+    let width = KNOB_WIDTH
+    let height = KNOB_WIDTH
+
+    if (knob === 1 || knob === 3) {
+      top -= KNOB_WIDTH
+      height *= 3
+    } else if (knob === 2 || knob === 4) {
+      left -= KNOB_WIDTH
+      width *= 3
+    }
+
+    return { left, top, width, height }
+  }
+
   mouseWithinKnob(item: ItemType): number {
-    const knobPositions = getKnobPositions(item.rectangle)
-    for (let i = 0; i < knobPositions.length; i++) {
-      const { x, y } = knobPositions[i]
-      if (pointWithinCircle(this.pointer, { x, y }, 10)) {
+    const positions = getKnobPositions(item.rectangle)
+    for (let i = 0; i < positions.length; i++) {
+      const pos = positions[i]
+      const { x, y } = pos
+      const knobRect = this.knobRectangle(x, y, i + 1)
+      if (pointWithinRect(this.pointer, knobRect)) {
         return i + 1
       }
     }
@@ -282,27 +308,14 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   paintKnobs(ctx: CanvasRenderingContext2D, item: ItemType) {
     const paintKnob = (x: number, y: number, knob: number) => {
-      const knobWidth = 8
+      const knobRect = this.knobRectangle(x, y, knob)
 
-      let left = x - knobWidth / 2
-      let top = y - knobWidth / 2
-      let width = knobWidth
-      let height = knobWidth
-
-      if (knob === 1 || knob === 3) {
-        top -= knobWidth
-        height *= 3
-      } else if (knob === 2 || knob === 4) {
-        left -= knobWidth
-        width *= 3
-      }
-
-      const knobRect = { left, top, width, height }
       const mouseInside = pointWithinRect(this.pointer, knobRect)
       const dragging = this.resizing && this.resizing.knob === knob
 
+      const { left, top, width, height } = knobRect
       ctx.beginPath()
-      ctx.roundRect(left, top, width, height, knobWidth / 2)
+      ctx.roundRect(left, top, width, height, KNOB_WIDTH / 2)
       ctx.closePath()
       ctx.fillStyle = dragging || mouseInside ? "white" : "blue"
       ctx.fill()
@@ -493,9 +506,9 @@ export class CanvasController<ItemType extends RectangularItem> {
     if (first) {
       this.dragging = {
         click,
-        origins: this.selected.map((item) => ({
-          x: item.rectangle.left,
-          y: item.rectangle.top,
+        origins: this.selected.map(({ rectangle }) => ({
+          x: rectangle.left,
+          y: rectangle.top,
         })),
         updatedIndices: new Set<number>(),
       }
@@ -511,10 +524,10 @@ export class CanvasController<ItemType extends RectangularItem> {
     const clientDiff = ptSub(point, click)
 
     for (let i = 0; i < this.selected.length; i++) {
-      const item = this.selected[i]
+      const rectangle = this.selected[i].rectangle
       const origin = origins[i]
-      item.rectangle.left = snap(origin.x + clientDiff.x / this.scale, 10)
-      item.rectangle.top = snap(origin.y + clientDiff.y / this.scale, 10)
+      rectangle.left = snap(origin.x + clientDiff.x / this.scale, 10)
+      rectangle.top = snap(origin.y + clientDiff.y / this.scale, 10)
     }
 
     const updated = this.updateParents()
@@ -541,11 +554,11 @@ export class CanvasController<ItemType extends RectangularItem> {
     if (this.selected.length === 0) {
       return
     }
-    const rect = this.selected[0]
+    const item = this.selected[0]
     this.resizing = {
       click,
-      initial: { ...rect },
-      item: rect,
+      initial: { ...item.rectangle }, // copy!
+      item,
       knob,
       updatedIndices: new Set<number>(),
     }
@@ -556,30 +569,35 @@ export class CanvasController<ItemType extends RectangularItem> {
       return
     }
 
-    const { click, initial, item: { rectangle }, knob } = this.resizing
+    const {
+      click,
+      initial,
+      item: { rectangle },
+      knob,
+    } = this.resizing
     const clientDiff = ptSub(point, click)
     const modelDiff = ptMul(clientDiff, 1 / this.scale)
     switch (knob) {
       case 1: {
         // left
-        rectangle.left = snap(initial.rectangle.left + modelDiff.x, 10)
-        rectangle.width = snap(initial.rectangle.width - modelDiff.x, 10)
+        rectangle.left = snap(initial.left + modelDiff.x, 10)
+        rectangle.width = snap(initial.width - modelDiff.x, 10)
         break
       }
       case 2: {
         // top
-        rectangle.top = snap(initial.rectangle.top + modelDiff.y, 10)
-        rectangle.height = snap(initial.rectangle.height - modelDiff.y, 10)
+        rectangle.top = snap(initial.top + modelDiff.y, 10)
+        rectangle.height = snap(initial.height - modelDiff.y, 10)
         break
       }
       case 3: {
         // right
-        rectangle.width = snap(initial.rectangle.width + modelDiff.x, 10)
+        rectangle.width = snap(initial.width + modelDiff.x, 10)
         break
       }
       case 4: {
         // bottom
-        rectangle.height = snap(initial.rectangle.height + modelDiff.y, 10)
+        rectangle.height = snap(initial.height + modelDiff.y, 10)
         break
       }
     }

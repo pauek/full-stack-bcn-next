@@ -5,8 +5,8 @@ import { TreeNode } from "@/lib/tree"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
-import { getPieceAttachmentList } from "./attachments"
-import { getDiskpathByHash } from "./hashmaps"
+import { getPieceAttachmentList, updateMarkdownMetadata } from "./attachments"
+import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readMetadata, updateMetadata } from "./metadata"
 import { getPieceWithChildren } from "./pieces"
 import {
@@ -14,7 +14,7 @@ import {
   filesWalkContentPieces,
   fileTypeInfo,
   getDiskpathForPiece,
-  readAttachmentMetadata
+  readAttachmentMetadata,
 } from "./utils"
 
 const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) => {
@@ -46,19 +46,27 @@ export const extendedMapPositionForPiece = async (
     if (!pieceWithChildren) {
       throw new Error(`Piece not found for idpath "${piece.idpath.join("/")}"????`)
     }
-    let children: string[] = []
-    if (pieceWithChildren.children) {
-      children = pieceWithChildren.children.map((ch) => ch.hash)
-    }
 
+    const { children } = pieceWithChildren
+
+    // Children are other pieces and also attachments
+    let childrenHashes: string[] = []
+    if (children) {
+      childrenHashes = children.map((ch) => ch.hash)
+    }
+    for (const type of AllAttachmentTypes) {
+      const attachmentHashes = (await getPieceAttachmentList(piece, type)).map((a) => a.hash)
+      childrenHashes = childrenHashes.concat(attachmentHashes)
+    }
+    
     return {
       kind: "piece",
       hash: piece.hash,
       name: piece.name,
       rectangle: { left, top, width, height },
-      children,
+      children: childrenHashes,
       idpath: piece.idpath,
-      level: pieceWithChildren.metadata.level,
+      level: metadata.level,
     }
   } else {
     return null
@@ -69,19 +77,19 @@ const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
   const positions: MapPosition<string>[] = []
   for (const type of AllAttachmentTypes) {
     const info = fileTypeInfo[type]
-    const exercises = await getPieceAttachmentList(piece, type)
-    for (const exercise of exercises) {
+    const attachments = await getPieceAttachmentList(piece, type)
+    for (const attachment of attachments) {
       const diskpath = await getDiskpathForPiece(piece)
-      const bytes = await readFile(join(diskpath, info.subdir, exercise.filename))
-      const metadata = await readAttachmentMetadata(type, bytes)
+      const bytes = await readFile(join(diskpath, info.subdir, attachment.filename))
+      const metadata = await readAttachmentMetadata(piece.idpath, attachment.filename, bytes)
       if (metadata && metadata.mapPosition) {
         const { left, top, width, height } = checkMapPosition(metadata, piece)
         positions.push({
-          kind: FileType.exercise,
-          hash: exercise.hash,
-          name: exercise.filename,
+          kind: type,
+          hash: attachment.hash,
+          idpath: piece.idpath,
+          name: attachment.filename,
           rectangle: { left, top, width, height },
-          idpath: [...piece.idpath, "exercise", exercise.filename],
           level: 0,
         })
       }
@@ -95,14 +103,15 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
 
   const root = await filesGetRoot()
   const positions: MapPosition<Hash>[] = []
+
   await filesWalkContentPieces(root.idpath, async ({ piece }) => {
-    const mapPos = await extendedMapPositionForPiece(piece)
-    if (mapPos) {
-      positions.push(mapPos)
+    const piecePos = await extendedMapPositionForPiece(piece)
+    if (piecePos) {
+      positions.push(piecePos)
     }
     const attachmentPositions = await extendedMapPositionForAttachments(piece)
-    for (const position of attachmentPositions) {
-      positions.push(position)
+    for (const attPos of attachmentPositions) {
+      positions.push(attPos)
     }
   })
 
@@ -113,47 +122,54 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
     return lev2 - lev1 // reverse sorted!
   })
 
-  const maybeFind = (hash: string) => {
-    const index = positions.findIndex((it) => it.hash === hash)
-    if (index === -1) {
-      return null
-    }
-    return index
+  // Compute tree (children indices)
+  const lookup = (hash: string) => {
+    const index = positions.findIndex((p) => p.hash === hash)
+    return index === -1 ? null : index
   }
+  const childrenIndices = (children?: string[]) => children?.map(lookup).filter((ch) => ch !== null)
 
-  // Once sorted, we want to relate the children to their parents by an index
-  // so the children are just an index to the parent.
-  const cleanResults = positions.map((pos) => {
-    const childrenIndices = pos.children?.map((ch) => maybeFind(ch)).filter((ch) => ch !== null)
-
-    return {
-      kind: pos.kind,
-      rectangle: { ...pos.rectangle },
-      name: pos.name,
-      hash: pos.hash,
-      idpath: pos.idpath,
-      level: pos.level,
-      children: childrenIndices,
-    }
-  })
-
-  return cleanResults
+  return positions.map((pos) => ({
+    ...pos,
+    children: childrenIndices(pos.children),
+  }))
 }
 
-export const updatePosition = async (hash: string, mapPosition: IRectangle) => {
+export const updatePiecePosition = async (hash: string, rectangle: IRectangle) => {
   const diskpath = await getDiskpathByHash(hash)
   if (diskpath === null) {
     throw new Error(`Diskpath not found for hash ${hash}`)
   }
-  const { left, top, width, height } = mapPosition
+  const { left, top, width, height } = rectangle
   updateMetadata(diskpath, async (metadata) => {
     metadata.mapPosition = { left, top, width, height }
   })
 }
 
+export const updateMarkdownPosition = (filetype: FileType) => async (pos: MapPosition<number>) => {
+  const diskpath = await getDiskpathByIdpath(pos.idpath)
+  if (diskpath === null) {
+    throw new Error(`Diskpath not found for hash ${pos.idpath.join("/")}`)
+  }
+  updateMarkdownMetadata(pos.idpath, filetype, pos.name, { mapPosition: pos.rectangle })
+}
+
+export const updatePiecePositionFromMapPosition = async (pos: MapPosition<number>) =>
+  updatePiecePosition(pos.hash, pos.rectangle)
+
+type UpdateFunc = (pos: MapPosition<number>) => Promise<void>
+const updateFunctionTable = new Map<any, UpdateFunc>([
+  ["piece", updatePiecePositionFromMapPosition],
+  [FileType.exercise, updateMarkdownPosition(FileType.exercise)],
+  [FileType.doc, updateMarkdownPosition(FileType.doc)],
+])
 export const updateMapPositions = async (poslist: MapPosition<number>[]) => {
   for (const pos of poslist) {
-    await updatePosition(pos.hash, pos.rectangle)
+    const func = updateFunctionTable.get(pos.kind)
+    if (!func) {
+      throw new Error(`Invalid kind ${pos.kind}`)
+    }
+    await func(pos)
   }
 }
 
@@ -172,19 +188,19 @@ export const assignPosition = async (node: TreeNode) => {
       let x = 20
       for (const chapter of session.children) {
         const rect = { left: x, top: y, width: 200, height: 50 }
-        updatePosition(chapter.hash, rect)
+        updatePiecePosition(chapter.hash, rect)
         x += 210
       }
       const sessionWidth = Math.max(x, 220)
       const rect = { left: 10, top: y + 10, width: sessionWidth, height: 70 }
-      updatePosition(session.hash, rect)
+      updatePiecePosition(session.hash, rect)
       y += 90
       partHeight += 90
       maxSessionWidth = Math.max(maxSessionWidth, sessionWidth)
     }
     const width = Math.max(maxSessionWidth + 20, 200)
     const rect = { left: 0, top: y - partHeight, width, height: partHeight }
-    updatePosition(part.hash, rect)
+    updatePiecePosition(part.hash, rect)
     y += 80
   }
 }

@@ -1,9 +1,12 @@
-import { FileType } from "@/data/schema"
+import { AllAttachmentTypes, FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { readFile } from "fs/promises"
 import { basename, join, join as pathJoin } from "path"
 import { FileBuffer, FileReference } from "../data-backend"
 import * as utils from "./utils"
+import { getDiskpathByIdpath } from "./hashmaps"
+import { splitMarkdownPreamble } from "@/lib/utils"
+import { writeFile } from "fs/promises"
 
 export const pieceNumSlides = async (piece: ContentPiece) => {
   return (await getPieceSlideList(piece)).length
@@ -31,12 +34,30 @@ export const getAttachmentContent = async (piece: ContentPiece, fileref: FileRef
     let typeInfo = utils.fileTypeInfo[fileref.filetype]
     const filepath = pathJoin(diskpath, typeInfo.subdir, fileref.filename)
     const bytes = await readFile(filepath)
-    const metadata = await utils.readAttachmentMetadata(fileref.filetype, bytes)
+    const metadata = await utils.readAttachmentMetadata(piece.idpath, fileref.filename, bytes)
     return { bytes, metadata }
   } catch (e) {
     console.error(`Error reading attachment! ${e}`)
     return null
   }
+}
+
+export const updateMarkdownMetadata = async (
+  idpath: string[],
+  filetype: FileType,
+  filename: string,
+  metadata: Record<string, any>
+) => {
+  const diskpath = await getDiskpathByIdpath(idpath)
+  if (diskpath === null) {
+    console.error(`Error updating exercise metadata: diskpath not found for ${idpath.join("/")}`)
+    return
+  }
+  const filepath = pathJoin(diskpath, utils.fileTypeInfo[filetype].subdir, filename)
+  const bytes = await readFile(filepath)
+  const { body } = await splitMarkdownPreamble(bytes.toString())
+  const newPreamble = JSON.stringify(metadata, null, 2)
+  await writeFile(filepath, `---\n${newPreamble}\n---\n${body}`)
 }
 
 export const getPieceSlideList = async (piece: ContentPiece) =>
@@ -60,7 +81,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: FileType,
+  filetype: FileType
 ): Promise<Buffer | null> => {
   const diskpath = await utils.getDiskpathForPiece(piece)
   const fileTypeInfo = utils.fileTypeInfo[filetype]
@@ -71,4 +92,13 @@ export const getPieceFileData = async (
     console.error(`Error reading ${fulldiskpath}: ${e}`)
     return null
   }
+}
+
+export const getAllPieceAttachments = async (piece: ContentPiece) => {
+  let result: FileReference[] = []
+  for (const type of AllAttachmentTypes) {
+    const attachments = await getPieceAttachmentList(piece, type)
+    result = result.concat(attachments)
+  }
+  return result
 }

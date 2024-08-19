@@ -1,6 +1,6 @@
 import "@/lib/env.mjs"
 
-import { AllAttachmentTypes, FileType } from "@/data/schema"
+import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { insertFile } from "@/lib/data/db/insert"
 import { getPieceAttachmentList } from "@/lib/data/files/attachments"
@@ -34,7 +34,8 @@ export const insertFiles = async (piece: ContentPiece) => {
     })
 
   let allFiles: FileInsertion[] = []
-  for (const filetype of AllAttachmentTypes) {
+  const attachmentsWithFolders = [FileType.image, FileType.slide, FileType.exercise, FileType.quiz]
+  for (const filetype of attachmentsWithFolders) {
     allFiles = allFiles.concat(
       (await getPieceAttachmentList(piece, filetype)).map(
         fullpath(fileTypeInfo[filetype].subdir, filetype),
