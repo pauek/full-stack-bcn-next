@@ -22,7 +22,7 @@ import {
 
 import { getContentTree } from "./tree"
 
-import { getMapPositions, getMapPositionsExtended, updateMapPositions } from "./positions"
+import { getMapPositionsExtended, updateMapPositions } from "./positions"
 
 export const backend: DataBackendBase = {
   getInfo: () => `DB: ${env.TURSO_URL}`,
@@ -44,7 +44,6 @@ export const backend: DataBackendBase = {
 
   getContentTree,
 
-  getMapPositions,
   getMapPositionsExtended,
   updateMapPositions,
 }

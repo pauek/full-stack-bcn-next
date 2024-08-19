@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPositionExtended } from "@/data/schema"
+import { MapPosition } from "@/data/schema"
 import { CanvasController } from "@/lib/canvas-controller"
 import { MapPositionsAdapter } from "@/lib/map-positions-adapter"
 import { usePathname, useRouter } from "next/navigation"
@@ -11,10 +11,10 @@ type MapSize = {
   height: number
 }
 
-type Controller = CanvasController<MapPositionExtended>
+type Controller = CanvasController<MapPosition<number>>
 
 interface Props {
-  mapPositions: MapPositionExtended[]
+  mapPositions: MapPosition<number>[]
 }
 export default function Map({ mapPositions }: Props) {
   const router = useRouter()

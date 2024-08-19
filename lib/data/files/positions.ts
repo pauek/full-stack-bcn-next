@@ -1,20 +1,20 @@
-import { AllAttachmentTypes, type MapPosition, type MapPositionExtended } from "@/data/schema"
+import { AllAttachmentTypes, FileType, type MapPosition } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { IRectangle } from "@/lib/geometry"
 import { TreeNode } from "@/lib/tree"
 import { readFile } from "fs/promises"
 import { join } from "path"
+import { Hash } from "../hashing"
 import { getPieceAttachmentList } from "./attachments"
 import { getDiskpathByHash } from "./hashmaps"
 import { readMetadata, updateMetadata } from "./metadata"
 import { getPieceWithChildren } from "./pieces"
 import {
   filesGetRoot,
-  filesGetRootIdpath,
   filesWalkContentPieces,
   fileTypeInfo,
   getDiskpathForPiece,
-  readAttachmentMetadata,
+  readAttachmentMetadata
 } from "./utils"
 
 const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) => {
@@ -33,7 +33,9 @@ const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) =>
   return { left, top, width, height }
 }
 
-export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
+export const extendedMapPositionForPiece = async (
+  piece: ContentPiece
+): Promise<MapPosition<string> | null> => {
   const diskpath = await getDiskpathForPiece(piece)
   const metadata = await readMetadata(diskpath)
   if (metadata.mapPosition) {
@@ -50,12 +52,10 @@ export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
     }
 
     return {
+      kind: "piece",
       hash: piece.hash,
       name: piece.name,
-      left,
-      top,
-      width,
-      height,
+      rectangle: { left, top, width, height },
       children,
       idpath: piece.idpath,
       level: pieceWithChildren.metadata.level,
@@ -66,7 +66,7 @@ export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
 }
 
 const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
-  const positions: Position[] = []
+  const positions: MapPosition<string>[] = []
   for (const type of AllAttachmentTypes) {
     const info = fileTypeInfo[type]
     const exercises = await getPieceAttachmentList(piece, type)
@@ -77,13 +77,10 @@ const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
       if (metadata && metadata.mapPosition) {
         const { left, top, width, height } = checkMapPosition(metadata, piece)
         positions.push({
+          kind: FileType.exercise,
           hash: exercise.hash,
           name: exercise.filename,
-          left,
-          top,
-          width,
-          height,
-          children: [],
+          rectangle: { left, top, width, height },
           idpath: [...piece.idpath, "exercise", exercise.filename],
           level: 0,
         })
@@ -93,13 +90,11 @@ const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
   return positions
 }
 
-type Position = NonNullable<Awaited<ReturnType<typeof extendedMapPositionForPiece>>>
-
-export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> => {
+export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> => {
   //  Hay que devolver los items ordenados por nivel, para pintarlos en el orden correcto.
 
   const root = await filesGetRoot()
-  const positions: Position[] = []
+  const positions: MapPosition<Hash>[] = []
   await filesWalkContentPieces(root.idpath, async ({ piece }) => {
     const mapPos = await extendedMapPositionForPiece(piece)
     if (mapPos) {
@@ -129,13 +124,11 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
   // Once sorted, we want to relate the children to their parents by an index
   // so the children are just an index to the parent.
   const cleanResults = positions.map((pos) => {
-    const childrenIndices = pos.children.map((ch) => maybeFind(ch)).filter((ch) => ch !== null)
+    const childrenIndices = pos.children?.map((ch) => maybeFind(ch)).filter((ch) => ch !== null)
 
     return {
-      left: pos.left,
-      top: pos.top,
-      width: pos.width,
-      height: pos.height,
+      kind: pos.kind,
+      rectangle: { ...pos.rectangle },
       name: pos.name,
       hash: pos.hash,
       idpath: pos.idpath,
@@ -158,9 +151,9 @@ export const updatePosition = async (hash: string, mapPosition: IRectangle) => {
   })
 }
 
-export const updateMapPositions = async (rectlist: MapPosition[]) => {
-  for (const rect of rectlist) {
-    await updatePosition(rect.hash, rect)
+export const updateMapPositions = async (poslist: MapPosition<number>[]) => {
+  for (const pos of poslist) {
+    await updatePosition(pos.hash, pos.rectangle)
   }
 }
 
@@ -194,26 +187,4 @@ export const assignPosition = async (node: TreeNode) => {
     updatePosition(part.hash, rect)
     y += 80
   }
-}
-
-export const getMapPositions = async () => {
-  const rootIdpath = await filesGetRootIdpath()
-  const result: MapPosition[] = []
-  await filesWalkContentPieces(rootIdpath, async ({ piece, diskpath }) => {
-    const metadata = await readMetadata(diskpath)
-    if (metadata.mapPosition) {
-      // Check mapPosition has the fields that we expect
-      const { left, top, width, height } = metadata.mapPosition
-      if (
-        typeof left !== "number" ||
-        typeof top !== "number" ||
-        typeof width !== "number" ||
-        typeof height !== "number"
-      ) {
-        throw new Error(`Invalid mapPosition for ${piece.idpath.join("/")}`)
-      }
-      result.push({ hash: piece.hash, left, top, width, height })
-    }
-  })
-  return result
 }

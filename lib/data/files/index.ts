@@ -13,7 +13,7 @@ import {
 
 import { getQuizAnswersForHash } from "./quiz"
 import { getAllIdpaths } from "./backend"
-import { getMapPositions, getMapPositionsExtended, updateMapPositions } from "./positions"
+import { getMapPositionsExtended, updateMapPositions } from "./positions"
 import { getContentTree } from "./tree"
 
 console.info(`Backend = "files"`)
@@ -36,8 +36,6 @@ export const backend: DataBackendBase = {
   getPieceSlideList,
 
   getQuizAnswersForHash,
-
-  getMapPositions,
 
   getAllIdpaths,
   getContentTree,

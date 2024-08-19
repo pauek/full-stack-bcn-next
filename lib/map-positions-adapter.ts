@@ -1,10 +1,10 @@
 import { actionMapPositionsUpdate } from "@/actions/positions"
-import { MapPositionExtended } from "@/data/schema"
+import { MapPosition } from "@/data/schema"
 import { useRouter } from "next/navigation"
 import { CanvasController } from "./canvas-controller"
 import { pointWithinRect } from "./geometry"
 
-type Item = MapPositionExtended
+type Item = MapPosition<number>
 
 type Router = ReturnType<typeof useRouter>
 
@@ -32,7 +32,7 @@ export class MapPositionsAdapter {
   }
 
   paintMinimal(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height } = item
+    const { left, top, width, height } = item.rectangle
     const over = pointWithinRect(controller.pointer, { left, top, width, height })
     if (controller.mode === "edit" && over) {
       ctx.fillStyle = "lightblue"
@@ -43,7 +43,7 @@ export class MapPositionsAdapter {
   }
 
   paintLevel0(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height } = item
+    const { left, top, width, height } = item.rectangle
 
     ctx.beginPath()
     ctx.roundRect(left, top, width, height, 5)
@@ -65,7 +65,7 @@ export class MapPositionsAdapter {
   }
 
   paintLevel1(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height } = item
+    const { left, top, width, height } = item.rectangle
 
     ctx.strokeStyle = "#ccc"
     ctx.lineWidth = 1
@@ -84,7 +84,7 @@ export class MapPositionsAdapter {
   }
 
   paintLevel2(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height } = item
+    const { left, top, width, height } = item.rectangle
 
     ctx.strokeStyle = "#ccc"
     ctx.lineWidth = 2

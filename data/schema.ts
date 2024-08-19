@@ -1,3 +1,4 @@
+import { IRectangle } from "@/lib/geometry"
 import { relations, sql } from "drizzle-orm"
 import { blob, index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
 import { z } from "zod"
@@ -23,18 +24,14 @@ export type DBPiece = typeof pieces.$inferSelect
 
 // Map Positions
 
-export type MapPosition = {
+export type MapPosition<T> = {
+  rectangle: IRectangle
+  kind: "piece" | FileType
   hash: string
-  left: number
-  top: number
-  width: number
-  height: number
-}
-export type MapPositionExtended = MapPosition & {
   name: string
   idpath: string[]
   level: number
-  children: number[]
+  children?: T[]
 }
 
 // HAS-A Relation

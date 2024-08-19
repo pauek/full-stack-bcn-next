@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "files:build": "BACKEND=files next build",
+    "build": "BACKEND=files next build",
     "dev:build": "DB=development next build",
-    "build": "DB=production next build",
+    "prod:build": "DB=production next build",
     "preview:build": "DB=preview next build",
     "start": "next start",
     "lint": "next lint",

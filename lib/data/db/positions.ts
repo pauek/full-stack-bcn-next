@@ -1,20 +1,7 @@
-import { MapPosition, MapPositionExtended } from "@/data/schema"
+import { MapPosition } from "@/data/schema"
 import { db } from "./db"
 
-export const getMapPositions = async () => {
-  const pieces = await db.query.pieces.findMany({
-    columns: {
-      pieceHash: true,
-      metadata: true,
-    },
-  })
-  return pieces.map(({ pieceHash, metadata }) => {
-    const { left, top, width, height } = metadata
-    return { pieceHash, left, top, width, height }
-  })
-}
-
-export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> => {
+export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> => {
   //  Hay que devolver los items ordenados por nivel, para pintarlos en el orden correcto.
   const positions = await db.query.hashmap.findMany({
     columns: {
@@ -79,6 +66,6 @@ export const getMapPositionsExtended = async (): Promise<MapPositionExtended[]> 
 
 export type MapPositionWithPiece = Awaited<ReturnType<typeof getMapPositionsExtended>>[number]
 
-export const updateMapPositions = async (positionList: MapPosition[]) => {
+export const updateMapPositions = async (positionList: MapPosition<number>[]) => {
   throw new Error("Not implemented on purpose!!")
 }
