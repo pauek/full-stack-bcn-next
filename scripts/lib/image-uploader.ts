@@ -97,7 +97,7 @@ class ImageUploader {
     await Promise.allSettled(
       Array.from({ length: this.parallelRequests }).map((_, i) => {
         return _uploadAllWithOffset(i)
-      })
+      }),
     )
 
     // Erase last line if necessary
@@ -118,7 +118,7 @@ class ImageUploader {
             Bucket: process.env.R2_BUCKET,
             ContinuationToken: contToken,
             MaxKeys: 200,
-          })
+          }),
         )
         if (result.Contents) {
           for (const { Key: name, Size: size } of result.Contents) {
@@ -141,7 +141,7 @@ class ImageUploader {
 
 export const withImageUploader = async (
   options: ImageUploaderOptions,
-  func: (uploader: ImageUploader) => Promise<void>
+  func: (uploader: ImageUploader) => Promise<void>,
 ) => {
   const uploader = new ImageUploader(options)
   // await delay(1000);

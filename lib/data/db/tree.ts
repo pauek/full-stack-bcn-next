@@ -10,12 +10,10 @@ type Options = {
   level: number
 }
 export const getContentTree = async (idpath: string[], { level }: Options) => {
-
   const _getContentTree = async (idpath: string[], level: number) => {
     if (level === 0) {
       return await getPiece(idpath)
     }
-
   }
 
   const hash = await pathToHash(idpath)

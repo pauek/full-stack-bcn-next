@@ -10,7 +10,7 @@ import { getFileData, getPieceFilesByFiletype } from "./utils"
 
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<FileReference[]> => {
   const results = await getPieceFilesByFiletype(piece.hash, filetype)
   if (!results) {
@@ -70,7 +70,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<Buffer | null> => {
   const [result] = await db
     .select({ data: schema.files.data })
@@ -81,8 +81,8 @@ export const getPieceFileData = async (
       and(
         eq(schema.pieces.pieceHash, piece.hash),
         eq(schema.attachments.filename, filename),
-        eq(schema.attachments.filetype, filetype)
-      )
+        eq(schema.attachments.filetype, filetype),
+      ),
     )
     .limit(1)
   if (!result || !result.data) {

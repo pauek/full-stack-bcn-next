@@ -61,7 +61,7 @@ export const chunkArray = (array: Array<any>, chunkSize: number) => {
 
 // https://stackoverflow.com/questions/64928212/how-to-use-promise-allsettled-with-typescript
 export const isFulfilled = function <T>(
-  input: PromiseSettledResult<T>
+  input: PromiseSettledResult<T>,
 ): input is PromiseFulfilledResult<T> {
   return input.status === "fulfilled"
 }

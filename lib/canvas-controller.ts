@@ -29,7 +29,7 @@ interface CanvasAdapter<ItemType extends RectangularItem> {
   paintItem: (
     ctrl: CanvasController<ItemType>,
     ctx: CanvasRenderingContext2D,
-    item: ItemType
+    item: ItemType,
   ) => void
   clickItem(item: ItemType): void
 }
@@ -86,7 +86,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   constructor(
     ref: RefObject<HTMLCanvasElement>,
     urlPath: string,
-    adapter: CanvasAdapter<ItemType>
+    adapter: CanvasAdapter<ItemType>,
   ) {
     this.adapter = adapter
     this.canvasRef = ref
@@ -350,7 +350,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       ctx,
       `bounds:   ${left.toFixed(0)}, ${top.toFixed(0)}, ${width.toFixed(0)}, ${height.toFixed(0)}`,
       4,
-      0
+      0,
     )
   }
 
@@ -622,7 +622,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
     this.selected = this.items.filter(
-      (item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel)
+      (item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel),
     )
   }
 
@@ -633,7 +633,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
     this.selected = this.items.filter(
-      (item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel)
+      (item) => item.level === 0 && rectIntersectsRect(item, rubberbandModel),
     )
     this.rubberbanding = null
   }

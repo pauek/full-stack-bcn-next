@@ -42,12 +42,8 @@
           "name": "attachments_piece_hash_pieces_piece_hash_fk",
           "tableFrom": "attachments",
           "tableTo": "pieces",
-          "columnsFrom": [
-            "piece_hash"
-          ],
-          "columnsTo": [
-            "piece_hash"
-          ],
+          "columnsFrom": ["piece_hash"],
+          "columnsTo": ["piece_hash"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -55,23 +51,15 @@
           "name": "attachments_file_hash_files_file_hash_fk",
           "tableFrom": "attachments",
           "tableTo": "files",
-          "columnsFrom": [
-            "file_hash"
-          ],
-          "columnsTo": [
-            "file_hash"
-          ],
+          "columnsFrom": ["file_hash"],
+          "columnsTo": ["file_hash"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "attachments_piece_hash_file_hash_filetype_pk": {
-          "columns": [
-            "piece_hash",
-            "file_hash",
-            "filetype"
-          ],
+          "columns": ["piece_hash", "file_hash", "filetype"],
           "name": "attachments_piece_hash_file_hash_filetype_pk"
         }
       },
@@ -128,9 +116,7 @@
       "indexes": {
         "hash_idx": {
           "name": "hash_idx",
-          "columns": [
-            "piece_hash"
-          ],
+          "columns": ["piece_hash"],
           "isUnique": false
         }
       },
@@ -139,12 +125,8 @@
           "name": "hashmap_piece_hash_pieces_piece_hash_fk",
           "tableFrom": "hashmap",
           "tableTo": "pieces",
-          "columnsFrom": [
-            "piece_hash"
-          ],
-          "columnsTo": [
-            "piece_hash"
-          ],
+          "columnsFrom": ["piece_hash"],
+          "columnsTo": ["piece_hash"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -214,22 +196,15 @@
           "name": "quiz_answers_hash_files_file_hash_fk",
           "tableFrom": "quiz_answers",
           "tableTo": "files",
-          "columnsFrom": [
-            "hash"
-          ],
-          "columnsTo": [
-            "file_hash"
-          ],
+          "columnsFrom": ["hash"],
+          "columnsTo": ["file_hash"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "quiz_answers_hash_answer_pk": {
-          "columns": [
-            "hash",
-            "answer"
-          ],
+          "columns": ["hash", "answer"],
           "name": "quiz_answers_hash_answer_pk"
         }
       },
@@ -259,12 +234,8 @@
           "name": "related_pieces_parent_pieces_piece_hash_fk",
           "tableFrom": "related_pieces",
           "tableTo": "pieces",
-          "columnsFrom": [
-            "parent"
-          ],
-          "columnsTo": [
-            "piece_hash"
-          ],
+          "columnsFrom": ["parent"],
+          "columnsTo": ["piece_hash"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -272,22 +243,15 @@
           "name": "related_pieces_child_pieces_piece_hash_fk",
           "tableFrom": "related_pieces",
           "tableTo": "pieces",
-          "columnsFrom": [
-            "child"
-          ],
-          "columnsTo": [
-            "piece_hash"
-          ],
+          "columnsFrom": ["child"],
+          "columnsTo": ["piece_hash"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "related_pieces_parent_child_pk": {
-          "columns": [
-            "parent",
-            "child"
-          ],
+          "columns": ["parent", "child"],
           "name": "related_pieces_parent_child_pk"
         }
       },

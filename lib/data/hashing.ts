@@ -30,7 +30,7 @@ export const hashAny = (x: any) => {
     hasher.update(
       Object.entries(x)
         .map(([field, value]) => hashAny(`${field}=${value}\n`))
-        .join("")
+        .join(""),
     )
   } else {
     throw `hash: Unsupported type ${typeof x}: ${JSON.stringify(x)}`
@@ -46,7 +46,10 @@ export type HashItem = {
   filename: string
   hash: string
 }
-export const hashPiece = async function (piece: ContentPiece, childrenHashes: HashItem[]): Promise<Hash> {
+export const hashPiece = async function (
+  piece: ContentPiece,
+  childrenHashes: HashItem[],
+): Promise<Hash> {
   //
   childrenHashes.sort((a, b) => a.filename.localeCompare(b.filename))
 

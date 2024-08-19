@@ -103,7 +103,7 @@ export const updateFileTree = async function () {
       })
 
       return { hash: newHash, filename, level }
-    }
+    },
   )
 
   if (!cliArgs.dryRun) {

@@ -40,7 +40,7 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
 const dbPieceToContentPiece = (
   idpath: string[],
   dbPiece: schema.DBPiece,
-  children?: ContentPiece[]
+  children?: ContentPiece[],
 ): ContentPiece => {
   const { name, metadata, pieceHash } = dbPiece
   return {
@@ -99,7 +99,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     if (childIdpath === null) {
       console.warn(
         `getPieceWithChildren: child idpath not found ` +
-          `for "${child.pieceHash}" (parent: ${idpath.join("/")})`
+          `for "${child.pieceHash}" (parent: ${idpath.join("/")})`,
       )
       continue
     }

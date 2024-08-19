@@ -48,4 +48,3 @@ export const backend: DataBackendBase = {
   getMapPositionsExtended,
   updateMapPositions,
 }
-

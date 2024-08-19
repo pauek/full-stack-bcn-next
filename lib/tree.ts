@@ -44,7 +44,7 @@ export const dbConstructFullTree = async () => {
   if (tree.children[0].id !== "fullstack") {
     throw new Error("Expected 'fullstack' course to be the root!")
   }
-  return tree.children[0];
+  return tree.children[0]
 }
 
 export const computeLevels = async (tree: TreeNode) => {

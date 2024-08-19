@@ -4,7 +4,12 @@ import { IRectangle } from "@/lib/geometry"
 import { TreeNode } from "@/lib/tree"
 import { readMetadata, updateMetadata } from "./metadata"
 import { getPieceWithChildren } from "./pieces"
-import { filesGetRoot, filesGetRootIdpath, filesWalkContentPieces, getDiskpathForPiece } from "./utils"
+import {
+  filesGetRoot,
+  filesGetRootIdpath,
+  filesWalkContentPieces,
+  getDiskpathForPiece,
+} from "./utils"
 import { getDiskpathByHash } from "./hashmaps"
 
 export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
@@ -20,7 +25,7 @@ export const extendedMapPositionForPiece = async (piece: ContentPiece) => {
       typeof height !== "number"
     ) {
       throw new Error(
-        `Invalid mapPosition for ${piece.idpath.join("/")}: ${JSON.stringify(metadata.mapPosition)}`
+        `Invalid mapPosition for ${piece.idpath.join("/")}: ${JSON.stringify(metadata.mapPosition)}`,
       )
     }
     // Get children

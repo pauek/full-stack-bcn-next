@@ -20,7 +20,7 @@ export class MapPositionsAdapter {
   saveItems(positions: Item[]) {
     actionMapPositionsUpdate(positions)
       .then(
-        () => console.log("Updated:", positions) // TODO: better message
+        () => console.log("Updated:", positions), // TODO: better message
       )
       .catch((e) => {
         console.error(`Error updating positions: `, e) // TODO: show user
@@ -28,7 +28,7 @@ export class MapPositionsAdapter {
   }
 
   async loadItems() {
-    return this.items;
+    return this.items
   }
 
   paintMinimal(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
@@ -44,7 +44,7 @@ export class MapPositionsAdapter {
 
   paintLevel0(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item
-    
+
     ctx.beginPath()
     ctx.roundRect(left, top, width, height, 5)
     ctx.closePath()

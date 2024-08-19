@@ -19,7 +19,7 @@ import { Hash } from "../hashing"
 export const getPieceFilesByFiletype = async (
   pieceHash: string,
   filetype: FileType,
-  options?: { limit: number }
+  options?: { limit: number },
 ) => {
   // find file starting with cover associated with piece
   const result = await db

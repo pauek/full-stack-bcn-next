@@ -13,8 +13,8 @@ export type HashmapEntry = {
 }
 
 type GlobalHashmaps = {
-  loaded: boolean,
-  changes: boolean,
+  loaded: boolean
+  changes: boolean
   entries: HashmapEntry[]
   deleted: boolean[]
   byHash: Map<string, number>
@@ -135,7 +135,7 @@ export const loadGlobalHashmap = async () => {
       hashmapAdd({ hash, idpath, diskpath, level })
 
       return { hash, filename: basename(diskpath), level }
-    }
+    },
   )
 
   globalHashmaps.loaded = true
@@ -200,7 +200,7 @@ export const hashAllContent = async function (rootIdpath: string[]) {
       hashes.set(idjpath, { hash, idpath: piece.idpath, diskpath, level })
 
       return { hash, filename, level }
-    }
+    },
   )
 
   return hashes

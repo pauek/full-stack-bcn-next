@@ -10,7 +10,7 @@ export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> =
 
 export const getAllAttachmentPaths = async (
   rootIdpath: string[],
-  filetype: FileType
+  filetype: FileType,
 ): Promise<string[][]> => {
   const result: string[][] = []
   await filesWalkContentPieces(rootIdpath, async ({ piece }) => {

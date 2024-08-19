@@ -37,8 +37,8 @@ export const insertFiles = async (piece: ContentPiece) => {
   for (const filetype of AllAttachmentTypes) {
     allFiles = allFiles.concat(
       (await getPieceAttachmentList(piece, filetype)).map(
-        fullpath(fileTypeInfo[filetype].subdir, filetype)
-      )
+        fullpath(fileTypeInfo[filetype].subdir, filetype),
+      ),
     )
   }
   const doc = await findDocFilename(diskpath)

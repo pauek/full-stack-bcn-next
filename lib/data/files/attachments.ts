@@ -57,7 +57,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: FileType
+  filetype: FileType,
 ): Promise<Buffer | null> => {
   const diskpath = await utils.getDiskpathForPiece(piece)
   const fileTypeInfo = utils.fileTypeInfo[filetype]

@@ -21,7 +21,7 @@ export default function Map({ mapPositions }: Props) {
   const pathname = usePathname()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stateRef = useRef<Controller>(
-    new CanvasController(canvasRef, pathname, new MapPositionsAdapter(router, mapPositions))
+    new CanvasController(canvasRef, pathname, new MapPositionsAdapter(router, mapPositions)),
   )
 
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 })

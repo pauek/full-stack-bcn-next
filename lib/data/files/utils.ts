@@ -85,7 +85,7 @@ export const findCoverImageFilename = async (piece: ContentPiece) => {
 
 export const listPieceSubdir = async (
   diskpath: string,
-  filetype: FileType
+  filetype: FileType,
 ): Promise<FileReference[]> => {
   try {
     const typeInfo = fileTypeInfo[filetype]
@@ -115,7 +115,7 @@ export const okToSkipMissingHashes = async (func: (...args: any[]) => Promise<an
 
 export const readPieceAtDiskpath = async (
   diskpath: string,
-  parentIdpath: string[]
+  parentIdpath: string[],
 ): Promise<ContentPiece> => {
   const dirname = basename(diskpath)
   const name = dirNameToTitle(dirname)
@@ -142,7 +142,7 @@ type PieceAndPath = {
 
 export const getPieceChildren = async (
   parent: ContentPiece,
-  diskpath: string
+  diskpath: string,
 ): Promise<PieceAndPath[]> => {
   const children: PieceAndPath[] = []
   const idToPath: Map<string, string> = new Map() // Check that no IDs in children are repeated
@@ -158,7 +158,7 @@ export const getPieceChildren = async (
         throw new Error(
           `INCONSISTENCY ERROR: children of ${parent.idpath.join("/")}` +
             ` the same ID: "${child.id}"!\n` +
-            `["${existingPath}" <=> "${childDiskpath}"]\n`
+            `["${existingPath}" <=> "${childDiskpath}"]\n`,
         )
       }
 
@@ -220,7 +220,7 @@ export const findoutDiskpathFromIdpath = async (idpath: string[]): Promise<strin
 }
 
 export const getPieceAndPathWithChildren = async (
-  idpath: string[]
+  idpath: string[],
 ): Promise<PieceAndPath | null> => {
   let diskpath = await findoutDiskpathFromIdpath(idpath)
   if (diskpath === null) {
@@ -237,7 +237,7 @@ const walkFiles = async function <T>(
   index: number,
   idpath: string[],
   diskpath: string,
-  func: FilesWalkFunc<T>
+  func: FilesWalkFunc<T>,
 ) {
   const parentIdpath = idpath.slice(0, -1)
   const piece = await readPieceAtDiskpath(diskpath, parentIdpath)
