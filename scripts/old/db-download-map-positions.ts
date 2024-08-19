@@ -4,7 +4,7 @@ import { MapPosition } from "@/data/schema"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 
-import { dbBackend } from "@/lib/data"
+import { backend as dbBackend } from "@/lib/data/db"
 import { closeConnection } from "@/lib/data/db/db"
 import { updateMetadata } from "@/lib/data/files/metadata"
 import { filesWalkContentPieces, filesGetRootIdpath } from "@/lib/data/files/utils"

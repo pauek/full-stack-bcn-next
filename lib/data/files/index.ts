@@ -16,6 +16,8 @@ import { getAllIdpaths } from "./backend"
 import { getMapPositions, getMapPositionsExtended, updateMapPositions } from "./positions"
 import { getContentTree } from "./tree"
 
+console.info(`Backend = "files"`)
+
 export const backend: DataBackendBase = {
   getInfo: () => {
     return "<< FILES >>"

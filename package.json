@@ -3,12 +3,15 @@
   "version": "0.1.1",
   "private": true,
   "scripts": {
-    "dev": "BACKEND=files next dev",
+    "dev": "next dev",
     "files:build": "BACKEND=files next build",
-    "build": "next build",
+    "dev:build": "DB=development next build",
+    "build": "DB=production next build",
+    "preview:build": "DB=preview next build",
     "start": "next start",
     "lint": "next lint",
-    "sync": "bun run scripts/sync.ts",
+    "sync": "NODE_ENV=production DB=development bun run scripts/sync.ts",
+    "preview:sync": "NODE_ENV=production DB=preview bun run scripts/sync.ts",
     "prod:sync": "NODE_ENV=production bun run scripts/sync.ts",
     "format": "bunx prettier --write ."
   },

@@ -1,7 +1,7 @@
 import "@/lib/env-config"
 
 import { FileType } from "@/data/schema"
-import { dbBackend } from "@/lib/data"
+import { backend as dbBackend } from "@/lib/data/db"
 import { closeConnection } from "@/lib/data/db/db"
 import { dbGetAllHashmaps } from "@/lib/data/db/hashmaps"
 import { insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"

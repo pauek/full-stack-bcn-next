@@ -1,6 +1,6 @@
 import { FileType, FileTypeValues } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { dbBackend } from "@/lib/data"
+import data from "@/lib/data"
 import { closeConnection } from "@/lib/data/db/db"
 import { getPieceFilesByFiletype } from "@/lib/data/db/utils"
 import { filesGetRoot } from "@/lib/data/files/utils"
@@ -12,12 +12,12 @@ const {
 } = process
 
 showExecutionTime(async () => {
-  const info = dbBackend.getInfo()
+  const info = data.getInfo()
   console.log(chalk.gray(`[${info}]`))
 
   let root: ContentPiece | null = null
   if (idjpath) {
-    root = await dbBackend.getPiece(idjpath.split("/"))
+    root = await data.getPiece(idjpath.split("/"))
     if (!root) {
       console.error(`Piece "${idjpath}" not found.`)
       process.exit(1)
@@ -26,7 +26,7 @@ showExecutionTime(async () => {
     root = await filesGetRoot()
   }
 
-  await dbBackend.walkContentPieces(root, async (piece, _children) => {
+  await data.walkContentPieces(root, async (piece, _children) => {
     console.log(piece.hash, piece.idpath.join("/"))
     for (const filetype of FileTypeValues) {
       const files = await getPieceFilesByFiletype(piece.hash, filetype as FileType)
