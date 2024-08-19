@@ -30,7 +30,6 @@ export const _generateStaticParams = async () => {
     return []
   }
   const allIdPaths = await data.getAllIdpaths(course.idpath)
-  console.log("allIdPaths", allIdPaths)
   return allIdPaths
     .filter((path) => path.length === 3)
     .map(([course, part, session]) => ({ course, part, session }))
