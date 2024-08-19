@@ -96,6 +96,7 @@ export const readAttachmentMetadata = async (
   if (preamble.length > 0) {
     return getMetadataFromMarkdownPreamble(preamble)
   } else {
+    // FIXME(pauek): Unimplemented
     return null
   }
 }

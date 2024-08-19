@@ -32,7 +32,6 @@ export const getAttachmentContent = async (piece: ContentPiece, fileref: FileRef
     const filepath = pathJoin(diskpath, typeInfo.subdir, fileref.filename)
     const bytes = await readFile(filepath)
     const metadata = await utils.readAttachmentMetadata(fileref.filetype, bytes)
-    console.log("getAttachmentContent", bytes.length, metadata)
     return { bytes, metadata }
   } catch (e) {
     console.error(`Error reading attachment! ${e}`)
