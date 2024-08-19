@@ -24,7 +24,7 @@ export type DBPiece = typeof pieces.$inferSelect
 // Map Positions
 
 export type MapPosition = {
-  pieceHash: string
+  hash: string
   left: number
   top: number
   width: number

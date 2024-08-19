@@ -19,7 +19,7 @@ showExecutionTime(async () => {
   const positions = await dbBackend.getMapPositions()
   const hashToPosition = new Map<string, MapPosition>()
   for (const pos of positions) {
-    hashToPosition.set(pos.pieceHash, pos)
+    hashToPosition.set(pos.hash, pos)
   }
 
   const rootIdpath = await filesGetRootIdpath()
