@@ -1,4 +1,6 @@
-[ ] QuizAnswers no tiene que ser una tabla aparte!!!
-[ ] BIG: Mejorar el workflow de edición con ficheros
+[ ] - Arreglar la página del doc
+[ ] - Pintar cada tipo de actividad de una forma distinta
+[ ] - Crear páginas para los ejercicios y arreglar links desde el mapa
 
-[ ] Implementar login con Authjs
+[ ] - Versión móvil
+[ ] - Implementar login con Authjs
