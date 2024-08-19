@@ -1,26 +1,14 @@
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { env } from "@/lib/env.mjs"
+import { splitMarkdownPreamble } from "@/lib/utils"
 import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
+import { getDiskpathByIdpath } from "./hashmaps"
 import { getDiskpathForPiece, listPieceSubdir } from "./utils"
-import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 
 const ANSWERS_FILE = join(env.CONTENT_ROOT, "./answers.json")
-
-export const splitMarkdownPreamble = (text: string) => {
-  const lines = text.split("\n")
-  if (lines[0] === "---") {
-    const preambleEnd = lines.indexOf("---", 1)
-    if (preambleEnd !== -1) {
-      const preamble = lines.slice(1, preambleEnd).join("\n")
-      const body = lines.slice(preambleEnd + 1).join("\n")
-      return { preamble, body }
-    }
-  }
-  return { preamble: "", body: text }
-}
 
 export const getQuizPartsFromFile = (text: string) => {
   const { preamble, body } = splitMarkdownPreamble(text)

@@ -25,12 +25,14 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   }
 }
 
-export const getAttachmentBytes = async (piece: ContentPiece, fileref: FileReference) => {
+export const getAttachmentContent = async (piece: ContentPiece, fileref: FileReference) => {
   try {
     const diskpath = await utils.getDiskpathForPiece(piece)
     let typeInfo = utils.fileTypeInfo[fileref.filetype]
     const filepath = pathJoin(diskpath, typeInfo.subdir, fileref.filename)
-    return await readFile(filepath)
+    const bytes = await readFile(filepath)
+    const metadata = await utils.readAttachmentMetadata(fileref.filetype, bytes, fileref.filename)
+    return { bytes, metadata }
   } catch (e) {
     return null
   }

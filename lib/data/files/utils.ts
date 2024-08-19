@@ -10,6 +10,8 @@ import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readStoredHash } from "./hashes"
 import { readMetadata } from "./metadata"
 import { getPiece } from "./pieces"
+import { readFile } from "fs/promises"
+import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true })
 
@@ -35,18 +37,18 @@ export const isQuiz = (ent: Dirent) => ent.isFile() && isMarkdown(ent.name)
 
 type FileTypeInfo = {
   subdir: string
-  predicate: (ent: Dirent) => boolean
+  typeMatch: (ent: Dirent) => boolean
 }
 
 export const fileTypeInfo: Record<FileType, FileTypeInfo> = {
-  doc: { predicate: isDoc, subdir: "" },
-  cover: { predicate: isCover, subdir: "" },
-  slide: { predicate: isSlide, subdir: "slides" },
-  image: { predicate: isImage, subdir: "images" },
-  exercise: { predicate: isExercise, subdir: "exercises" },
-  quiz: { predicate: isQuiz, subdir: "quiz" },
-  video: { predicate: () => false, subdir: "<none>" },
-  other: { predicate: () => false, subdir: "" },
+  doc: { typeMatch: isDoc, subdir: "" },
+  cover: { typeMatch: isCover, subdir: "" },
+  slide: { typeMatch: isSlide, subdir: "slides" },
+  image: { typeMatch: isImage, subdir: "images" },
+  exercise: { typeMatch: isExercise, subdir: "exercises" },
+  quiz: { typeMatch: isQuiz, subdir: "quiz" },
+  video: { typeMatch: () => false, subdir: "<none>" },
+  other: { typeMatch: () => false, subdir: "" },
 }
 
 export const determineFiletype = (ent: Dirent): FileType => {
@@ -83,6 +85,15 @@ export const findCoverImageFilename = async (piece: ContentPiece) => {
   return filename ? join(diskpath, filename) : null
 }
 
+export const readAttachmentMetadata = async (fileType: FileType, bytes: Buffer, filename: string): Promise<Record<string, any> | null> => {
+  if (fileType === FileType.exercise) {
+    const { preamble } = splitMarkdownPreamble(bytes.toString())
+    return getMetadataFromMarkdownPreamble(preamble)
+  } else {
+    return null
+  }
+}
+
 export const listPieceSubdir = async (
   diskpath: string,
   filetype: FileType,
@@ -92,7 +103,7 @@ export const listPieceSubdir = async (
     const abspath = join(diskpath, typeInfo.subdir)
     const files: FileReference[] = []
     for (const ent of await readDirWithFileTypes(abspath)) {
-      if (typeInfo.predicate(ent)) {
+      if (typeInfo.typeMatch(ent)) {
         const filename = ent.name
         const hash = await hashFile(join(abspath, filename))
         files.push({ filename, hash, filetype })
@@ -272,3 +283,4 @@ export const filesGetRoot = async (): Promise<ContentPiece> => {
 export const filesGetRootIdpath = (): string[] => {
   return [env.COURSE_ID]
 }
+

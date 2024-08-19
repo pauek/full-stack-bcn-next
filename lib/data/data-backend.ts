@@ -33,6 +33,11 @@ export type FileReference = {
   filetype: FileType
 }
 
+export type FileContent = null | {
+  bytes: Buffer
+  metadata: Record<string, any> | null
+}
+
 // prettier-ignore
 export interface DataBackendBase {
   getInfo: () => string
@@ -42,7 +47,7 @@ export interface DataBackendBase {
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>
 
   getPieceAttachmentList: (piece: ContentPiece, filetype: FileType) => Promise<FileReference[]>
-  getAttachmentBytes: (piece: ContentPiece, fileref: FileReference) => Promise<Buffer | null>
+  getAttachmentContent: (piece: ContentPiece, fileref: FileReference) => Promise<FileContent>
   getQuizAnswersForHash: (idpath: string[], hash: Hash) => Promise<string[]>
   
   getPieceDocument: (piece: ContentPiece) => Promise<FileBuffer | null>

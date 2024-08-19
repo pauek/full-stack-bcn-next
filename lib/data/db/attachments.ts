@@ -3,14 +3,14 @@ import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { base64ToBytes } from "@/lib/utils"
 import { and, eq } from "drizzle-orm"
-import { FileBuffer, FileReference } from "../data-backend"
+import { FileBuffer, FileContent, FileReference } from "../data-backend"
 import { Hash } from "../hashing"
 import { db } from "./db"
-import { getFileData, getPieceFilesByFiletype } from "./utils"
+import { getFileContent, getPieceFilesByFiletype } from "./utils"
 
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
-  filetype: schema.FileType,
+  filetype: schema.FileType
 ): Promise<FileReference[]> => {
   const results = await getPieceFilesByFiletype(piece.hash, filetype)
   if (!results) {
@@ -22,20 +22,21 @@ export const getPieceAttachmentList = async (
   }))
 }
 
-const _getAttachmentBytesByHash = async (hash: string): Promise<Buffer | null> => {
+const _getAttachmentContentByHash = async (hash: string): Promise<FileContent | null> => {
   try {
-    const data = await getFileData(hash)
-    if (!data) {
+    const content = await getFileContent(hash)
+    if (!content) {
       return null
     }
-    return Buffer.from(base64ToBytes(data))
+    const { data, metadata } = content;
+    return { bytes: Buffer.from(base64ToBytes(data)), metadata }
   } catch (e) {
     return null
   }
 }
 
-export const getAttachmentBytes = async (_piece: ContentPiece, fileref: FileReference) => {
-  return _getAttachmentBytesByHash(fileref.hash)
+export const getAttachmentContent = async (_piece: ContentPiece, fileref: FileReference) => {
+  return _getAttachmentContentByHash(fileref.hash)
 }
 
 export const __getFileListByFiletype =
@@ -59,18 +60,19 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
   if (!file) {
     return null
   }
-  const base64 = await getFileData(file.hash)
-  if (!base64) {
+  const content = await getFileContent(file.hash)
+  if (!content) {
     return null
   }
-  const buffer = Buffer.from(base64ToBytes(base64))
+  const { data, metadata } = content
+  const buffer = Buffer.from(base64ToBytes(data))
   return { buffer, name: file.filename }
 }
 
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: schema.FileType,
+  filetype: schema.FileType
 ): Promise<Buffer | null> => {
   const [result] = await db
     .select({ data: schema.files.data })
@@ -81,8 +83,8 @@ export const getPieceFileData = async (
       and(
         eq(schema.pieces.pieceHash, piece.hash),
         eq(schema.attachments.filename, filename),
-        eq(schema.attachments.filetype, filetype),
-      ),
+        eq(schema.attachments.filetype, filetype)
+      )
     )
     .limit(1)
   if (!result || !result.data) {

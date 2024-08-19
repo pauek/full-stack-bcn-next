@@ -11,12 +11,12 @@ type ExerciseProps = {
   index: number
 }
 export default async function Exercise({ index, chapter, exercise }: ExerciseProps) {
-  const text = await data.getAttachmentBytes(chapter, exercise)
+  const content = await data.getAttachmentContent(chapter, exercise)
   const images = await data.getPieceAttachmentList(chapter, FileType.image)
   const imageMap = new Map(images.map((ref) => [ref.filename, ref]))
 
   return (
-    text && (
+    content && (
       <div className="md:flex md:flex-row flex-col mx-2.5 mb-2.5">
         <div
           className={cn(
@@ -28,7 +28,7 @@ export default async function Exercise({ index, chapter, exercise }: ExercisePro
           {index}
         </div>
         <div className="flex-1">
-          <MdxDocument className="p-2.5" text={text?.toString()} imageMap={imageMap} />
+          <MdxDocument className="p-2.5" text={content.bytes.toString()} imageMap={imageMap} />
         </div>
       </div>
     )

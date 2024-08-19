@@ -36,9 +36,9 @@ export const getPieceFilesByFiletype = async (
   return result
 }
 
-export const getFileData = async (fileHash: string) => {
+export const getFileContent = async (fileHash: string) => {
   const [result] = await db
-    .select({ data: schema.files.data })
+    .select({ data: schema.files.data, metadata: schema.files.metadata })
     .from(schema.files)
     .where(eq(schema.files.hash, fileHash))
     .limit(1)
@@ -46,7 +46,7 @@ export const getFileData = async (fileHash: string) => {
   if (!result) {
     return null
   }
-  return result.data
+  return result
 }
 
 export const pieceHasFiletype = async (pieceHash: string, filetype: FileType): Promise<boolean> =>

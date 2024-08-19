@@ -5,7 +5,7 @@ import { base64ToBytes, lastElement } from "@/lib/utils"
 import { eq, inArray } from "drizzle-orm"
 import { FileBuffer } from "../data-backend"
 import { db } from "./db"
-import { getFileData, getPieceFilesByFiletype, pathToHash, pieceHasFiletype } from "./utils"
+import { getFileContent, getPieceFilesByFiletype, pathToHash, pieceHasFiletype } from "./utils"
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.cover)
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.doc)
@@ -40,7 +40,7 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
 const dbPieceToContentPiece = (
   idpath: string[],
   dbPiece: schema.DBPiece,
-  children?: ContentPiece[],
+  children?: ContentPiece[]
 ): ContentPiece => {
   const { name, metadata, pieceHash } = dbPiece
   return {
@@ -99,7 +99,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     if (childIdpath === null) {
       console.warn(
         `getPieceWithChildren: child idpath not found ` +
-          `for "${child.pieceHash}" (parent: ${idpath.join("/")})`,
+          `for "${child.pieceHash}" (parent: ${idpath.join("/")})`
       )
       continue
     }
@@ -118,13 +118,16 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   if (!result) {
     return null
   }
-  const data = await getFileData(result.hash)
-  if (data === null) {
+  const content = await getFileContent(result.hash)
+  if (content === null) {
     console.warn(`Content piece "${piece.idpath.join("/")}" [${hash}] has a dangling document!
       [file_hash = ${result.hash}]
       [pieceHash = ${hash}]
   `)
     return null
   }
-  return { name: result.filename, buffer: Buffer.from(base64ToBytes(data)) }
+  return {
+    name: result.filename,
+    buffer: Buffer.from(base64ToBytes(content.data)),
+  }
 }

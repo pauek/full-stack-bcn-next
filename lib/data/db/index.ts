@@ -12,7 +12,7 @@ import {
 } from "./pieces"
 
 import {
-  getAttachmentBytes,
+  getAttachmentContent,
   getPieceAttachmentList,
   getPieceFileData,
   getPieceImageList,
@@ -36,7 +36,7 @@ export const backend: DataBackendBase = {
   pieceHasDoc,
 
   getPieceAttachmentList,
-  getAttachmentBytes,
+  getAttachmentContent,
   getPieceImageList,
   getPieceSlideList,
   getPieceFileData,

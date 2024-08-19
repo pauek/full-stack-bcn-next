@@ -17,7 +17,7 @@ type QuizQuestionProps = {
   index: number
 }
 export default async function QuizQuestion({ index, chapter, quiz }: QuizQuestionProps) {
-  const text = await data.getAttachmentBytes(chapter, quiz)
+  const text = await data.getAttachmentContent(chapter, quiz)
   const images = await data.getPieceAttachmentList(chapter, FileType.image)
   const imageMap = new Map(images.map((ref) => [ref.filename, ref]))
 

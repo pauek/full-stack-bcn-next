@@ -95,3 +95,24 @@ export const clamp = (value: number, min: number, max: number): number =>
 export const snap = (value: number, step: number): number => Math.round(value / step) * step
 
 export const setUnion = <T>(a: Iterable<T>, b: Iterable<T>) => new Set([...a, ...b])
+
+export const splitMarkdownPreamble = (text: string) => {
+  const lines = text.split("\n")
+  if (lines[0] === "---") {
+    const preambleEnd = lines.indexOf("---", 1)
+    if (preambleEnd !== -1) {
+      const preamble = lines.slice(1, preambleEnd).join("\n")
+      const body = lines.slice(preambleEnd + 1).join("\n")
+      return { preamble, body }
+    }
+  }
+  return { preamble: "", body: text }
+}
+
+export const getMetadataFromMarkdownPreamble = (preamble: string) => {
+  const json = JSON.parse(preamble)
+  if (typeof json !== "object") {
+    throw new Error("Invalid JSON metadata: should be an object")
+  }
+  return json as Record<string, any>
+}
