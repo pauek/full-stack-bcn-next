@@ -61,7 +61,7 @@ export const chunkArray = (array: Array<any>, chunkSize: number) => {
 
 // https://stackoverflow.com/questions/64928212/how-to-use-promise-allsettled-with-typescript
 export const isFulfilled = function <T>(
-  input: PromiseSettledResult<T>,
+  input: PromiseSettledResult<T>
 ): input is PromiseFulfilledResult<T> {
   return input.status === "fulfilled"
 }
@@ -115,4 +115,34 @@ export const getMetadataFromMarkdownPreamble = (preamble: string) => {
     throw new Error("Invalid JSON metadata: should be an object")
   }
   return json as Record<string, any>
+}
+
+export type Color = {
+  r: number
+  g: number
+  b: number,
+  a: number
+}
+export const interpolateColor = (a: Color, b: Color, t: number) => {
+  return {
+    r: a.r + (b.r - a.r) * t,
+    g: a.g + (b.g - a.g) * t,
+    b: a.b + (b.b - a.b) * t,
+    a: a.a + (b.a - a.a) * t
+  }
+}
+
+export const colorToCSS = (color: Color) => {
+  const { r, g, b, a } = color
+  return `rgba(${r}, ${g}, ${b}, ${a})`
+}
+
+export const factorFromInterval = (value: number, low: number, high: number) => {
+  if (value < low) {
+    return 0
+  } else if (value > high) {
+    return 1
+  } else {
+    return (value - low) / (high - low)
+  }
 }

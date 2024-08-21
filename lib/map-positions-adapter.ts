@@ -3,6 +3,8 @@ import { FileType, MapPosition } from "@/data/schema"
 import { useRouter } from "next/navigation"
 import { CanvasController } from "./canvas-controller"
 import { pointWithinRect } from "./geometry"
+import { colorToCSS, factorFromInterval, interpolateColor } from "./utils"
+import { inter } from "./fonts"
 
 type Item = MapPosition<number>
 
@@ -60,7 +62,7 @@ export class MapPositionsAdapter {
     const { left, top, width, height } = item.rectangle
     const { scale } = this.controller
     ctx.fillStyle = color
-    ctx.shadowColor = "rgba(0, 0, 0, 0.1)"
+    ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
     ctx.shadowBlur = 3 * scale
     ctx.shadowOffsetX = 0
     ctx.shadowOffsetY = 3 * scale
@@ -77,13 +79,17 @@ export class MapPositionsAdapter {
 
     const { left, top, width, height } = item.rectangle
 
-    ctx.font = "12px Inter"
+    const f = factorFromInterval(this.controller.scale, 0.5, 2.0)
+    const light = { r: 0, g: 0, b: 0, a: 0.1 }
+    const dark = { r: 0, g: 0, b: 0, a: 1 }
+    const cssColor = colorToCSS(interpolateColor(light, dark, f))
+
+    ctx.font = "10px Inter"
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "black"
+    ctx.fillStyle = cssColor
 
-    const name = `${item.name}`
-    ctx.fillText(`${name}`, left + width / 2, top + height / 2)
+    ctx.fillText(`Practice`, left + width / 2, top + height / 2)
   }
 
   paintDoc(ctx: CanvasRenderingContext2D, item: Item) {
@@ -91,12 +97,17 @@ export class MapPositionsAdapter {
 
     const { left, top, width, height } = item.rectangle
 
-    ctx.font = "12px Inter"
+    const f = factorFromInterval(this.controller.scale, 0.5, 2.0)
+    const light = { r: 0, g: 0, b: 0, a: 0.1 }
+    const dark = { r: 0, g: 0, b: 0, a: 1 }
+    const cssColor = colorToCSS(interpolateColor(light, dark, f))
+
+    ctx.font = "10px Inter"
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "black"
+    ctx.fillStyle = cssColor
 
-    ctx.fillText(`${item.name}`, left + width / 2, top + height / 2)
+    ctx.fillText(`Reading`, left + width / 2, top + height / 2)
   }
 
   paintActivity(ctx: CanvasRenderingContext2D, item: Item) {
@@ -110,7 +121,9 @@ export class MapPositionsAdapter {
   }
 
   paintChapter(ctx: CanvasRenderingContext2D, item: Item) {
+    const fontSize = 12
     const { left, top, width, height } = item.rectangle
+
 
     ctx.strokeStyle = "#ccc"
     ctx.lineWidth = 1
@@ -121,45 +134,62 @@ export class MapPositionsAdapter {
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)"
     ctx.fill()
 
-    ctx.font = "bold 12px Inter"
+    const f = factorFromInterval(this.controller.scale, 0.5, 2.0)
+    const light = { r: 0, g: 0, b: 0, a: 0.1 }
+    const dark = { r: 0, g: 0, b: 0, a: 1 }
+    const cssColor = colorToCSS(interpolateColor(light, dark, f))
+
+    ctx.font = `bold ${fontSize}px Inter`
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "black"
-    ctx.fillText(`${item.name}`, left + width / 2, top + 12)
+    ctx.fillStyle = cssColor
+    ctx.fillText(`${item.name}`, left + width / 2, top + fontSize)
   }
 
   paintSession(ctx: CanvasRenderingContext2D, item: Item) {
+    const f = factorFromInterval(this.controller.scale, 0.3, 1.5)
+    const light = { r: 240, g: 240, b: 240, a: 1 }
+    const dark = { r: 0, g: 0, b: 0, a: 1 }
+    const cssColor = colorToCSS(interpolateColor(light, dark, f))
+
+    const fontSize = 18
     const { left, top, width, height } = item.rectangle
 
-    ctx.strokeStyle = "#ddd"
+    ctx.strokeStyle = cssColor
     ctx.lineWidth = 1
     ctx.beginPath()
     ctx.roundRect(left, top, width, height, 10)
     ctx.closePath()
     ctx.stroke()
 
-    ctx.font = "18px Inter"
+    ctx.font = `${fontSize}px Inter`
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "#aaa"
-    ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + 18)
+    ctx.fillStyle = cssColor
+    ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + height / 2)
   }
 
   paintPart(ctx: CanvasRenderingContext2D, item: Item) {
+    const f = factorFromInterval(this.controller.scale, 0.3, 1.2)
+    const light = { r: 240, g: 240, b: 240, a: 1 }
+    const dark = { r: 0, g: 0, b: 0, a: 1 }
+    const cssColor = colorToCSS(interpolateColor(dark, light, f))
+
+    const fontSize = 64
     const { left, top, width, height } = item.rectangle
 
-    ctx.strokeStyle = "#ccc"
+    ctx.strokeStyle = cssColor
     ctx.lineWidth = 2
     ctx.beginPath()
     ctx.roundRect(left, top, width, height, 15)
     ctx.closePath()
     ctx.stroke()
 
-    ctx.font = "bold 24px Inter"
+    ctx.font = `bold ${fontSize}px Inter`
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "#aaa"
-    ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + 22)
+    ctx.fillStyle = cssColor
+    ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + height / 2)
   }
 
   paintItem(ctx: CanvasRenderingContext2D, item: Item) {

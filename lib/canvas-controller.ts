@@ -213,16 +213,14 @@ export class CanvasController<ItemType extends RectangularItem> {
 
         const outline = rectangleEnlarge(rectangleListUnion(childrenRects), 10)
 
-        // Space for the title
-        if (item.level === 1) {
-          outline.top -= 16
-          outline.height += 16
-        } else if (item.level === 2) {
-          outline.top -= 32
-          outline.height += 32
+        let { left, top, width, height } = outline
+
+        // For the header of chapters (no-one else)
+        if (item.level === 1 /* Chapter */) {
+          top -= 12
+          height += 12
         }
 
-        const { left, top, width, height } = outline
         if (
           item.rectangle.left !== left ||
           item.rectangle.top !== top ||
@@ -814,7 +812,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
 const showText = (ctx: CanvasRenderingContext2D, str: string, lin: number, col: number) => {
   ctx.textBaseline = "middle"
-  ctx.fillStyle = "white"
+  ctx.fillStyle = "black"
   ctx.font = "12px monospace"
   ctx.fillText(str, 6 * col + 6, 16 * lin + 16)
 }

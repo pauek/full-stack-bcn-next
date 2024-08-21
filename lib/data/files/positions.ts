@@ -58,7 +58,7 @@ export const extendedMapPositionForPiece = async (
       const attachmentHashes = (await getPieceAttachmentList(piece, type)).map((a) => a.hash)
       childrenHashes = childrenHashes.concat(attachmentHashes)
     }
-    
+
     return {
       kind: "piece",
       hash: piece.hash,
@@ -135,10 +135,10 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
   }))
 }
 
-export const updatePiecePosition = async (hash: string, rectangle: IRectangle) => {
-  const diskpath = await getDiskpathByHash(hash)
+export const updatePiecePosition = async (idpath: string[], rectangle: IRectangle) => {
+  const diskpath = await getDiskpathByIdpath(idpath)
   if (diskpath === null) {
-    throw new Error(`Diskpath not found for hash ${hash}`)
+    throw new Error(`Diskpath not found for idjpath ${idpath.join("/")}`)
   }
   const { left, top, width, height } = rectangle
   updateMetadata(diskpath, async (metadata) => {
@@ -147,8 +147,8 @@ export const updatePiecePosition = async (hash: string, rectangle: IRectangle) =
 }
 
 export interface PositionUpdate {
-  hash: string, // only needed for "piece"
-  kind: "piece" | FileType,
+  hash: string // only needed for "piece"
+  kind: "piece" | FileType
   idpath: string[]
   name: string
   rectangle: IRectangle
@@ -167,7 +167,7 @@ export const updateExercisePosition = _updateMarkdownPosition(FileType.exercise)
 export const updateQuizPosition = _updateMarkdownPosition(FileType.quiz)
 
 export const updatePiecePositionFromMapPosition = async (pos: PositionUpdate) =>
-  updatePiecePosition(pos.hash, pos.rectangle)
+  updatePiecePosition(pos.idpath, pos.rectangle)
 
 type UpdateFunc = (pos: PositionUpdate) => Promise<void>
 const updateFunctionTable = new Map<"piece" | FileType, UpdateFunc>([
@@ -183,37 +183,5 @@ export const updateMapPositions = async (poslist: PositionUpdate[]) => {
       throw new Error(`Invalid kind ${pos}`)
     }
     await func(pos)
-  }
-}
-
-export const assignPosition = async (node: TreeNode) => {
-  const { level } = node
-  if (level !== 1) {
-    throw new Error(`Expected level 1, got ${level}`)
-  }
-
-  let y = 10
-  for (const part of node.children) {
-    // Assign parts
-    let partHeight = 0
-    let maxSessionWidth = 0
-    for (const session of part.children) {
-      let x = 20
-      for (const chapter of session.children) {
-        const rect = { left: x, top: y, width: 200, height: 50 }
-        updatePiecePosition(chapter.hash, rect)
-        x += 210
-      }
-      const sessionWidth = Math.max(x, 220)
-      const rect = { left: 10, top: y + 10, width: sessionWidth, height: 70 }
-      updatePiecePosition(session.hash, rect)
-      y += 90
-      partHeight += 90
-      maxSessionWidth = Math.max(maxSessionWidth, sessionWidth)
-    }
-    const width = Math.max(maxSessionWidth + 20, 200)
-    const rect = { left: 0, top: y - partHeight, width, height: partHeight }
-    updatePiecePosition(part.hash, rect)
-    y += 80
   }
 }
