@@ -146,7 +146,15 @@ export const updatePiecePosition = async (hash: string, rectangle: IRectangle) =
   })
 }
 
-export const updateMarkdownPosition = (filetype: FileType) => async (pos: MapPosition<number>) => {
+export interface PositionUpdate {
+  hash: string, // only needed for "piece"
+  kind: "piece" | FileType,
+  idpath: string[]
+  name: string
+  rectangle: IRectangle
+}
+
+const _updateMarkdownPosition = (filetype: FileType) => async (pos: PositionUpdate) => {
   const diskpath = await getDiskpathByIdpath(pos.idpath)
   if (diskpath === null) {
     throw new Error(`Diskpath not found for hash ${pos.idpath.join("/")}`)
@@ -154,20 +162,25 @@ export const updateMarkdownPosition = (filetype: FileType) => async (pos: MapPos
   updateMarkdownMetadata(pos.idpath, filetype, pos.name, { mapPosition: pos.rectangle })
 }
 
-export const updatePiecePositionFromMapPosition = async (pos: MapPosition<number>) =>
+export const updateDocPosition = _updateMarkdownPosition(FileType.doc)
+export const updateExercisePosition = _updateMarkdownPosition(FileType.exercise)
+export const updateQuizPosition = _updateMarkdownPosition(FileType.quiz)
+
+export const updatePiecePositionFromMapPosition = async (pos: PositionUpdate) =>
   updatePiecePosition(pos.hash, pos.rectangle)
 
-type UpdateFunc = (pos: MapPosition<number>) => Promise<void>
-const updateFunctionTable = new Map<any, UpdateFunc>([
+type UpdateFunc = (pos: PositionUpdate) => Promise<void>
+const updateFunctionTable = new Map<"piece" | FileType, UpdateFunc>([
   ["piece", updatePiecePositionFromMapPosition],
-  [FileType.exercise, updateMarkdownPosition(FileType.exercise)],
-  [FileType.doc, updateMarkdownPosition(FileType.doc)],
+  [FileType.doc, updateDocPosition],
+  [FileType.exercise, updateExercisePosition],
+  [FileType.quiz, updateQuizPosition],
 ])
-export const updateMapPositions = async (poslist: MapPosition<number>[]) => {
+export const updateMapPositions = async (poslist: PositionUpdate[]) => {
   for (const pos of poslist) {
     const func = updateFunctionTable.get(pos.kind)
     if (!func) {
-      throw new Error(`Invalid kind ${pos.kind}`)
+      throw new Error(`Invalid kind ${pos}`)
     }
     await func(pos)
   }
