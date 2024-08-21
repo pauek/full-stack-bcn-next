@@ -82,7 +82,7 @@ export class MapPositionsAdapter {
     ctx.textBaseline = "middle"
     ctx.fillStyle = "black"
 
-    const name = `${item.idpath.slice(-1).join("/")} -- ${item.name}`
+    const name = `${item.name}`
     ctx.fillText(`${name}`, left + width / 2, top + height / 2)
   }
 
