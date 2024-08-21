@@ -11,16 +11,28 @@ type Router = ReturnType<typeof useRouter>
 export class MapPositionsAdapter {
   router: Router
   items: Item[]
+  _controller: null | CanvasController<Item> = null
 
   constructor(router: any, items: Item[]) {
     this.router = router
     this.items = items
   }
 
+  get controller() {
+    if (!this._controller) {
+      throw new Error("Controller not set")
+    }
+    return this._controller
+  }
+
+  setController(controller: CanvasController<Item>) {
+    this._controller = controller
+  }
+
   saveItems(positions: Item[]) {
     actionMapPositionsUpdate(positions)
       .then(
-        () => console.log("Updated:", positions), // TODO: better message
+        () => console.log("Updated:", positions) // TODO: better message
       )
       .catch((e) => {
         console.error(`Error updating positions: `, e) // TODO: show user
@@ -31,10 +43,10 @@ export class MapPositionsAdapter {
     return this.items
   }
 
-  paintMinimal(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
+  paintMinimal(ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item.rectangle
-    const over = pointWithinRect(controller.pointer, { left, top, width, height })
-    if (controller.mode === "edit" && over) {
+    const over = pointWithinRect(this.controller.pointer, { left, top, width, height })
+    if (this.controller.mode === "edit" && over) {
       ctx.fillStyle = "lightblue"
     } else if (item.level === 0) {
       ctx.fillStyle = "white"
@@ -42,41 +54,62 @@ export class MapPositionsAdapter {
     }
   }
 
-  paintLevel0(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    const { left, top, width, height } = item.rectangle
+  roundedRectangle(ctx: CanvasRenderingContext2D, item: Item, color: string) {
+    ctx.save()
 
+    const { left, top, width, height } = item.rectangle
+    const { scale } = this.controller
+    ctx.fillStyle = color
+    ctx.shadowColor = "rgba(0, 0, 0, 0.1)"
+    ctx.shadowBlur = 3 * scale
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 3 * scale
     ctx.beginPath()
     ctx.roundRect(left, top, width, height, 5)
     ctx.closePath()
-    ctx.save()
-
-    // Fillstyle
-    let fillStyle = "white"
-    if (item.kind === "exercise") {
-      fillStyle = "lightblue"
-    }
-    ctx.fillStyle = fillStyle
-    
-    ctx.shadowColor = "rgba(0, 0, 0, 0.1)"
-    ctx.shadowBlur = 3 * controller.scale
-    ctx.shadowOffsetX = 0
-    ctx.shadowOffsetY = 3 * controller.scale
     ctx.fill()
+
     ctx.restore()
+  }
+
+  paintExercise(ctx: CanvasRenderingContext2D, item: Item) {
+    this.roundedRectangle(ctx, item, "lightblue")
+
+    const { left, top, width, height } = item.rectangle
 
     ctx.font = "12px Inter"
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
     ctx.fillStyle = "black"
 
-    let name = item.name
-    if (item.kind === FileType.exercise) {
-      name =  `${item.idpath.slice(-1).join("/")} -- ${item.name}`
-    }
+    const name = `${item.idpath.slice(-1).join("/")} -- ${item.name}`
     ctx.fillText(`${name}`, left + width / 2, top + height / 2)
   }
 
-  paintLevel1(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
+  paintDoc(ctx: CanvasRenderingContext2D, item: Item) {
+    this.roundedRectangle(ctx, item, "white")
+
+    const { left, top, width, height } = item.rectangle
+
+    ctx.font = "12px Inter"
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.fillStyle = "black"
+
+    ctx.fillText(`${item.name}`, left + width / 2, top + height / 2)
+  }
+
+  paintActivity(ctx: CanvasRenderingContext2D, item: Item) {
+    if (item.kind === FileType.exercise) {
+      this.paintExercise(ctx, item)
+    } else if (item.kind === FileType.doc) {
+      this.paintDoc(ctx, item)
+    } else {
+      this.roundedRectangle(ctx, item, "red")
+    }
+  }
+
+  paintChapter(ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item.rectangle
 
     ctx.strokeStyle = "#ccc"
@@ -95,35 +128,48 @@ export class MapPositionsAdapter {
     ctx.fillText(`${item.name}`, left + width / 2, top + 12)
   }
 
-  paintLevel2(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
+  paintSession(ctx: CanvasRenderingContext2D, item: Item) {
+    const { left, top, width, height } = item.rectangle
+
+    ctx.strokeStyle = "#ddd"
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.roundRect(left, top, width, height, 10)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.font = "18px Inter"
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.fillStyle = "#aaa"
+    ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + 18)
+  }
+
+  paintPart(ctx: CanvasRenderingContext2D, item: Item) {
     const { left, top, width, height } = item.rectangle
 
     ctx.strokeStyle = "#ccc"
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.roundRect(left, top, width, height, 5)
+    ctx.roundRect(left, top, width, height, 15)
     ctx.closePath()
     ctx.stroke()
 
-    ctx.font = "bold 20px Inter"
+    ctx.font = "bold 24px Inter"
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
     ctx.fillStyle = "#aaa"
     ctx.fillText(`${item.name.toUpperCase()}`, left + width / 2, top + 22)
   }
 
-  paintItem(controller: CanvasController<Item>, ctx: CanvasRenderingContext2D, item: Item) {
-    switch (item.level) {
-      case 0:
-        this.paintLevel0(controller, ctx, item)
-        break
-      case 1:
-        this.paintLevel1(controller, ctx, item)
-        break
-      case 2:
-        this.paintLevel2(controller, ctx, item)
-        break
-    }
+  paintItem(ctx: CanvasRenderingContext2D, item: Item) {
+    const paintFunction = [
+      this.paintActivity.bind(this),
+      this.paintChapter.bind(this),
+      this.paintSession.bind(this),
+      this.paintPart.bind(this),
+    ]
+    paintFunction[item.level](ctx, item)
   }
 
   clickItem(item: Item) {

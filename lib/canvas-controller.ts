@@ -25,13 +25,10 @@ export const MAX_SCALE = 2
 const KNOB_WIDTH = 8
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
+  setController(controller: CanvasController<ItemType>): void
   loadItems: () => Promise<ItemType[]>
   saveItems: (items: ItemType[]) => void
-  paintItem: (
-    ctrl: CanvasController<ItemType>,
-    ctx: CanvasRenderingContext2D,
-    item: ItemType
-  ) => void
+  paintItem: (ctx: CanvasRenderingContext2D, item: ItemType) => void
   clickItem(item: ItemType): void
 }
 
@@ -91,6 +88,8 @@ export class CanvasController<ItemType extends RectangularItem> {
     adapter: CanvasAdapter<ItemType>
   ) {
     this.adapter = adapter
+    this.adapter.setController(this)
+
     this.canvasRef = ref
     this.items = []
 
@@ -355,15 +354,15 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   paintDebugInfo(ctx: CanvasRenderingContext2D) {
-    showText(ctx, `mode:     ${this.mode}`, 0, 0)
-    showText(ctx, `scale:    ${this.scale.toFixed(6)}`, 1, 0)
-    showText(ctx, `origin:   ${pointToString(this.origin)}`, 2, 0)
-    showText(ctx, `mouse:    ${pointToString(this.pointer)}`, 3, 0)
+    showText(ctx, `mode:   ${this.mode}`, 0, 0)
+    showText(ctx, `scale:  ${this.scale.toFixed(6)}`, 1, 0)
+    showText(ctx, `origin: ${pointToString(this.origin)}`, 2, 0)
+    showText(ctx, `mouse:  ${pointToString(this.pointer)}`, 3, 0)
 
     const { left, top, width, height } = this.getClientBounds()
     showText(
       ctx,
-      `bounds:   ${left.toFixed(0)}, ${top.toFixed(0)}, ${width.toFixed(0)}, ${height.toFixed(0)}`,
+      `bounds: ${left.toFixed(0)}, ${top.toFixed(0)}, ${width.toFixed(0)}, ${height.toFixed(0)}`,
       4,
       0
     )
@@ -391,7 +390,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i]
       if (rectIntersectsRect(item.rectangle, bounds)) {
-        this.adapter.paintItem(this, ctx, this.items[i])
+        this.adapter.paintItem(ctx, this.items[i])
       }
     }
   }
