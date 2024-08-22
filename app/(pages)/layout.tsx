@@ -24,9 +24,7 @@ export default async function RootLayout({ children }: Props) {
       <div className="w-full h-full pt-12 flex flex-col">
         <Header course={course} />
         <main className="min-h-full w-full flex flex-col items-center">
-          <div id="page-box" className="flex-1 w-full relative">
-            {children}
-          </div>
+          {children}
           <Footer />
         </main>
       </div>

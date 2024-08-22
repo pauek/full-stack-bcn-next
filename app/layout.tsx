@@ -1,6 +1,5 @@
 import DarkModeAwareBody from "@/components/DarkModeAwareBody"
 import Map from "@/components/map/Map"
-import MapStateProvider from "@/components/map/map-context"
 import "./globals.css"
 
 export const metadata = {
@@ -18,10 +17,8 @@ export default async function RootLayout({ children }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       </head>
       <DarkModeAwareBody lang="en">
-        <MapStateProvider>
-          <Map />
-        </MapStateProvider>
-        {children}
+        <Map />
+        <div className="bg-background z-10">{children}</div>
       </DarkModeAwareBody>
     </html>
   )

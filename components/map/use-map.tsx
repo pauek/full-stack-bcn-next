@@ -3,14 +3,10 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { useCallback, useContext, useEffect, useState } from "react"
-import {
-  MapContext,
-  MapItem,
-  MapSize,
-} from "./map-context"
+import { useCallback, useEffect, useState } from "react"
 import { globalCanvasElement } from "./canvas"
 import { globalCanvasController, globalMapPositionsAdapter } from "./map-globals"
+import { MapItem, MapSize } from "./types"
 
 const useCanvasResizeEvent = () => {
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 })
@@ -48,7 +44,7 @@ const useWindowKeydownEvents = () => {
   }, [])
 }
 
-const useMapStateInitialization = (items: MapItem[] | null) => {
+const useMapStateInitialization = (items: MapItem[]) => {
   const router = useRouter()
 
   const go = useCallback((url: string) => router.push(url), [router])
@@ -79,14 +75,13 @@ const useSetMouseAndTouchEvents = () => {
   }, [])
 }
 
-export const useMap = () => {
-  const mapState = useContext(MapContext)
-
+export const useMap = (items: MapItem[]) => {
   useChangeOfPathname()
   useCanvasResizeEvent()
-  useMapStateInitialization(mapState?.items ?? null)
+  useMapStateInitialization(items)
   useSetMouseAndTouchEvents()
   useWindowKeydownEvents()
-
-  return { canvasElement: globalCanvasElement }
+  return {
+    canvasElement: globalCanvasElement,
+  }
 }
