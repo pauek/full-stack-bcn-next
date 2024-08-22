@@ -14,8 +14,8 @@ import {
   rectangleListUnion,
   rectIntersectsRect,
 } from "@/lib/geometry"
-import { RefObject } from "react"
 import { clamp, setUnion, snap } from "./utils"
+import { globalCanvasElement } from "@/components/map/canvas"
 
 export const MAP_MAX_WIDTH = 4000
 export const MAP_MAX_HEIGHT = 4000
@@ -24,7 +24,6 @@ export const MAX_SCALE = 3
 const KNOB_WIDTH = 8
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
-  setController(controller: CanvasController<ItemType>): void
   loadItems: () => Promise<ItemType[]>
   saveItems: (items: ItemType[]) => void
   paintItem: (ctx: CanvasRenderingContext2D, item: ItemType) => void
@@ -38,15 +37,19 @@ interface RectangularItem {
 }
 
 export class CanvasController<ItemType extends RectangularItem> {
+  // Things that have to be initialized
+  _adapter: CanvasAdapter<ItemType> | null = null
+  _canvas: HTMLCanvasElement | null = null
+  
+  // Internal fields
   mode: "view" | "edit" = "view"
-
-  adapter: CanvasAdapter<ItemType>
-  canvasRef: RefObject<HTMLCanvasElement>
-  items: ItemType[]
-
-  pointer: Point
-  scale: number
-  origin: Point
+  items: ItemType[] = []
+  pointer: Point = { x: 0, y: 0 }
+  scale: number = 1
+  origin: Point = { x: 0, y: 0 }
+  overRect: ItemType | null = null
+  selected: Set<ItemType> = new Set()
+  debug: boolean = false
 
   panning: null | {
     click: Point
@@ -76,48 +79,49 @@ export class CanvasController<ItemType extends RectangularItem> {
     distInitial: number
   } = null
 
-  overRect: ItemType | null = null
-  selected: Set<ItemType> = new Set()
+  ///
 
-  debug: boolean = false
-
-  constructor(
-    ref: RefObject<HTMLCanvasElement>,
-    urlPath: string,
-    adapter: CanvasAdapter<ItemType>
-  ) {
-
+  constructor() {
     console.log(`------- Canvas Controller CONSTRUCTOR -------`)
-    this.adapter = adapter
-    this.adapter.setController(this)
-
-    this.canvasRef = ref
-    this.items = []
-
-    // default values
-    this.scale = 1
-    this.origin = { x: 0, y: 0 }
-
-    this.parseUrlPath(urlPath)
-
-    this.pointer = { x: 0, y: 0 }
-    this.panning = null
+    this._canvas = globalCanvasElement
   }
+
+  init(adapter: CanvasAdapter<ItemType>) {
+    this._adapter = adapter
+    this.loadItems()
+  }
+
+  setEvents(canvas: HTMLCanvasElement) {
+    canvas.addEventListener("mousedown", (e) => this.onMouseDown(e))
+    canvas.addEventListener("mousemove", (e) => this.onMouseMove(e))
+    canvas.addEventListener("mouseup", (e) => this.onMouseUp(e))
+    canvas.addEventListener("touchstart", (e) => this.onTouchStart(e))
+    canvas.addEventListener("touchmove", (e) => this.onTouchMove(e))
+    canvas.addEventListener("touchend", (e) => this.onTouchEnd(e))
+    canvas.addEventListener("wheel", (e) => this.onWheel(e))
+  }
+
+  get adapter() {
+    if (this._adapter === null) {
+      throw new Error(`Uninitialized adapter!`)
+    }
+    return this._adapter
+  }
+
+  get canvas() {
+    if (this._canvas === null) {
+      throw new Error(`Canvas is null!`)
+    }
+    return this._canvas
+  }
+
 
   scaleToUrl() {
     window.history.replaceState(null, "", `/m/${this.getUrlPath()}`)
   }
 
-  getCanvas() {
-    const canvas = this.canvasRef.current
-    if (!canvas) {
-      throw new Error(`Canvas is null!`)
-    }
-    return canvas
-  }
-
   getModelBounds() {
-    const { width, height } = this.getCanvas()
+    const { width, height } = this.canvas
     return this.rectClientToModel({ left: 0, top: 0, width, height })
   }
 
@@ -415,11 +419,10 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   paint() {
-    const canvas = this.canvasRef.current
-    if (!canvas) {
+    if (!this.canvas) {
       return
     }
-    const ctx = canvas.getContext("2d")
+    const ctx = this.canvas.getContext("2d")
     if (!ctx) {
       throw new Error(`Canvas 2D context is null!`)
     }
@@ -480,7 +483,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   clampOrigin() {
     // Limit the origin
-    const { width, height } = this.getCanvas()
+    const { width, height } = this.canvas
     const bounds = this.getClientBounds()
 
     const xfree = width - bounds.width
@@ -667,9 +670,11 @@ export class CanvasController<ItemType extends RectangularItem> {
       height: Math.abs(y1 - y2),
     }
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = new Set(this.items.filter(
-      (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
-    ))
+    this.selected = new Set(
+      this.items.filter(
+        (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
+      )
+    )
   }
 
   endRubberbanding() {
@@ -678,9 +683,11 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = new Set(this.items.filter(
-      (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
-    ))
+    this.selected = new Set(
+      this.items.filter(
+        (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
+      )
+    )
     this.rubberbanding = null
   }
 
@@ -688,7 +695,6 @@ export class CanvasController<ItemType extends RectangularItem> {
   mouseOverSelectedItem() {
     return [...this.selected].some((item) => pointWithinRect(this.pointer, item.rectangle))
   }
-
 
   onMouseOrTouchDown(point: Point, shiftKey: boolean) {
     if (this.selected.size > 0) {
@@ -741,8 +747,8 @@ export class CanvasController<ItemType extends RectangularItem> {
       this.updateOver()
     }
     this.pointer = this.clientToModel(point)
-    if (this.canvasRef.current) {
-      this.canvasRef.current.style.cursor = this.overRect ? "pointer" : "auto"
+    if (this.canvas) {
+      this.canvas.style.cursor = this.overRect ? "pointer" : "auto"
     }
     this.paint()
   }
@@ -764,22 +770,22 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   // Mouse events
 
-  onMouseDown(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  onMouseDown(event: MouseEvent) {
     this.onMouseOrTouchDown(eventPoint(event), event.shiftKey)
   }
 
-  onMouseMove(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  onMouseMove(event: MouseEvent) {
     this.onMouseOrTouchMove(eventPoint(event))
   }
 
-  onMouseUp(event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+  onMouseUp(event: MouseEvent) {
     this.onMouseOrTouchUp()
   }
 
   /* We have to implement ourselves the pinch-to-zoom feature 
      using the number of touch points and the distance between them */
 
-  onTouchStart(event: React.TouchEvent<HTMLCanvasElement>) {
+  onTouchStart(event: TouchEvent) {
     this.updateOver()
     if (event.touches.length === 1) {
       this.onMouseOrTouchDown(eventPoint(event.touches[0]), false)
@@ -792,7 +798,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
-  onTouchMove(event: React.TouchEvent<HTMLCanvasElement>) {
+  onTouchMove(event: TouchEvent) {
     if (this.zooming) {
       if (event.touches.length === 2) {
         const f1 = event.touches[0]
@@ -806,14 +812,14 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
-  onTouchEnd(event: React.TouchEvent<HTMLCanvasElement>) {
+  onTouchEnd(event: TouchEvent) {
     this.onMouseOrTouchUp()
     this.zooming = null
   }
 
   // Mouse Wheel (zoom on desktop)
 
-  onWheel(event: React.WheelEvent<HTMLCanvasElement>) {
+  onWheel(event: WheelEvent) {
     let dscale = 1 - event.deltaY / 1000
     let newScale = clamp(this.scale * dscale, MIN_SCALE, MAX_SCALE)
     dscale = newScale / this.scale

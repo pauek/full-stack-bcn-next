@@ -2,14 +2,13 @@
 
 import { actionMapPositionsUpdate } from "@/actions/positions"
 import { FileType, MapPosition } from "@/data/schema"
-import { useRouter } from "next/navigation"
 import { CanvasController } from "./canvas-controller"
 import { pointWithinRect } from "./geometry"
 import { colorToCSS, factorFromInterval, interpolateColor } from "./utils"
 
 type Item = MapPosition<number>
 
-type Router = ReturnType<typeof useRouter>
+type RouteFunc = (url: string) => void
 
 const iconNames = {
   doc: "menu-book",
@@ -17,24 +16,19 @@ const iconNames = {
 }
 
 export class MapPositionsAdapter {
-  router: Router
-  items: Item[]
+  // Fields set by init
+  _router: RouteFunc | null = null
+  _items: Item[] | null = null
   _controller: null | CanvasController<Item> = null
 
+  // Icons loaded later (not at construction time)
   _icons: Map<string, HTMLImageElement> = new Map()
 
-  constructor(router: any, items: Item[]) {
-    this.router = router
-    this.items = items
-  }
-
-  loadIcons() {
-    // TODO(pauek): make sure images are loaded before rendering
-    for (const filename of Object.values(iconNames)) {
-      const icon = new Image()
-      icon.src = `/icons/${filename}.svg`
-      this._icons.set(filename, icon)
-    }
+  init(controller: CanvasController<Item>, items: Item[] | null, router: any) {
+    this._controller = controller
+    this._router = router
+    this._items = items
+    this.loadIcons()
   }
 
   get controller() {
@@ -42,10 +36,6 @@ export class MapPositionsAdapter {
       throw new Error("Controller not set")
     }
     return this._controller
-  }
-
-  setController(controller: CanvasController<Item>) {
-    this._controller = controller
   }
 
   saveItems(positions: Item[]) {
@@ -59,7 +49,19 @@ export class MapPositionsAdapter {
   }
 
   async loadItems() {
-    return this.items
+    if (this._items === null) {
+      throw new Error(`Unset items in MapPositionsAdapter!`)
+    }
+    return this._items
+  }
+
+  loadIcons() {
+    // TODO(pauek): make sure images are loaded before rendering
+    for (const filename of Object.values(iconNames)) {
+      const icon = new Image()
+      icon.src = `/icons/${filename}.svg`
+      this._icons.set(filename, icon)
+    }
   }
 
   paintMinimal(ctx: CanvasRenderingContext2D, item: Item) {
@@ -229,15 +231,23 @@ export class MapPositionsAdapter {
     paintFunction[item.level](ctx, item)
   }
 
+  go(url: string) {
+    if (this._router) {
+      this._router(url)
+    } else {
+      console.warn(`Trying to go to ${url} with the router not set`)
+    }
+  }
+
   clickItem(item: Item) {
     const { kind, idpath, index } = item
     const idjpath = idpath.join("/")
     if (kind === "piece") {
-      this.router.push(`/c/${idjpath}`)
+      this.go(`/c/${idjpath}`)
     } else if (kind === FileType.doc) {
-      this.router.push(`/c/${idjpath}`)
+      this.go(`/c/${idjpath}`)
     } else if (kind === FileType.exercise) {
-      this.router.push(`/c/${idjpath}/ex/${index + 1}`)
+      this.go(`/c/${idjpath}/ex/${index + 1}`)
     }
   }
 }

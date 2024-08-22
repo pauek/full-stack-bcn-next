@@ -28,10 +28,10 @@ export default function DarkModeAwareBody({
   }
 
   return (
-    <html className={cn(className, dark ? "dark" : "")}>
+    <body className={cn(className, dark ? "dark" : "")}>
       <DarkModeContext.Provider value={{ dark, setDark: setDarkMode }}>
         {children}
       </DarkModeContext.Provider>
-    </html>
+    </body>
   )
 }
