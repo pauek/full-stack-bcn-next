@@ -34,7 +34,8 @@ const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) =>
 }
 
 export const extendedMapPositionForPiece = async (
-  piece: ContentPiece
+  piece: ContentPiece,
+  index: number
 ): Promise<MapPosition<string> | null> => {
   const diskpath = await getDiskpathForPiece(piece)
   const metadata = await readMetadata(diskpath)
@@ -61,6 +62,7 @@ export const extendedMapPositionForPiece = async (
 
     return {
       kind: "piece",
+      index,
       hash: piece.hash,
       name: piece.name,
       rectangle: { left, top, width, height },
@@ -78,7 +80,8 @@ const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
   for (const type of AllAttachmentTypes) {
     const info = fileTypeInfo[type]
     const attachments = await getPieceAttachmentList(piece, type)
-    for (const attachment of attachments) {
+    for (let i = 0; i < attachments.length; i++) {
+      const attachment = attachments[i]
       const diskpath = await getDiskpathForPiece(piece)
       const bytes = await readFile(join(diskpath, info.subdir, attachment.filename))
       const metadata = await readAttachmentMetadata(piece.idpath, attachment.filename, bytes)
@@ -86,6 +89,7 @@ const extendedMapPositionForAttachments = async (piece: ContentPiece) => {
         const { left, top, width, height } = checkMapPosition(metadata, piece)
         positions.push({
           kind: type,
+          index: i,
           hash: attachment.hash,
           idpath: piece.idpath,
           name: attachment.filename,
@@ -104,8 +108,8 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
   const root = await filesGetRoot()
   const positions: MapPosition<Hash>[] = []
 
-  await filesWalkContentPieces(root.idpath, async ({ piece }) => {
-    const piecePos = await extendedMapPositionForPiece(piece)
+  await filesWalkContentPieces(root.idpath, async ({ piece, index }) => {
+    const piecePos = await extendedMapPositionForPiece(piece, index)
     if (piecePos) {
       positions.push(piecePos)
     }

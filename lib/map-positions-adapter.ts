@@ -26,8 +26,6 @@ export class MapPositionsAdapter {
   constructor(router: any, items: Item[]) {
     this.router = router
     this.items = items
-
-    this.loadIcons()
   }
 
   loadIcons() {
@@ -74,7 +72,6 @@ export class MapPositionsAdapter {
       ctx.fillRect(left, top, width, height)
     }
   }
-
 
   sizeAndMargin(item: Item) {
     const margin = 0.1 * item.rectangle.height
@@ -134,13 +131,12 @@ export class MapPositionsAdapter {
   }
 
   paintExercise(ctx: CanvasRenderingContext2D, item: Item) {
-    const text = `Practice`
+    const text = `Exercise ${item.index + 1}`
     this.computeItemBounds(ctx, item, text)
     this.controller.itemRectangle(ctx, item.rectangle, "lightblue")
     this.paintItemIcon(ctx, item, iconNames.exercise)
     this.paintItemText(ctx, item, text)
   }
-
 
   paintActivity(ctx: CanvasRenderingContext2D, item: Item) {
     if (item.kind === FileType.exercise) {
@@ -234,8 +230,14 @@ export class MapPositionsAdapter {
   }
 
   clickItem(item: Item) {
-    if (item.idpath) {
-      this.router.push(`/c/${item.idpath.join("/")}`)
+    const { kind, idpath, index } = item
+    const idjpath = idpath.join("/")
+    if (kind === "piece") {
+      this.router.push(`/c/${idjpath}`)
+    } else if (kind === FileType.doc) {
+      this.router.push(`/c/${idjpath}`)
+    } else if (kind === FileType.exercise) {
+      this.router.push(`/c/${idjpath}/ex/${index + 1}`)
     }
   }
 }

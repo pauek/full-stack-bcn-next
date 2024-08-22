@@ -27,6 +27,7 @@ export type DBPiece = typeof pieces.$inferSelect
 export type MapPosition<T> = {
   rectangle: IRectangle
   kind: "piece" | FileType
+  index: number
   hash: string
   name: string
   idpath: string[]

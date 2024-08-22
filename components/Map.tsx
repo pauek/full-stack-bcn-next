@@ -20,15 +20,16 @@ export default function Map({ mapPositions }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const stateRef = useRef<Controller>(
-    new CanvasController(canvasRef, pathname, new MapPositionsAdapter(router, mapPositions)),
-  )
+  const adapterRef = useRef<MapPositionsAdapter>(new MapPositionsAdapter(router, mapPositions))
+  const stateRef = useRef<Controller>(new CanvasController(canvasRef, pathname, adapterRef.current))
 
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 })
   const { current: state } = stateRef
 
   useEffect(() => {
     state.loadItems()
+    adapterRef.current.loadIcons()
+
     if (pathname === "/m") {
       const pageBox = document.getElementById("page-box")
       if (!pageBox) {
