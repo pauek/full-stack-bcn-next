@@ -90,7 +90,7 @@ export class MapPositionsAdapter {
 
     // Compute bounds: recompute width and change the original rectangle (!)
     const { size, margin } = this.sizeAndMargin(item)
-    item.rectangle.width = 3 * margin + size + 2 * margin + textWidth.width + 4 * margin
+    item.rectangle.width = 3 * margin + size + 2 * margin + textWidth.width + 3 * margin
     item.rectangle.height = 20 // Force height to be 20 now...
   }
 
@@ -115,7 +115,7 @@ export class MapPositionsAdapter {
     const dark = { r: 0, g: 0, b: 0, a: 1 }
     const cssColor = colorToCSS(interpolateColor(light, dark, f))
 
-    ctx.font = "10px Inter"
+    ctx.font = "9px Inter"
     ctx.textAlign = "left"
     ctx.textBaseline = "middle"
     ctx.fillStyle = cssColor
