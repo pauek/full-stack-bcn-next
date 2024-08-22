@@ -5,7 +5,6 @@ import {
   IRectangle,
   Point,
   pointToString,
-  pointWithinCircle,
   pointWithinRect,
   ptAdd,
   ptDistance,
@@ -20,8 +19,8 @@ import { clamp, setUnion, snap } from "./utils"
 
 export const MAP_MAX_WIDTH = 4000
 export const MAP_MAX_HEIGHT = 4000
-export const MIN_SCALE = 0.24
-export const MAX_SCALE = 2
+export const MIN_SCALE = 0.25
+export const MAX_SCALE = 3
 const KNOB_WIDTH = 8
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
@@ -61,7 +60,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   dragging: null | {
     click: Point
-    origins: Point[]
+    origins: Map<ItemType, Point>
     updatedIndices: Set<number>
   } = null
 
@@ -78,7 +77,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   } = null
 
   overRect: ItemType | null = null
-  selected: ItemType[] = []
+  selected: Set<ItemType> = new Set()
 
   debug: boolean = false
 
@@ -241,9 +240,9 @@ export class CanvasController<ItemType extends RectangularItem> {
     const { left, top, width, height } = item
     ctx.fillStyle = fillStyle
     ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
-    ctx.shadowBlur = 3 * this.scale
+    ctx.shadowBlur = 2 * this.scale
     ctx.shadowOffsetX = 0
-    ctx.shadowOffsetY = 3 * this.scale
+    ctx.shadowOffsetY = 2 * this.scale
 
     ctx.beginPath()
     ctx.roundRect(left, top, width, height, height / 2)
@@ -294,6 +293,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   mouseWithinKnob(item: ItemType): number {
+    return -1 // Resizing is disabled for now
     const positions = getKnobPositions(item.rectangle)
     for (let i = 0; i < positions.length; i++) {
       const pos = positions[i]
@@ -344,14 +344,15 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   paintOverRect(ctx: CanvasRenderingContext2D, item: ItemType) {
-    const { left, top, width, height } = item.rectangle
+    const outlineDistance = 1.5
+    const { left, top, width, height } = rectangleEnlarge(item.rectangle, outlineDistance)
     if (this.scale < 0.2) {
       ctx.fillStyle = "rgba(0, 0, 255, 0.6)"
       ctx.fillRect(left, top, width, height)
     } else {
       if (this.mode === "edit") {
         ctx.strokeStyle = "blue"
-        ctx.lineWidth = 2
+        ctx.lineWidth = 1
       } else {
         ctx.strokeStyle = "black"
         ctx.lineWidth = 1
@@ -439,14 +440,17 @@ export class CanvasController<ItemType extends RectangularItem> {
 
     this.paintItems(ctx, bounds)
 
-    if (this.selected.length > 0) {
+    if (this.selected.size > 0) {
       for (const rect of this.selected) {
         this.paintSelected(ctx, rect)
       }
-      if (this.selected.length === 1) {
-        this.paintKnobs(ctx, this.selected[0])
-      }
-    } else if (this.overRect) {
+      // Resizing is disabled for now
+      // if (this.selected.length === 1) {
+      //   this.paintKnobs(ctx, this.selected[0])
+      // }
+    }
+
+    if (this.overRect) {
       this.paintOverRect(ctx, this.overRect)
     }
 
@@ -467,7 +471,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   // Panning
 
   startPanning(point: Point) {
-    this.selected = []
+    this.selected.clear()
     this.dragging = null
     this.panning = { click: point, origin: { ...this.origin } }
   }
@@ -518,29 +522,31 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   startDragging(click: Point) {
     const [first] = this.selected
+    const updatedIndices = new Set<number>()
+    const origins: Map<ItemType, Point> = new Map()
+    for (const item of this.selected) {
+      origins.set(item, {
+        x: item.rectangle.left,
+        y: item.rectangle.top,
+      })
+    }
+
     if (first) {
-      this.dragging = {
-        click,
-        origins: this.selected.map(({ rectangle }) => ({
-          x: rectangle.left,
-          y: rectangle.top,
-        })),
-        updatedIndices: new Set<number>(),
-      }
+      this.dragging = { click, origins, updatedIndices }
     }
   }
 
   doDragging(point: Point) {
-    if (!this.dragging || this.selected.length === 0) {
+    if (!this.dragging || this.selected.size === 0) {
       return
     }
 
     const { click, origins } = this.dragging
     const clientDiff = ptSub(point, click)
 
-    for (let i = 0; i < this.selected.length; i++) {
-      const rectangle = this.selected[i].rectangle
-      const origin = origins[i]
+    for (const item of this.selected) {
+      const rectangle = item.rectangle
+      const origin = origins.get(item)!
       rectangle.left = snap(origin.x + clientDiff.x / this.scale, 10)
       rectangle.top = snap(origin.y + clientDiff.y / this.scale, 10)
     }
@@ -550,7 +556,7 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   endDragging() {
-    if (!this.dragging || this.selected.length === 0) {
+    if (!this.dragging || this.selected.size === 0) {
       return
     }
     const updatedIndices = this.updateParents()
@@ -563,17 +569,17 @@ export class CanvasController<ItemType extends RectangularItem> {
     this.dragging = null
   }
 
-  // Resizing
+  // Resizing (WARNING: RESIZING IS DISABLED FOR NOW)
 
   startResizing(click: Point, knob: number) {
-    if (this.selected.length === 0) {
+    if (this.selected.size === 0) {
       return
     }
-    const item = this.selected[0]
+    const [first] = this.selected.values()
     this.resizing = {
       click,
-      initial: { ...item.rectangle }, // copy!
-      item,
+      initial: { ...first.rectangle }, // copy!
+      item: first,
       knob,
       updatedIndices: new Set<number>(),
     }
@@ -659,9 +665,9 @@ export class CanvasController<ItemType extends RectangularItem> {
       height: Math.abs(y1 - y2),
     }
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = this.items.filter(
+    this.selected = new Set(this.items.filter(
       (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
-    )
+    ))
   }
 
   endRubberbanding() {
@@ -670,26 +676,26 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
 
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
-    this.selected = this.items.filter(
+    this.selected = new Set(this.items.filter(
       (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
-    )
+    ))
     this.rubberbanding = null
   }
 
   // Abstract Events
 
   onMouseOrTouchDown(point: Point, shiftKey: boolean) {
-    if (this.selected.length > 0) {
-      const knob = this.mouseWithinKnob(this.selected[0])
+    if (this.selected.size > 0) {
+      const knob = this.mouseWithinKnob(this.selected.values().next().value)
       if (knob != -1) {
         this.startResizing(point, knob)
-      } else if (this.selected.some((item) => pointWithinRect(this.pointer, item.rectangle))) {
+      } else if ([...this.selected].some((item) => pointWithinRect(this.pointer, item.rectangle))) {
         this.startDragging(point)
       } else if (this.overRect) {
         if (shiftKey) {
-          this.selected.push(this.overRect)
+          this.selected.add(this.overRect)
         } else {
-          this.selected = [this.overRect]
+          this.selected = new Set([this.overRect])
           this.startDragging(point)
         }
       } else {
@@ -697,7 +703,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       }
     } else if (this.overRect) {
       if (this.mode === "edit") {
-        this.selected = [this.overRect]
+        this.selected = new Set([this.overRect])
         this.startDragging(point)
       } else {
         this.adapter.clickItem(this.overRect)
@@ -819,7 +825,7 @@ export class CanvasController<ItemType extends RectangularItem> {
     } else if (event.key === "Escape") {
       if (this.mode === "edit") {
         this.mode = "view"
-        this.selected = []
+        this.selected.clear()
       } else {
         this.mode = "edit"
       }
