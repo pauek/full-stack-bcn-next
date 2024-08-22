@@ -1,13 +1,10 @@
-import DarkModeAwareRoot from "@/components/DarkModeAwareBody"
 import Footer from "@/components/Footer"
 import Header from "@/components/Header"
-import { Analytics } from "@vercel/analytics/react"
-import { inter } from "@/lib/fonts"
-import { cn } from "@/lib/utils"
-import "../globals.css"
 import data from "@/lib/data"
 import { env } from "@/lib/env.mjs"
+import { Analytics } from "@vercel/analytics/react"
 import { notFound } from "next/navigation"
+import "../globals.css"
 
 export const metadata = {
   title: "Full-stack Web Technologies",
@@ -23,22 +20,17 @@ export default async function RootLayout({ children }: Props) {
     notFound()
   }
   return (
-    <DarkModeAwareRoot lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
-      <body className={cn(inter.className, "h-screen flex flex-col")}>
-        <div className="w-full h-full pt-12 flex flex-col">
-          <Header course={course} />
-          <main className="min-h-full w-full flex flex-col items-center">
-            <div id="page-box" className="flex-1 w-full relative">
-              {children}
-            </div>
-            <Footer />
-          </main>
-        </div>
-        <Analytics />
-      </body>
-    </DarkModeAwareRoot>
+    <>
+      <div className="w-full h-full pt-12 flex flex-col">
+        <Header course={course} />
+        <main className="min-h-full w-full flex flex-col items-center">
+          <div id="page-box" className="flex-1 w-full relative">
+            {children}
+          </div>
+          <Footer />
+        </main>
+      </div>
+      <Analytics />
+    </>
   )
 }

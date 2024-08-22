@@ -1,5 +1,5 @@
 import DarkModeAwareRoot from "@/components/DarkModeAwareBody"
-import "../../globals.css"
+import "./globals.css"
 import Map from "@/components/Map"
 import data from "@/lib/data"
 
@@ -18,8 +18,10 @@ export default async function RootLayout({ children }: Props) {
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       </head>
-      <body id="page-box">
-        <Map mapPositions={mapPositions} />
+      <body>
+        <div className="absolute top-0 left-0 right-0 bottom-0" id="page-box">
+          <Map mapPositions={mapPositions} />
+        </div>
         {children}
       </body>
     </DarkModeAwareRoot>

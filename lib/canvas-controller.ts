@@ -86,6 +86,8 @@ export class CanvasController<ItemType extends RectangularItem> {
     urlPath: string,
     adapter: CanvasAdapter<ItemType>
   ) {
+
+    console.log(`------- Canvas Controller CONSTRUCTOR -------`)
     this.adapter = adapter
     this.adapter.setController(this)
 
