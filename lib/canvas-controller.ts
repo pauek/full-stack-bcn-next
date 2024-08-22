@@ -235,6 +235,24 @@ export class CanvasController<ItemType extends RectangularItem> {
     return updated
   }
 
+  itemRectangle(ctx: CanvasRenderingContext2D, item: IRectangle, fillStyle: string) {
+    ctx.save()
+
+    const { left, top, width, height } = item
+    ctx.fillStyle = fillStyle
+    ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
+    ctx.shadowBlur = 3 * this.scale
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 3 * this.scale
+
+    ctx.beginPath()
+    ctx.roundRect(left, top, width, height, height / 2)
+    ctx.closePath()
+    ctx.fill()
+
+    ctx.restore()
+  }
+
   paintGrid(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
     const left = bounds.left - (bounds.left % 10)
     for (let _x = 0; _x <= bounds.width; _x += 10) {
@@ -297,7 +315,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       ctx.strokeStyle = "blue"
       ctx.lineWidth = 2
       ctx.beginPath()
-      ctx.roundRect(left, top, width, height, 5)
+      ctx.roundRect(left, top, width, height, height / 2)
       ctx.closePath()
       ctx.stroke()
     }
@@ -339,7 +357,7 @@ export class CanvasController<ItemType extends RectangularItem> {
         ctx.lineWidth = 1
       }
       ctx.beginPath()
-      ctx.roundRect(left, top, width, height, 5)
+      ctx.roundRect(left, top, width, height, height / 2)
       ctx.closePath()
       ctx.stroke()
     }

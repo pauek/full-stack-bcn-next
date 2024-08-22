@@ -1,10 +1,11 @@
+"use client"
+
 import { actionMapPositionsUpdate } from "@/actions/positions"
 import { FileType, MapPosition } from "@/data/schema"
 import { useRouter } from "next/navigation"
 import { CanvasController } from "./canvas-controller"
 import { pointWithinRect } from "./geometry"
 import { colorToCSS, factorFromInterval, interpolateColor } from "./utils"
-import { inter } from "./fonts"
 
 type Item = MapPosition<number>
 
@@ -15,9 +16,22 @@ export class MapPositionsAdapter {
   items: Item[]
   _controller: null | CanvasController<Item> = null
 
+  _icons: Map<string, HTMLImageElement> = new Map()
+
   constructor(router: any, items: Item[]) {
     this.router = router
     this.items = items
+
+    this.loadIcons()
+  }
+
+  loadIcons() {
+    // TODO(pauek): make sure images are loaded before rendering
+    for (const iconName of ["menu-book"]) {
+      const icon = new Image()
+      icon.src = `/icons/${iconName}.svg`
+      this._icons.set(iconName, icon)
+    }
   }
 
   get controller() {
@@ -56,26 +70,10 @@ export class MapPositionsAdapter {
     }
   }
 
-  roundedRectangle(ctx: CanvasRenderingContext2D, item: Item, color: string) {
-    ctx.save()
 
-    const { left, top, width, height } = item.rectangle
-    const { scale } = this.controller
-    ctx.fillStyle = color
-    ctx.shadowColor = "rgba(0, 0, 0, 0.2)"
-    ctx.shadowBlur = 3 * scale
-    ctx.shadowOffsetX = 0
-    ctx.shadowOffsetY = 3 * scale
-    ctx.beginPath()
-    ctx.roundRect(left, top, width, height, 5)
-    ctx.closePath()
-    ctx.fill()
-
-    ctx.restore()
-  }
 
   paintExercise(ctx: CanvasRenderingContext2D, item: Item) {
-    this.roundedRectangle(ctx, item, "lightblue")
+    this.controller.itemRectangle(ctx, item.rectangle, "lightblue")
 
     const { left, top, width, height } = item.rectangle
 
@@ -93,7 +91,7 @@ export class MapPositionsAdapter {
   }
 
   paintDoc(ctx: CanvasRenderingContext2D, item: Item) {
-    this.roundedRectangle(ctx, item, "white")
+    this.controller.itemRectangle(ctx, item.rectangle, "white")
 
     const { left, top, width, height } = item.rectangle
 
@@ -108,6 +106,13 @@ export class MapPositionsAdapter {
     ctx.fillStyle = cssColor
 
     ctx.fillText(`Reading`, left + width / 2, top + height / 2)
+
+    const icon = this._icons.get("menu-book")
+    if (icon !== undefined) {
+      const size = 0.8 * height
+      const margin = 0.1 * height
+      ctx.drawImage(icon, left + 2*margin, top + margin, size, size)
+    }
   }
 
   paintActivity(ctx: CanvasRenderingContext2D, item: Item) {
@@ -116,14 +121,13 @@ export class MapPositionsAdapter {
     } else if (item.kind === FileType.doc) {
       this.paintDoc(ctx, item)
     } else {
-      this.roundedRectangle(ctx, item, "red")
+      this.controller.itemRectangle(ctx, item.rectangle, "red")
     }
   }
 
   paintChapter(ctx: CanvasRenderingContext2D, item: Item) {
     const fontSize = 12
     const { left, top, width, height } = item.rectangle
-
 
     ctx.strokeStyle = "#ccc"
     ctx.lineWidth = 1
