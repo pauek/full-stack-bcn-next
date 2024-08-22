@@ -683,19 +683,27 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   // Abstract Events
+  mouseOverSelectedItem() {
+    return [...this.selected].some((item) => pointWithinRect(this.pointer, item.rectangle))
+  }
+
 
   onMouseOrTouchDown(point: Point, shiftKey: boolean) {
     if (this.selected.size > 0) {
       const knob = this.mouseWithinKnob(this.selected.values().next().value)
       if (knob != -1) {
         this.startResizing(point, knob)
-      } else if ([...this.selected].some((item) => pointWithinRect(this.pointer, item.rectangle))) {
-        this.startDragging(point)
       } else if (this.overRect) {
         if (shiftKey) {
-          this.selected.add(this.overRect)
+          if (this.selected.has(this.overRect)) {
+            this.selected.delete(this.overRect)
+          } else {
+            this.selected.add(this.overRect)
+          }
         } else {
-          this.selected = new Set([this.overRect])
+          if (!this.mouseOverSelectedItem()) {
+            this.selected = new Set([this.overRect])
+          }
           this.startDragging(point)
         }
       } else {
