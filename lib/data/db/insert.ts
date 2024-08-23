@@ -1,6 +1,6 @@
 import * as schema from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { hashAny } from "@/lib/data/hashing"
+import { hashAny, HashItem } from "@/lib/data/hashing"
 import {
   bytesToBase64,
   logPresentFile,
@@ -15,7 +15,7 @@ import { db } from "./db"
 import { FileType } from "@/data/schema"
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
-  await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing()
+  await db.insert(schema.relatedPieces).values({ childHash, parentHash })
 }
 
 const _pieceHashExists = async (hash: string) => {
@@ -49,7 +49,7 @@ export const attachmentExists = async (
   return found !== undefined
 }
 
-export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) => {
+export const insertPiece = async (piece: ContentPiece, children: HashItem[]) => {
   if (await dbPieceExists(piece)) {
     return false // it was not inserted
   }
@@ -64,11 +64,15 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
       target: schema.pieces.pieceHash,
       set: dbPiece,
     })
-    return true // it was inserted
+    // Insert parent-child links
+    for (const child of children) {
+      await pieceSetParent(child.hash, piece.hash)
+    }
+
+    return true
   } catch (e: any) {
-    console.error(
-      `Inserting "${piece.idpath.join("/")}" [${JSON.stringify(dbPiece)}]: ${e.toString()}`
-    )
+    const idjpath = piece.idpath.join("/")
+    console.error(`inserPiece: ERROR inserting "${idjpath}":`, e)
   }
 }
 

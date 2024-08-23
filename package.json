@@ -4,16 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "files:build": "BACKEND=files next build",
-    "dev:build": "DB=development next build",
-    "build": "next build",
-    "preview:build": "DB=preview next build",
-    "start": "next start",
-    "lint": "next lint",
     "sync": "NODE_ENV=production DB=development bun run scripts/sync.ts",
+    "build": "DB=development next build",
+    "start": "DB=development next start",
+    "lint": "next lint",
+    "format": "bunx prettier --write .",
+    "files:build": "BACKEND=files next build",
+    "files:start": "BACKEND=files next start",
     "preview:sync": "NODE_ENV=production DB=preview bun run scripts/sync.ts",
-    "prod:sync": "NODE_ENV=production bun run scripts/sync.ts",
-    "format": "bunx prettier --write ."
+    "preview:build": "DB=preview next build",
+    "preview:start": "DB=preview next start",
+    "prod:sync": "NODE_ENV=production DB=production bun run scripts/sync.ts",
+    "prod:build": "DB=production next build",
+    "prod:start": "DB=production next start"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.504.0",

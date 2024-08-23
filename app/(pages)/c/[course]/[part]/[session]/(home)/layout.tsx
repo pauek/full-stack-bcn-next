@@ -16,13 +16,13 @@ export default async function Layout({ children, params }: _Props) {
   )
 
   const Page = () => (
-    <div className="w-full bg-secondary pt-2 px-2 pb-12 flex-1 relative flex flex-row">
-      <div className="w-full h-full max-w-[54rem] m-auto">{children}</div>
+    <div className="w-full bg-secondary pb-12 flex-1 relative flex flex-col">
+      <div className="w-full h-full">{children}</div>
     </div>
   )
 
   return (
-    <div id="top" className="w-full h-full flex flex-col">
+    <div id="top" className="w-full h-full flex flex-col flex-1">
       <Header />
       <Page />
     </div>

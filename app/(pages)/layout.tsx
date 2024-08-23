@@ -21,9 +21,10 @@ export default async function RootLayout({ children }: Props) {
   }
   return (
     <>
-      <div className="w-full h-full pt-12 flex flex-col">
+      <div id="curtain" className="-z-10 fixed top-0 left-0 right-0 bottom-0 bg-background"></div>
+      <div className="pt-12 flex flex-col min-h-screen">
         <Header course={course} />
-        <main className="min-h-full w-full flex flex-col items-center">
+        <main className="w-full flex-1 flex flex-col items-center">
           {children}
           <Footer />
         </main>

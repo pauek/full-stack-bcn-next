@@ -1,7 +1,11 @@
 [X] - Arreglar la página del doc (que arreglará el "build" en Vercel)
 [X] - Pintar cada tipo de actividad de una forma distinta
+[X] - El mapa siemrpe está presente
+[X] - Workflow: `bun dev`, `bun sync`, `bun build`, `bun start`
+
 [ ] - Normalizar los rectángulos al redimensionarlos (porque si no falla el hover y los clicks porque tienen width < 0 || height < 0)
 [ ] - Crear páginas para los ejercicios y arreglar links desde el mapa
 
+[ ] - Dark mode bien
 [ ] - Versión móvil
 [ ] - Implementar login con Authjs

@@ -18,7 +18,7 @@ export default async function RootLayout({ children }: Props) {
       </head>
       <DarkModeAwareBody lang="en">
         <Map />
-        <div className="bg-background z-10">{children}</div>
+        {children}
       </DarkModeAwareBody>
     </html>
   )

@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
-import { collectAnswersForPiece, writeAnswers } from "./quiz"
+import { collectAnswersForPiece } from "./quiz"
 import { getPieceSlideList } from "./attachments"
 import { pieceHasDoc } from "./pieces"
 import { filesWalkContentPieces } from "./utils"
@@ -25,7 +25,7 @@ export const readMetadata = async (diskpath: string): Promise<any> => {
   }
 }
 
-const writeMetadata = async (dir: string, metadata: any) => {
+export const writeMetadata = async (dir: string, metadata: any) => {
   const json = JSON.stringify(metadata, null, 2)
   const metadataPath = join(dir, METADATA_FILENAME)
   await writeFile(metadataPath, json)
@@ -35,6 +35,7 @@ export const updateMetadata = async (diskpath: string, func: (metadata: any) => 
   const metadata = await readMetadata(diskpath)
   await func(metadata)
   await writeMetadata(diskpath, metadata)
+  return metadata
 }
 
 type PieceStandardMetadata = {
@@ -87,6 +88,4 @@ export const courseUpdateMetadata = async (courseIdpath: string[], logFunc?: Met
       }
     })
   })
-
-  await writeAnswers(allAnswers)
 }

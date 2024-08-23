@@ -10,8 +10,8 @@ let TURSO_URL: string | undefined
 console.log(`DB = ${chalk.yellow(DB)}`)
 
 if (DB === "development") {
-  TURSO_TOKEN = process.env.TURSO_TOKEN_DEVELOPMENT
-  TURSO_URL = process.env.TURSO_URL_DEVELOPMENT
+  TURSO_TOKEN = process.env.TURSO_TOKEN
+  TURSO_URL = process.env.TURSO_URL
 } else if (DB === "preview") {
   TURSO_TOKEN = process.env.TURSO_TOKEN_PREVIEW
   TURSO_URL = process.env.TURSO_URL_PREVIEW

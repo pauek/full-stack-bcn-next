@@ -1,28 +1,25 @@
 import "@/lib/env-config"
 
 import { FileType } from "@/data/schema"
+import { ContentPiece } from "@/lib/adt"
 import { backend as dbBackend } from "@/lib/data/db"
 import { closeConnection } from "@/lib/data/db/db"
-import { dbGetAllHashmaps } from "@/lib/data/db/hashmaps"
 import { insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
-import { collectAnswersForPiece, writeAnswers } from "@/lib/data/files/quiz"
+import { getAllPieceAttachments } from "@/lib/data/files/attachments"
 import { readStoredHash, writeStoredHash } from "@/lib/data/files/hashes"
 import {
-  forEachHashmapEntry,
   hashmapAdd,
   hashmapRemove,
   loadGlobalHashmap,
   writeGlobalHashmap,
 } from "@/lib/data/files/hashmaps"
-import { updateMetadata } from "@/lib/data/files/metadata"
-import { getPiece, pieceHasDoc } from "@/lib/data/files/pieces"
+import { writeMetadata } from "@/lib/data/files/metadata"
 import { filesGetRootIdpath, filesWalkContentPieces, listPieceSubdir } from "@/lib/data/files/utils"
 import { Hash, HashItem, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { basename } from "path"
 import { insertFiles } from "./lib/lib"
-import { getAllPieceAttachments, getPieceAttachmentList } from "@/lib/data/files/attachments"
 
 const cliArgs = {
   forcedUpdate: false,
@@ -31,20 +28,24 @@ const cliArgs = {
 
 type HashItemLevel = HashItem & { level: number }
 
-const allAnswers: Map<Hash, string[]> = new Map()
+/** Parse options */
+const parseOption = (args: string[], long: string, short: string): boolean =>
+  args.includes(long) || args.includes(short)
 
-export const updatePiece = async (idpath: string[]) => {
-  const piece = await getPiece(idpath)
-  if (piece === null) {
-    throw new Error(`Piece not found??? "${idpath.join("/")}"`)
-  }
+/**
+ * Update a content piece in the database.
+ * @param idpath The idpath of the piece.
+ *
+ * Also shows the hash and idpath of the piece on the screen. If the piece has
+ * the "hidden" metadata field set to `true`, it will not upload anything.
+ */
+export const updatePiece = async (piece: ContentPiece, childrenHashes: HashItem[]) => {
   if (piece.metadata.hidden) {
     return
   }
-  console.log(piece.hash, piece.idpath.join("/"))
   try {
     await Promise.allSettled([
-      await insertPiece(piece),
+      await insertPiece(piece, childrenHashes),
       await insertPieceHashmap(piece),
       await insertFiles(piece),
       // await uploadImages(piece),
@@ -54,117 +55,107 @@ export const updatePiece = async (idpath: string[]) => {
   }
 }
 
+/**
+ * Walk the file tree and compute the new hash, level,
+ */
 export const updateFileTree = async function () {
   let sessionIndex = 1
+  let numChanges = 0
+
+  // Load global hashmap before
+  await loadGlobalHashmap()
 
   // WARNING: The pieces have to be walked in order of filename!
-  // Otherwise, the indices will be wrong.
-
+  // Otherwise, the indices will be wrong. (This is in principle
+  // guaranteed by filesWalkContentPieces.)
+  //
   await filesWalkContentPieces<HashItemLevel>(
     filesGetRootIdpath(),
     async ({ index, piece, diskpath, children }) => {
       const filename = basename(diskpath)
 
-      // New hash (potential new change)
+      // Attachments
+      const attachments = await getAllPieceAttachments(piece)
+      const slideList = await listPieceSubdir(diskpath, FileType.slide)
+      const hasDoc = attachments.some((a) => a.filetype === FileType.doc)
+
+      // Compute level
+      const childrenLevels = children.map(({ level }) => level)
+      if (attachments.length > 0) {
+        childrenLevels.push(0) // Attachments count as level 0
+      }
+      const level = 1 + Math.max(-1, ...childrenLevels)
+
+      // IMPORTANT: Updating metadata changes the hash!!
+      // Update metadata fields (metadata was already read)
+      const { metadata } = piece
+      metadata.level = level
+      metadata.hasDoc = hasDoc
+      metadata.numSlides = slideList.length
+      const depth = piece.idpath.length
+      if (depth === 3) {
+        metadata.index = sessionIndex++ // for sessions
+      } else {
+        metadata.index = index
+      }
+      if (!cliArgs.dryRun) {
+        await writeMetadata(diskpath, metadata)
+      }
+
+      // Compute new hash
       const oldHash = await readStoredHash(diskpath)
       const newHash = await hashPiece(piece, children)
       if (!cliArgs.dryRun) {
+        piece.hash = newHash // remember!
         await writeStoredHash(diskpath, newHash)
       }
 
-      // Compute level, depth, ...
-      const childrenLevels = children.map(({ level }) => level)
-      const attachments = await getAllPieceAttachments(piece)
-      // Attachments count as level 0
-      if (attachments.length > 0) {
-        childrenLevels.push(0)
-      }
-
-      const level = 1 + Math.max(-1, ...childrenLevels)
-
-      // As soon as we can, we update the hashmap (since other funcs depend on it)
-      if (newHash !== oldHash && !piece.metadata.hidden) {
+      // --- UPDATE ---
+      // Only if the hash has changed, or if we are uploading everything
+      if (cliArgs.forcedUpdate || newHash !== oldHash) {
         hashmapRemove(oldHash)
         hashmapAdd({ hash: newHash, idpath: piece.idpath, diskpath, level })
-      }
-
-      // Collect quiz answers
-      for (const [key, values] of await collectAnswersForPiece(piece)) {
-        allAnswers.set(key, values)
-      }
-
-      // Update own metadata
-      const depth = piece.idpath.length
-      const slideList = await listPieceSubdir(diskpath, FileType.slide)
-
-      updateMetadata(diskpath, async (M) => {
         if (!cliArgs.dryRun) {
-          M.level = level
-          M.hasDoc = await pieceHasDoc(piece) // This uses the globalHashmap!
-          M.numSlides = slideList.length
-          M.index = index
-          if (depth === 3) {
-            M.index = sessionIndex++ // for sessions
-          }
+          await updatePiece(piece, children)
         }
-      })
+        console.log(piece.hash, piece.idpath.join("/"))
+        numChanges++
+      }
 
       return { hash: newHash, filename, level }
     }
   )
 
+  // Write global hashmap after
   if (!cliArgs.dryRun) {
-    await writeGlobalHashmap() // a.s.a.p.
+    await writeGlobalHashmap()
   }
+
+  return { numChanges }
 }
 
-//
-// Check, for each entry in the local hashmap, if that hash is in the database.
-// Otherwise, upload the whole piece, including files, etc.
-//
-const uploadChanges = async () => {
-  const hashmaps = await dbGetAllHashmaps()
-  const dbMap = new Map(hashmaps.map((h) => [h.idpath.join("/"), h.pieceHash] as const))
-
-  await forEachHashmapEntry(async ({ idpath, hash: filesHash }) => {
-    const dbHash = dbMap.get(idpath.join("/"))
-    if (dbHash !== filesHash || cliArgs.forcedUpdate) {
-      if (!cliArgs.dryRun) {
-        await updatePiece(idpath)
-      } else {
-        const piece = await getPiece(idpath)
-        console.log(piece!.hash, piece!.idpath.join("/"))
-      }
-    }
-  })
-}
-
-const step = async (message: string, func: () => Promise<void>) => {
-  process.stdout.write(chalk.green(`${message}\n`))
-  await func()
-}
-const [_bun, _script, ...args] = process.argv
-
-const parseOption = (long: string, short: string): boolean =>
-  args.includes(long) || args.includes(short)
-
+// Main
 showExecutionTime(async () => {
-  cliArgs.dryRun = parseOption("--dry-run", "-n")
-  cliArgs.forcedUpdate = parseOption("--force", "-f")
-
-  console.log(chalk.gray(`[${dbBackend.getInfo()}]`))
-  console.log(chalk.gray(`[forcedUpdate = ${cliArgs.forcedUpdate}]`))
-
-  await loadGlobalHashmap()
-
-  await step("Checking file tree", updateFileTree)
-  await step("Processing changes", uploadChanges)
-  if (!cliArgs.dryRun) {
-    await step("Writing answers", () => writeAnswers(allAnswers))
-  }
+  const [_bun, _script, ...args] = process.argv
+  cliArgs.dryRun = parseOption(args, "--dry-run", "-n")
+  cliArgs.forcedUpdate = parseOption(args, "--force", "-f")
 
   if (cliArgs.dryRun) {
-    console.log(chalk.bgYellow("DRY RUN: no changes were made."))
+    console.log(chalk.bgYellow("DRY RUN: nothing will be written to disk."))
+  }
+  if (cliArgs.forcedUpdate) {
+    console.log(chalk.bgYellow("FORCED UPDATE: all pieces will be processed."))
+  }
+
+  const { numChanges } = await updateFileTree()
+
+  if (numChanges === 0) {
+    console.log(`No changes.`)
+  } else {
+    console.log(`${numChanges} changed pieces.`)
+  }
+  if (cliArgs.dryRun) {
+    console.log(chalk.bgYellow("DRY RUN: nothing was written to disk."))
   }
 
   await closeConnection()

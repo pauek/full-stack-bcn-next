@@ -43,8 +43,8 @@ export default async function Layout({ children, params }: _Props) {
   )
 
   const Navigator = () => (
-    <div className="border-b p-1 px-3 text-xs text-stone-400 dark:text-stone-600 w-full flex flex-row justify-center">
-      <div className="flex flex-row w-full max-w-[54rem]">
+    <div className="border-b p-1 px-3 text-xs text-stone-400 dark:text-stone-600 w-full flex flex-row justify-centers">
+      <div className="flex flex-row w-full max-w-[54rem] mx-auto">
         {index > 0 ? (
           <Link href={pieceUrlPath(chapterList[index - 1].idpath)} className="flex-1">
             <ArrowLeftIcon />
@@ -75,7 +75,7 @@ export default async function Layout({ children, params }: _Props) {
   )
 
   return (
-    <div id="top" className="w-full h-full flex flex-col items-center">
+    <div id="top" className="w-full h-full flex flex-col items-center bg-background">
       <Navigator />
       <Header />
       <PageWrapper>{children}</PageWrapper>

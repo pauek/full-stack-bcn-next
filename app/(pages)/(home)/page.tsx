@@ -13,7 +13,6 @@ export default async function Home() {
   if (rootPiece === null) {
     notFound()
   }
-  console.dir(rootPiece, { depth: 4 })
   const { children } = rootPiece
   return (
     <div className="m-auto max-w-[38em]">

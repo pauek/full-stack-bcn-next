@@ -1,14 +1,11 @@
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { env } from "@/lib/env.mjs"
 import { splitMarkdownPreamble } from "@/lib/utils"
-import { readFile, writeFile } from "fs/promises"
+import { readFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
 import { getDiskpathByIdpath } from "./hashmaps"
 import { getDiskpathForPiece, listPieceSubdir } from "./utils"
-
-const ANSWERS_FILE = join(env.CONTENT_ROOT, "./answers.json")
 
 export const getQuizPartsFromFile = (text: string) => {
   const { preamble, body } = splitMarkdownPreamble(text)
@@ -17,24 +14,12 @@ export const getQuizPartsFromFile = (text: string) => {
   }
   const { answers }: { answers: string[] } = JSON.parse(preamble)
   if (!answers) {
-    console.log(text)
     throw new Error("Question missing answer")
   }
   if (!Array.isArray(answers)) {
     throw new Error("Answer should be an array!")
   }
   return { answers, body }
-}
-
-export const writeAnswers = async (answers: Map<Hash, string[]>) => {
-  const json = JSON.stringify([...answers.entries()], null, 2)
-  await writeFile(ANSWERS_FILE, json)
-}
-
-export const readAnswers = async (): Promise<Map<Hash, string[]>> => {
-  const content = await readFile(ANSWERS_FILE)
-  const entries = JSON.parse(content.toString())
-  return new Map(entries)
 }
 
 export const collectAnswersForPiece = async (piece: ContentPiece): Promise<Map<Hash, string[]>> => {

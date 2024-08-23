@@ -2,7 +2,7 @@
 
 import { actionLoadMapPositions } from "@/actions/positions"
 import { useMap } from "@/components/map/use-map"
-import { LegacyRef, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { MapItem } from "./types"
 
 const Container = ({ items }: { items: MapItem[] }) => {
@@ -10,7 +10,6 @@ const Container = ({ items }: { items: MapItem[] }) => {
   const { canvasElement } = useMap(items)
 
   useEffect(() => {
-    console.log("appendCanvas", ref.current === null, canvasElement === null)
     if (ref.current && canvasElement) {
       ref.current.appendChild(canvasElement)
     }

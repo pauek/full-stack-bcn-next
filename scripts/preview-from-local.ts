@@ -1,5 +1,6 @@
 import { $ } from "bun"
 import { createClient } from "@tursodatabase/api"
+import { showExecutionTime } from "@/lib/utils"
 
 const API_TOKEN = process.env.TURSO_API_TOKEN
 if (!API_TOKEN) {
@@ -86,11 +87,13 @@ const savePreviewToken = async (newToken: string) => {
   console.log(`Saved token to "${envFile}"`)
 }
 
-await deleteOldPreviewDatabase()
-const dumpFile = await createSQLiteDump()
-const buffer = await readDumpAsBytes(dumpFile)
-const dumpUrl = await uploadDumpToTurso(buffer)
-const database = await createPreviewDatabase(dumpUrl)
-const token = await getTokenForDatabase(database)
-await savePreviewToken(token)
-console.log(database)
+showExecutionTime(async () => {
+  await deleteOldPreviewDatabase()
+  const dumpFile = await createSQLiteDump()
+  const buffer = await readDumpAsBytes(dumpFile)
+  const dumpUrl = await uploadDumpToTurso(buffer)
+  const database = await createPreviewDatabase(dumpUrl)
+  const token = await getTokenForDatabase(database)
+  await savePreviewToken(token)
+  console.log(database)
+})
