@@ -1,10 +1,11 @@
 "use client"
 
 import { actionMapPositionsUpdate } from "@/actions/positions"
-import { FileType, MapPosition } from "@/data/schema"
+import { FileType, MapPosition, zMapPosition } from "@/data/schema"
 import { CanvasController } from "./canvas-controller"
-import { pointWithinRect } from "./geometry"
+import { checkRectangle, pointWithinRect } from "./geometry"
 import { colorToCSS, factorFromInterval, interpolateColor } from "./utils"
+import { z } from "zod"
 
 type Item = MapPosition<number>
 
@@ -52,11 +53,14 @@ export class MapPositionsAdapter {
     if (this._items === null) {
       throw new Error(`Unset items in MapPositionsAdapter!`)
     }
+
+    // Check that items are what we expect (they come from outside Typescript!)
+    const zItemArray = z.array(zMapPosition(z.number()))
+    zItemArray.parse(this._items)
     return this._items
   }
 
   loadIcons() {
-    // TODO(pauek): make sure images are loaded before rendering
     for (const filename of Object.values(iconNames)) {
       const icon = new Image()
       icon.src = `/icons/${filename}.svg`
@@ -222,6 +226,10 @@ export class MapPositionsAdapter {
   }
 
   paintItem(ctx: CanvasRenderingContext2D, item: Item) {
+    if (!checkRectangle(item.rectangle)) {
+      console.error(`Invalid rectangle: ${JSON.stringify(item)}`)
+      return
+    }
     const paintFunction = [
       this.paintActivity.bind(this),
       this.paintChapter.bind(this),

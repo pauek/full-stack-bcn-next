@@ -4,11 +4,10 @@
 
 import { usePathname, useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import { globalCanvasElement } from "./canvas"
 import { globalCanvasController, globalMapPositionsAdapter } from "./map-globals"
 import { MapItem, MapSize } from "./types"
 
-const useCanvasResizeEvent = () => {
+const useCanvasResizeEvent = (canvas: HTMLCanvasElement | null) => {
   const [size, setSize] = useState<MapSize>({ width: 0, height: 0 })
 
   // Resize event
@@ -16,13 +15,15 @@ const useCanvasResizeEvent = () => {
     const resize = () => {
       const { innerWidth: width, innerHeight: height } = window
       setSize({ width, height })
-      globalCanvasElement.width = width
-      globalCanvasElement.height = height
+      if (canvas) {
+        canvas.width = width
+        canvas.height = height
+      }
     }
     resize()
     window.addEventListener("resize", resize)
     return () => window.removeEventListener("resize", resize)
-  }, [])
+  }, [canvas])
 
   // Paint when changing size
   useEffect(() => {
@@ -69,19 +70,29 @@ const useChangeOfPathname = () => {
   }, [pathname])
 }
 
-const useSetMouseAndTouchEvents = () => {
+const useSetMouseAndTouchEvents = (canvas: HTMLCanvasElement | null) => {
   useEffect(() => {
-    globalCanvasController.setEvents(globalCanvasElement)
-  }, [])
+    if (canvas) {
+      globalCanvasController.setEvents(canvas)
+    }
+  }, [canvas])
 }
 
 export const useMap = (items: MapItem[]) => {
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null)
+
+  useEffect(() => {
+    const canvas = document.createElement("canvas")
+    setCanvas(canvas)
+    globalCanvasController.setCanvas(canvas)
+  }, [])
+
   useChangeOfPathname()
-  useCanvasResizeEvent()
+  useCanvasResizeEvent(canvas)
   useMapStateInitialization(items)
-  useSetMouseAndTouchEvents()
+  useSetMouseAndTouchEvents(canvas)
   useWindowKeydownEvents()
   return {
-    canvasElement: globalCanvasElement,
+    canvasElement: canvas,
   }
 }

@@ -25,6 +25,11 @@ export const base64ToString = (base64: string) => {
   return buffer.toString("utf8")
 }
 
+export const stringToBase64 = (str: string) => {
+  const buf = Buffer.from(str)
+  return buf.toString("base64")
+}
+
 export const bytesToBase64 = (bytes: Uint8Array) => {
   const buf = Buffer.from(bytes)
   return buf.toString("base64")

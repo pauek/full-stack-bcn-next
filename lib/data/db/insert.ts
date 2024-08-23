@@ -1,11 +1,18 @@
 import * as schema from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { hashAny } from "@/lib/data/hashing"
-import { bytesToBase64, logPresentFile, logUploadedFile } from "@/lib/utils"
+import {
+  bytesToBase64,
+  logPresentFile,
+  logUploadedFile,
+  splitMarkdownPreamble,
+  stringToBase64,
+} from "@/lib/utils"
 import { and, eq } from "drizzle-orm"
 import { readFile } from "fs/promises"
 import { getQuizPartsFromFile } from "../files/quiz"
 import { db } from "./db"
+import { FileType } from "@/data/schema"
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
   await db.insert(schema.relatedPieces).values({ childHash, parentHash }).onConflictDoNothing()
@@ -30,13 +37,13 @@ export const fileExists = async (hash: string) => {
 export const attachmentExists = async (
   pieceHash: string,
   fileHash: string,
-  filetype: schema.FileType,
+  filetype: schema.FileType
 ) => {
   const found = await db.query.attachments.findFirst({
     where: and(
       eq(schema.attachments.pieceHash, pieceHash),
       eq(schema.attachments.fileHash, fileHash),
-      eq(schema.attachments.filetype, filetype),
+      eq(schema.attachments.filetype, filetype)
     ),
   })
   return found !== undefined
@@ -60,7 +67,7 @@ export const insertPiece = async (piece: ContentPiece, parent?: ContentPiece) =>
     return true // it was inserted
   } catch (e: any) {
     console.error(
-      `Inserting "${piece.idpath.join("/")}" [${JSON.stringify(dbPiece)}]: ${e.toString()}`,
+      `Inserting "${piece.idpath.join("/")}" [${JSON.stringify(dbPiece)}]: ${e.toString()}`
     )
   }
 }
@@ -87,20 +94,24 @@ type FileInfo = {
 }
 export const insertFile = async (
   piece: ContentPiece,
-  { filename, filetype, diskpath }: FileInfo,
+  { filename, filetype, diskpath }: FileInfo
 ) => {
   try {
     const bytes = await readFile(diskpath)
     const fileHash = hashAny(bytes)
+
     let data: string = bytesToBase64(bytes)
+
+    // Extract metadata for certain types (for now, docs and exercises)
     let metadata: Record<string, any> | null = null
-    if (filetype === schema.FileType.quiz) {
+    if (filetype === FileType.doc || filetype === FileType.exercise) {
+      const { preamble, body } = splitMarkdownPreamble(bytes.toString())
+      if (preamble) {
+        metadata = JSON.parse(preamble)
+      }
+      data = stringToBase64(body)
+    } else if (filetype === schema.FileType.quiz) {
       const { body, answers } = getQuizPartsFromFile(bytes.toString())
-      //
-      // NOTE(pauek): the fileHash is for the whole file (including the Markdown preamble),
-      //   but we store only the body so if you try to check the hash with only the data,
-      //   it will not match.
-      //
       data = body
       metadata = { quizAnswers: answers }
     }

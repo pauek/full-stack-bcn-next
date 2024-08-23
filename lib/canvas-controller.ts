@@ -15,7 +15,6 @@ import {
   rectIntersectsRect,
 } from "@/lib/geometry"
 import { clamp, setUnion, snap } from "./utils"
-import { globalCanvasElement } from "@/components/map/canvas"
 
 export const MAP_MAX_WIDTH = 4000
 export const MAP_MAX_HEIGHT = 4000
@@ -37,10 +36,11 @@ interface RectangularItem {
 }
 
 export class CanvasController<ItemType extends RectangularItem> {
-  // Things that have to be initialized
+  // Things that have to be initialized / changed
   _adapter: CanvasAdapter<ItemType> | null = null
   _canvas: HTMLCanvasElement | null = null
-  
+  _loadedItems: boolean = false
+
   // Internal fields
   mode: "view" | "edit" = "view"
   items: ItemType[] = []
@@ -81,14 +81,15 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   ///
 
-  constructor() {
-    console.log(`------- Canvas Controller CONSTRUCTOR -------`)
-    this._canvas = globalCanvasElement
-  }
-
   init(adapter: CanvasAdapter<ItemType>) {
     this._adapter = adapter
-    this.loadItems()
+    this.loadItems().then(() => {
+      this._loadedItems = true
+    })
+  }
+
+  setCanvas(canvas: HTMLCanvasElement) {
+    this._canvas = canvas
   }
 
   setEvents(canvas: HTMLCanvasElement) {
@@ -114,7 +115,6 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
     return this._canvas
   }
-
 
   scaleToUrl() {
     window.history.replaceState(null, "", `/m/${this.getUrlPath()}`)
@@ -168,6 +168,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   async loadItems() {
     this.items = await this.adapter.loadItems()
+    this._loadedItems = true
     this.paint()
   }
 
@@ -196,10 +197,10 @@ export class CanvasController<ItemType extends RectangularItem> {
   }
 
   updateOver() {
-    this.overRect =
-      this.items.findLast(
-        (item) => item.level === 0 && pointWithinRect(this.pointer, item.rectangle)
-      ) || null
+    const hasRectAndPointerInside = (item: ItemType) =>
+      item.level === 0 && item.rectangle && pointWithinRect(this.pointer, item.rectangle)
+
+    this.overRect = this.items.findLast(hasRectAndPointerInside) || null
   }
 
   updateParents(): number[] {
@@ -412,7 +413,8 @@ export class CanvasController<ItemType extends RectangularItem> {
   paintItems(ctx: CanvasRenderingContext2D, bounds: IRectangle) {
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i]
-      if (rectIntersectsRect(item.rectangle, bounds)) {
+      const { rectangle } = item
+      if (rectangle && rectIntersectsRect(rectangle, bounds)) {
         this.adapter.paintItem(ctx, this.items[i])
       }
     }
@@ -420,6 +422,10 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   paint() {
     if (!this.canvas) {
+      return
+    }
+    if (!this._loadedItems) {
+      console.warn(`Trying to paint before items are loaded`)
       return
     }
     const ctx = this.canvas.getContext("2d")

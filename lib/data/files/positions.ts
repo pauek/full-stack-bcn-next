@@ -1,12 +1,11 @@
 import { AllAttachmentTypes, FileType, type MapPosition } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import { IRectangle } from "@/lib/geometry"
-import { TreeNode } from "@/lib/tree"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { Hash } from "../hashing"
 import { getPieceAttachmentList, updateMarkdownMetadata } from "./attachments"
-import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
+import { getDiskpathByIdpath } from "./hashmaps"
 import { readMetadata, updateMetadata } from "./metadata"
 import { getPieceWithChildren } from "./pieces"
 import {

@@ -1,7 +1,7 @@
 import { IRectangle } from "@/lib/geometry"
 import { relations, sql } from "drizzle-orm"
 import { blob, index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
-import { z } from "zod"
+import { z, ZodType } from "zod"
 
 // Pieces
 
@@ -34,6 +34,24 @@ export type MapPosition<T> = {
   level: number
   children?: T[]
 }
+
+export const zRectangle = z.object({
+  left: z.number(),
+  top: z.number(),
+  width: z.number(),
+  height: z.number(),
+})
+
+export const zMapPosition = (Z: ZodType) => z.object({
+  rectangle: zRectangle.optional(),
+  kind: z.union([z.literal("piece"), z.enum(FileTypes)]),
+  index: z.number(),
+  hash: z.string(),
+  name: z.string(),
+  idpath: z.array(z.string()),
+  level: z.number(),
+  children: z.array(Z).optional(),
+})
 
 // HAS-A Relation
 

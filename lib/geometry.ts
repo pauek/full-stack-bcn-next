@@ -94,7 +94,16 @@ export const rectangleUnion = (a: IRectangle, b: IRectangle): IRectangle => {
 }
 
 export const checkRectangle = ({ left, top, width, height }: IRectangle): boolean => {
-  return !Number.isNaN(left) && !Number.isNaN(top) && !Number.isNaN(width) && !Number.isNaN(height)
+  return (
+    typeof left === "number" &&
+    typeof top === "number" &&
+    typeof width === "number" &&
+    typeof height === "number" &&
+    !Number.isNaN(left) &&
+    !Number.isNaN(top) &&
+    !Number.isNaN(width) &&
+    !Number.isNaN(height)
+  )
 }
 
 export const rectangleListUnion = (rects: IRectangle[]): IRectangle => {

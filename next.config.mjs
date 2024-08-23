@@ -30,8 +30,7 @@ const makeNextConfig = async (phase, { defaultConfig }) => {
   const config = { ...nextConfig }
 
   if (process.env.NODE_ENV === "development" && env.BACKEND !== "files") {
-    console.error(`Don't do development with BACKEND != "files"!`)
-    process.exit(1)
+    console.warn(`Warning: you are doing development with BACKEND !== "files"!`)
   }
 
   return withMDX(config)
