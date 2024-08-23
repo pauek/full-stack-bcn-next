@@ -69,9 +69,7 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     with: {
       piece: {
         with: {
-          children: {
-            with: { child: true },
-          },
+          children: { with: { child: true } },
         },
       },
     },

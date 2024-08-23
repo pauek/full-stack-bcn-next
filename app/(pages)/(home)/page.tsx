@@ -9,11 +9,12 @@ const cachedGetContentTree = unstable_cache(data.getContentTree, ["contentTree"]
 
 export default async function Home() {
   const isDevMode = process.env.NODE_ENV === "development"
-  const course = await cachedGetContentTree([env.COURSE_ID], { level: isDevMode ? 3 : 2 })
-  if (course === null) {
+  const rootPiece = await cachedGetContentTree([env.COURSE_ID], { level: isDevMode ? 3 : 2 })
+  if (rootPiece === null) {
     notFound()
   }
-  const { children } = course
+  console.dir(rootPiece, { depth: 4 })
+  const { children } = rootPiece
   return (
     <div className="m-auto max-w-[38em]">
       <div className="w-full sm:w-[38em]">
