@@ -1,27 +1,33 @@
-"use client"
-
-import { ContentPiece } from "@/lib/adt"
+import data from "@/lib/data"
+import { env } from "@/lib/env.mjs"
 import Link from "next/link"
-import { useSelectedLayoutSegments } from "next/navigation"
 import DarkModeSwitch from "./DarkModeSwitch"
+import { MapIcon } from "./icons/MapIcon"
 
-export default function Header({ course }: { course: ContentPiece }) {
-  const [_c, _courseId] = useSelectedLayoutSegments()
-
+export default async function Header() {
+  const course = await data.getPiece([env.COURSE_ID])
+  if (!course) {
+    throw new Error(`Course not found: "${env.COURSE_ID}"`)
+  }
   return (
     <header
       className={
-        "fixed top-0 left-0 right-0 bg-card h-12 flex " +
-        "flex-row items-center justify-between border-b z-20 shadow-sm overflow-visible"
+        "p-2 fixed top-0 left-0 right-0 flex flex-row items-center justify-between z-20 overflow-visible pointer-events-none"
       }
     >
-      <Link href="/" className="font-bold ml-5 overflow-ellipsis">
-        {course.name}
-      </Link>
+      <div className="flex flex-row items-center gap-3 bg-card rounded-full shadow-lg px-3 h-9 pointer-events-auto">
+        <Link href="/m">
+          <MapIcon className="w-7 h-7 text-gray-600" />
+        </Link>
 
-      <Link href="/m">Map</Link>
+        <Link href="/" className="font-bold overflow-ellipsis">
+          {course.name}
+        </Link>
+      </div>
 
-      <DarkModeSwitch className="mr-5" />
+      <div className="flex flex-row items-center gap-3 bg-card rounded-full shadow-lg px-3 h-9 min-w-16 pointer-events-auto">
+        <DarkModeSwitch />
+      </div>
     </header>
   )
 }

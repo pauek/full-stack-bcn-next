@@ -1,4 +1,5 @@
 import DarkModeAwareBody from "@/components/DarkModeAwareBody"
+import Header from "@/components/Header"
 import Map from "@/components/map/Map"
 import "./globals.css"
 
@@ -17,6 +18,7 @@ export default async function RootLayout({ children }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       </head>
       <DarkModeAwareBody lang="en">
+        <Header />
         <Map />
         {children}
       </DarkModeAwareBody>

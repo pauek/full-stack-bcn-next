@@ -1,9 +1,9 @@
 import { HeaderTitle } from "@/components/HeaderTitle"
 import { pieceUrlPath } from "@/lib/urls"
-import { ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon } from "@radix-ui/react-icons"
 import Link from "next/link"
 import { getSessionWithChaptersOrNotFound } from "../utils"
 import { ChapterPageProps, getChapterOrNotFound } from "./utils"
+import Navigator from "@/components/Navigator"
 
 type _Props = ChapterPageProps & {
   children: React.ReactNode
@@ -13,12 +13,6 @@ export default async function Layout({ children, params }: _Props) {
   const chapterList = session.children || []
   const chapter = await getChapterOrNotFound({ params })
   const index = chapterList.findIndex((ch) => ch.hash === chapter.hash)
-
-  const BigSlash = () => (
-    <div className="hidden sm:block w-12 h-full relative overflow-clip">
-      <div className="absolute -top-1 -bottom-1 left-[55%] w-[1px] bg-primary opacity-20 rotate-[12deg]"></div>
-    </div>
-  )
 
   const Header = () => (
     <div className="px-5 flex flex-row justify-center border-b w-full">
@@ -42,41 +36,9 @@ export default async function Layout({ children, params }: _Props) {
     </div>
   )
 
-  const Navigator = () => (
-    <div className="border-b p-1 px-3 text-xs text-stone-400 dark:text-stone-600 w-full flex flex-row justify-centers">
-      <div className="flex flex-row w-full max-w-[54rem] mx-auto">
-        {index > 0 ? (
-          <Link href={pieceUrlPath(chapterList[index - 1].idpath)} className="flex-1">
-            <ArrowLeftIcon />
-            <div className="line-clamp-1">{chapterList[index - 1].name}</div>
-          </Link>
-        ) : (
-          <div className="flex-1"></div>
-        )}
-        <div className="border-l mx-2"></div>
-        <Link href={pieceUrlPath(session.idpath)} className="flex-1 flex flex-col items-center ">
-          <ArrowUpIcon />
-          <div className="line-clamp-1">{session.name}</div>
-        </Link>
-        <div className="border-l mx-2"></div>
-        {index < chapterList.length - 1 ? (
-          <Link
-            href={pieceUrlPath(chapterList[index + 1].idpath)}
-            className="flex-1 text-right flex flex-col items-end"
-          >
-            <ArrowRightIcon />
-            <div className="line-clamp-1">{chapterList[index + 1].name}</div>
-          </Link>
-        ) : (
-          <div className="flex-1"></div>
-        )}
-      </div>
-    </div>
-  )
-
   return (
-    <div id="top" className="w-full h-full flex flex-col items-center bg-background">
-      <Navigator />
+    <div id="top" className="w-full h-full flex flex-col justify-center bg-background">
+      <Navigator pieceList={chapterList} parent={session} index={index} />
       <Header />
       <PageWrapper>{children}</PageWrapper>
     </div>

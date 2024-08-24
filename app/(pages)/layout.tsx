@@ -1,9 +1,6 @@
 import Footer from "@/components/Footer"
 import Header from "@/components/Header"
-import data from "@/lib/data"
-import { env } from "@/lib/env.mjs"
 import { Analytics } from "@vercel/analytics/react"
-import { notFound } from "next/navigation"
 import "../globals.css"
 
 export const metadata = {
@@ -15,15 +12,11 @@ type Props = {
   children: React.ReactNode
 }
 export default async function RootLayout({ children }: Props) {
-  const course = await data.getPiece([env.COURSE_ID])
-  if (!course) {
-    notFound()
-  }
   return (
     <>
       <div id="curtain" className="-z-10 fixed top-0 left-0 right-0 bottom-0 bg-background"></div>
-      <div className="pt-12 flex flex-col min-h-screen">
-        <Header course={course} />
+      <div className="flex flex-col min-h-screen">
+        <Header />
         <main className="w-full flex-1 flex flex-col items-center">
           {children}
           <Footer />
