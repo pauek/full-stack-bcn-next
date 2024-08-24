@@ -104,6 +104,8 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     children.push(dbPieceToContentPiece(childIdpath, child))
   }
 
+  children.sort((a, b) => a.metadata.index - b.metadata.index)
+
   return dbPieceToContentPiece(idpath, pieceResult.piece, children)
 }
 

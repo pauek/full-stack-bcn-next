@@ -1,4 +1,4 @@
-import { HeaderTitle } from "@/components/HeaderTitle"
+import { SubtitleTitle } from "@/components/SubtitleTitle"
 import Navigator from "@/components/Navigator"
 import data from "@/lib/data"
 import { env } from "@/lib/env.mjs"
@@ -21,7 +21,7 @@ export default async function Layout({ children, params }: _Props) {
   const Header = () => (
     <div className="px-5 flex flex-row justify-center border-b w-full">
       <div className="h-full flex flex-row max-w-[54rem] w-full">
-        <HeaderTitle title={session.name} subtitle={`SESSION ${session.metadata.index}`} />
+        <SubtitleTitle title={session.name} subtitle={`SESSION ${session.metadata.index}`} />
       </div>
     </div>
   )

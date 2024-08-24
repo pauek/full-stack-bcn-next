@@ -1,6 +1,6 @@
 import { ContentPiece } from "@/lib/adt"
 import PartHeader from "./PartHeader"
-import SessionCard from "./SessionCard"
+import SessionCard from "./cards/SessionCard"
 
 type CoursePartProps = {
   part: ContentPiece

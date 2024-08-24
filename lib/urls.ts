@@ -2,11 +2,12 @@ import { extname } from "path"
 import { FileReference } from "./data/data-backend"
 import { env } from "@/lib/env.mjs"
 
-const BASE_DIR = "c"
+const DEFAULT_PREFIX = "c"
 
-export const pieceRef = (path: string) => `/${BASE_DIR}/${path}`
+// export const pieceRef = (prefix: string, path: string) => `/${prefix}/${path}`
 
-export const pieceUrlPath = (idpath: string[]) => `/${BASE_DIR}/${idpath.join("/")}`
+export const pieceUrlPath = (idpath: string[], prefix?: string) =>
+  `/${prefix || DEFAULT_PREFIX}/${idpath.join("/")}`
 
 export const attachmentUrl = (fileref: FileReference) =>
   `${env.R2_PUBLIC_URL}/${fileref.hash}${extname(fileref.filename)}`
