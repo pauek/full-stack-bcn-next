@@ -8,6 +8,25 @@ import { Hash } from "../hashing"
 import { db } from "./db"
 import { getFileContent, getPieceFilesByFiletype } from "./utils"
 
+export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
+  const [result] = await getPieceFilesByFiletype(piece.hash, FileType.doc)
+  if (!result) {
+    return null
+  }
+  const content = await getFileContent(result.hash)
+  if (content === null) {
+    console.warn(`Content piece "${piece.idpath.join("/")}" [${piece.hash}] has a dangling document!
+      [file_hash = ${result.hash}]
+      [pieceHash = ${piece.hash}]
+  `)
+    return null
+  }
+  return {
+    name: result.filename,
+    buffer: Buffer.from(base64ToBytes(content.data)),
+  }
+}
+
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
   filetype: schema.FileType
@@ -28,7 +47,7 @@ const _getAttachmentContentByHash = async (hash: string): Promise<FileContent | 
     if (!content) {
       return null
     }
-    const { data, metadata } = content;
+    const { data, metadata } = content
     return { bytes: Buffer.from(base64ToBytes(data)), metadata }
   } catch (e) {
     return null

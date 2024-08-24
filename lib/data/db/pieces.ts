@@ -1,11 +1,10 @@
 import * as schema from "@/data/schema"
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { base64ToBytes, lastElement } from "@/lib/utils"
+import { lastElement } from "@/lib/utils"
 import { eq, inArray } from "drizzle-orm"
-import { FileBuffer } from "../data-backend"
 import { db } from "./db"
-import { getFileContent, getPieceFilesByFiletype, pathToHash, pieceHasFiletype } from "./utils"
+import { pieceHasFiletype } from "./utils"
 
 export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.cover)
 export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.doc)
@@ -109,25 +108,4 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
   return dbPieceToContentPiece(idpath, pieceResult.piece, children)
 }
 
-export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const hash = await pathToHash(piece.idpath)
-  if (!hash) {
-    return null
-  }
-  const [result] = await getPieceFilesByFiletype(hash, FileType.doc)
-  if (!result) {
-    return null
-  }
-  const content = await getFileContent(result.hash)
-  if (content === null) {
-    console.warn(`Content piece "${piece.idpath.join("/")}" [${hash}] has a dangling document!
-      [file_hash = ${result.hash}]
-      [pieceHash = ${hash}]
-  `)
-    return null
-  }
-  return {
-    name: result.filename,
-    buffer: Buffer.from(base64ToBytes(content.data)),
-  }
-}
+

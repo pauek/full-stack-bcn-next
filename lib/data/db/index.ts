@@ -3,15 +3,10 @@ import { DataBackendBase } from "../data-backend"
 
 import { getAllIdpaths } from "./idpaths"
 
-import {
-  getPiece,
-  getPieceDocument,
-  getPieceWithChildren,
-  pieceHasCover,
-  pieceHasDoc,
-} from "./pieces"
+import { getPiece, getPieceWithChildren, pieceHasCover, pieceHasDoc } from "./pieces"
 
 import {
+  getPieceDocument,
   getAttachmentContent,
   getPieceAttachmentList,
   getPieceFileData,

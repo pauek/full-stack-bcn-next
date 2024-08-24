@@ -1,4 +1,5 @@
 import { ContentPiece } from "@/lib/adt"
+import { AttachmentInfo } from "./utils"
 
 type SubtitleTitleProps = {
   title: string
@@ -26,16 +27,22 @@ const wordForIdpath = (idpath: string[]) => {
   }
 }
 
+
+
 interface HeaderProps {
-  piece: ContentPiece
+  piece: ContentPiece,
+  attachments: Record<string, AttachmentInfo>
 }
-export const Header = ({ piece }: HeaderProps) => (
-  <div className="px-5 flex flex-row justify-center border-b w-full bg-background">
-    <div className="h-full flex flex-row max-w-[54rem] w-full">
-      <SubtitleTitle
-        title={piece.name}
-        subtitle={`${wordForIdpath(piece.idpath)} ${piece.metadata.index}`}
-      />
+export const Header = ({ piece, attachments }: HeaderProps) => {
+  return (
+    <div className="px-5 flex flex-row justify-center border-b w-full bg-background">
+      <div className="h-full flex flex-row max-w-[54rem] w-full items-end">
+        <SubtitleTitle
+          title={piece.name}
+          subtitle={`${wordForIdpath(piece.idpath)} ${piece.metadata.index}`}
+        />
+        <div className="flex-1" />
+      </div>
     </div>
-  </div>
-)
+  )
+}

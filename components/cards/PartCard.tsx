@@ -12,7 +12,7 @@ export default async function PartCard({ piece }: { piece: ContentPiece }) {
   }
   const { children } = part
   return (
-    <Link href={pieceUrlPath(piece.idpath, `c2`)}>
+    <Link href={pieceUrlPath(piece.idpath)}>
       <div className="group p-3 px-4 bg-card shadow rounded border hover:border-foreground">
         <h4 className="text-center text-gray-400">{piece.name.toUpperCase()}</h4>
         <div className="flex flex-wrap gap-2 justify-center">

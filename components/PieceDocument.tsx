@@ -6,11 +6,11 @@ import { splitMarkdownPreamble } from "@/lib/utils"
 import MdxDocument from "./mdx/MdxDocument"
 
 type ChapterProps = {
-  chapter: ContentPiece
+  piece: ContentPiece
 }
-export default async function Chapter({ chapter }: ChapterProps) {
-  const doc = await data.getPieceDocument(chapter)
-  const images = await data.getPieceAttachmentList(chapter, FileType.image)
+export default async function PieceDocument({ piece }: ChapterProps) {
+  const doc = await data.getPieceDocument(piece)
+  const images = await data.getPieceAttachmentList(piece, FileType.image)
   const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]))
 
   const Document = ({ doc }: { doc: FileBuffer }) => {
@@ -28,8 +28,8 @@ export default async function Chapter({ chapter }: ChapterProps) {
 
 
   return (
-    <div key={chapter.hash} className="bg-card rounded relative">
-      {doc && <Document doc={doc} />}
+    <div key={piece.hash} className="bg-card rounded relative">
+      {doc ? <Document doc={doc} /> : <p>No document.</p>}
     </div>
   )
 }

@@ -3,15 +3,17 @@ import data from "@/lib/data"
 import { notFound } from "next/navigation"
 import Navigator from "@/components/Navigator"
 import { Header } from "./header"
+import { attachmentsMenuOptions, splitIdpath } from "./utils"
 
 interface Props {
   children: React.ReactNode
   params: {
-    idpath: string[]
+    path: string[]
   }
 }
 
-export default async function Layout({ children, params: { idpath } }: Props) {
+export default async function Layout({ children, params }: Props) {
+  const { idpath } = splitIdpath(params.path)
   let piece: ContentPiece | null = await data.getPiece(idpath)
   if (!piece) {
     notFound()
@@ -30,11 +32,13 @@ export default async function Layout({ children, params: { idpath } }: Props) {
     }
   }
 
+  const attachments = await attachmentsMenuOptions(piece)
+
   return (
     <main id="top" className="flex-1 w-full h-full flex flex-col bg-secondary">
-      <Navigator pieceList={siblings} parent={parent} index={index} prefix="c2" />
-      <Header piece={piece} />
-      <div className="mt-4 flex-1 max-w-[54em] w-full mx-auto flex flex-col">{children}</div>
+      <Navigator pieceList={siblings} parent={parent} index={index} />
+      <Header piece={piece} attachments={attachments} />
+      <div className="flex-1 max-w-[54em] w-full mx-auto flex flex-col">{children}</div>
     </main>
   )
 }

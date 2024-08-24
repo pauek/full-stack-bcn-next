@@ -1,4 +1,4 @@
-import Chapter from "@/components/Chapter"
+import PieceDocument from "@/components/PieceDocument"
 import Exercise from "@/components/Exercise"
 import SlideGrid from "@/components/SlideGrid"
 import { FileType } from "@/data/schema"
@@ -50,7 +50,7 @@ export default async function Page({ params }: ChapterPageProps) {
 
   const Document = () => (
     <div className="flex flex-col justify-start">
-      <Chapter chapter={chapter} />
+      <PieceDocument piece={chapter} />
     </div>
   )
 
