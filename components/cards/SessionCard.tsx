@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 
-type _Props = {
+interface Props {
   session: ContentPiece
 }
-export default async function SessionCard({ session }: _Props) {
+export default async function SessionCard({ session }: Props) {
   const [cover] = await data.getPieceAttachmentList(session, FileType.cover)
   const { idpath, name, metadata } = session
   const { index } = metadata
@@ -18,13 +18,13 @@ export default async function SessionCard({ session }: _Props) {
   const numSlides = session.children?.reduce((a, b) => a + b.metadata.numSlides, 0)
 
   return (
-    <Link href={pieceUrlPath(idpath)} className="w-1/3 aspect-[7/6]">
+    <Link href={pieceUrlPath(idpath, `c2`)} className="w-1/4 aspect-[7/6]">
       <div
         className={cn(
           "h-full text-xs sm:text-sm",
           "flex flex-col relative items-stretch",
           "hover:border-foreground",
-          "bg-muted border rounded-md shadow shadow-foreground-50 m-1 overflow-clip",
+          "bg-muted border rounded-md shadow shadow-foreground-50 m-1 overflow-clip"
         )}
       >
         <div className="flex-1 relative">
@@ -50,7 +50,7 @@ export default async function SessionCard({ session }: _Props) {
         <div
           className={cn(
             "w-[1.8em] h-[1.8em] absolute flex flex-col justify-center font-bold",
-            "items-center top-0.5 left-0.5 text-xs rounded-sm bg-card border",
+            "items-center top-0.5 left-0.5 text-xs rounded-sm bg-card border"
           )}
         >
           {index}

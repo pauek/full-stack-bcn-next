@@ -1,4 +1,4 @@
-import { HeaderTitle } from "@/components/HeaderTitle"
+import { SubtitleTitle } from "@/components/SubtitleTitle"
 import { pieceUrlPath } from "@/lib/urls"
 import Link from "next/link"
 import { getSessionWithChaptersOrNotFound } from "../utils"
@@ -17,7 +17,7 @@ export default async function Layout({ children, params }: _Props) {
   const Header = () => (
     <div className="px-5 flex flex-row justify-center border-b w-full">
       <div className="h-full flex flex-row items-end max-w-[54rem] w-full">
-        <HeaderTitle
+        <SubtitleTitle
           title={chapter.name}
           subtitle={
             <>
