@@ -46,6 +46,7 @@ export interface DataBackendBase {
   getPieceWithChildren: (idpath: string[]) => Promise<ContentPiece | null>
   getContentTree: (idpath: string[], options: { level: number }) => Promise<ContentPiece | null>
 
+  getPieceAttachmentTypes: (piece: ContentPiece) => Promise<Set<FileType>>
   getPieceAttachmentList: (piece: ContentPiece, filetype: FileType) => Promise<FileReference[]>
   getAttachmentContent: (piece: ContentPiece, fileref: FileReference) => Promise<FileContent>
   getQuizAnswersForHash: (idpath: string[], hash: Hash) => Promise<string[]>

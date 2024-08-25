@@ -41,6 +41,16 @@ export const getPieceAttachmentList = async (
   }))
 }
 
+export const getPieceAttachmentTypes = async (
+  piece: ContentPiece
+): Promise<Set<schema.FileType>> => {
+  const results = await db
+    .selectDistinct({ filetype: schema.attachments.filetype })
+    .from(schema.attachments)
+    .where(eq(schema.attachments.pieceHash, piece.hash))
+  return new Set(results.map((result) => schema.fileTypeFromString(result.filetype)))
+}
+
 const _getAttachmentContentByHash = async (hash: string): Promise<FileContent | null> => {
   try {
     const content = await getFileContent(hash)

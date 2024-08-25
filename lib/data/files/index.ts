@@ -5,6 +5,7 @@ import { getPiece, getPieceWithChildren, pieceHasCover, pieceHasDoc } from "./pi
 import {
   getAttachmentContent,
   getPieceAttachmentList,
+  getPieceAttachmentTypes,
   getPieceDocument,
   getPieceFileData,
   getPieceImageList,
@@ -28,7 +29,8 @@ export const backend: DataBackendBase = {
   pieceHasCover,
   pieceHasDoc,
 
-  getAttachmentContent: getAttachmentContent,
+  getPieceAttachmentTypes,
+  getAttachmentContent,
   getPieceAttachmentList,
   getPieceDocument,
   getPieceFileData,

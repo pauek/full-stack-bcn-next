@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import data from "@/lib/data"
-import { attachmentUrl, pieceUrlPath } from "@/lib/urls"
+import { filetypeToUrlSegment, fileUrl, pieceUrlPath } from "@/lib/urls"
 import { TabsContent } from "@radix-ui/react-tabs"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -155,7 +155,7 @@ type SlidesContentProps = {
 }
 const SlidesContent = async ({ slides }: SlidesContentProps) => (
   <div className="bg-background p-4 rounded">
-    <SlideGrid slides={slides.map(attachmentUrl)} />
+    <SlideGrid slides={slides.map(fileUrl)} />
   </div>
 )
 
@@ -300,20 +300,13 @@ export const generateStaticParams = async () => {
     }
     params.push({ path: piece.idpath })
 
-    if (await data.pieceHasDoc(piece)) {
-      params.push({ path: [...piece.idpath, ".doc"] })
-    }
-    const slides = await data.getPieceAttachmentList(piece, FileType.slide)
-    if (slides.length > 0) {
-      params.push({ path: [...piece.idpath, ".slides"] })
-    }
-    const exercises = await data.getPieceAttachmentList(piece, FileType.exercise)
-    if (exercises.length > 0) {
-      params.push({ path: [...piece.idpath, ".exercises"] })
-    }
-    const questions = await data.getPieceAttachmentList(piece, FileType.quiz)
-    if (questions.length > 0) {
-      params.push({ path: [...piece.idpath, ".quiz"] })
+    const attachmentTypes = await data.getPieceAttachmentTypes(piece)
+    for (const filetype of attachmentTypes) {
+      const segment = filetypeToUrlSegment(filetype)
+      // NOTE(pauek): Only filetypes which have a segment have a page
+      if (segment) {
+        params.push({ path: [...piece.idpath] })
+      }
     }
   }
 

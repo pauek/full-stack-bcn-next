@@ -6,6 +6,7 @@ import { getAllIdpaths } from "./tree"
 import {
   getAttachmentContent,
   getPieceAttachmentList,
+  getPieceAttachmentTypes,
   getPieceDocument,
   getPieceFileData,
   getPieceImageList,
@@ -28,6 +29,7 @@ export const backend: DataBackendBase = {
   pieceHasCover,
   pieceHasDoc,
 
+  getPieceAttachmentTypes,
   getPieceAttachmentList,
   getAttachmentContent,
   getPieceImageList,
@@ -37,6 +39,6 @@ export const backend: DataBackendBase = {
 
   getContentTree,
 
-  getMapPositionsExtended,
+  getMapPositionsExtended,  
   updateMapPositions,
 }

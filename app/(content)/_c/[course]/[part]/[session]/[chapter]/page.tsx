@@ -3,7 +3,7 @@ import SlideGrid from "@/components/SlideGrid"
 import { FileType } from "@/data/schema"
 import data from "@/lib/data"
 import { env } from "@/lib/env.mjs"
-import { attachmentUrl } from "@/lib/urls"
+import { fileUrl } from "@/lib/urls"
 import { ChapterPageProps, getChapterAttachments, getChapterOrNotFound } from "./utils"
 import CollapsibleSection from "@/components/Collapsible"
 import SlideShow from "@/components/icons/SlideShow"
@@ -47,7 +47,7 @@ export default async function Page({ params }: ChapterPageProps) {
         className="border bg-zinc-200 dark:bg-zinc-900"
         icon={<SlideShow size={14} />}
       >
-        <SlideGrid slides={slides.map(attachmentUrl)} />
+        <SlideGrid slides={slides.map(fileUrl)} />
       </CollapsibleSection>
     )
 

@@ -1,6 +1,6 @@
 import Zoomable from "@/components/Zoomable"
 import { FileReference } from "@/lib/data/data-backend"
-import { attachmentUrl } from "@/lib/urls"
+import { fileUrl } from "@/lib/urls"
 import { cn } from "@/lib/utils"
 import NextImage from "next/image"
 
@@ -35,7 +35,7 @@ export default function ImageForChapter(imageMap: Map<string, FileReference>) {
       >
         <MaybeZoomable bgColor={bgColor}>
           <NextImage
-            src={attachmentUrl(fileref)}
+            src={fileUrl(fileref)}
             alt={props.alt || "image"}
             width={Number(props.width)}
             height={Number(props.height)}

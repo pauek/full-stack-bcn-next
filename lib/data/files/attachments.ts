@@ -102,3 +102,9 @@ export const getAllPieceAttachments = async (piece: ContentPiece) => {
   }
   return result
 }
+
+// NOTE(pauek): Maybe optimize this, idk
+export const getPieceAttachmentTypes = async (piece: ContentPiece): Promise<Set<FileType>> => {
+  const attachments = await getAllPieceAttachments(piece)
+  return new Set(attachments.map((a) => a.filetype))
+}

@@ -1,7 +1,7 @@
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import data from "@/lib/data"
-import { attachmentUrl, pieceUrlPath } from "@/lib/urls"
+import { fileUrl, pieceUrlPath } from "@/lib/urls"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
@@ -31,7 +31,7 @@ export default async function SessionCard({ session }: Props) {
           {cover && (
             <Image
               className="object-cover dark:invert"
-              src={attachmentUrl(cover)}
+              src={fileUrl(cover)}
               alt="card cover"
               fill={true}
             />
