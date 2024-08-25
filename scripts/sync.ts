@@ -2,7 +2,6 @@ import "@/lib/env-config"
 
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
-import { backend as dbBackend } from "@/lib/data/db"
 import { closeConnection } from "@/lib/data/db/db"
 import { insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
 import { getAllPieceAttachments } from "@/lib/data/files/attachments"
@@ -15,7 +14,7 @@ import {
 } from "@/lib/data/files/hashmaps"
 import { writeMetadata } from "@/lib/data/files/metadata"
 import { filesGetRootIdpath, filesWalkContentPieces, listPieceSubdir } from "@/lib/data/files/utils"
-import { Hash, HashItem, hashPiece } from "@/lib/data/hashing"
+import { HashItem, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { basename } from "path"
@@ -36,13 +35,11 @@ const parseOption = (args: string[], long: string, short: string): boolean =>
  * Update a content piece in the database.
  * @param idpath The idpath of the piece.
  *
- * Also shows the hash and idpath of the piece on the screen. If the piece has
- * the "hidden" metadata field set to `true`, it will not upload anything.
+ * Also shows the hash and idpath of the piece on the screen.
  */
 export const updatePiece = async (piece: ContentPiece, childrenHashes: HashItem[]) => {
-  if (piece.metadata.hidden) {
-    return
-  }
+  // NOTE(pauek): Process 'hidden' pieces anyway. We will filter them out
+  // at the last moment before showing them to the user.
   try {
     await Promise.allSettled([
       await insertPiece(piece, childrenHashes),
@@ -101,6 +98,7 @@ export const updateFileTree = async function () {
       if (!cliArgs.dryRun) {
         await writeMetadata(diskpath, metadata)
       }
+
 
       // Compute new hash
       const oldHash = await readStoredHash(diskpath)
