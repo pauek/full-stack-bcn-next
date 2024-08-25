@@ -185,9 +185,7 @@ export const getPieceChildren = async (
       }
 
       idToPath.set(child.id, childDiskpath)
-      if (!child.metadata.hidden) {
-        children.push({ piece: child, diskpath: childDiskpath })
-      }
+      children.push({ piece: child, diskpath: childDiskpath })
     }
   }
 
