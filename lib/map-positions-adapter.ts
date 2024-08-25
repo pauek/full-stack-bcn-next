@@ -253,9 +253,9 @@ export class MapPositionsAdapter {
     if (kind === "piece") {
       this.go(`/c/${idjpath}`)
     } else if (kind === FileType.doc) {
-      this.go(`/c/${idjpath}`)
+      this.go(`/c/${idjpath}/.doc`)
     } else if (kind === FileType.exercise) {
-      this.go(`/c/${idjpath}/ex/${index + 1}`)
+      this.go(`/c/${idjpath}/.exercises`)
     }
   }
 }
