@@ -34,7 +34,7 @@ import { ContentPiece, hash, pieceLevelFromChildren, setHash } from "@/lib/adt"
 import { closeConnection } from "@/lib/data/db/db"
 import { dbPieceHashExists, insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
 import { getAllPieceAttachments } from "@/lib/data/files/attachments"
-import { readStoredHash, writeStoredHash } from "@/lib/data/files/hashes"
+import { writeStoredHash } from "@/lib/data/files/hashes"
 import {
   hashmapAdd,
   hashmapRemove,
@@ -42,13 +42,8 @@ import {
   writeGlobalHashmap,
 } from "@/lib/data/files/hashmaps"
 import { writeMetadata } from "@/lib/data/files/metadata"
-import {
-  filesGetRoot,
-  filesGetRootIdpath,
-  filesWalkContentPieces,
-  listPieceSubdir,
-} from "@/lib/data/files/utils"
-import { childrenHashes, HashItem, hashPiece } from "@/lib/data/hashing"
+import { filesGetRootIdpath, filesWalkContentPieces } from "@/lib/data/files/utils"
+import { childrenHashes, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { insertFiles } from "./lib/lib"
@@ -56,11 +51,6 @@ import { insertFiles } from "./lib/lib"
 const cliArgs = {
   forcedUpdate: false,
   dryRun: false,
-}
-
-type WalkItemData = HashItem & {
-  level: number
-  piece: ContentPiece
 }
 
 /** Parse options */
@@ -73,15 +63,15 @@ const parseOption = (args: string[], long: string, short: string): boolean =>
  *
  * Also shows the hash and idpath of the piece on the screen.
  */
-export const syncWithDatabase = async (): Promise<number> => {
+export const syncWithDatabase = async (tree: ContentPiece): Promise<number> => {
   let numChanges = 0
-  let rootPiece = await filesGetRoot()
-
+  
   // NOTE(pauek): Process 'hidden' pieces anyway. We will filter them out
   // at the last moment before showing them to the user.
 
   // Recursively update the Merkle tree, pruning branches that are already in the database.
   const _updatePiece = async (piece: ContentPiece) => {
+    console.log(`${hash(piece)} ${piece.idpath.join("/")}`)
     await insertPiece(piece)
     await insertPieceHashmap(piece)
     await insertFiles(piece)
@@ -93,18 +83,28 @@ export const syncWithDatabase = async (): Promise<number> => {
     if (await dbPieceHashExists(hash(piece))) {
       return
     }
-    // Insert the piece and its children (some of which might be already there)
+
+    // Update children first (to avoid foreign key problems in `related_pieces`)
+    if (piece.children) {
+      for (const child of piece.children) {
+        await _sync(child)
+      }
+    }
+
+    // Insert the piece
     try {
       await _updatePiece(piece)
       numChanges++
     } catch (e) {
       console.error(`Error updating piece ${piece.idpath.join("/")}: ${e}`)
     }
+
+
   }
 
-  await _sync(rootPiece)
+  await _sync(tree)
 
-  return 0
+  return numChanges
 }
 
 /**
@@ -155,7 +155,7 @@ export const syncFileTreeMetadata = async function (): Promise<{
       // Compute new hash
       const oldHash = piece.hash
       const newHash = await hashPiece(piece, await childrenHashes(piece))
-      
+
       if (!cliArgs.dryRun) {
         await writeStoredHash(diskpath, newHash)
         setHash(piece, newHash) // Replace it in memory as well
@@ -201,18 +201,18 @@ showExecutionTime(async () => {
   } else {
     console.log(`${metadataChanges} changed pieces.`)
   }
+  console.log(tree.hash)
+  
   if (cliArgs.dryRun) {
     console.log(chalk.bgYellow("DRY RUN: nothing was written to disk."))
   }
 
-  /*
-  const dbChanges = await syncWithDatabase()
+  const dbChanges = await syncWithDatabase(tree)
   if (dbChanges === 0) {
     console.log(`No database changes.`)
   } else {
     console.log(`${dbChanges} database changes.`)
   }
-  */
- 
+
   await closeConnection()
 })
