@@ -1,4 +1,4 @@
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import { pieceUrlPath } from "@/lib/urls"
 import Link from "next/link"
 
@@ -15,7 +15,7 @@ export default function ChapterLocalLinks({ session, chapters }: Props) {
           (chapter) =>
             chapter.metadata.hidden || (
               <Link
-                key={chapter.hash}
+                key={hash(chapter)}
                 href={pieceUrlPath(chapter.idpath)}
                 className="text-sm opacity-60"
               >

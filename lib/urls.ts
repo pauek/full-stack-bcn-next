@@ -1,8 +1,7 @@
+import { FileType } from "@/data/schema"
+import { env } from "@/lib/env.mjs"
 import { extname } from "path"
 import { FileReference } from "./data/data-backend"
-import { env } from "@/lib/env.mjs"
-import { FileType } from "@/data/schema"
-import { file } from "bun"
 
 const DEFAULT_PREFIX = "c"
 

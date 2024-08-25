@@ -15,7 +15,7 @@ export default async function SessionCard({ session }: Props) {
   const { index } = metadata
 
   const isDevMode = process.env.NODE_ENV === "development"
-  const numSlides = session.children?.reduce((a, b) => a + b.metadata.numSlides, 0)
+  const numSlides = session.children?.reduce((a, b) => a + (b.metadata.numSlides || 0), 0)
 
   return (
     <Link href={pieceUrlPath(idpath)} className="w-1/4 aspect-[7/6]">

@@ -5,6 +5,7 @@ import { readFile } from "fs/promises"
 import { getPieceAttachmentList, getPieceDocument, getPieceFileData } from "./files/attachments"
 import { METADATA_FILENAME } from "./files/metadata"
 import { fileTypeInfo } from "./files/utils"
+import { basename } from "path"
 
 export type Hash = string
 
@@ -30,7 +31,7 @@ export const hashAny = (x: any) => {
     hasher.update(
       Object.entries(x)
         .map(([field, value]) => hashAny(`${field}=${value}\n`))
-        .join(""),
+        .join("")
     )
   } else {
     throw `hash: Unsupported type ${typeof x}: ${JSON.stringify(x)}`
@@ -42,35 +43,58 @@ export const hashFile = async (diskpath: string) => {
   return hashAny(await readFile(diskpath))
 }
 
+export const childrenHashes = async (piece: ContentPiece) => {
+  const result: HashItem[] = []
+  for (const child of piece.children || []) {
+    const { diskpath } = child.metadata
+    if (!diskpath) {
+      throw new Error(`No diskpath for child ${child.idpath.join("/")}!`)
+    }
+    result.push({ id: child.id, hash: child.hash })
+  }
+  return result
+}
+
 export type HashItem = {
-  filename: string
+  id: string
   hash: string
 }
 export const hashPiece = async function (
   piece: ContentPiece,
-  childrenHashes: HashItem[],
+  childrenHashes: HashItem[]
 ): Promise<Hash> {
   //
-  childrenHashes.sort((a, b) => a.filename.localeCompare(b.filename))
+  childrenHashes.sort((a, b) => a.id.localeCompare(b.id))
+
+  // WARNING: Choose *carefully* what metadata fields we want to put in the hash
+  //
+  // index: if we change the index, the hash should NOT change, because it only
+  //    changes the position as a sibling the parent. The parent hash _will_ change,
+  //    but the child's content is the same.
+  // 
+  // hidden: That a piece is hidden also should NOT make the hash change.
+  // 
+  const { id, hasDoc, numSlides, mapPosition } = piece.metadata
+  const selectedMetadata = { id, hasDoc, numSlides, mapPosition }
 
   const hashes: HashItem[] = []
-  const fields = Object.entries(piece.metadata).sort(([a], [b]) => a.localeCompare(b))
+  const fields = Object.entries(selectedMetadata).sort(([a], [b]) => a.localeCompare(b))
   const strFields = JSON.stringify(fields)
   hashes.push({
-    filename: METADATA_FILENAME,
+    id: METADATA_FILENAME,
     hash: hashAny(strFields),
   })
 
   const doc = await getPieceDocument(piece)
   if (doc !== null) {
     const { name, buffer } = doc
-    hashes.push({ filename: name, hash: hashAny(buffer) })
+    hashes.push({ id: name, hash: hashAny(buffer) })
   }
 
   const [cover] = await getPieceAttachmentList(piece, FileType.cover)
   if (cover) {
     const { filename, hash } = cover
-    hashes.push({ filename, hash })
+    hashes.push({ id: filename, hash })
   }
 
   // All kinds of attachments
@@ -80,7 +104,7 @@ export const hashPiece = async function (
     for (const { filename } of attachmentList) {
       const fileData = await getPieceFileData(piece, filename, filetype)
       hashes.push({
-        filename: `${info.subdir}/${filename}`,
+        id: `${info.subdir}/${filename}`,
         hash: hashAny(fileData),
       })
     }
@@ -88,14 +112,14 @@ export const hashPiece = async function (
 
   hashes.sort((a, b) => {
     // first by name, then by hash
-    const cmp1 = a.filename.localeCompare(b.filename)
+    const cmp1 = a.id.localeCompare(b.id)
     if (cmp1 != 0) return cmp1
     const cmp2 = a.hash.localeCompare(b.hash)
     return cmp2
   })
 
   const allHashes = [...childrenHashes, ...hashes]
-  const allHashesAsText = allHashes.map(({ filename: name, hash }) => `${hash} ${name}\n`).join("")
+  const allHashesAsText = allHashes.map(({ id: name, hash }) => `${hash} ${name}\n`).join("")
 
   return hashAny(allHashesAsText)
 }

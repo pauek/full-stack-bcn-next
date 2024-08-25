@@ -1,3 +1,4 @@
+import { ContentPieceMetadata } from "@/lib/adt"
 import { IRectangle } from "@/lib/geometry"
 import { relations, sql } from "drizzle-orm"
 import { blob, index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
@@ -12,7 +13,7 @@ export const pieces = sqliteTable("pieces", {
     .notNull()
     .default(sql`(current_timestamp)`),
 
-  metadata: text("metadata", { mode: "json" }).notNull().$type<Record<string, any>>(),
+  metadata: text("metadata", { mode: "json" }).notNull().$type<ContentPieceMetadata>(),
 })
 export const piecesRelations = relations(pieces, ({ one, many }) => ({
   parents: many(relatedPieces, { relationName: "parent_relation" }),

@@ -1,6 +1,6 @@
 import * as schema from "@/data/schema"
 import { FileType } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import { base64ToBytes } from "@/lib/utils"
 import { and, eq } from "drizzle-orm"
 import { FileBuffer, FileContent, FileReference } from "../data-backend"
@@ -9,15 +9,15 @@ import { db } from "./db"
 import { getFileContent, getPieceFilesByFiletype } from "./utils"
 
 export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const [result] = await getPieceFilesByFiletype(piece.hash, FileType.doc)
+  const [result] = await getPieceFilesByFiletype(hash(piece), FileType.doc)
   if (!result) {
     return null
   }
   const content = await getFileContent(result.hash)
   if (content === null) {
-    console.warn(`Content piece "${piece.idpath.join("/")}" [${piece.hash}] has a dangling document!
+    console.warn(`Content piece "${piece.idpath.join("/")}" [${hash(piece)}] has a dangling document!
       [file_hash = ${result.hash}]
-      [pieceHash = ${piece.hash}]
+      [pieceHash = ${hash(piece)}]
   `)
     return null
   }
@@ -31,7 +31,7 @@ export const getPieceAttachmentList = async (
   piece: ContentPiece,
   filetype: schema.FileType
 ): Promise<FileReference[]> => {
-  const results = await getPieceFilesByFiletype(piece.hash, filetype)
+  const results = await getPieceFilesByFiletype(hash(piece), filetype)
   if (!results) {
     return []
   }
@@ -47,7 +47,7 @@ export const getPieceAttachmentTypes = async (
   const results = await db
     .selectDistinct({ filetype: schema.attachments.filetype })
     .from(schema.attachments)
-    .where(eq(schema.attachments.pieceHash, piece.hash))
+    .where(eq(schema.attachments.pieceHash, hash(piece)))
   return new Set(results.map((result) => schema.fileTypeFromString(result.filetype)))
 }
 
@@ -71,7 +71,7 @@ export const getAttachmentContent = async (_piece: ContentPiece, fileref: FileRe
 export const __getFileListByFiletype =
   (filetype: schema.FileType) =>
   async (piece: ContentPiece): Promise<FileReference[]> => {
-    const results = await getPieceFilesByFiletype(piece.hash, filetype)
+    const results = await getPieceFilesByFiletype(hash(piece), filetype)
     if (!results) {
       return []
     }
@@ -85,7 +85,7 @@ export const getPieceImageList = __getFileListByFiletype(FileType.image)
 export const getPieceSlideList = __getFileListByFiletype(FileType.slide)
 
 export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileBuffer | null> => {
-  const [file] = await getPieceFilesByFiletype(piece.hash, FileType.cover, { limit: 1 })
+  const [file] = await getPieceFilesByFiletype(hash(piece), FileType.cover, { limit: 1 })
   if (!file) {
     return null
   }
@@ -110,7 +110,7 @@ export const getPieceFileData = async (
     .leftJoin(schema.files, eq(schema.attachments.fileHash, schema.files.hash))
     .where(
       and(
-        eq(schema.pieces.pieceHash, piece.hash),
+        eq(schema.pieces.pieceHash, hash(piece)),
         eq(schema.attachments.filename, filename),
         eq(schema.attachments.filetype, filetype)
       )

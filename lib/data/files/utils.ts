@@ -1,18 +1,16 @@
 import { FileType } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash, UNKNOWN } from "@/lib/adt"
 import { env } from "@/lib/env.mjs"
+import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
 import { Dirent } from "fs"
 import { readdir } from "fs/promises"
 import { basename, extname, join } from "path"
-import { FileReference, FilesWalkFunc } from "../data-backend"
+import { FileReference } from "../data-backend"
 import { hashFile } from "../hashing"
-import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readStoredHash } from "./hashes"
+import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readMetadata } from "./metadata"
 import { getPiece } from "./pieces"
-import { readFile } from "fs/promises"
-import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
-import { ConsoleLogWriter } from "drizzle-orm"
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true })
 
@@ -135,26 +133,31 @@ export const okToSkipMissingHashes = async (func: (...args: any[]) => Promise<an
   _okToSkipMissingHashes = false
 }
 
+/**
+ * Read a piece from disk including: name, metadata (id), hash and idpath.
+ * Does _not_ read children.
+ *
+ * @param diskpath The directory where to read the piece from.
+ * @param parentIdpath The path of the parent, to construct the complete idpath.
+ * @returns a `ContentPiece` object.
+ */
 export const readPieceAtDiskpath = async (
   diskpath: string,
   parentIdpath: string[]
 ): Promise<ContentPiece> => {
-  const dirname = basename(diskpath)
-  const name = dirNameToTitle(dirname)
   const metadata = await readMetadata(diskpath)
-
-  let hash: string = "<unknown>"
-  const readHash = await readStoredHash(diskpath)
-  if (readHash !== null) {
-    hash = readHash
+  return {
+    id: metadata.id,
+    idpath: [...parentIdpath, metadata.id],
+    name: dirNameToTitle(basename(diskpath)),
+    hash: (await readStoredHash(diskpath)) ?? "<missing>",
+    metadata: {
+      ...metadata,
+      index: UNKNOWN,
+      level: UNKNOWN,
+      diskpath,
+    },
   }
-
-  const { id } = metadata
-  if (!id) {
-    throw Error(`Missing id from ContentPiece at ${diskpath}!`)
-  }
-  const idpath = [...parentIdpath, id]
-  return { id, idpath, hash, name, metadata }
 }
 
 type PieceAndPath = {
@@ -162,7 +165,7 @@ type PieceAndPath = {
   diskpath: string
 }
 
-export const getPieceChildren = async (
+export const filesReadChildren = async (
   parent: ContentPiece,
   diskpath: string
 ): Promise<PieceAndPath[]> => {
@@ -199,20 +202,57 @@ export const getPieceChildren = async (
   return children
 }
 
+type IdAndPath = {
+  id: string
+  diskpath: string
+}
+export const filesFindChildrenDiskpaths = async (
+  diskpath: string,
+  parentIdpath: string[]
+): Promise<IdAndPath[]> => {
+  const children: IdAndPath[] = []
+  const childIdToDiskpath: Map<string, string> = new Map() // Check that no IDs in children are repeated
+
+  for (const ent of await readDirWithFileTypes(diskpath)) {
+    if (isContentPiece(ent)) {
+      const childDiskpath = join(diskpath, ent.name)
+      const { id: childId } = await readMetadata(childDiskpath)
+
+      // Check duplicated IDs and show where they occur
+      const existingPath = childIdToDiskpath.get(childId)
+      if (existingPath) {
+        throw new Error(
+          `INCONSISTENCY ERROR: children of ${parentIdpath.join("/")}` +
+            ` the same ID: "${childId}"!\n` +
+            `["${existingPath}" <=> "${childDiskpath}"]\n`
+        )
+      }
+
+      childIdToDiskpath.set(childId, childDiskpath)
+      children.push({ id: childId, diskpath: childDiskpath })
+    }
+  }
+
+  // IMPORTANT: Sort children by their filenames
+  children.sort((a, b) => basename(a.diskpath).localeCompare(basename(b.diskpath)))
+
+  return children
+}
+
 export const getDiskpathForPiece = async (piece: ContentPiece): Promise<string> => {
-  const d1 = await getDiskpathByHash(piece.hash)
+  const d1 = await getDiskpathByHash(hash(piece))
   if (d1) return d1
 
   const d2 = await getDiskpathByIdpath(piece.idpath)
   if (d2) return d2
 
-  const d3 = await findoutDiskpathFromIdpath(piece.idpath)
+  const d3 = await findDiskpathFromIdpath(piece.idpath)
   if (d3) return d3
 
   throw new Error(`Could not find diskpath for "${piece.name}" ${piece.idpath.join("/")}????`)
 }
 
-export const findoutDiskpathFromIdpath = async (idpath: string[]): Promise<string | null> => {
+export const findDiskpathFromIdpath = async (idpath: string[]): Promise<string | null> => {
   const findSubdirWithID = async (diskpath: string, id: string) => {
     for (const ent of await readDirWithFileTypes(diskpath)) {
       if (isContentPiece(ent)) {
@@ -242,42 +282,55 @@ export const findoutDiskpathFromIdpath = async (idpath: string[]): Promise<strin
 export const getPieceAndPathWithChildren = async (
   idpath: string[]
 ): Promise<PieceAndPath | null> => {
-  let diskpath = await findoutDiskpathFromIdpath(idpath)
+  let diskpath = await findDiskpathFromIdpath(idpath)
   if (diskpath === null) {
     return null
   }
   let parentIdPath = idpath.slice(0, -1)
   let piece = await readPieceAtDiskpath(diskpath, parentIdPath)
-  const children_diskpath = await getPieceChildren(piece, diskpath)
+  const children_diskpath = await filesReadChildren(piece, diskpath)
   piece.children = children_diskpath.map(({ piece }) => piece)
   return { piece, diskpath }
 }
 
-const walkFiles = async function <T>(
-  index: number,
-  idpath: string[],
-  diskpath: string,
-  func: FilesWalkFunc<T>
-) {
-  const parentIdpath = idpath.slice(0, -1)
-  const piece = await readPieceAtDiskpath(diskpath, parentIdpath)
-  const children_diskpath = await getPieceChildren(piece, diskpath)
+/**
+ * Type of callback for the `filesWalkContentPieces` function.
+ */
+export type FilesWalkFunc = (diskpath: string, piece: ContentPiece) => Promise<ContentPiece>
 
-  const children: any[] = []
-  for (let i = 0; i < children_diskpath.length; i++) {
-    const { piece, diskpath } = children_diskpath[i]
-    const childIndex = i + 1
-    children.push(await walkFiles(childIndex, piece.idpath, diskpath, func))
-  }
-  return await func({ index, piece, diskpath, children })
-}
-
-export const filesWalkContentPieces = async function <T>(idpath: string[], func: FilesWalkFunc<T>) {
-  const diskpath = await findoutDiskpathFromIdpath(idpath)
+/**
+ * Walk the file tree recursively for each piece, starting at a certain idpath.
+ * At each piece, the function `func` is called with the `diskpath` and the `piece`,
+ * and the given `piece` contains both the `index` and the `children` fields filled in,
+ * which means that children are walked first.
+ *
+ * @param idpath
+ * @param func
+ * @returns
+ */
+export const filesWalkContentPieces = async (idpath: string[], func: FilesWalkFunc) => {
+  const diskpath = await findDiskpathFromIdpath(idpath)
   if (diskpath === null) {
     throw Error(`Diskpath not found for ${idpath.join("/")}`)
   }
-  return walkFiles(1, idpath, diskpath, func)
+
+  const _walkFiles = async (index: number, idpath: string[], diskpath: string) => {
+    const parentIdpath = idpath.slice(0, -1)
+    const piece = await readPieceAtDiskpath(diskpath, parentIdpath)
+    piece.metadata.index = index
+
+    const childrenDiskpaths = await filesFindChildrenDiskpaths(diskpath, idpath)
+    const children: ContentPiece[] = []
+    for (let i = 0; i < childrenDiskpaths.length; i++) {
+      const { id, diskpath } = childrenDiskpaths[i]
+      children.push(await _walkFiles(i + 1, [...idpath, id], diskpath))
+    }
+    piece.children = children
+
+    return await func(diskpath, piece)
+  }
+
+  return _walkFiles(1, idpath, diskpath)
 }
 
 export const filesGetRoot = async (): Promise<ContentPiece> => {

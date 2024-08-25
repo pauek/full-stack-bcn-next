@@ -1,17 +1,17 @@
-import { filesWalkContentPieces, filesGetRootIdpath } from "@/lib/data/files/utils"
-import { HashItem, hashPiece } from "@/lib/data/hashing"
+import { hash, setHash } from "@/lib/adt"
+import { filesGetRootIdpath, filesWalkContentPieces } from "@/lib/data/files/utils"
+import { childrenHashes, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
-import { basename } from "path"
 
 showExecutionTime(async () => {
   const rootIdpath = await filesGetRootIdpath()
 
-  await filesWalkContentPieces<HashItem>(rootIdpath, async ({ piece, diskpath, children }) => {
-    const filename = basename(diskpath)
-    const computedHash = await hashPiece(piece, children)
-    if (piece.hash !== computedHash) {
-      console.log(`Hash mismatch: ${piece.hash} != ${computedHash} (${piece.idpath.join("/")})`)
+  await filesWalkContentPieces(rootIdpath, async (diskpath, piece) => {
+    const computedHash = await hashPiece(piece, await childrenHashes(piece))
+    if (hash(piece) !== computedHash) {
+      console.log(`Hash mismatch: ${hash(piece)} != ${computedHash} (${piece.idpath.join("/")})`)
     }
-    return { hash: computedHash, filename }
+    setHash(piece, computedHash)
+    return piece
   })
 })

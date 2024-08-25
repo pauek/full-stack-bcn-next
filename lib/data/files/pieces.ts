@@ -11,7 +11,7 @@ export const pieceHasDoc = async (piece: ContentPiece) => {
 }
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
-  const diskpath = await utils.findoutDiskpathFromIdpath(idpath)
+  const diskpath = await utils.findDiskpathFromIdpath(idpath)
   if (diskpath === null) {
     return null
   }

@@ -3,7 +3,7 @@ import PartCard from "@/components/cards/PartCard"
 import SessionCard from "@/components/cards/SessionCard"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileType } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import data from "@/lib/data"
 import { filetypeToUrlSegment, fileUrl, pieceUrlPath } from "@/lib/urls"
 import { TabsContent } from "@radix-ui/react-tabs"
@@ -46,9 +46,10 @@ async function CoursePage({ piece }: { piece: ContentPiece }) {
   return (
     <div className="mt-4 flex-1 flex flex-col gap-5">
       {piece?.children &&
-        piece.children.map((childPiece) => (
-          <PartCard key={childPiece.idpath.join("/")} piece={childPiece} />
-        ))}
+        piece.children.map(
+          (child) =>
+            child.metadata.hidden || <PartCard key={child.idpath.join("/")} piece={child} />
+        )}
     </div>
   )
 }
@@ -58,21 +59,27 @@ async function PartPage({ piece: { children } }: { piece: ContentPiece }) {
     <div className="flex-1 mt-4">
       <div className="flex flex-wrap justify-center gap-2 bg-background py-3">
         {children &&
-          children.map((session) => (
-            <SessionCard key={session.idpath.join("/")} session={session} />
-          ))}
+          children.map(
+            (session) =>
+              session.metadata.hidden || (
+                <SessionCard key={session.idpath.join("/")} session={session} />
+              )
+          )}
       </div>
     </div>
   )
 }
 
 async function SessionPage({ piece }: { piece: ContentPiece }) {
+  if (!piece.children || piece.children.length === 0) {
+    return <EmptyPage />
+  }
   return (
     <div className="flex-1">
       <div className="flex flex-col gap-1.5 py-3">
         {piece?.children &&
           piece.children.map((chapter) => (
-            <ChapterCard key={chapter.idpath.join("/")} chapter={chapter} />
+            chapter.metadata.hidden || <ChapterCard key={chapter.idpath.join("/")} chapter={chapter} />
           ))}
       </div>
     </div>
@@ -84,6 +91,13 @@ async function ChapterPage({ piece }: { piece: ContentPiece }) {
   const slides = await data.getPieceAttachmentList(piece, FileType.slide)
   const exercises = await data.getPieceAttachmentList(piece, FileType.exercise)
   const questions = await data.getPieceAttachmentList(piece, FileType.quiz)
+
+  const noContent =
+    document === null && slides.length === 0 && exercises.length === 0 && questions.length === 0
+
+  if (noContent) {
+    return <EmptyPage />
+  }
 
   return (
     <div className="flex-1">
@@ -119,6 +133,14 @@ async function ChapterPage({ piece }: { piece: ContentPiece }) {
   )
 }
 
+const EmptyPage = () => (
+  <main className="flex-1 flex flex-col items-center border rounded mt-4">
+    <div className="flex-[1]" />
+    <div className="text-xl text-gray-400 font-bold">No activities yet.</div>
+    <div className="flex-[2]" />
+  </main>
+)
+
 /// Attachment bodies
 
 type DocumentContentProps = {
@@ -130,7 +152,7 @@ const DocumentContent = async ({ piece, document }: DocumentContentProps) => {
   const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]))
   const { body } = splitMarkdownPreamble(document.buffer.toString())
   return (
-    <div key={piece.hash} className="bg-card rounded relative">
+    <div key={hash(piece)} className="bg-card rounded relative">
       <div className="mx-5 py-5">
         <MdxDocument text={body} imageMap={chapterImageMap} className="bg-card rounded relative" />
       </div>
@@ -295,7 +317,6 @@ export const generateStaticParams = async () => {
       continue
     }
     if (piece.metadata.hidden) {
-      console.log(`Skipping hidden piece: ${piece.idpath.join("/")}`)
       continue
     }
     params.push({ path: piece.idpath })

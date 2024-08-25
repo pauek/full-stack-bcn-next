@@ -1,5 +1,5 @@
 import { AllAttachmentTypes, FileType, type MapPosition } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import { IRectangle } from "@/lib/geometry"
 import { readFile } from "fs/promises"
 import { join } from "path"
@@ -52,7 +52,7 @@ export const extendedMapPositionForPiece = async (
     // Children are other pieces and also attachments
     let childrenHashes: string[] = []
     if (children) {
-      childrenHashes = children.map((ch) => ch.hash)
+      childrenHashes = children.map(hash)
     }
     for (const type of AllAttachmentTypes) {
       const attachmentHashes = (await getPieceAttachmentList(piece, type)).map((a) => a.hash)
@@ -62,7 +62,7 @@ export const extendedMapPositionForPiece = async (
     return {
       kind: "piece",
       index,
-      hash: piece.hash,
+      hash: hash(piece),
       name: piece.name,
       rectangle: { left, top, width, height },
       children: childrenHashes,
@@ -107,8 +107,8 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
   const root = await filesGetRoot()
   const positions: MapPosition<Hash>[] = []
 
-  await filesWalkContentPieces(root.idpath, async ({ piece, index }) => {
-    const piecePos = await extendedMapPositionForPiece(piece, index)
+  await filesWalkContentPieces(root.idpath, async (diskpath, piece) => {
+    const piecePos = await extendedMapPositionForPiece(piece, piece.metadata.index)
     if (piecePos) {
       positions.push(piecePos)
     }
@@ -116,6 +116,7 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
     for (const attPos of attachmentPositions) {
       positions.push(attPos)
     }
+    return piece
   })
 
   // We sort the results here, instead of in the query (can't do it in Drizzle??)

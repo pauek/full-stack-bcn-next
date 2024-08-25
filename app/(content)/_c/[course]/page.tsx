@@ -1,4 +1,5 @@
 import Part from "@/components/Part"
+import { hash } from "@/lib/adt"
 import data from "@/lib/data"
 import { env } from "@/lib/env.mjs"
 import { unstable_cache } from "next/cache"
@@ -17,7 +18,7 @@ export default async function Page() {
   return (
     <div className="m-auto max-w-[38em]">
       <div className="w-full sm:w-[38em]">
-        {children && children.map((part) => <Part key={part.hash} part={part} />)}
+        {children && children.map((part) => <Part key={hash(part)} part={part} />)}
       </div>
     </div>
   )

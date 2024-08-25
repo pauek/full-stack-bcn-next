@@ -1,13 +1,12 @@
 import * as schema from "@/data/schema"
 import { FileType } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
-import { lastElement } from "@/lib/utils"
+import { ContentPiece, hash, zContentPieceMetadata } from "@/lib/adt"
 import { eq, inArray } from "drizzle-orm"
 import { db } from "./db"
 import { pieceHasFiletype } from "./utils"
 
-export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.cover)
-export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(piece.hash, FileType.doc)
+export const pieceHasCover = (piece: ContentPiece) => pieceHasFiletype(hash(piece), FileType.cover)
+export const pieceHasDoc = (piece: ContentPiece) => pieceHasFiletype(hash(piece), FileType.doc)
 
 export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> => {
   const result = await db.query.hashmap.findFirst({
@@ -15,8 +14,8 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
     with: {
       piece: {
         columns: {
-          pieceHash: true,
           name: true,
+          pieceHash: true,
           metadata: true,
         },
       },
@@ -27,12 +26,13 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
     return null
   }
 
+  const metadata = zContentPieceMetadata.parse(result.piece.metadata)
   return {
-    ...result.piece,
-    hash: result.pieceHash,
-    id: lastElement(idpath),
+    id: metadata.id,
     idpath,
-    children: [],
+    name: result.piece.name,
+    hash: result.piece.pieceHash,
+    metadata,
   }
 }
 
@@ -43,11 +43,11 @@ const dbPieceToContentPiece = (
 ): ContentPiece => {
   const { name, metadata, pieceHash } = dbPiece
   return {
+    id: metadata.id,
     name,
-    metadata,
     hash: pieceHash,
     idpath,
-    id: lastElement(idpath),
+    metadata,
     children,
   }
 }
@@ -77,10 +77,9 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     return null
   }
 
-  // NOTE(pauek): We don't ever filter hidden piece, just until the moment of 
+  // NOTE(pauek): We don't ever filter hidden piece, just until the moment of
   // showing them to the user.
-  const childrenHashes = pieceResult.piece.children
-    .map(({ child }) => child.pieceHash)
+  const childrenHashes = pieceResult.piece.children.map(({ child }) => child.pieceHash)
 
   const childrenResult = await db.query.pieces.findMany({
     where: inArray(schema.pieces.pieceHash, childrenHashes),

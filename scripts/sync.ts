@@ -1,9 +1,38 @@
+/*
+
+Sync
+----
+
+Ficheros --> Metadatos
+Metadatos --> Base de Datos (repetidamente)
+
+1. Primero hay que propagar los cambios que hay en los ficheros a los metadatos (.meta.json):
+   - Cambios en contenido Markdown.
+   - Ficheros nuevos: ejercicios, preguntas de test, slides, imágenes, etc.
+   - Cambios en los propios metadatos, que también afectan al hash (posición, índice, nivel, id).
+   Con los metadatos actualizados, se tienen los hashes de cada pieza de contenido.
+
+   Este paso genera una lista de cosas que han cambiado, que se muestra por pantalla.
+
+2. Se actualiza la base de datos usando el Merkle tree: desde arriba de todo, se mira si el hash existe.
+   Si existe, se corta esa rama del proceso recursivo.
+   Si no existe, hay que actualizar todas las tablas afectadas: pieces, hashmap, relaciones. 
+   
+   Luego hay que actualizar los attachments, incluyendo imágenes, que están en CloudFlare. 
+   Para cada uno de estos, hay que mirar primero en la base de datos si las imágenes exiten ya. 
+   Si no existen, hay que subirlas. Si existen no hay que hacer nada. Los attachments son 
+   también como parte del Merkle tree.
+
+   Y nunca se borra nada, solo se añade ("append only").
+
+*/
+
 import "@/lib/env-config"
 
 import { FileType } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash, pieceLevelFromChildren, setHash } from "@/lib/adt"
 import { closeConnection } from "@/lib/data/db/db"
-import { insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
+import { dbPieceHashExists, insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
 import { getAllPieceAttachments } from "@/lib/data/files/attachments"
 import { readStoredHash, writeStoredHash } from "@/lib/data/files/hashes"
 import {
@@ -13,11 +42,15 @@ import {
   writeGlobalHashmap,
 } from "@/lib/data/files/hashmaps"
 import { writeMetadata } from "@/lib/data/files/metadata"
-import { filesGetRootIdpath, filesWalkContentPieces, listPieceSubdir } from "@/lib/data/files/utils"
-import { HashItem, hashPiece } from "@/lib/data/hashing"
+import {
+  filesGetRoot,
+  filesGetRootIdpath,
+  filesWalkContentPieces,
+  listPieceSubdir,
+} from "@/lib/data/files/utils"
+import { childrenHashes, HashItem, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
-import { basename } from "path"
 import { insertFiles } from "./lib/lib"
 
 const cliArgs = {
@@ -25,7 +58,10 @@ const cliArgs = {
   dryRun: false,
 }
 
-type HashItemLevel = HashItem & { level: number }
+type WalkItemData = HashItem & {
+  level: number
+  piece: ContentPiece
+}
 
 /** Parse options */
 const parseOption = (args: string[], long: string, short: string): boolean =>
@@ -37,25 +73,48 @@ const parseOption = (args: string[], long: string, short: string): boolean =>
  *
  * Also shows the hash and idpath of the piece on the screen.
  */
-export const updatePiece = async (piece: ContentPiece, childrenHashes: HashItem[]) => {
+export const syncWithDatabase = async (): Promise<number> => {
+  let numChanges = 0
+  let rootPiece = await filesGetRoot()
+
   // NOTE(pauek): Process 'hidden' pieces anyway. We will filter them out
   // at the last moment before showing them to the user.
-  try {
-    await Promise.allSettled([
-      await insertPiece(piece, childrenHashes),
-      await insertPieceHashmap(piece),
-      await insertFiles(piece),
-      // await uploadImages(piece),
-    ])
-  } catch (e) {
-    console.error(`Error updating piece ${piece.idpath.join("/")}: ${e}`)
+
+  // Recursively update the Merkle tree, pruning branches that are already in the database.
+  const _updatePiece = async (piece: ContentPiece) => {
+    await insertPiece(piece)
+    await insertPieceHashmap(piece)
+    await insertFiles(piece)
   }
+
+  const _sync = async (piece: ContentPiece) => {
+    // If this particular hash is already in the database, we don't need to do anything, since
+    // the hash depends recuersively on all the children and attachments.
+    if (await dbPieceHashExists(hash(piece))) {
+      return
+    }
+    // Insert the piece and its children (some of which might be already there)
+    try {
+      await _updatePiece(piece)
+      numChanges++
+    } catch (e) {
+      console.error(`Error updating piece ${piece.idpath.join("/")}: ${e}`)
+    }
+  }
+
+  await _sync(rootPiece)
+
+  return 0
 }
 
 /**
- * Walk the file tree and compute the new hash, level,
+ * Walk the file tree and compute the new level, metadata, and hash.
+ * The result is a memory datastructure of the _whole content tree_.
  */
-export const updateFileTree = async function () {
+export const syncFileTreeMetadata = async function (): Promise<{
+  tree: ContentPiece
+  numChanges: number
+}> {
   let sessionIndex = 1
   let numChanges = 0
 
@@ -66,22 +125,16 @@ export const updateFileTree = async function () {
   // Otherwise, the indices will be wrong. (This is in principle
   // guaranteed by filesWalkContentPieces.)
   //
-  await filesWalkContentPieces<HashItemLevel>(
+  const tree = await filesWalkContentPieces(
     filesGetRootIdpath(),
-    async ({ index, piece, diskpath, children }) => {
-      const filename = basename(diskpath)
-
+    async (diskpath, piece): Promise<ContentPiece> => {
       // Attachments
       const attachments = await getAllPieceAttachments(piece)
-      const slideList = await listPieceSubdir(diskpath, FileType.slide)
+      const slideList = attachments.filter((a) => a.filetype === FileType.slide)
       const hasDoc = attachments.some((a) => a.filetype === FileType.doc)
 
       // Compute level
-      const childrenLevels = children.map(({ level }) => level)
-      if (attachments.length > 0) {
-        childrenLevels.push(0) // Attachments count as level 0
-      }
-      const level = 1 + Math.max(-1, ...childrenLevels)
+      let level = pieceLevelFromChildren(piece)
 
       // IMPORTANT: Updating metadata changes the hash!!
       // Update metadata fields (metadata was already read)
@@ -93,34 +146,30 @@ export const updateFileTree = async function () {
       if (depth === 3) {
         metadata.index = sessionIndex++ // for sessions
       } else {
-        metadata.index = index
+        metadata.index = piece.metadata.index
       }
       if (!cliArgs.dryRun) {
         await writeMetadata(diskpath, metadata)
       }
 
-
       // Compute new hash
-      const oldHash = await readStoredHash(diskpath)
-      const newHash = await hashPiece(piece, children)
+      const oldHash = piece.hash
+      const newHash = await hashPiece(piece, await childrenHashes(piece))
+      
       if (!cliArgs.dryRun) {
-        piece.hash = newHash // remember!
         await writeStoredHash(diskpath, newHash)
+        setHash(piece, newHash) // Replace it in memory as well
       }
 
-      // --- UPDATE ---
       // Only if the hash has changed, or if we are uploading everything
       if (cliArgs.forcedUpdate || newHash !== oldHash) {
         hashmapRemove(oldHash)
         hashmapAdd({ hash: newHash, idpath: piece.idpath, diskpath, level })
-        if (!cliArgs.dryRun) {
-          await updatePiece(piece, children)
-        }
-        console.log(piece.hash, piece.idpath.join("/"))
+        console.log(hash(piece), piece.idpath.join("/"))
         numChanges++
       }
 
-      return { hash: newHash, filename, level }
+      return piece
     }
   )
 
@@ -129,7 +178,7 @@ export const updateFileTree = async function () {
     await writeGlobalHashmap()
   }
 
-  return { numChanges }
+  return { tree, numChanges }
 }
 
 // Main
@@ -145,16 +194,25 @@ showExecutionTime(async () => {
     console.log(chalk.bgYellow("FORCED UPDATE: all pieces will be processed."))
   }
 
-  const { numChanges } = await updateFileTree()
+  const { tree, numChanges: metadataChanges } = await syncFileTreeMetadata()
 
-  if (numChanges === 0) {
-    console.log(`No changes.`)
+  if (metadataChanges === 0) {
+    console.log(`No metadata changes.`)
   } else {
-    console.log(`${numChanges} changed pieces.`)
+    console.log(`${metadataChanges} changed pieces.`)
   }
   if (cliArgs.dryRun) {
     console.log(chalk.bgYellow("DRY RUN: nothing was written to disk."))
   }
 
+  /*
+  const dbChanges = await syncWithDatabase()
+  if (dbChanges === 0) {
+    console.log(`No database changes.`)
+  } else {
+    console.log(`${dbChanges} database changes.`)
+  }
+  */
+ 
   await closeConnection()
 })

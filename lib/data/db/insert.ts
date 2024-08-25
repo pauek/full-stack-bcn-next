@@ -1,6 +1,7 @@
 import * as schema from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
-import { hashAny, HashItem } from "@/lib/data/hashing"
+import { FileType } from "@/data/schema"
+import { ContentPiece, hash } from "@/lib/adt"
+import { hashAny } from "@/lib/data/hashing"
 import {
   bytesToBase64,
   logPresentFile,
@@ -12,20 +13,19 @@ import { and, eq } from "drizzle-orm"
 import { readFile } from "fs/promises"
 import { getQuizPartsFromFile } from "../files/quiz"
 import { db } from "./db"
-import { FileType } from "@/data/schema"
 
 export const pieceSetParent = async (childHash: string, parentHash: string) => {
   await db.insert(schema.relatedPieces).values({ childHash, parentHash })
 }
 
-const _pieceHashExists = async (hash: string) => {
+export const dbPieceHashExists = async (hash: string) => {
   const found = await db.query.pieces.findFirst({
     where: eq(schema.pieces.pieceHash, hash),
   })
   return found !== undefined
 }
 
-export const dbPieceExists = async (piece: ContentPiece) => _pieceHashExists(piece.hash)
+export const dbPieceExists = async (piece: ContentPiece) => dbPieceHashExists(hash(piece))
 
 export const fileExists = async (hash: string) => {
   const found = await db.query.files.findFirst({
@@ -49,24 +49,20 @@ export const attachmentExists = async (
   return found !== undefined
 }
 
-export const insertPiece = async (piece: ContentPiece, children: HashItem[]) => {
+export const insertPiece = async (piece: ContentPiece) => {
   if (await dbPieceExists(piece)) {
     return false // it was not inserted
   }
   const dbPiece: schema.DBPiece = {
-    pieceHash: piece.hash,
+    pieceHash: hash(piece),
     name: piece.name,
     createdAt: new Date(),
     metadata: piece.metadata,
   }
   try {
-    await db.insert(schema.pieces).values(dbPiece).onConflictDoUpdate({
-      target: schema.pieces.pieceHash,
-      set: dbPiece,
-    })
-    // Insert parent-child links
-    for (const child of children) {
-      await pieceSetParent(child.hash, piece.hash)
+    await db.insert(schema.pieces).values(dbPiece)
+    for (const child of piece.children || []) {
+      await pieceSetParent(hash(child), hash(piece))
     }
 
     return true
@@ -77,14 +73,11 @@ export const insertPiece = async (piece: ContentPiece, children: HashItem[]) => 
 }
 
 export const insertPieceHashmap = async (piece: ContentPiece) => {
-  const level = piece.metadata.level
+  const { idpath, metadata } = piece
+  const { level } = metadata
   await db
     .insert(schema.hashmap)
-    .values({
-      idpath: piece.idpath,
-      pieceHash: piece.hash,
-      level,
-    })
+    .values({ idpath, pieceHash: piece.hash, level })
     .onConflictDoUpdate({
       target: schema.hashmap.idpath,
       set: { pieceHash: piece.hash },
@@ -128,11 +121,11 @@ export const insertFile = async (
       logUploadedFile(fileHash, filetype, filename)
     }
 
-    const existsAttachment = await attachmentExists(piece.hash, fileHash, filetype)
+    const existsAttachment = await attachmentExists(hash(piece), fileHash, filetype)
     if (!existsAttachment) {
       await db.insert(schema.attachments).values({
         fileHash: fileHash,
-        pieceHash: piece.hash,
+        pieceHash: hash(piece),
         filetype,
         filename,
       })

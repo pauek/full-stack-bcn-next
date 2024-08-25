@@ -4,6 +4,7 @@ import Link from "next/link"
 import { getSessionWithChaptersOrNotFound } from "../utils"
 import { ChapterPageProps, getChapterOrNotFound } from "./utils"
 import Navigator from "@/components/Navigator"
+import { hash } from "@/lib/adt"
 
 type _Props = ChapterPageProps & {
   children: React.ReactNode
@@ -12,7 +13,7 @@ export default async function Layout({ children, params }: _Props) {
   const session = await getSessionWithChaptersOrNotFound({ params })
   const chapterList = session.children || []
   const chapter = await getChapterOrNotFound({ params })
-  const index = chapterList.findIndex((ch) => ch.hash === chapter.hash)
+  const index = chapterList.findIndex((ch) => hash(ch) === hash(chapter))
 
   const Header = () => (
     <div className="px-5 flex flex-row justify-center border-b w-full">

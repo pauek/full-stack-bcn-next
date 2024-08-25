@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export type Point = {
   x: number
   y: number
@@ -45,6 +47,13 @@ export const eventPoint = (event: IMouseEvent): Point => {
 export const pointToString = (p: Point): string => {
   return `(${p.x.toFixed(0)}, ${p.y.toFixed(0)})`
 }
+
+export const zRectangle = z.object({
+  left: z.number(),
+  top: z.number(),
+  width: z.number(),
+  height: z.number(),
+})
 
 export interface IRectangle {
   left: number

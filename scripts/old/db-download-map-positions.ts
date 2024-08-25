@@ -2,12 +2,12 @@ import "@/lib/env.mjs"
 
 import { MapPosition } from "@/data/schema"
 import { showExecutionTime } from "@/lib/utils"
-import chalk from "chalk"
 
-import { getMapPositionsExtended } from "@/lib/data/db/positions"
+import { hash } from "@/lib/adt"
 import { closeConnection } from "@/lib/data/db/db"
+import { getMapPositionsExtended } from "@/lib/data/db/positions"
 import { updateMetadata } from "@/lib/data/files/metadata"
-import { filesWalkContentPieces, filesGetRootIdpath } from "@/lib/data/files/utils"
+import { filesGetRootIdpath, filesWalkContentPieces } from "@/lib/data/files/utils"
 
 const {
   argv: [_bun, _script],
@@ -20,15 +20,15 @@ showExecutionTime(async () => {
     hashToPosition.set(pos.hash, pos)
   }
 
-  const rootIdpath = await filesGetRootIdpath()
-  await filesWalkContentPieces(rootIdpath, async ({ piece, diskpath }) => {
+  await filesWalkContentPieces(await filesGetRootIdpath(), async (diskpath, piece) => {
     await updateMetadata(diskpath, async (metadata) => {
-      const position = hashToPosition.get(piece.hash)
+      const position = hashToPosition.get(hash(piece))
       if (position) {
         const { left, top, width, height } = position.rectangle
         metadata.mapPosition = { left, top, width, height }
       }
     })
+    return piece
   })
 
   await closeConnection()

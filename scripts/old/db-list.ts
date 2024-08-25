@@ -1,5 +1,5 @@
 import { FileType, FileTypeValues } from "@/data/schema"
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import data from "@/lib/data"
 import { closeConnection } from "@/lib/data/db/db"
 import { getPieceFilesByFiletype } from "@/lib/data/db/utils"
@@ -27,9 +27,9 @@ showExecutionTime(async () => {
   }
 
   await data.walkContentPieces(root, async (piece, _children) => {
-    console.log(piece.hash, piece.idpath.join("/"))
+    console.log(hash(piece), piece.idpath.join("/"))
     for (const filetype of FileTypeValues) {
-      const files = await getPieceFilesByFiletype(piece.hash, filetype as FileType)
+      const files = await getPieceFilesByFiletype(hash(piece), filetype as FileType)
       for (const file of files || []) {
         console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.filename}`))
       }

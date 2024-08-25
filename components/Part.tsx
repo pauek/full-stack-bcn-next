@@ -1,4 +1,4 @@
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import PartHeader from "./PartHeader"
 import SessionCard from "./cards/SessionCard"
 
@@ -18,7 +18,7 @@ export default async function Part({ part }: CoursePartProps) {
           {row
             .filter(({ metadata }) => !metadata.hidden)
             .map((session) => (
-              <SessionCard key={session.hash} session={session} />
+              <SessionCard key={hash(session)} session={session} />
             ))}
         </div>
       ))}

@@ -11,14 +11,17 @@ import { getAllPieceAttachments } from "@/lib/data/files/attachments"
 import { PositionUpdate, updateMapPositions } from "@/lib/data/files/positions"
 import { filesGetRootIdpath, filesWalkContentPieces } from "@/lib/data/files/utils"
 
-await filesWalkContentPieces<void>(filesGetRootIdpath(), async ({ piece }) => {
+await filesWalkContentPieces(filesGetRootIdpath(), async (_, piece) => {
+  const { idpath, metadata } = piece
+  const { level, mapPosition } = metadata
   if (piece.metadata.level !== 1) {
-    return
+    return piece
   }
-  console.log(piece.idpath, piece.metadata.level)
-  console.log(piece.metadata.mapPosition)
 
-  const pos = piece.metadata.mapPosition
+  console.log(idpath, level)
+  console.log(mapPosition)
+
+  const pos = mapPosition || { left: 0, top: 0 }
   let i = 0
   let j = 0
 
@@ -53,4 +56,5 @@ await filesWalkContentPieces<void>(filesGetRootIdpath(), async ({ piece }) => {
   } catch (e) {
     console.error(`Could not update positions for ${piece.idpath}:`, e)
   }
+  return piece
 })

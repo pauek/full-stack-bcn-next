@@ -13,13 +13,16 @@ export default async function PartCard({ piece }: { piece: ContentPiece }) {
   const { children } = part
   return (
     <Link href={pieceUrlPath(piece.idpath)}>
-      <div className="group p-3 px-4 bg-card shadow rounded border hover:border-foreground">
+      <div className="group p-3 px-4 bg-card rounded border border-transparent hover:border-primary">
         <h4 className="text-center text-gray-400">{piece.name.toUpperCase()}</h4>
         <div className="flex flex-wrap gap-2 justify-center">
           {children &&
-            children.map((session) => (
-              <SessionCard key={session.idpath.join("/")} session={session} />
-            ))}
+            children.map(
+              (session) =>
+                session.metadata.hidden || (
+                  <SessionCard key={session.idpath.join("/")} session={session} />
+                )
+            )}
         </div>
       </div>
     </Link>

@@ -46,18 +46,3 @@ export const dbConstructFullTree = async () => {
   }
   return tree.children[0]
 }
-
-export const computeLevels = async (tree: TreeNode) => {
-  const _computeLevels = (node: TreeNode): number => {
-    if (node.children.length === 0) {
-      node.level = 0
-      return 0
-    }
-    const childrenLevels = node.children.map(_computeLevels)
-    const level = 1 + Math.max(...childrenLevels)
-    node.level = level
-    return level
-  }
-
-  _computeLevels(tree)
-}

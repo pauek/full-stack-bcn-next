@@ -32,28 +32,30 @@ const mapPositionsForPieces = async () => {
   })
 }
 
-type PositionResult = Awaited<ReturnType<typeof mapPositionsForPieces>>
-
 export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> => {
   //  Hay que devolver los items ordenados por nivel, para pintarlos en el orden correcto.
   const positions: MapPosition<string>[] = []
 
   for (const mapPos of await mapPositionsForPieces()) {
-    const { piece, idpath, pieceHash, level } = mapPos
+    const { piece, idpath, pieceHash, level, piece: { metadata } } = mapPos
+    const { index, mapPosition } = metadata
+    if (!mapPosition) {
+      throw new Error(`Missing mapPosition for ${piece.name}`)
+    }
 
     // Children
     const childrenHashes = piece.children.map((ch) => ch.childHash)
-    const mapPosition: MapPosition<string> = {
-      index: piece.metadata.index,
+    const pos: MapPosition<string> = {
+      index: index,
       kind: "piece",
       name: piece.name,
       hash: pieceHash,
       idpath,
       level,
-      rectangle: piece.metadata.mapPosition,
+      rectangle: mapPosition ,
       children: childrenHashes,
     }
-    positions.push(mapPosition)
+    positions.push(pos)
 
     // Attachments
     const { attachments } = piece

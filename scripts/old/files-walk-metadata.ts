@@ -5,12 +5,13 @@ import { showExecutionTime } from "@/lib/utils"
 showExecutionTime(async () => {
   const rootIdpath = await filesGetRootIdpath()
 
-  await filesWalkContentPieces(rootIdpath, async ({ piece, diskpath }) => {
+  await filesWalkContentPieces(rootIdpath, async (diskpath, piece) => {
     await updateMetadata(diskpath, async (metadata) => {
       if ("slideHashes" in metadata) {
         console.log(piece.idpath.join("/"))
         delete metadata.slideHashes
       }
     })
+    return piece
   })
 })

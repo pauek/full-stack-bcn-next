@@ -11,7 +11,7 @@ import {
 } from "@aws-sdk/client-s3"
 import { readFile } from "fs/promises"
 import { extname, join } from "path"
-import { fileTypeInfo, findoutDiskpathFromIdpath } from "../../lib/data/files/utils"
+import { fileTypeInfo, findDiskpathFromIdpath } from "../../lib/data/files/utils"
 import mimeTypeTable from "../../lib/data/mime-types.json"
 
 const mimeTypes: Record<string, string> = mimeTypeTable
@@ -81,7 +81,7 @@ class ImageUploader {
       const path = imagePaths[index]
       const idpath = path.slice(0, path.length - 1)
       const imageFilename = path.slice(-1)[0]
-      const diskpath = await findoutDiskpathFromIdpath(idpath)
+      const diskpath = await findDiskpathFromIdpath(idpath)
       if (diskpath === null) {
         throw new Error(`Diskpath not found for ${idpath.join("/")}`)
       }

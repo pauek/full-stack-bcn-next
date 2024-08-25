@@ -1,9 +1,10 @@
 import { env } from "@/lib/env.mjs"
 import { readFile, writeFile } from "fs/promises"
 import { basename, join } from "path"
-import { HashItem, hashPiece } from "../hashing"
+import { childrenHashes, HashItem, hashPiece } from "../hashing"
 import { HASH_MAP_FILE, readStoredHash } from "./hashes"
 import { filesWalkContentPieces } from "./utils"
+import { pieceLevelFromChildren } from "@/lib/adt"
 
 export type HashmapEntry = {
   hash: string
@@ -115,28 +116,24 @@ export const loadGlobalHashmap = async () => {
   type Item = HashItem & { level: number }
 
   // 2. Walk the files directly
-  await filesWalkContentPieces<Item>(
-    [env.COURSE_ID],
-    async ({ piece, diskpath, children }): Promise<Item> => {
-      const level = 1 + Math.max(-1, ...children.map(({ level }) => level))
-      const { idpath } = piece
+  await filesWalkContentPieces([env.COURSE_ID], async (diskpath, piece) => {
+    const { idpath } = piece
 
-      // 2a. try getting it from file
-      let hash = await readStoredHash(diskpath)
-      if (hash === null) {
-        // 2b. compute it
-        hash = await hashPiece(piece, children)
-      }
+    // 2a. try getting it from file
+    let hash = await readStoredHash(diskpath)
+    if (hash === null) {
+      // 2b. compute it
+      hash = await hashPiece(piece, await childrenHashes(piece))
+    }
+    if (hash === null) {
+      throw new Error(`hash shoud not be null!`)
+    }
 
-      if (hash === null) {
-        throw new Error(`hash shoud not be null!`)
-      }
+    const level = pieceLevelFromChildren(piece)
+    hashmapAdd({ hash, idpath, diskpath, level })
 
-      hashmapAdd({ hash, idpath, diskpath, level })
-
-      return { hash, filename: basename(diskpath), level }
-    },
-  )
+    return piece
+  })
 
   globalHashmaps.loaded = true
   console.info(`Remade hashmap (${globalHashmaps.entries.length} entries)`)
@@ -186,22 +183,16 @@ export const getHashFromIdjpath = async (idjpath: string) => {
 export const hashAllContent = async function (rootIdpath: string[]) {
   const hashes: Map<string, HashmapEntry> = new Map()
 
-  await filesWalkContentPieces<HashItem & { level: number }>(
-    rootIdpath,
-    async ({ piece, diskpath, children }) => {
-      const filename = basename(diskpath)
-      const hash = await hashPiece(piece, children)
-      const idjpath = piece.idpath.join("/")
+  await filesWalkContentPieces(rootIdpath, async (diskpath, piece) => {
+    const { idpath } = piece
 
-      // Compute level here
-      const childrenLevels = children.map(({ level }) => level)
-      const level = 1 + Math.max(...childrenLevels)
+    const hash = await hashPiece(piece, await childrenHashes(piece))
+    const level = pieceLevelFromChildren(piece)
+    const idjpath = idpath.join("/")
+    hashes.set(idjpath, { hash, idpath, diskpath, level })
 
-      hashes.set(idjpath, { hash, idpath: piece.idpath, diskpath, level })
-
-      return { hash, filename, level }
-    },
-  )
+    return piece
+  })
 
   return hashes
 }

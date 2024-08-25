@@ -1,4 +1,4 @@
-import { ContentPiece } from "@/lib/adt"
+import { ContentPiece, hash } from "@/lib/adt"
 import { pieceUrlPath } from "@/lib/urls"
 import Link from "next/link"
 import { SessionPageProps, _generateStaticParams, getPieceWithChildrenOrNotFound } from "../utils"
@@ -17,7 +17,7 @@ export default async function Page({ params }: SessionPageProps) {
   return (
     <div className="w-full max-w-[54rem] flex flex-col gap-2 mx-auto pt-2">
       {chapters.map((chapter) => (
-        <ChapterCard key={chapter.hash} chapter={chapter} />
+        <ChapterCard key={hash(chapter)} chapter={chapter} />
       ))}
     </div>
   )
