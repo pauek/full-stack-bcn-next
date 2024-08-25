@@ -1,7 +1,6 @@
 import ChapterCard from "@/components/cards/ChapterCard"
 import PartCard from "@/components/cards/PartCard"
 import SessionCard from "@/components/cards/SessionCard"
-import PieceDocument from "@/components/PieceDocument"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
@@ -23,6 +22,11 @@ import {
 import { ErrorBoundary } from "react-error-boundary"
 import QuizQuestion from "@/components/QuizQuestion"
 import { QuestionError } from "@/components/QuestionError"
+import MdxDocument from "@/components/mdx/MdxDocument"
+import { FileBuffer, FileReference } from "@/lib/data/data-backend"
+import { splitMarkdownPreamble } from "@/lib/utils"
+
+/// Pages
 
 async function DefaultPage({ piece }: { piece: ContentPiece }) {
   return (
@@ -75,7 +79,7 @@ async function SessionPage({ piece }: { piece: ContentPiece }) {
 }
 
 async function ChapterPage({ piece }: { piece: ContentPiece }) {
-  const document = await data.getPieceAttachmentList(piece, FileType.doc)
+  const document = await data.getPieceDocument(piece)
   const slides = await data.getPieceAttachmentList(piece, FileType.slide)
   const exercises = await data.getPieceAttachmentList(piece, FileType.exercise)
   const questions = await data.getPieceAttachmentList(piece, FileType.quiz)
@@ -84,66 +88,153 @@ async function ChapterPage({ piece }: { piece: ContentPiece }) {
     <div className="flex-1">
       <Tabs defaultValue="document" className="relative mt-4">
         <TabsList className="absolute right-0 -top-16">
-          {document.length > 0 && <TabsTrigger value="document">Document</TabsTrigger>}
+          {document !== null && <TabsTrigger value="document">Document</TabsTrigger>}
           {exercises.length > 0 && <TabsTrigger value="exercises">Exercises</TabsTrigger>}
           {slides.length > 0 && <TabsTrigger value="slides">Slides</TabsTrigger>}
           {questions.length > 0 && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
         </TabsList>
-        <TabsContent value="document">
-          <PieceDocument piece={piece} />
-        </TabsContent>
-        <TabsContent value="exercises">
-          <div className="flex flex-col gap-4">
-            {exercises.map(async (exercise, index) => (
-              <Exercise key={exercise.hash} index={index + 1} chapter={piece} exercise={exercise} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="slides">
-          <div className="bg-background p-4 rounded">
-            <SlideGrid slides={slides.map(attachmentUrl)} />
-          </div>
-        </TabsContent>
-        <TabsContent value="quiz">
-          <div className="w-full h-full flex flex-row justify-center">
-            <Carousel
-              className="w-full h-full flex flex-col justify-center max-w-[38em] pt-[1em]"
-              orientation="horizontal"
-              opts={{ loop: true, duration: 15 }}
-            >
-              <CarouselContent>
-                {questions.map(async (quiz, index) => (
-                  <CarouselItem key={quiz.hash} className="h-full flex flex-col justify-center">
-                    <ErrorBoundary fallback={<QuestionError quiz={quiz} />}>
-                      <QuizQuestion index={index + 1} chapter={piece} quiz={quiz} />
-                    </ErrorBoundary>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <div className="hidden md:block">
-                <CarouselPrevious />
-                <CarouselNext />
-              </div>
-            </Carousel>
-          </div>
-        </TabsContent>
+        {document !== null && (
+          <TabsContent value="document">
+            <DocumentContent piece={piece} document={document} />
+          </TabsContent>
+        )}
+        {exercises.length > 0 && (
+          <TabsContent value="exercises">
+            <ExerciseContent piece={piece} exercises={exercises} />
+          </TabsContent>
+        )}
+        {slides.length > 0 && (
+          <TabsContent value="slides">
+            <SlidesContent slides={slides} />
+          </TabsContent>
+        )}
+        {questions.length > 0 && (
+          <TabsContent value="quiz">
+            <QuizContent piece={piece} questions={questions} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )
 }
 
-async function DocumentPage({ piece }: { piece: ContentPiece }) {
+/// Attachment bodies
+
+type DocumentContentProps = {
+  piece: ContentPiece
+  document: FileBuffer
+}
+const DocumentContent = async ({ piece, document }: DocumentContentProps) => {
+  const images = await data.getPieceAttachmentList(piece, FileType.image)
+  const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]))
+  const { body } = splitMarkdownPreamble(document.buffer.toString())
   return (
-    <main className="mt-4">
-      <PieceDocument piece={piece} />
-    </main>
+    <div key={piece.hash} className="bg-card rounded relative">
+      <div className="mx-5 py-5">
+        <MdxDocument text={body} imageMap={chapterImageMap} className="bg-card rounded relative" />
+      </div>
+    </div>
   )
 }
 
-const attachmentPage = (piece: ContentPiece, attachment: string) => {
+type ContentProps = {
+  piece: ContentPiece
+  exercises: FileReference[]
+}
+const ExerciseContent = async ({ piece, exercises }: ContentProps) => (
+  <div className="flex flex-col gap-4">
+    {exercises.map(async (exercise, index) => (
+      <Exercise key={exercise.hash} index={index + 1} chapter={piece} exercise={exercise} />
+    ))}
+  </div>
+)
+
+type SlidesContentProps = {
+  slides: FileReference[]
+}
+const SlidesContent = async ({ slides }: SlidesContentProps) => (
+  <div className="bg-background p-4 rounded">
+    <SlideGrid slides={slides.map(attachmentUrl)} />
+  </div>
+)
+
+type QuizContentProps = {
+  piece: ContentPiece
+  questions: FileReference[]
+}
+const QuizContent = async ({ piece, questions }: QuizContentProps) => {
+  return (
+    <div className="w-full h-full flex flex-row justify-center">
+      <Carousel
+        className="w-full h-full flex flex-col justify-center max-w-[38em] pt-[1em]"
+        orientation="horizontal"
+        opts={{ loop: true, duration: 15 }}
+      >
+        <CarouselContent>
+          {questions.map(async (quiz, index) => (
+            <CarouselItem key={quiz.hash} className="h-full flex flex-col justify-center">
+              <ErrorBoundary fallback={<QuestionError quiz={quiz} />}>
+                <QuizQuestion index={index + 1} chapter={piece} quiz={quiz} />
+              </ErrorBoundary>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="hidden md:block">
+          <CarouselPrevious />
+          <CarouselNext />
+        </div>
+      </Carousel>
+    </div>
+  )
+}
+
+/// Dispatchers
+
+const attachmentPage = async (piece: ContentPiece, attachment: string) => {
   switch (attachment) {
     case ".doc": {
-      return <DocumentPage piece={piece} />
+      const document = await data.getPieceDocument(piece)
+      if (document === null) {
+        notFound()
+      }
+      return (
+        <main className="mt-4">
+          <DocumentContent piece={piece} document={document} />
+        </main>
+      )
+    }
+    case ".exercises": {
+      const exercises = await data.getPieceAttachmentList(piece, FileType.exercise)
+      if (exercises.length === 0) {
+        notFound()
+      }
+      return (
+        <main className="mt-4">
+          <ExerciseContent piece={piece} exercises={exercises} />
+        </main>
+      )
+    }
+    case ".slides": {
+      const slides = await data.getPieceAttachmentList(piece, FileType.slide)
+      if (slides.length === 0) {
+        notFound()
+      }
+      return (
+        <main className="mt-4">
+          <SlidesContent slides={slides} />
+        </main>
+      )
+    }
+    case ".quiz": {
+      const questions = await data.getPieceAttachmentList(piece, FileType.quiz)
+      if (questions.length === 0) {
+        notFound()
+      }
+      return (
+        <main className="mt-4">
+          <QuizContent piece={piece} questions={questions} />
+        </main>
+      )
     }
     default: {
       throw new Error(`Unknown attachment type: ${attachment}`)
