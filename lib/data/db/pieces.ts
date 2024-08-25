@@ -77,7 +77,11 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
     return null
   }
 
-  const childrenHashes = pieceResult.piece.children.map(({ child }) => child.pieceHash)
+  // NOTE(pauek): We don't ever filter hidden piece, just until the moment of 
+  // showing them to the user.
+  const childrenHashes = pieceResult.piece.children
+    .map(({ child }) => child.pieceHash)
+
   const childrenResult = await db.query.pieces.findMany({
     where: inArray(schema.pieces.pieceHash, childrenHashes),
     with: {
@@ -107,5 +111,3 @@ export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPie
 
   return dbPieceToContentPiece(idpath, pieceResult.piece, children)
 }
-
-

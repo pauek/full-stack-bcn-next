@@ -1,4 +1,3 @@
-import PieceDocument from "@/components/PieceDocument"
 import Exercise from "@/components/Exercise"
 import SlideGrid from "@/components/SlideGrid"
 import { FileType } from "@/data/schema"
@@ -17,11 +16,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { ErrorBoundary } from "react-error-boundary"
-import { FileReference } from "@/lib/data/data-backend"
+import { FileBuffer, FileReference } from "@/lib/data/data-backend"
 import QuizQuestion from "@/components/QuizQuestion"
 import FullScreen from "@/components/FullScreen"
 import { QuizIcon } from "@/components/icons/QuizIcon"
 import { getSessionOrNotFound } from "../utils"
+import MdxDocument from "@/components/mdx/MdxDocument"
+import { splitMarkdownPreamble } from "@/lib/utils"
 
 export async function generateMetadata({ params }: ChapterPageProps) {
   const session = await getSessionOrNotFound({ params })
@@ -33,6 +34,8 @@ export async function generateMetadata({ params }: ChapterPageProps) {
 
 export default async function Page({ params }: ChapterPageProps) {
   const chapter = await getChapterOrNotFound({ params })
+  const document = await data.getPieceDocument(chapter)
+
   const slides = await getChapterAttachments(chapter, FileType.slide)
   const exercises = await getChapterAttachments(chapter, FileType.exercise)
   const questions = await getChapterAttachments(chapter, FileType.quiz)
@@ -48,11 +51,24 @@ export default async function Page({ params }: ChapterPageProps) {
       </CollapsibleSection>
     )
 
-  const Document = () => (
-    <div className="flex flex-col justify-start">
-      <PieceDocument piece={chapter} />
-    </div>
-  )
+  const Document = async ({ document }: { document: FileBuffer }) => {
+    const images = await data.getPieceAttachmentList(chapter, FileType.image)
+    const chapterImageMap = new Map(images.map((ref) => [ref.filename, ref]))
+    const { body } = splitMarkdownPreamble(document.buffer.toString())
+    return (
+      <div className="flex flex-col justify-start">
+        <div className="bg-card rounded relative">
+          <div className="mx-5 py-5">
+            <MdxDocument
+              text={body}
+              imageMap={chapterImageMap}
+              className="bg-card rounded relative"
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const Exercises = () =>
     exercises.length > 0 && (
@@ -98,7 +114,7 @@ export default async function Page({ params }: ChapterPageProps) {
     <div className="flex flex-col gap-4 pt-2">
       <Quiz />
       <Slides />
-      <Document />
+      {document && <Document document={document} />}
       <Exercises />
     </div>
   )
@@ -114,12 +130,12 @@ const QuestionError = ({ quiz }: { quiz: FileReference }) => {
   )
 }
 
-export const generateStaticParams = async () => {
-  const course = await data.getPiece([env.COURSE_ID])
-  if (!course) {
-    return []
-  }
-  return (await data.getAllIdpaths(course.idpath))
-    .filter((path) => path.length === 4)
-    .map(([course, part, session, chapter]) => ({ course, part, session, chapter }))
-}
+// export const generateStaticParams = async () => {
+//   const course = await data.getPiece([env.COURSE_ID])
+//   if (!course) {
+//     return []
+//   }
+//   return (await data.getAllIdpaths(course.idpath))
+//     .filter((path) => path.length === 4)
+//     .map(([course, part, session, chapter]) => ({ course, part, session, chapter }))
+// }

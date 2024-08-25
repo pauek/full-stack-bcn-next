@@ -23,4 +23,4 @@ export default async function Page({ params }: SessionPageProps) {
   )
 }
 
-export const generateStaticParams = _generateStaticParams
+// export const generateStaticParams = _generateStaticParams

@@ -25,6 +25,7 @@ import { QuestionError } from "@/components/QuestionError"
 import MdxDocument from "@/components/mdx/MdxDocument"
 import { FileBuffer, FileReference } from "@/lib/data/data-backend"
 import { splitMarkdownPreamble } from "@/lib/utils"
+import { env } from "@/lib/env.mjs"
 
 /// Pages
 
@@ -52,12 +53,12 @@ async function CoursePage({ piece }: { piece: ContentPiece }) {
   )
 }
 
-async function PartPage({ piece }: { piece: ContentPiece }) {
+async function PartPage({ piece: { children } }: { piece: ContentPiece }) {
   return (
     <div className="flex-1 mt-4">
       <div className="flex flex-wrap justify-center gap-2 bg-background py-3">
-        {piece?.children &&
-          piece.children.map((session) => (
+        {children &&
+          children.map((session) => (
             <SessionCard key={session.idpath.join("/")} session={session} />
           ))}
       </div>
@@ -278,4 +279,44 @@ export default async function Page({ params }: Props) {
   } else {
     return piecePage(piece)
   }
+}
+
+export const generateStaticParams = async () => {
+  const course = await data.getPiece([env.COURSE_ID])
+  if (!course) {
+    return []
+  }
+  const idpaths = await data.getAllIdpaths(course.idpath)
+  const params: { path: string[] }[] = []
+  for (const idpath of idpaths) {
+    const piece = await data.getPiece(idpath)
+    if (piece === null) {
+      console.warn(`WARNING: getAllIdpaths returns "${idpath.join("/")}" which is not from a piece`)
+      continue
+    }
+    console.log(piece.metadata)
+    if (piece.metadata.hidden) {
+      console.log(`Skipping hidden piece: ${piece.idpath.join("/")}`)
+      continue
+    }
+    params.push({ path: piece.idpath })
+
+    if (await data.pieceHasDoc(piece)) {
+      params.push({ path: [...piece.idpath, ".doc"] })
+    }
+    const slides = await data.getPieceAttachmentList(piece, FileType.slide)
+    if (slides.length > 0) {
+      params.push({ path: [...piece.idpath, ".slides"] })
+    }
+    const exercises = await data.getPieceAttachmentList(piece, FileType.exercise)
+    if (exercises.length > 0) {
+      params.push({ path: [...piece.idpath, ".exercises"] })
+    }
+    const questions = await data.getPieceAttachmentList(piece, FileType.quiz)
+    if (questions.length > 0) {
+      params.push({ path: [...piece.idpath, ".quiz"] })
+    }
+  }
+
+  return params
 }
