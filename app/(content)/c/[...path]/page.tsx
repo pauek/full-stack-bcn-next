@@ -294,7 +294,6 @@ export const generateStaticParams = async () => {
       console.warn(`WARNING: getAllIdpaths returns "${idpath.join("/")}" which is not from a piece`)
       continue
     }
-    console.log(piece.metadata)
     if (piece.metadata.hidden) {
       console.log(`Skipping hidden piece: ${piece.idpath.join("/")}`)
       continue
