@@ -6,12 +6,23 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileType } from "@/data/schema"
 import { ContentPiece } from "@/lib/adt"
 import data from "@/lib/data"
-import { pieceUrlPath } from "@/lib/urls"
+import { attachmentUrl, pieceUrlPath } from "@/lib/urls"
 import { TabsContent } from "@radix-ui/react-tabs"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { splitIdpath } from "./utils"
 import Exercise from "@/components/Exercise"
+import SlideGrid from "@/components/SlideGrid"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import { ErrorBoundary } from "react-error-boundary"
+import QuizQuestion from "@/components/QuizQuestion"
+import { QuestionError } from "@/components/QuestionError"
 
 async function DefaultPage({ piece }: { piece: ContentPiece }) {
   return (
@@ -67,21 +78,20 @@ async function ChapterPage({ piece }: { piece: ContentPiece }) {
   const document = await data.getPieceAttachmentList(piece, FileType.doc)
   const slides = await data.getPieceAttachmentList(piece, FileType.slide)
   const exercises = await data.getPieceAttachmentList(piece, FileType.exercise)
-  const quiz = await data.getPieceAttachmentList(piece, FileType.quiz)
+  const questions = await data.getPieceAttachmentList(piece, FileType.quiz)
 
   return (
     <div className="flex-1">
       <Tabs defaultValue="document" className="relative mt-4">
         <TabsList className="absolute right-0 -top-16">
           {document.length > 0 && <TabsTrigger value="document">Document</TabsTrigger>}
-          {slides.length > 0 && <TabsTrigger value="slides">Slides</TabsTrigger>}
           {exercises.length > 0 && <TabsTrigger value="exercises">Exercises</TabsTrigger>}
-          {quiz.length > 0 && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
+          {slides.length > 0 && <TabsTrigger value="slides">Slides</TabsTrigger>}
+          {questions.length > 0 && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
         </TabsList>
         <TabsContent value="document">
           <PieceDocument piece={piece} />
         </TabsContent>
-        <TabsContent value="slides">Slides</TabsContent>
         <TabsContent value="exercises">
           <div className="flex flex-col gap-4">
             {exercises.map(async (exercise, index) => (
@@ -89,7 +99,34 @@ async function ChapterPage({ piece }: { piece: ContentPiece }) {
             ))}
           </div>
         </TabsContent>
-        <TabsContent value="quiz">Quiz</TabsContent>
+        <TabsContent value="slides">
+          <div className="bg-background p-4 rounded">
+            <SlideGrid slides={slides.map(attachmentUrl)} />
+          </div>
+        </TabsContent>
+        <TabsContent value="quiz">
+          <div className="w-full h-full flex flex-row justify-center">
+            <Carousel
+              className="w-full h-full flex flex-col justify-center max-w-[38em] pt-[1em]"
+              orientation="horizontal"
+              opts={{ loop: true, duration: 15 }}
+            >
+              <CarouselContent>
+                {questions.map(async (quiz, index) => (
+                  <CarouselItem key={quiz.hash} className="h-full flex flex-col justify-center">
+                    <ErrorBoundary fallback={<QuestionError quiz={quiz} />}>
+                      <QuizQuestion index={index + 1} chapter={piece} quiz={quiz} />
+                    </ErrorBoundary>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="hidden md:block">
+                <CarouselPrevious />
+                <CarouselNext />
+              </div>
+            </Carousel>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   )

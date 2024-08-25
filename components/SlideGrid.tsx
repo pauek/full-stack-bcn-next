@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { useState } from "react"
 import SlideViewer from "./SlideViewer"
+import { cn } from "@/lib/utils"
 
 type Props = {
   slides: Array<string>
@@ -35,10 +36,10 @@ export default function SlideGrid({ slides }: Props) {
       )}
       <div className="max-w-[54rem] m-auto">
         <div
-          className={
-            `mx-5 grid xl:grid-cols-8 lg:grid-cols-6 ` +
-            `md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2`
-          }
+          className={cn(
+            "grid xl:grid-cols-8 lg:grid-cols-6",
+            "md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2"
+          )}
         >
           {slides &&
             slides.map((url, i: number) => (
