@@ -81,6 +81,18 @@ export const syncWithDatabase = async (tree: ContentPiece): Promise<number> => {
     // If this particular hash is already in the database, we don't need to do anything, since
     // the hash depends recuersively on all the children and attachments.
     if (await dbPieceHashExists(hash(piece))) {
+      /* 
+      
+        FIXME!!
+
+        Even if the piece exists, if could be that the hasnmap doesn't reflect that, so 
+        we should change the hashmap unconditionally. 
+
+        This happened because I made a change that was an "undo" of another change, so 
+        then it happened that the piece was detected to be in the database, but the hashmap
+        wasn't changed.
+         
+      */
       return
     }
 
@@ -202,7 +214,7 @@ showExecutionTime(async () => {
     console.log(`${metadataChanges} changed pieces.`)
   }
   console.log(tree.hash)
-  
+
   if (cliArgs.dryRun) {
     console.log(chalk.bgYellow("DRY RUN: nothing was written to disk."))
   }
