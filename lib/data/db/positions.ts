@@ -38,9 +38,14 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
 
   for (const mapPos of await mapPositionsForPieces()) {
     const { piece, idpath, pieceHash, level, piece: { metadata } } = mapPos
-    const { index, mapPosition } = metadata
+    const { hidden, index, mapPosition } = metadata
+
+    if (hidden) {
+      continue
+    }
     if (!mapPosition) {
-      throw new Error(`Missing mapPosition for ${piece.name}`)
+      console.error(`getMapPositionsExtended: warning: no mapPosition for ${piece.name}`)
+      continue
     }
 
     // Children
@@ -52,7 +57,7 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
       hash: pieceHash,
       idpath,
       level,
-      rectangle: mapPosition ,
+      rectangle: mapPosition,
       children: childrenHashes,
     }
     positions.push(pos)
