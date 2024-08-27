@@ -3,7 +3,9 @@
 [X] - El mapa siemrpe está presente
 [X] - Workflow: `bun dev`, `bun sync`, `bun build`, `bun start`
 [X] - Sobreescribir el comando de build en Vercel
+[X] - Sync 99% correcto
 
+[ ] - El campo "hidden" de los pieces debe estar en el hashmap
 [ ] - Normalizar los rectángulos al redimensionarlos 
       (si no falla hover y clicks al tener width < 0 || height < 0)
 [ ] - Crear páginas para los ejercicios y arreglar links desde el mapa
