@@ -79,16 +79,6 @@ export const rectIntersectsRect = (rect: IRectangle, bounds: IRectangle): boolea
   )
 }
 
-export const getKnobPositions = (rect: IRectangle): Point[] => {
-  const { left, top, width, height } = rect
-  return [
-    { x: left, y: top + height / 2 }, // left
-    { x: left + width / 2, y: top }, // top
-    { x: left + width, y: top + height / 2 }, // right
-    { x: left + width / 2, y: top + height }, // bottom
-  ]
-}
-
 export const rectangleUnion = (a: IRectangle, b: IRectangle): IRectangle => {
   const left = Math.min(a.left, b.left)
   const top = Math.min(a.top, b.top)

@@ -1,7 +1,6 @@
 import {
   checkRectangle,
   eventPoint,
-  getKnobPositions,
   IRectangle,
   Point,
   pointToString,
@@ -20,7 +19,6 @@ export const MAP_MAX_WIDTH = 4000
 export const MAP_MAX_HEIGHT = 4000
 export const MIN_SCALE = 0.25
 export const MAX_SCALE = 3
-const KNOB_WIDTH = 8
 
 interface CanvasAdapter<ItemType extends RectangularItem> {
   loadItems: () => Promise<ItemType[]>
@@ -64,14 +62,6 @@ export class CanvasController<ItemType extends RectangularItem> {
   dragging: null | {
     click: Point
     origins: Map<ItemType, Point>
-    updatedIndices: Set<number>
-  } = null
-
-  resizing: null | {
-    click: Point
-    initial: IRectangle
-    item: ItemType
-    knob: number
     updatedIndices: Set<number>
   } = null
 
@@ -282,37 +272,6 @@ export class CanvasController<ItemType extends RectangularItem> {
     }
   }
 
-  knobRectangle(x: number, y: number, knob: number): IRectangle {
-    let left = x - KNOB_WIDTH / 2
-    let top = y - KNOB_WIDTH / 2
-    let width = KNOB_WIDTH
-    let height = KNOB_WIDTH
-
-    if (knob === 1 || knob === 3) {
-      top -= KNOB_WIDTH
-      height *= 3
-    } else if (knob === 2 || knob === 4) {
-      left -= KNOB_WIDTH
-      width *= 3
-    }
-
-    return { left, top, width, height }
-  }
-
-  mouseWithinKnob(item: ItemType): number {
-    return -1 // Resizing is disabled for now
-    const positions = getKnobPositions(item.rectangle)
-    for (let i = 0; i < positions.length; i++) {
-      const pos = positions[i]
-      const { x, y } = pos
-      const knobRect = this.knobRectangle(x, y, i + 1)
-      if (pointWithinRect(this.pointer, knobRect)) {
-        return i + 1
-      }
-    }
-    return -1
-  }
-
   paintSelected(ctx: CanvasRenderingContext2D, item: ItemType) {
     const { left, top, width, height } = item.rectangle
     if (this.scale < 0.2) {
@@ -325,28 +284,6 @@ export class CanvasController<ItemType extends RectangularItem> {
       ctx.roundRect(left, top, width, height, height / 2)
       ctx.closePath()
       ctx.stroke()
-    }
-  }
-
-  paintKnobs(ctx: CanvasRenderingContext2D, item: ItemType) {
-    const paintKnob = (x: number, y: number, knob: number) => {
-      const knobRect = this.knobRectangle(x, y, knob)
-
-      const mouseInside = pointWithinRect(this.pointer, knobRect)
-      const dragging = this.resizing && this.resizing.knob === knob
-
-      const { left, top, width, height } = knobRect
-      ctx.beginPath()
-      ctx.roundRect(left, top, width, height, KNOB_WIDTH / 2)
-      ctx.closePath()
-      ctx.fillStyle = dragging || mouseInside ? "white" : "blue"
-      ctx.fill()
-    }
-
-    const knobPositions = getKnobPositions(item.rectangle)
-    for (let i = 0; i < knobPositions.length; i++) {
-      const { x, y } = knobPositions[i]
-      paintKnob(x, y, i + 1)
     }
   }
 
@@ -455,10 +392,6 @@ export class CanvasController<ItemType extends RectangularItem> {
       for (const rect of this.selected) {
         this.paintSelected(ctx, rect)
       }
-      // Resizing is disabled for now
-      // if (this.selected.length === 1) {
-      //   this.paintKnobs(ctx, this.selected[0])
-      // }
     }
 
     if (this.overRect) {
@@ -580,78 +513,6 @@ export class CanvasController<ItemType extends RectangularItem> {
     this.dragging = null
   }
 
-  // Resizing (WARNING: RESIZING IS DISABLED FOR NOW)
-
-  startResizing(click: Point, knob: number) {
-    if (this.selected.size === 0) {
-      return
-    }
-    const [first] = this.selected.values()
-    this.resizing = {
-      click,
-      initial: { ...first.rectangle }, // copy!
-      item: first,
-      knob,
-      updatedIndices: new Set<number>(),
-    }
-  }
-
-  doResizing(point: Point) {
-    if (!this.resizing) {
-      return
-    }
-
-    const {
-      click,
-      initial,
-      item: { rectangle },
-      knob,
-    } = this.resizing
-    const clientDiff = ptSub(point, click)
-    const modelDiff = ptMul(clientDiff, 1 / this.scale)
-    switch (knob) {
-      case 1: {
-        // left
-        rectangle.left = snap(initial.left + modelDiff.x, 10)
-        rectangle.width = snap(initial.width - modelDiff.x, 10)
-        break
-      }
-      case 2: {
-        // top
-        rectangle.top = snap(initial.top + modelDiff.y, 10)
-        rectangle.height = snap(initial.height - modelDiff.y, 10)
-        break
-      }
-      case 3: {
-        // right
-        rectangle.width = snap(initial.width + modelDiff.x, 10)
-        break
-      }
-      case 4: {
-        // bottom
-        rectangle.height = snap(initial.height + modelDiff.y, 10)
-        break
-      }
-    }
-
-    const updated = this.updateParents()
-    this.resizing.updatedIndices = setUnion(this.resizing.updatedIndices, updated)
-  }
-
-  endResizing() {
-    if (!this.resizing) {
-      return
-    }
-    const updatedIndices = this.updateParents()
-    this.resizing.updatedIndices = setUnion(this.resizing.updatedIndices, updatedIndices)
-    const updated: ItemType[] = []
-    for (const index of this.resizing.updatedIndices) {
-      updated.push(this.items[index])
-    }
-    this.adapter.saveItems([this.resizing.item, ...updated])
-    this.resizing = null
-  }
-
   // Rubberbanding
 
   startRubberbanding(point: Point) {
@@ -704,10 +565,7 @@ export class CanvasController<ItemType extends RectangularItem> {
 
   onMouseOrTouchDown(point: Point, shiftKey: boolean) {
     if (this.selected.size > 0) {
-      const knob = this.mouseWithinKnob(this.selected.values().next().value)
-      if (knob != -1) {
-        this.startResizing(point, knob)
-      } else if (this.overRect) {
+      if (this.overRect) {
         if (shiftKey) {
           if (this.selected.has(this.overRect)) {
             this.selected.delete(this.overRect)
@@ -743,8 +601,6 @@ export class CanvasController<ItemType extends RectangularItem> {
   onMouseOrTouchMove(point: Point) {
     if (this.rubberbanding) {
       this.doRubberbanding(point)
-    } else if (this.resizing) {
-      this.doResizing(point)
     } else if (this.dragging) {
       this.doDragging(point)
     } else if (this.panning) {
@@ -762,8 +618,6 @@ export class CanvasController<ItemType extends RectangularItem> {
   onMouseOrTouchUp() {
     if (this.rubberbanding) {
       this.endRubberbanding()
-    } else if (this.resizing) {
-      this.endResizing()
     } else if (this.dragging) {
       this.endDragging()
     } else if (this.panning) {
