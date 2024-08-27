@@ -32,7 +32,7 @@ import "@/lib/env-config"
 import { FileType } from "@/data/schema"
 import { ContentPiece, hash, pieceLevelFromChildren, setHash } from "@/lib/adt"
 import { closeConnection } from "@/lib/data/db/db"
-import { dbPieceHashExists, insertPiece, insertPieceHashmap } from "@/lib/data/db/insert"
+import { dbPieceHashExists, insertPiece, insertPieceHashmap as dbInsertHashmap } from "@/lib/data/db/insert"
 import { getAllPieceAttachments } from "@/lib/data/files/attachments"
 import { writeStoredHash } from "@/lib/data/files/hashes"
 import {
@@ -47,6 +47,7 @@ import { childrenHashes, hashPiece } from "@/lib/data/hashing"
 import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 import { insertFiles } from "./lib/lib"
+import { dbGetHashmapForIdpath, dbUpdateHashmap } from "@/lib/data/db/hashmaps"
 
 const cliArgs = {
   forcedUpdate: false,
@@ -63,9 +64,10 @@ const parseOption = (args: string[], long: string, short: string): boolean =>
  *
  * Also shows the hash and idpath of the piece on the screen.
  */
-export const syncWithDatabase = async (tree: ContentPiece): Promise<number> => {
-  let numChanges = 0
-  
+export const syncWithDatabase = async (tree: ContentPiece) => {
+  let contentChanges = 0
+  let hashmapChanges = 0
+
   // NOTE(pauek): Process 'hidden' pieces anyway. We will filter them out
   // at the last moment before showing them to the user.
 
@@ -73,26 +75,14 @@ export const syncWithDatabase = async (tree: ContentPiece): Promise<number> => {
   const _updatePiece = async (piece: ContentPiece) => {
     console.log(`${hash(piece)} ${piece.idpath.join("/")}`)
     await insertPiece(piece)
-    await insertPieceHashmap(piece)
+    await dbInsertHashmap(piece)
     await insertFiles(piece)
   }
 
-  const _sync = async (piece: ContentPiece) => {
+  const _syncContent = async (piece: ContentPiece) => {
     // If this particular hash is already in the database, we don't need to do anything, since
     // the hash depends recuersively on all the children and attachments.
     if (await dbPieceHashExists(hash(piece))) {
-      /* 
-      
-        FIXME!!
-
-        Even if the piece exists, if could be that the hasnmap doesn't reflect that, so 
-        we should change the hashmap unconditionally. 
-
-        This happened because I made a change that was an "undo" of another change, so 
-        then it happened that the piece was detected to be in the database, but the hashmap
-        wasn't changed.
-         
-      */
       return
     }
 
@@ -106,17 +96,35 @@ export const syncWithDatabase = async (tree: ContentPiece): Promise<number> => {
     // Insert the piece
     try {
       await _updatePiece(piece)
-      numChanges++
+      contentChanges++
     } catch (e) {
       console.error(`Error updating piece ${piece.idpath.join("/")}: ${e}`)
     }
+  }
 
+  const _sync = async (piece: ContentPiece) => {
+    // 1. First, update the content
+    await _syncContent(piece)
 
+    // 2. Go to the hashmap and look for the idpath. 
+    const hashmap = await dbGetHashmapForIdpath(piece.idpath)
+    if (!hashmap) {
+      // a) new idpath
+      await dbInsertHashmap(piece)
+      hashmapChanges++
+    } else if (hashmap.pieceHash !== hash(piece)) {
+      // b) change of hash
+      await dbUpdateHashmap(piece.idpath, hash(piece))
+      hashmapChanges++
+    } else {
+      // c) hash is the same
+      return
+    }
   }
 
   await _sync(tree)
 
-  return numChanges
+  return { contentChanges, hashmapChanges }
 }
 
 /**
@@ -205,26 +213,34 @@ showExecutionTime(async () => {
   if (cliArgs.forcedUpdate) {
     console.log(chalk.bgYellow("FORCED UPDATE: all pieces will be processed."))
   }
+  console.log() // just the newline
 
   const { tree, numChanges: metadataChanges } = await syncFileTreeMetadata()
 
   if (metadataChanges === 0) {
-    console.log(`No metadata changes.`)
+    console.log(`No metadata changes.\n`)
   } else {
-    console.log(`${metadataChanges} changed pieces.`)
+    console.log(`${metadataChanges} changed pieces.\n`)
   }
-  console.log(tree.hash)
 
   if (cliArgs.dryRun) {
     console.log(chalk.bgYellow("DRY RUN: nothing was written to disk."))
   }
 
-  const dbChanges = await syncWithDatabase(tree)
-  if (dbChanges === 0) {
-    console.log(`No database changes.`)
+  const { contentChanges, hashmapChanges } = await syncWithDatabase(tree)
+  if (contentChanges === 0 && hashmapChanges === 0) {
+    console.log(`No database changes.\n`)
   } else {
-    console.log(`${dbChanges} database changes.`)
+    if (contentChanges > 0) {
+      console.log(`${contentChanges} database content changes.`)
+    }
+    if (hashmapChanges > 0) {
+      console.log(`${hashmapChanges} database hashmap changes.`)
+    }
+    console.log() // just the newline
   }
+
+  console.log(`Root: ${chalk.green(hash(tree))}`)
 
   await closeConnection()
 })
