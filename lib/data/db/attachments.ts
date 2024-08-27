@@ -1,7 +1,7 @@
 import * as schema from "@/data/schema"
 import { FileType } from "@/data/schema"
 import { ContentPiece, hash } from "@/lib/adt"
-import { base64ToBytes } from "@/lib/utils"
+import { base64ToBytes, delay } from "@/lib/utils"
 import { and, eq } from "drizzle-orm"
 import { FileBuffer, FileContent, FileReference } from "../data-backend"
 import { Hash } from "../hashing"
@@ -15,7 +15,9 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   }
   const content = await getFileContent(result.hash)
   if (content === null) {
-    console.warn(`Content piece "${piece.idpath.join("/")}" [${hash(piece)}] has a dangling document!
+    console.warn(`Content piece "${piece.idpath.join("/")}" [${hash(
+      piece
+    )}] has a dangling document!
       [file_hash = ${result.hash}]
       [pieceHash = ${hash(piece)}]
   `)

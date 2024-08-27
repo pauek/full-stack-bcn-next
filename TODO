@@ -4,11 +4,11 @@
 [X] - Workflow: `bun dev`, `bun sync`, `bun build`, `bun start`
 [X] - Sobreescribir el comando de build en Vercel
 [X] - Sync 99% correcto
+[X] - Quitar el código de redimensionado.
+[X] - Loading para cualquier parte del contenido
 
 [ ] - El campo "hidden" de los pieces debe estar en el hashmap
-[ ] - Normalizar los rectángulos al redimensionarlos 
-      (si no falla hover y clicks al tener width < 0 || height < 0)
-[ ] - Crear páginas para los ejercicios y arreglar links desde el mapa
+[ ] - Page para ejercicios individuales y links desde el mapa
 [ ] - Permitir poner "mapPosition" en quizzes y slides (múltiples ficheros)
 [ ] - Movimientos jerárquicos:
       [ ] - Las coordenadas de los hijos son relativas a los padres

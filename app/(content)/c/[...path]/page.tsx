@@ -78,9 +78,12 @@ async function SessionPage({ piece }: { piece: ContentPiece }) {
     <div className="flex-1">
       <div className="flex flex-col gap-1.5 py-3">
         {piece?.children &&
-          piece.children.map((chapter) => (
-            chapter.metadata.hidden || <ChapterCard key={chapter.idpath.join("/")} chapter={chapter} />
-          ))}
+          piece.children.map(
+            (chapter) =>
+              chapter.metadata.hidden || (
+                <ChapterCard key={chapter.idpath.join("/")} chapter={chapter} />
+              )
+          )}
       </div>
     </div>
   )

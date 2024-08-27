@@ -5,7 +5,7 @@ import { basename, join, join as pathJoin } from "path"
 import { FileBuffer, FileReference } from "../data-backend"
 import * as utils from "./utils"
 import { getDiskpathByIdpath } from "./hashmaps"
-import { splitMarkdownPreamble } from "@/lib/utils"
+import { delay, splitMarkdownPreamble } from "@/lib/utils"
 import { writeFile } from "fs/promises"
 
 export const pieceNumSlides = async (piece: ContentPiece) => {

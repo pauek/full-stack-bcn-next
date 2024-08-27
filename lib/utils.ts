@@ -54,7 +54,11 @@ export const showExecutionTime = async <T>(func: () => Promise<T>, msg?: string)
   console.log(chalk.yellow(`\n[${msg ? `${msg}: ` : ``}${(end - start) / 1000}s]`))
 }
 
-export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export const delay = async (ms: number) => {
+  if (process.env.NODE_ENV === "development") {
+    await new Promise((resolve) => setTimeout(resolve, ms))
+  }
+}
 
 export const chunkArray = (array: Array<any>, chunkSize: number) => {
   const result = []
@@ -125,7 +129,7 @@ export const getMetadataFromMarkdownPreamble = (preamble: string) => {
 export type Color = {
   r: number
   g: number
-  b: number,
+  b: number
   a: number
 }
 export const interpolateColor = (a: Color, b: Color, t: number) => {
@@ -133,7 +137,7 @@ export const interpolateColor = (a: Color, b: Color, t: number) => {
     r: a.r + (b.r - a.r) * t,
     g: a.g + (b.g - a.g) * t,
     b: a.b + (b.b - a.b) * t,
-    a: a.a + (b.a - a.a) * t
+    a: a.a + (b.a - a.a) * t,
   }
 }
 
