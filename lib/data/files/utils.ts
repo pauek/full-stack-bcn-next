@@ -1,6 +1,6 @@
 import { FileType } from "@/data/schema"
 import { ContentPiece, hash, UNKNOWN } from "@/lib/adt"
-import { CONTENT_ROOT, env } from "@/lib/env.mjs"
+import { env } from "@/lib/env.mjs"
 import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
 import { Dirent } from "fs"
 import { readdir } from "fs/promises"
@@ -11,6 +11,7 @@ import { readStoredHash } from "./hashes"
 import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readMetadata } from "./metadata"
 import { getPiece } from "./pieces"
+import { CONTENT_ROOT } from "@/lib/env-files"
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true })
 

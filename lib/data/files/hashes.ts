@@ -1,4 +1,4 @@
-import { CONTENT_ROOT } from "@/lib/env.mjs"
+import { CONTENT_ROOT } from "@/lib/env-files"
 import { readFile, writeFile } from "fs/promises"
 import { join } from "path"
 
