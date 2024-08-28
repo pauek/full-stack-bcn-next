@@ -2,7 +2,7 @@ import { env } from "@/lib/env.mjs"
 import { readFile, writeFile } from "fs/promises"
 import { basename, join } from "path"
 import { childrenHashes, HashItem, hashPiece } from "../hashing"
-import { HASH_MAP_FILE, readStoredHash } from "./hashes"
+import { getHashmapFilepath, readStoredHash } from "./hashes"
 import { filesWalkContentPieces } from "./utils"
 import { pieceLevelFromChildren } from "@/lib/adt"
 
@@ -59,7 +59,7 @@ export const hashmapRemove = (hash: string | null) => {
 }
 
 export const readGlobalHashmap = async (): Promise<boolean> => {
-  const diskpath = join(process.cwd(), HASH_MAP_FILE)
+  const diskpath = join(process.cwd(), getHashmapFilepath())
   const buffer = await readFile(diskpath)
   const lines = buffer
     .toString()
@@ -83,7 +83,7 @@ export const writeGlobalHashmap = async () => {
   if (!globalHashmaps.changes) {
     return
   }
-  const diskpath = join(process.cwd(), HASH_MAP_FILE)
+  const diskpath = join(process.cwd(), getHashmapFilepath())
   const lines: string[] = []
 
   const { entries, deleted } = globalHashmaps

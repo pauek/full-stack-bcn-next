@@ -1,5 +1,6 @@
 import { FileType } from "@/data/schema"
 import { ContentPiece, hash, UNKNOWN } from "@/lib/adt"
+import { getContentRoot } from "@/lib/env-files"
 import { env } from "@/lib/env.mjs"
 import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
 import { Dirent } from "fs"
@@ -11,7 +12,6 @@ import { readStoredHash } from "./hashes"
 import { getDiskpathByHash, getDiskpathByIdpath } from "./hashmaps"
 import { readMetadata } from "./metadata"
 import { getPiece } from "./pieces"
-import { CONTENT_ROOT } from "@/lib/env-files"
 
 export const readDirWithFileTypes = (path: string) => readdir(path, { withFileTypes: true })
 
@@ -268,7 +268,7 @@ export const findDiskpathFromIdpath = async (idpath: string[]): Promise<string |
   }
 
   // Iterate over subdirectories
-  let currDiskpath: string = CONTENT_ROOT
+  let currDiskpath: string = getContentRoot()
   for (const id of idpath) {
     const subdir = await findSubdirWithID(currDiskpath, id)
     if (subdir === null) {

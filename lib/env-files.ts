@@ -1,10 +1,10 @@
 const _envVar = (variable: string) => {
   const value = process.env[variable]
-  if (value === undefined) {
-    throw new Error(`Missing ${variable} in environment`)
+  if (value === undefined && process.env.BACKEND === "files") {
+    throw new Error(`Environment variable ${variable} is required in files mode.`)
   }
   return value
 }
 
 // Outside t3-oss/env-nextjs:
-export const CONTENT_ROOT = _envVar("CONTENT_ROOT")
+export const getContentRoot = () => _envVar("CONTENT_ROOT") || "."
