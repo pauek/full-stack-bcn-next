@@ -16,7 +16,7 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
   const content = await getFileContent(result.hash)
   if (content === null) {
     console.warn(`Content piece "${piece.idpath.join("/")}" [${hash(
-      piece
+      piece,
     )}] has a dangling document!
       [file_hash = ${result.hash}]
       [pieceHash = ${hash(piece)}]
@@ -31,7 +31,7 @@ export const getPieceDocument = async (piece: ContentPiece): Promise<FileBuffer 
 
 export const getPieceAttachmentList = async (
   piece: ContentPiece,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<FileReference[]> => {
   const results = await getPieceFilesByFiletype(hash(piece), filetype)
   if (!results) {
@@ -44,7 +44,7 @@ export const getPieceAttachmentList = async (
 }
 
 export const getPieceAttachmentTypes = async (
-  piece: ContentPiece
+  piece: ContentPiece,
 ): Promise<Set<schema.FileType>> => {
   const results = await db
     .selectDistinct({ filetype: schema.attachments.filetype })
@@ -103,7 +103,7 @@ export const getPieceCoverImageData = async (piece: ContentPiece): Promise<FileB
 export const getPieceFileData = async (
   piece: ContentPiece,
   filename: string,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ): Promise<Buffer | null> => {
   const [result] = await db
     .select({ data: schema.files.data })
@@ -114,8 +114,8 @@ export const getPieceFileData = async (
       and(
         eq(schema.pieces.pieceHash, hash(piece)),
         eq(schema.attachments.filename, filename),
-        eq(schema.attachments.filetype, filetype)
-      )
+        eq(schema.attachments.filetype, filetype),
+      ),
     )
     .limit(1)
   if (!result || !result.data) {

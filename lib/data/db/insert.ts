@@ -37,13 +37,13 @@ export const fileExists = async (hash: string) => {
 export const attachmentExists = async (
   pieceHash: string,
   fileHash: string,
-  filetype: schema.FileType
+  filetype: schema.FileType,
 ) => {
   const found = await db.query.attachments.findFirst({
     where: and(
       eq(schema.attachments.pieceHash, pieceHash),
       eq(schema.attachments.fileHash, fileHash),
-      eq(schema.attachments.filetype, filetype)
+      eq(schema.attachments.filetype, filetype),
     ),
   })
   return found !== undefined
@@ -91,7 +91,7 @@ type FileInfo = {
 }
 export const insertFile = async (
   piece: ContentPiece,
-  { filename, filetype, diskpath }: FileInfo
+  { filename, filetype, diskpath }: FileInfo,
 ) => {
   try {
     const bytes = await readFile(diskpath)

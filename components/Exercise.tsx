@@ -27,7 +27,7 @@ export default async function Exercise({ index, chapter, exercise }: ExercisePro
           className={cn(
             "mx-2.5 lg:ml-5 mt-[.5em] w-[1.8em] h-[1.8em]",
             "flex flex-col justify-center items-center",
-            "bg-primary text-background font-bold rounded-full"
+            "bg-primary text-background font-bold rounded-full",
           )}
         >
           {index}

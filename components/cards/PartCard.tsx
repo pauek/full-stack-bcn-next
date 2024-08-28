@@ -21,7 +21,7 @@ export default async function PartCard({ piece }: { piece: ContentPiece }) {
               (session) =>
                 session.metadata.hidden || (
                   <SessionCard key={session.idpath.join("/")} session={session} />
-                )
+                ),
             )}
         </div>
       </div>

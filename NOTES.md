@@ -36,3 +36,27 @@ Se puede hacer todo junto en un walk:
 - Update metadata: levels, hashes, indices.
 - Accumulate what has changed.
 - Save hashmap at the end.
+
+# Entornos
+
+- Máquina local:
+
+  - `bun dev`, next.js (NODE_ENV=development)
+    - Edición del contenido (BACKEND=files), i a veces:
+      - Prueba con base de datos (BACKEND=db)
+  - `bun sync` NODE_ENV no afecta?
+    - Bases de datos: local "development", "preview", "production".
+      (Usar `bun -r ...`?)
+  - `bunx drizzle-kit ...` NODE_ENV no afecta?
+    - Bases de datos: local "development", "preview", "production".
+      (Usar `bun -r ...`)
+  - `bun run build`, next.js (NODE_ENV=production)
+    - Con ficheros (BACKEND=files)
+    - En la base de datos (BACKEND=db)
+      - Base de datos local ("development")
+      - Base de datos remota ("preview"). Por tanto
+
+- Vercel:
+  - `bun run build` NODE_ENV=production
+    - Con variables de entorno para "preview" (rama !== "main")
+    - Con variables de entorno para "production" (rama === "main")

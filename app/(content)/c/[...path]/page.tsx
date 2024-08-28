@@ -48,7 +48,7 @@ async function CoursePage({ piece }: { piece: ContentPiece }) {
       {piece?.children &&
         piece.children.map(
           (child) =>
-            child.metadata.hidden || <PartCard key={child.idpath.join("/")} piece={child} />
+            child.metadata.hidden || <PartCard key={child.idpath.join("/")} piece={child} />,
         )}
     </div>
   )
@@ -63,7 +63,7 @@ async function PartPage({ piece: { children } }: { piece: ContentPiece }) {
             (session) =>
               session.metadata.hidden || (
                 <SessionCard key={session.idpath.join("/")} session={session} />
-              )
+              ),
           )}
       </div>
     </div>
@@ -82,7 +82,7 @@ async function SessionPage({ piece }: { piece: ContentPiece }) {
             (chapter) =>
               chapter.metadata.hidden || (
                 <ChapterCard key={chapter.idpath.join("/")} chapter={chapter} />
-              )
+              ),
           )}
       </div>
     </div>

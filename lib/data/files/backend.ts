@@ -13,7 +13,7 @@ export const getAllAttachmentPaths = async (
   filetype: FileType,
 ): Promise<string[][]> => {
   const result: string[][] = []
-  await filesWalkContentPieces(rootIdpath, async (_,  piece) => {
+  await filesWalkContentPieces(rootIdpath, async (_, piece) => {
     const attachments = await getPieceAttachmentList(piece, filetype)
     for (const file of attachments) {
       result.push([...piece.idpath, file.filename])

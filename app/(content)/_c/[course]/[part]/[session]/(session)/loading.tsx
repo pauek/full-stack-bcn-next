@@ -1,5 +1,4 @@
 export default function Loading() {
-
   const ChapterSkeleton = () => (
     <div className="p-2 px-3 rounded flex flex-col bg-skeleton">
       <span className="text-[.65em] opacity-50 mr-3 text-transparent">CHAPTER X</span>

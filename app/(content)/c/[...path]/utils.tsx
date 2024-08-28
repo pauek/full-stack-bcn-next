@@ -28,7 +28,7 @@ export type AttachmentInfo = {
 }
 
 export const attachmentsMenuOptions = async (
-  piece: ContentPiece
+  piece: ContentPiece,
 ): Promise<Record<string, AttachmentInfo>> => {
   return {
     doc: { name: "Document", attachments: await data.getPieceAttachmentList(piece, FileType.doc) },

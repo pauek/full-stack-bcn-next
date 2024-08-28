@@ -31,7 +31,7 @@ export const hashAny = (x: any) => {
     hasher.update(
       Object.entries(x)
         .map(([field, value]) => hashAny(`${field}=${value}\n`))
-        .join("")
+        .join(""),
     )
   } else {
     throw `hash: Unsupported type ${typeof x}: ${JSON.stringify(x)}`
@@ -61,7 +61,7 @@ export type HashItem = {
 }
 export const hashPiece = async function (
   piece: ContentPiece,
-  childrenHashes: HashItem[]
+  childrenHashes: HashItem[],
 ): Promise<Hash> {
   //
   childrenHashes.sort((a, b) => a.id.localeCompare(b.id))
@@ -71,9 +71,9 @@ export const hashPiece = async function (
   // index: if we change the index, the hash should NOT change, because it only
   //    changes the position as a sibling the parent. The parent hash _will_ change,
   //    but the child's content is the same.
-  // 
+  //
   // hidden: That a piece is hidden also should NOT make the hash change.
-  // 
+  //
   const { id, hasDoc, numSlides, mapPosition } = piece.metadata
   const selectedMetadata = { id, hasDoc, numSlides, mapPosition }
 

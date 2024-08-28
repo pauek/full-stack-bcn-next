@@ -7,6 +7,7 @@
 [X] - Quitar el código de redimensionado.
 [X] - Loading para cualquier parte del contenido
 
+[ ] - El número de ejercicios sale mal en el preview.
 [ ] - El campo "hidden" de los pieces debe estar en el hashmap
 [ ] - Page para ejercicios individuales y links desde el mapa
 [ ] - Permitir poner "mapPosition" en quizzes y slides (múltiples ficheros)

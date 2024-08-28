@@ -1,5 +1,6 @@
 import mdx from "@next/mdx"
 import { env } from "./lib/env.mjs" // <--- IMPORTANT: Validate variables at build time
+import chalk from "chalk"
 
 const withMDX = mdx({
   // no options
@@ -25,6 +26,9 @@ const nextConfig = {
   },
   poweredByHeader: false,
 }
+
+// The "phase-production-build" is called two times, so we avoid printing the message twice
+console.log(`TURSO_URL = ${chalk.green(env.TURSO_URL)}\n`)
 
 const makeNextConfig = async (phase, { defaultConfig }) => {
   const config = { ...nextConfig }

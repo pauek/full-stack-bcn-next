@@ -26,7 +26,7 @@ const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) =>
     typeof height !== "number"
   ) {
     throw new Error(
-      `Invalid mapPosition for ${piece.idpath.join("/")}: ${JSON.stringify(metadata.mapPosition)}`
+      `Invalid mapPosition for ${piece.idpath.join("/")}: ${JSON.stringify(metadata.mapPosition)}`,
     )
   }
   return { left, top, width, height }
@@ -34,7 +34,7 @@ const checkMapPosition = (metadata: Record<string, any>, piece: ContentPiece) =>
 
 export const extendedMapPositionForPiece = async (
   piece: ContentPiece,
-  index: number
+  index: number,
 ): Promise<MapPosition<string> | null> => {
   const diskpath = await getDiskpathForPiece(piece)
   const metadata = await readMetadata(diskpath)

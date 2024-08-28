@@ -325,7 +325,7 @@ export class CanvasController<ItemType extends RectangularItem> {
       ctx,
       `bounds: ${left.toFixed(0)}, ${top.toFixed(0)}, ${width.toFixed(0)}, ${height.toFixed(0)}`,
       4,
-      0
+      0,
     )
   }
 
@@ -539,8 +539,8 @@ export class CanvasController<ItemType extends RectangularItem> {
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
     this.selected = new Set(
       this.items.filter(
-        (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
-      )
+        (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel),
+      ),
     )
   }
 
@@ -552,8 +552,8 @@ export class CanvasController<ItemType extends RectangularItem> {
     const rubberbandModel = this.rectClientToModel(this.rubberbanding.rect)
     this.selected = new Set(
       this.items.filter(
-        (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel)
-      )
+        (item) => item.level === 0 && rectIntersectsRect(item.rectangle, rubberbandModel),
+      ),
     )
     this.rubberbanding = null
   }

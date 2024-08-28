@@ -38,7 +38,7 @@ export default function SlideGrid({ slides }: Props) {
         <div
           className={cn(
             "grid xl:grid-cols-8 lg:grid-cols-6",
-            "md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2"
+            "md:grid-cols-6 sm:grid-cols-4 grid-cols-2 gap-2",
           )}
         >
           {slides &&

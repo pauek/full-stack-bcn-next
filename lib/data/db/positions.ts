@@ -37,7 +37,13 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
   const positions: MapPosition<string>[] = []
 
   for (const mapPos of await mapPositionsForPieces()) {
-    const { piece, idpath, pieceHash, level, piece: { metadata } } = mapPos
+    const {
+      piece,
+      idpath,
+      pieceHash,
+      level,
+      piece: { metadata },
+    } = mapPos
     const { hidden, index, mapPosition } = metadata
 
     if (hidden) {
@@ -80,7 +86,6 @@ export const getMapPositionsExtended = async (): Promise<MapPosition<number>[]> 
 
   // We sort the results here, instead of in the query (can't do it in Drizzle??)
   positions.sort((p1, p2) => p2.level - p1.level)
-
 
   // Now we need to convert the children from hashes to indices
   const maybeFind = (hash: string) => {

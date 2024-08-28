@@ -24,7 +24,7 @@ export default async function SessionCard({ session }: Props) {
           "h-full text-xs sm:text-sm",
           "flex flex-col relative items-stretch",
           "hover:border-foreground",
-          "bg-muted border rounded-md shadow shadow-foreground-50 m-1 overflow-clip"
+          "bg-muted border rounded-md shadow shadow-foreground-50 m-1 overflow-clip",
         )}
       >
         <div className="flex-1 relative">
@@ -50,7 +50,7 @@ export default async function SessionCard({ session }: Props) {
         <div
           className={cn(
             "w-[1.8em] h-[1.8em] absolute flex flex-col justify-center font-bold",
-            "items-center top-0.5 left-0.5 text-xs rounded-sm bg-card border"
+            "items-center top-0.5 left-0.5 text-xs rounded-sm bg-card border",
           )}
         >
           {index}

@@ -43,16 +43,17 @@ export const zRectangle = z.object({
   height: z.number(),
 })
 
-export const zMapPosition = (Z: ZodType) => z.object({
-  rectangle: zRectangle.optional(),
-  kind: z.union([z.literal("piece"), z.enum(FileTypes)]),
-  index: z.number(),
-  hash: z.string(),
-  name: z.string(),
-  idpath: z.array(z.string()),
-  level: z.number(),
-  children: z.array(Z).optional(),
-})
+export const zMapPosition = (Z: ZodType) =>
+  z.object({
+    rectangle: zRectangle.optional(),
+    kind: z.union([z.literal("piece"), z.enum(FileTypes)]),
+    index: z.number(),
+    hash: z.string(),
+    name: z.string(),
+    idpath: z.array(z.string()),
+    level: z.number(),
+    children: z.array(Z).optional(),
+  })
 
 // HAS-A Relation
 
@@ -68,7 +69,7 @@ export const relatedPieces = sqliteTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.parentHash, table.childHash] }),
-  })
+  }),
 )
 export const childPiecesRelations = relations(relatedPieces, ({ one }) => ({
   parent: one(pieces, {
@@ -103,12 +104,12 @@ export const AllAttachmentTypes = [
 
 export const FileTypeValues: [FileType, ...FileType[]] = Object.values(FileType) as [
   FileType,
-  ...FileType[]
+  ...FileType[],
 ]
 
 const FileTypes: [string, ...string[]] = FileTypeValues.map((type) => String(type)) as [
   string,
-  ...string[]
+  ...string[],
 ]
 
 export const fileTypeFromString = (filetype: string): FileType => {
@@ -169,7 +170,7 @@ export const attachments = sqliteTable(
     pk: primaryKey({
       columns: [table.pieceHash, table.fileHash, table.filetype],
     }),
-  })
+  }),
 )
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   piece: one(pieces, {
@@ -200,7 +201,7 @@ export const hashmap = sqliteTable(
   },
   (table) => ({
     hashIdx: index("hash_idx").on(table.pieceHash),
-  })
+  }),
 )
 export const hashmapRelations = relations(hashmap, ({ one }) => ({
   piece: one(pieces, {

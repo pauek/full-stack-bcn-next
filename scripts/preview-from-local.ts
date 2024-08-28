@@ -70,7 +70,7 @@ const createPreviewDatabase = async (dumpUrl: string) => {
 
 const getTokenForDatabase = async (database: string) => {
   const { jwt } = await turso.databases.createToken(database)
-  return jwt;
+  return jwt
 }
 
 // from https://regex101.com/library/oI0rR9?orderBy=MOST_POINTS&search=json

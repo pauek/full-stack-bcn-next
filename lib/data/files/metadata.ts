@@ -25,7 +25,7 @@ export const readMetadata = async (diskpath: string): Promise<ContentPieceMetada
 export const writeMetadata = async (dir: string, metadata: any) => {
   // Sort fields so that no extra git changes are generated
   const sortedMetadata = Object.fromEntries(
-    Object.entries(metadata).sort(([a], [b]) => a.localeCompare(b))
+    Object.entries(metadata).sort(([a], [b]) => a.localeCompare(b)),
   )
   const json = JSON.stringify(sortedMetadata, null, 2) // Pretty print
   const path = join(dir, METADATA_FILENAME)

@@ -42,7 +42,7 @@ export class MapPositionsAdapter {
   saveItems(positions: Item[]) {
     actionMapPositionsUpdate(positions)
       .then(
-        () => console.log("Updated:", positions) // TODO: better message
+        () => console.log("Updated:", positions), // TODO: better message
       )
       .catch((e) => {
         console.error(`Error updating positions: `, e) // TODO: show user

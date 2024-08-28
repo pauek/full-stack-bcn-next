@@ -27,12 +27,19 @@ Metadatos --> Base de Datos (repetidamente)
 
 */
 
-import "@/lib/env-config"
+// import { loadEnvConfig } from "@next/env"
+// loadEnvConfig(process.cwd()) // Load env as NextJS does
+
+console.log(`TURSO_URL = ${chalk.green(process.env.TURSO_URL)}\n`)
 
 import { FileType } from "@/data/schema"
 import { ContentPiece, hash, pieceLevelFromChildren, setHash } from "@/lib/adt"
 import { closeConnection } from "@/lib/data/db/db"
-import { dbPieceHashExists, insertPiece, insertPieceHashmap as dbInsertHashmap } from "@/lib/data/db/insert"
+import {
+  dbPieceHashExists,
+  insertPiece,
+  insertPieceHashmap as dbInsertHashmap,
+} from "@/lib/data/db/insert"
 import { getAllPieceAttachments } from "@/lib/data/files/attachments"
 import { writeStoredHash } from "@/lib/data/files/hashes"
 import {
@@ -106,7 +113,7 @@ export const syncWithDatabase = async (tree: ContentPiece) => {
     // 1. First, update the content
     await _syncContent(piece)
 
-    // 2. Go to the hashmap and look for the idpath. 
+    // 2. Go to the hashmap and look for the idpath.
     const hashmap = await dbGetHashmapForIdpath(piece.idpath)
     if (!hashmap) {
       // a) new idpath
@@ -190,7 +197,7 @@ export const syncFileTreeMetadata = async function (): Promise<{
       }
 
       return piece
-    }
+    },
   )
 
   // Write global hashmap after
@@ -207,13 +214,15 @@ showExecutionTime(async () => {
   cliArgs.dryRun = parseOption(args, "--dry-run", "-n")
   cliArgs.forcedUpdate = parseOption(args, "--force", "-f")
 
-  if (cliArgs.dryRun) {
-    console.log(chalk.bgYellow("DRY RUN: nothing will be written to disk."))
+  if (cliArgs.dryRun || cliArgs.forcedUpdate) {
+    if (cliArgs.dryRun) {
+      console.log(chalk.bgYellow("DRY RUN: nothing will be written to disk."))
+    }
+    if (cliArgs.forcedUpdate) {
+      console.log(chalk.bgYellow("FORCED UPDATE: all pieces will be processed."))
+    }
+    console.log() // just the newline to separate
   }
-  if (cliArgs.forcedUpdate) {
-    console.log(chalk.bgYellow("FORCED UPDATE: all pieces will be processed."))
-  }
-  console.log() // just the newline
 
   const { tree, numChanges: metadataChanges } = await syncFileTreeMetadata()
 

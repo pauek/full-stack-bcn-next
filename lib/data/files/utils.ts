@@ -1,6 +1,6 @@
 import { FileType } from "@/data/schema"
 import { ContentPiece, hash, UNKNOWN } from "@/lib/adt"
-import { env } from "@/lib/env.mjs"
+import { CONTENT_ROOT, env } from "@/lib/env.mjs"
 import { getMetadataFromMarkdownPreamble, splitMarkdownPreamble } from "@/lib/utils"
 import { Dirent } from "fs"
 import { readdir } from "fs/promises"
@@ -87,7 +87,7 @@ export const findCoverImageFilename = async (piece: ContentPiece) => {
 export const readAttachmentMetadata = async (
   idpath: string[],
   filename: string,
-  bytes: Buffer
+  bytes: Buffer,
 ): Promise<Record<string, any> | null> => {
   try {
     const { preamble } = splitMarkdownPreamble(bytes.toString())
@@ -105,7 +105,7 @@ export const readAttachmentMetadata = async (
 
 export const listPieceSubdir = async (
   diskpath: string,
-  filetype: FileType
+  filetype: FileType,
 ): Promise<FileReference[]> => {
   try {
     const typeInfo = fileTypeInfo[filetype]
@@ -143,7 +143,7 @@ export const okToSkipMissingHashes = async (func: (...args: any[]) => Promise<an
  */
 export const readPieceAtDiskpath = async (
   diskpath: string,
-  parentIdpath: string[]
+  parentIdpath: string[],
 ): Promise<ContentPiece> => {
   const metadata = await readMetadata(diskpath)
   return {
@@ -167,7 +167,7 @@ type PieceAndPath = {
 
 export const filesReadChildren = async (
   parent: ContentPiece,
-  diskpath: string
+  diskpath: string,
 ): Promise<PieceAndPath[]> => {
   const children: PieceAndPath[] = []
   const idToPath: Map<string, string> = new Map() // Check that no IDs in children are repeated
@@ -183,7 +183,7 @@ export const filesReadChildren = async (
         throw new Error(
           `INCONSISTENCY ERROR: children of ${parent.idpath.join("/")}` +
             ` the same ID: "${child.id}"!\n` +
-            `["${existingPath}" <=> "${childDiskpath}"]\n`
+            `["${existingPath}" <=> "${childDiskpath}"]\n`,
         )
       }
 
@@ -208,7 +208,7 @@ type IdAndPath = {
 }
 export const filesFindChildrenDiskpaths = async (
   diskpath: string,
-  parentIdpath: string[]
+  parentIdpath: string[],
 ): Promise<IdAndPath[]> => {
   const children: IdAndPath[] = []
   const childIdToDiskpath: Map<string, string> = new Map() // Check that no IDs in children are repeated
@@ -224,7 +224,7 @@ export const filesFindChildrenDiskpaths = async (
         throw new Error(
           `INCONSISTENCY ERROR: children of ${parentIdpath.join("/")}` +
             ` the same ID: "${childId}"!\n` +
-            `["${existingPath}" <=> "${childDiskpath}"]\n`
+            `["${existingPath}" <=> "${childDiskpath}"]\n`,
         )
       }
 
@@ -267,7 +267,7 @@ export const findDiskpathFromIdpath = async (idpath: string[]): Promise<string |
   }
 
   // Iterate over subdirectories
-  let currDiskpath: string = env.CONTENT_ROOT
+  let currDiskpath: string = CONTENT_ROOT
   for (const id of idpath) {
     const subdir = await findSubdirWithID(currDiskpath, id)
     if (subdir === null) {
@@ -280,7 +280,7 @@ export const findDiskpathFromIdpath = async (idpath: string[]): Promise<string |
 }
 
 export const getPieceAndPathWithChildren = async (
-  idpath: string[]
+  idpath: string[],
 ): Promise<PieceAndPath | null> => {
   let diskpath = await findDiskpathFromIdpath(idpath)
   if (diskpath === null) {

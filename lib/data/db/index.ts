@@ -39,6 +39,6 @@ export const backend: DataBackendBase = {
 
   getContentTree,
 
-  getMapPositionsExtended,  
+  getMapPositionsExtended,
   updateMapPositions,
 }

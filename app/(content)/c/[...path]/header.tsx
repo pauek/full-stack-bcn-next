@@ -27,10 +27,8 @@ const wordForIdpath = (idpath: string[]) => {
   }
 }
 
-
-
 interface HeaderProps {
-  piece: ContentPiece,
+  piece: ContentPiece
   attachments: Record<string, AttachmentInfo>
 }
 export const Header = ({ piece, attachments }: HeaderProps) => {
