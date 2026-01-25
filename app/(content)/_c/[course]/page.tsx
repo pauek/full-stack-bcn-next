@@ -2,11 +2,20 @@ import Part from "@/components/Part"
 import { hash } from "@/lib/adt"
 import data from "@/lib/data"
 import { env } from "@/lib/env.mjs"
+import { Metadata } from "next"
 import { unstable_cache } from "next/cache"
 
 import { notFound } from "next/navigation"
 
 const cachedGetContentTree = unstable_cache(data.getContentTree, ["contentTree"])
+
+export async function generateMetadata(): Promise<Metadata> {
+    const course = await data.getPiece([env.COURSE_ID])
+    if (!course) {
+        return { title: "Not Found" }
+    }
+    return { title: course.name }
+}
 
 export default async function Page() {
     const isDevMode = process.env.NODE_ENV === "development"

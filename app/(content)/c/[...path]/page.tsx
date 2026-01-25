@@ -10,6 +10,7 @@ import { TabsContent } from "@radix-ui/react-tabs"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { splitIdpath } from "./utils"
+import { Metadata } from "next"
 import Exercise from "@/components/Exercise"
 import SlideGrid from "@/components/SlideGrid"
 import {
@@ -26,6 +27,53 @@ import MdxDocument from "@/components/mdx/MdxDocument"
 import { FileBuffer, FileReference } from "@/lib/data/data-backend"
 import { splitMarkdownPreamble } from "@/lib/utils"
 import { env } from "@/lib/env.mjs"
+
+interface PageProps {
+    params: Promise<{
+        path: string[]
+    }>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { idpath } = splitIdpath((await params).path)
+    const piece = await data.getPiece(idpath)
+    if (!piece) {
+        return { title: "Not Found" }
+    }
+
+    // Build title based on hierarchy level
+    switch (idpath.length) {
+        case 1: {
+            // Course level
+            return { title: piece.name }
+        }
+        case 2: {
+            // Part level
+            return { title: piece.name }
+        }
+        case 3: {
+            // Session level - include part name
+            const part = await data.getPiece(idpath.slice(0, 2))
+            if (part) {
+                return { title: `${piece.name} - ${part.name}` }
+            }
+            return { title: piece.name }
+        }
+        case 4: {
+            // Chapter level - include full hierarchy for proper file sorting
+            const course = await data.getPiece(idpath.slice(0, 1))
+            const part = await data.getPiece(idpath.slice(0, 2))
+            const session = await data.getPiece(idpath.slice(0, 3))
+            if (course && part && session) {
+                return { title: `${course.name} - ${part.name} - ${session.name} - ${piece.name}` }
+            }
+            return { title: piece.name }
+        }
+        default: {
+            return { title: piece.name }
+        }
+    }
+}
 
 /// Pages
 
@@ -107,7 +155,7 @@ async function ChapterPage({ piece }: { piece: ContentPiece }) {
     return (
         <div className="flex-1">
             <Tabs defaultValue="document" className="relative mt-4">
-                <TabsList className="absolute right-0 -top-16">
+                <TabsList className="absolute right-0 -top-16 print:hidden">
                     {document !== null && <TabsTrigger value="document">Document</TabsTrigger>}
                     {exercises.length > 0 && <TabsTrigger value="exercises">Exercises</TabsTrigger>}
                     {slides.length > 0 && <TabsTrigger value="slides">Slides</TabsTrigger>}
@@ -297,12 +345,7 @@ const piecePage = async (piece: ContentPiece) => {
     }
 }
 
-interface Props {
-    params: Promise<{
-        path: string[]
-    }>
-}
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: PageProps) {
     const { idpath, attachment } = splitIdpath((await params).path)
     const piece = await data.getPieceWithChildren(idpath)
     if (!piece) {

@@ -25,11 +25,15 @@ import MdxDocument from "@/components/mdx/MdxDocument"
 import { splitMarkdownPreamble } from "@/lib/utils"
 
 export async function generateMetadata({ params }: ChapterPageProps) {
-    const session = await getSessionOrNotFound({ params })
+    const { course: courseId, part: partId, session: sessionId } = await params
+    const course = await data.getPiece([courseId])
+    const part = await data.getPiece([courseId, partId])
+    const session = await data.getPiece([courseId, partId, sessionId])
     const chapter = await getChapterOrNotFound({ params })
-    return {
-        title: `${chapter.name} - ${session.name} - Full-stack Web Technologies`,
+    if (course && part && session) {
+        return { title: `${course.name} - ${part.name} - ${session.name} - ${chapter.name}` }
     }
+    return { title: chapter.name }
 }
 
 export default async function Page({ params }: ChapterPageProps) {

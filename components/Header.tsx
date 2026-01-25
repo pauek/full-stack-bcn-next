@@ -19,7 +19,7 @@ export default async function Header() {
     return (
         <header
             className={
-                "p-2 fixed top-0 left-0 right-0 flex flex-row items-center justify-between z-20 overflow-visible pointer-events-none"
+                "p-2 fixed top-0 left-0 right-0 flex flex-row items-center justify-between z-20 overflow-visible pointer-events-none print:hidden"
             }
         >
             <div className="flex flex-row gap-2">

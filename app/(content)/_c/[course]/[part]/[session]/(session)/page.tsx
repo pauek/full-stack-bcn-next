@@ -1,7 +1,22 @@
 import { ContentPiece, hash } from "@/lib/adt"
+import data from "@/lib/data"
 import { pieceUrlPath } from "@/lib/urls"
+import { Metadata } from "next"
 import Link from "next/link"
 import { SessionPageProps, _generateStaticParams, getPieceWithChildrenOrNotFound } from "../utils"
+
+export async function generateMetadata({ params }: SessionPageProps): Promise<Metadata> {
+    const { course, part, session } = await params
+    const piece = await data.getPiece([course, part, session])
+    const partPiece = await data.getPiece([course, part])
+    if (!piece) {
+        return { title: "Not Found" }
+    }
+    if (partPiece) {
+        return { title: `${piece.name} - ${partPiece.name}` }
+    }
+    return { title: piece.name }
+}
 
 export default async function Page({ params }: SessionPageProps) {
     const piece = await getPieceWithChildrenOrNotFound({ params })

@@ -12,7 +12,7 @@ interface Props {
 
 export default function Navigator({ index, pieceList, parent, prefix = "c" }: Props) {
     return (
-        <div className="h-14 border-b p-1 px-3 text-xs text-stone-400 dark:text-stone-600 w-full flex flex-row items-stretch bg-background">
+        <div className="h-14 border-b p-1 px-3 text-xs text-stone-400 dark:text-stone-600 w-full flex flex-row items-stretch bg-background print:hidden">
             <div className="flex flex-row w-full max-w-[54rem] mx-auto">
                 {pieceList && index > 0 ? (
                     <Link
