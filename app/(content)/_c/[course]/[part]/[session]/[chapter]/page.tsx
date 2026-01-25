@@ -1,13 +1,12 @@
-import Exercise from "@/components/Exercise"
-import SlideGrid from "@/components/SlideGrid"
-import { FileType } from "@/data/schema"
-import data from "@/lib/data"
-import { env } from "@/lib/env.mjs"
-import { fileUrl } from "@/lib/urls"
-import { ChapterPageProps, getChapterAttachments, getChapterOrNotFound } from "./utils"
 import CollapsibleSection from "@/components/Collapsible"
-import SlideShow from "@/components/icons/SlideShow"
+import Exercise from "@/components/Exercise"
+import FullScreen from "@/components/FullScreen"
 import { ExerciseIcon } from "@/components/icons/ExerciseIcon"
+import { QuizIcon } from "@/components/icons/QuizIcon"
+import SlideShow from "@/components/icons/SlideShow"
+import MdxDocument from "@/components/mdx/MdxDocument"
+import QuizQuestion from "@/components/QuizQuestion"
+import SlideGrid from "@/components/SlideGrid"
 import {
     Carousel,
     CarouselContent,
@@ -15,14 +14,13 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
-import { ErrorBoundary } from "react-error-boundary"
+import { FileType } from "@/data/schema"
+import data from "@/lib/data"
 import { FileBuffer, FileReference } from "@/lib/data/data-backend"
-import QuizQuestion from "@/components/QuizQuestion"
-import FullScreen from "@/components/FullScreen"
-import { QuizIcon } from "@/components/icons/QuizIcon"
-import { getSessionOrNotFound } from "../utils"
-import MdxDocument from "@/components/mdx/MdxDocument"
+import { fileUrl } from "@/lib/urls"
 import { splitMarkdownPreamble } from "@/lib/utils"
+import { ErrorBoundary } from "react-error-boundary"
+import { ChapterPageProps, getChapterAttachments, getChapterOrNotFound } from "./utils"
 
 export async function generateMetadata({ params }: ChapterPageProps) {
     const { course: courseId, part: partId, session: sessionId } = await params
@@ -145,13 +143,3 @@ const QuestionError = ({ quiz }: { quiz: FileReference }) => {
         </div>
     )
 }
-
-// export const generateStaticParams = async () => {
-//   const course = await data.getPiece([env.COURSE_ID])
-//   if (!course) {
-//     return []
-//   }
-//   return (await data.getAllIdpaths(course.idpath))
-//     .filter((path) => path.length === 4)
-//     .map(([course, part, session, chapter]) => ({ course, part, session, chapter }))
-// }

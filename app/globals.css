@@ -295,3 +295,54 @@
         }
     }
 }
+
+/* Bash/terminal commands - bright yellow text on dark background */
+/* Uses :has() to detect language class on nested code element */
+/* Outside @layer base to override hljs theme styles */
+pre:has(code.language-bash) code,
+pre:has(code.language-bash) code.hljs,
+pre:has(code.language-sh) code,
+pre:has(code.language-sh) code.hljs,
+pre:has(code.language-shell) code,
+pre:has(code.language-shell) code.hljs,
+pre:has(code.language-zsh) code,
+pre:has(code.language-zsh) code.hljs,
+pre.bash-command code,
+pre.bash-command code.hljs {
+    color: #ffee00;
+}
+
+/* Bash command followed by untagged output - remove gap between them */
+/* Using simpler selectors: any pre following a bash pre gets connected */
+pre:has(code.language-bash) + pre,
+pre:has(code.language-sh) + pre,
+pre:has(code.language-shell) + pre,
+pre:has(code.language-zsh) + pre {
+    margin-top: 0 !important;
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+pre:has(code.language-bash) + pre > code,
+pre:has(code.language-sh) + pre > code,
+pre:has(code.language-shell) + pre > code,
+pre:has(code.language-zsh) + pre > code {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+/* Use :has(+ pre) to target bash pre when followed by another pre */
+pre:has(code.language-bash):has(+ pre),
+pre:has(code.language-sh):has(+ pre),
+pre:has(code.language-shell):has(+ pre),
+pre:has(code.language-zsh):has(+ pre) {
+    margin-bottom: 0 !important;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+pre:has(code.language-bash):has(+ pre) > code,
+pre:has(code.language-sh):has(+ pre) > code,
+pre:has(code.language-shell):has(+ pre) > code,
+pre:has(code.language-zsh):has(+ pre) > code {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}

@@ -4,7 +4,7 @@ import CopyableCode from "./CopyableCode"
 import * as dom from "./dom"
 import Focus from "./Focus"
 import Note from "./Note"
-import { CopyablePre } from "./Pre"
+import { SmartPre } from "./Pre"
 import Ref from "./Ref"
 import Row from "./Row"
 import { Table, Td, Th } from "./Table"
@@ -29,7 +29,7 @@ const components = {
     aside: Aside,
     Aside,
     Warn,
-    pre: CopyablePre,
+    pre: SmartPre,
     Focus,
     Note,
 }
