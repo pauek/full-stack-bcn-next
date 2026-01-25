@@ -3,32 +3,32 @@ import { ContentPiece } from "../adt"
 import { Hash } from "./hashing"
 
 export type ImgData = {
-  data: Buffer
-  extension: string
+    data: Buffer
+    extension: string
 }
 
 export type CrumbData = {
-  name: string
-  idpath: string[]
-  siblings?: Array<CrumbData>
+    name: string
+    idpath: string[]
+    siblings?: Array<CrumbData>
 }
 
 export type WalkFunc = (piece: ContentPiece, children: any[]) => Promise<any>
 
 export type FileBuffer = {
-  name: string
-  buffer: Buffer
+    name: string
+    buffer: Buffer
 }
 
 export type FileReference = {
-  filename: string
-  hash: string
-  filetype: FileType
+    filename: string
+    hash: string
+    filetype: FileType
 }
 
 export type FileContent = null | {
-  bytes: Buffer
-  metadata: Record<string, any> | null
+    bytes: Buffer
+    metadata: Record<string, any> | null
 }
 
 // prettier-ignore
@@ -59,7 +59,7 @@ export interface DataBackendBase {
 }
 
 export interface DataBackend extends DataBackendBase {
-  getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>
-  walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>
-  anyChildHasAttachmentsOfType: (piece: ContentPiece, filetype: FileType) => Promise<boolean>
+    getBreadcrumbData: (...idpath: string[]) => Promise<CrumbData[]>
+    walkContentPieces: (piece: ContentPiece, func: WalkFunc) => Promise<void>
+    anyChildHasAttachmentsOfType: (piece: ContentPiece, filetype: FileType) => Promise<boolean>
 }

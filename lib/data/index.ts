@@ -7,13 +7,13 @@ import { DataBackend } from "./data-backend"
 // I don't know if Bun is necessary, but it might be.
 
 const dynamicallyCreateBackend = () => {
-  if (env.BACKEND === "files") {
-    const files = require(`./files`)
-    return { ...files.backend, ...commonBackend }
-  } else {
-    const db = require(`./db`)
-    return { ...db.backend, ...commonBackend }
-  }
+    if (env.BACKEND === "files") {
+        const files = require(`./files`)
+        return { ...files.backend, ...commonBackend }
+    } else {
+        const db = require(`./db`)
+        return { ...db.backend, ...commonBackend }
+    }
 }
 
 const backend: DataBackend = dynamicallyCreateBackend()

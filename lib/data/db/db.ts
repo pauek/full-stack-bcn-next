@@ -5,12 +5,12 @@ import { createClient } from "@libsql/client"
 import { drizzle } from "drizzle-orm/libsql"
 
 const client = createClient({
-  url: env.TURSO_URL,
-  authToken: env.TURSO_TOKEN,
+    url: env.TURSO_URL,
+    authToken: env.TURSO_TOKEN,
 })
 
 export const db = drizzle(client, { schema })
 
 export const closeConnection = async () => {
-  client.close()
+    client.close()
 }

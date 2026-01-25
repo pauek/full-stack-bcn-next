@@ -7,6 +7,6 @@ export type MapController = CanvasController<MapItem>
 export type MapAdapter = MapPositionsAdapter
 
 export type MapSize = {
-  width: number
-  height: number
+    width: number
+    height: number
 }

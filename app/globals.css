@@ -1,299 +1,297 @@
+/* Theme for HighlightJS */
+@import url("./stackoverflow-dark.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Theme for HighlightJS */
-@import url("./stackoverflow-dark.css");
-
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 20 14.3% 4.1%;
 
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+        --muted: 60 4.8% 95.9%;
+        --muted-foreground: 25 5.3% 44.7%;
 
-    --skeleton: 60 4.8% 90%;
+        --skeleton: 60 4.8% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 20 14.3% 4.1%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+        --card: 0 0% 100%;
+        --card-foreground: 20 14.3% 4.1%;
 
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
+        --border: 20 5.9% 90%;
+        --input: 20 5.9% 90%;
 
-    --primary: 24 9.8% 10%;
-    --primary-foreground: 60 9.1% 97.8%;
+        --primary: 24 9.8% 10%;
+        --primary-foreground: 60 9.1% 97.8%;
 
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
+        --secondary: 60 4.8% 95.9%;
+        --secondary-foreground: 24 9.8% 10%;
 
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 210 70% 40%;
+        --accent: 60 4.8% 95.9%;
+        --accent-foreground: 210 70% 40%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 60 9.1% 97.8%;
 
-    --ring: 24 5.4% 63.9%;
+        --ring: 24 5.4% 63.9%;
 
-    --radius: 0.5rem;
+        --radius: 0.5rem;
 
-    --code: #1c1b1b;
-    --inlcode: #ebe4e4;
-    --code-foreground: white;
-    --inlcode-foreground: black;
-  }
-
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-
-    --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 100%;
-
-    --secondary: 12 6.5% 7%;
-    --secondary-foreground: 60 9.1% 97.8%;
-
-    --tertiary: 340 30% 100%;
-    --tertiary-foreground: 0 9.8% 100%;
-
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 210 70% 85%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-
-    --ring: 12 6.5% 15.1%;
-
-    --skeleton: 60 4.8% 14%;
-
-    --code: black;
-    --inlcode: black;
-    --code-foreground: white;
-    --inlcode-foreground: white;
-  }
-
-  * {
-    @apply border-border;
-  }
-  :root {
-    @apply bg-background text-foreground;
-    scrollbar-gutter: stable;
-    font-family: sans-serif;
-  }
-  p {
-    @apply my-2 leading-5;
-  }
-  .aside > p {
-    @apply leading-4;
-  }
-  .focus {
-    @apply font-bold bg-foreground text-background rounded px-1 py-0.5;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply mb-0 font-semibold;
-  }
-  h1 {
-    @apply text-5xl font-bold;
-  }
-  h2 {
-    @apply text-4xl pt-8 pb-4 font-normal m-0;
-  }
-  h3 {
-    @apply text-xl first:mt-0 mb-2;
-  }
-  h4 {
-    @apply text-base mt-5 mb-1 first:mt-0;
-  }
-  h1 + p,
-  h2 + p,
-  h3 + p,
-  h4 + p,
-  h5 + p {
-    @apply mt-1;
-  }
-  .warning {
-    @apply my-2 px-2 pl-1.5 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-start gap-2;
-  }
-  .note {
-    @apply px-2 pl-1.5 py-1 bg-green-100 border border-green-400 text-xs rounded flex flex-row items-start gap-2;
-  }
-
-  ol {
-    @apply list-decimal;
-  }
-  ul {
-    @apply list-disc;
-  }
-  ul,
-  ol {
-    @apply pl-6;
-  }
-  li {
-    @apply my-1 pl-1;
-  }
-
-  .mdx-document pre code {
-    @apply m-0 bg-code;
-  }
-  strong {
-    @apply font-semibold;
-  }
-  pre,
-  code {
-    font-family: "Iosevka SS14", monospace;
-  }
-  h1 code,
-  h2 code,
-  h3 code,
-  h4 code,
-  h5 code {
-    @apply bg-background text-foreground;
-  }
-  code {
-    @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
-  }
-  .focus code {
-    @apply bg-foreground text-background px-0.5;
-  }
-  pre {
-    @apply flex flex-row border mx-0 my-1 rounded;
-  }
-  pre > code {
-    @apply overflow-x-auto py-1 px-2 rounded;
-  }
-  pre,
-  pre code {
-    @apply bg-code text-code-foreground;
-  }
-  a code {
-    @apply bg-accent-foreground text-background;
-  }
-  /* Links to MDN */
-  a[href^="https://developer.mozilla.org"]
-  {
-    font-weight: 500;
-  }
-  a[href^="https://developer.mozilla.org"]::after
-  {
-    content: url("/mdn.svg");
-  }
-  p {
-    margin: 0;
-  }
-  p + p,
-  ul + p,
-  ol + p,
-  div.aside + p {
-    margin-top: 1em;
-  }
-  p + .note {
-    margin-top: 1.5em;
-  }
-
-  .debug {
-    @apply border-2 border-red-500;
-  }
-  .aside {
-    margin-top: 0.1rem;
-  }
-  pre + pre {
-    @apply mt-0;
-  }
-  p + pre,
-  pre + p {
-    @apply mt-1;
-  }
-  h3,
-  h4,
-  h5 {
-    margin-top: 1.4em;
-  }
-  p + ol {
-    margin-top: 1.2em;
-  }
-  h5 + p {
-    @apply mt-2;
-  }
-  li p:last-child {
-    @apply mb-4;
-  }
-  .quiz-question em {
-    margin-top: 1em !important;
-  }
-  .mdx-document ol li + ol li {
-    margin-top: 1.6em;
-  }
-  .mdx-document li pre:last-child {
-    margin-bottom: 1.6em;
-  }
-
-  /* spinner! https://tobiasahlin.com/spinkit/ */
-  .spinner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-
-  .double-bounce1,
-  .double-bounce2 {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: #333;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    -webkit-animation: sk-bounce 2s infinite ease-in-out;
-    animation: sk-bounce 2s infinite ease-in-out;
-  }
-
-  .double-bounce2 {
-    -webkit-animation-delay: -1s;
-    animation-delay: -1s;
-  }
-
-  @-webkit-keyframes sk-bounce {
-    0%,
-    100% {
-      -webkit-transform: scale(0);
+        --code: #1c1b1b;
+        --inlcode: #ebe4e4;
+        --code-foreground: white;
+        --inlcode-foreground: black;
     }
-    50% {
-      -webkit-transform: scale(1);
-    }
-  }
 
-  @keyframes sk-bounce {
-    0%,
-    100% {
-      transform: scale(0);
-      -webkit-transform: scale(0);
+    .dark {
+        --background: 20 14.3% 4.1%;
+        --foreground: 60 9.1% 97.8%;
+
+        --muted: 12 6.5% 15.1%;
+        --muted-foreground: 24 5.4% 63.9%;
+
+        --popover: 20 14.3% 4.1%;
+        --popover-foreground: 60 9.1% 97.8%;
+
+        --card: 20 14.3% 4.1%;
+        --card-foreground: 60 9.1% 97.8%;
+
+        --border: 12 6.5% 15.1%;
+        --input: 12 6.5% 15.1%;
+
+        --primary: 60 9.1% 97.8%;
+        --primary-foreground: 24 9.8% 100%;
+
+        --secondary: 12 6.5% 7%;
+        --secondary-foreground: 60 9.1% 97.8%;
+
+        --tertiary: 340 30% 100%;
+        --tertiary-foreground: 0 9.8% 100%;
+
+        --accent: 12 6.5% 15.1%;
+        --accent-foreground: 210 70% 85%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 85.7% 97.3%;
+
+        --ring: 12 6.5% 15.1%;
+
+        --skeleton: 60 4.8% 14%;
+
+        --code: black;
+        --inlcode: black;
+        --code-foreground: white;
+        --inlcode-foreground: white;
     }
-    50% {
-      transform: scale(1);
-      -webkit-transform: scale(1);
+
+    * {
+        @apply border-border;
     }
-  }
+    :root {
+        @apply bg-background text-foreground;
+        scrollbar-gutter: stable;
+        font-family: sans-serif;
+    }
+    p {
+        @apply my-2 leading-5;
+    }
+    .aside > p {
+        @apply leading-4;
+    }
+    .focus {
+        @apply font-bold bg-foreground text-background rounded px-1 py-0.5;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply mb-0 font-semibold;
+    }
+    h1 {
+        @apply text-5xl font-bold;
+    }
+    h2 {
+        @apply text-4xl pt-8 pb-4 font-normal m-0;
+    }
+    h3 {
+        @apply text-xl first:mt-0 mb-2;
+    }
+    h4 {
+        @apply text-base mt-5 mb-1 first:mt-0;
+    }
+    h1 + p,
+    h2 + p,
+    h3 + p,
+    h4 + p,
+    h5 + p {
+        @apply mt-1;
+    }
+    .warning {
+        @apply my-2 px-2 pl-1.5 py-1 bg-yellow-100 border border-yellow-400 text-xs rounded flex flex-row items-start gap-2;
+    }
+    .note {
+        @apply px-2 pl-1.5 py-1 bg-green-100 border border-green-400 text-xs rounded flex flex-row items-start gap-2;
+    }
+
+    ol {
+        @apply list-decimal;
+    }
+    ul {
+        @apply list-disc;
+    }
+    ul,
+    ol {
+        @apply pl-6;
+    }
+    li {
+        @apply my-1 pl-1;
+    }
+
+    .mdx-document pre code {
+        @apply m-0 bg-code;
+    }
+    strong {
+        @apply font-semibold;
+    }
+    pre,
+    code {
+        font-family: "Iosevka SS14", monospace;
+    }
+    h1 code,
+    h2 code,
+    h3 code,
+    h4 code,
+    h5 code {
+        @apply bg-background text-foreground;
+    }
+    code {
+        @apply bg-inlcode text-inlcode-foreground px-1 rounded m-0;
+    }
+    .focus code {
+        @apply bg-foreground text-background px-0.5;
+    }
+    pre {
+        @apply flex flex-row border mx-0 my-1 rounded;
+    }
+    pre > code {
+        @apply overflow-x-auto py-1 px-2 rounded;
+    }
+    pre,
+    pre code {
+        @apply bg-code text-code-foreground;
+    }
+    a code {
+        @apply bg-accent-foreground text-background;
+    }
+    /* Links to MDN */
+    a[href^="https://developer.mozilla.org"] {
+        font-weight: 500;
+    }
+    a[href^="https://developer.mozilla.org"]::after {
+        content: url("/mdn.svg");
+    }
+    p {
+        margin: 0;
+    }
+    p + p,
+    ul + p,
+    ol + p,
+    div.aside + p {
+        margin-top: 1em;
+    }
+    p + .note {
+        margin-top: 1.5em;
+    }
+
+    .debug {
+        @apply border-2 border-red-500;
+    }
+    .aside {
+        margin-top: 0.1rem;
+    }
+    pre + pre {
+        @apply mt-0;
+    }
+    p + pre,
+    pre + p {
+        @apply mt-1;
+    }
+    h3,
+    h4,
+    h5 {
+        margin-top: 1.4em;
+    }
+    p + ol {
+        margin-top: 1.2em;
+    }
+    h5 + p {
+        @apply mt-2;
+    }
+    li p:last-child {
+        @apply mb-4;
+    }
+    .quiz-question em {
+        margin-top: 1em !important;
+    }
+    .mdx-document ol li + ol li {
+        margin-top: 1.6em;
+    }
+    .mdx-document li pre:last-child {
+        margin-bottom: 1.6em;
+    }
+
+    /* spinner! https://tobiasahlin.com/spinkit/ */
+    .spinner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .double-bounce1,
+    .double-bounce2 {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: #333;
+        opacity: 0.6;
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        -webkit-animation: sk-bounce 2s infinite ease-in-out;
+        animation: sk-bounce 2s infinite ease-in-out;
+    }
+
+    .double-bounce2 {
+        -webkit-animation-delay: -1s;
+        animation-delay: -1s;
+    }
+
+    @-webkit-keyframes sk-bounce {
+        0%,
+        100% {
+            -webkit-transform: scale(0);
+        }
+        50% {
+            -webkit-transform: scale(1);
+        }
+    }
+
+    @keyframes sk-bounce {
+        0%,
+        100% {
+            transform: scale(0);
+            -webkit-transform: scale(0);
+        }
+        50% {
+            transform: scale(1);
+            -webkit-transform: scale(1);
+        }
+    }
 }

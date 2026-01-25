@@ -8,33 +8,33 @@ import { showExecutionTime } from "@/lib/utils"
 import chalk from "chalk"
 
 const {
-  argv: [_bun, _script, idjpath],
+    argv: [_bun, _script, idjpath],
 } = process
 
 showExecutionTime(async () => {
-  const info = data.getInfo()
-  console.log(chalk.gray(`[${info}]`))
+    const info = data.getInfo()
+    console.log(chalk.gray(`[${info}]`))
 
-  let root: ContentPiece | null = null
-  if (idjpath) {
-    root = await data.getPiece(idjpath.split("/"))
-    if (!root) {
-      console.error(`Piece "${idjpath}" not found.`)
-      process.exit(1)
+    let root: ContentPiece | null = null
+    if (idjpath) {
+        root = await data.getPiece(idjpath.split("/"))
+        if (!root) {
+            console.error(`Piece "${idjpath}" not found.`)
+            process.exit(1)
+        }
+    } else {
+        root = await filesGetRoot()
     }
-  } else {
-    root = await filesGetRoot()
-  }
 
-  await data.walkContentPieces(root, async (piece, _children) => {
-    console.log(hash(piece), piece.idpath.join("/"))
-    for (const filetype of FileTypeValues) {
-      const files = await getPieceFilesByFiletype(hash(piece), filetype as FileType)
-      for (const file of files || []) {
-        console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.filename}`))
-      }
-    }
-  })
+    await data.walkContentPieces(root, async (piece, _children) => {
+        console.log(hash(piece), piece.idpath.join("/"))
+        for (const filetype of FileTypeValues) {
+            const files = await getPieceFilesByFiletype(hash(piece), filetype as FileType)
+            for (const file of files || []) {
+                console.log(chalk.gray(`  ${file.hash} ${filetype} ${file.filename}`))
+            }
+        }
+    })
 
-  await closeConnection()
+    await closeConnection()
 })

@@ -3,15 +3,15 @@ import { filesWalkContentPieces, filesGetRootIdpath } from "@/lib/data/files/uti
 import { showExecutionTime } from "@/lib/utils"
 
 showExecutionTime(async () => {
-  const rootIdpath = await filesGetRootIdpath()
+    const rootIdpath = await filesGetRootIdpath()
 
-  await filesWalkContentPieces(rootIdpath, async (diskpath, piece) => {
-    await updateMetadata(diskpath, async (metadata) => {
-      if ("slideHashes" in metadata) {
-        console.log(piece.idpath.join("/"))
-        delete metadata.slideHashes
-      }
+    await filesWalkContentPieces(rootIdpath, async (diskpath, piece) => {
+        await updateMetadata(diskpath, async (metadata) => {
+            if ("slideHashes" in metadata) {
+                console.log(piece.idpath.join("/"))
+                delete metadata.slideHashes
+            }
+        })
+        return piece
     })
-    return piece
-  })
 })

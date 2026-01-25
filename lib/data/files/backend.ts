@@ -4,21 +4,21 @@ import { getAllIdjpaths } from "./hashmaps"
 import { filesWalkContentPieces } from "./utils"
 
 export const getAllIdpaths = async (rootIdpath: string[]): Promise<string[][]> => {
-  const idjpaths = await getAllIdjpaths(rootIdpath.join("/"))
-  return idjpaths.map((idjpath) => idjpath.split("/"))
+    const idjpaths = await getAllIdjpaths(rootIdpath.join("/"))
+    return idjpaths.map((idjpath) => idjpath.split("/"))
 }
 
 export const getAllAttachmentPaths = async (
-  rootIdpath: string[],
-  filetype: FileType,
+    rootIdpath: string[],
+    filetype: FileType,
 ): Promise<string[][]> => {
-  const result: string[][] = []
-  await filesWalkContentPieces(rootIdpath, async (_, piece) => {
-    const attachments = await getPieceAttachmentList(piece, filetype)
-    for (const file of attachments) {
-      result.push([...piece.idpath, file.filename])
-    }
-    return piece
-  })
-  return result
+    const result: string[][] = []
+    await filesWalkContentPieces(rootIdpath, async (_, piece) => {
+        const attachments = await getPieceAttachmentList(piece, filetype)
+        for (const file of attachments) {
+            result.push([...piece.idpath, file.filename])
+        }
+        return piece
+    })
+    return result
 }

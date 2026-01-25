@@ -6,48 +6,49 @@ import CheckAnswer from "./CheckAnswer"
 import { Pre } from "./mdx/Pre"
 import { FileType } from "@/data/schema"
 import { getQuizPartsFromFile } from "@/lib/data/files/quiz"
+import type { MDXComponents } from "mdx/types"
 
 const Note = ({ children }: { children: React.ReactNode }) => {
-  return <div className="mt-4 text-xs opacity-70 italic">{children}</div>
+    return <div className="mt-4 text-xs opacity-70 italic">{children}</div>
 }
 
 type QuizQuestionProps = {
-  chapter: ContentPiece
-  quiz: FileReference
-  index: number
+    chapter: ContentPiece
+    quiz: FileReference
+    index: number
 }
 export default async function QuizQuestion({ index, chapter, quiz }: QuizQuestionProps) {
-  const text = await data.getAttachmentContent(chapter, quiz)
-  const images = await data.getPieceAttachmentList(chapter, FileType.image)
-  const imageMap = new Map(images.map((ref) => [ref.filename, ref]))
+    const text = await data.getAttachmentContent(chapter, quiz)
+    const images = await data.getPieceAttachmentList(chapter, FileType.image)
+    const imageMap = new Map(images.map((ref) => [ref.filename, ref]))
 
-  if (!text) {
-    return null
-  }
+    if (!text) {
+        return null
+    }
 
-  let quizText: string = "Error"
-  try {
-    const { body } = getQuizPartsFromFile(text.toString())
-    quizText = body
-  } catch (e) {
-    const msg = `
+    let quizText: string = "Error"
+    try {
+        const { body } = getQuizPartsFromFile(text.toString())
+        quizText = body
+    } catch (e) {
+        const msg = `
       Error in question: 
       Chapter ${chapter.name}, index ${index}, file ${quiz.filename}
     `
-    quizText = msg
-  }
+        quizText = msg
+    }
 
-  return (
-    <div className="quiz-question mx-2.5 bg-card rounded p-5 min-h-[25em] flex flex-col justify-center items-start">
-      <h4 className="mx-2.5 mb-0">{index}</h4>
-      <MdxDocument
-        className="p-2.5 w-full"
-        text={quizText}
-        syntaxHighlighting={false}
-        components={{ pre: Pre, Note }}
-        imageMap={imageMap}
-      />
-      <CheckAnswer idpath={chapter.idpath} quizHash={quiz.hash} />
-    </div>
-  )
+    return (
+        <div className="quiz-question mx-2.5 bg-card rounded p-5 min-h-[25em] flex flex-col justify-center items-start">
+            <h4 className="mx-2.5 mb-0">{index}</h4>
+            <MdxDocument
+                className="p-2.5 w-full"
+                text={quizText}
+                syntaxHighlighting={false}
+                components={{ pre: Pre, Note } as MDXComponents}
+                imageMap={imageMap}
+            />
+            <CheckAnswer idpath={chapter.idpath} quizHash={quiz.hash} />
+        </div>
+    )
 }

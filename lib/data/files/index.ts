@@ -3,13 +3,13 @@ import { DataBackendBase } from "../data-backend"
 import { getPiece, getPieceWithChildren, pieceHasCover, pieceHasDoc } from "./pieces"
 
 import {
-  getAttachmentContent,
-  getPieceAttachmentList,
-  getPieceAttachmentTypes,
-  getPieceDocument,
-  getPieceFileData,
-  getPieceImageList,
-  getPieceSlideList,
+    getAttachmentContent,
+    getPieceAttachmentList,
+    getPieceAttachmentTypes,
+    getPieceDocument,
+    getPieceFileData,
+    getPieceImageList,
+    getPieceSlideList,
 } from "./attachments"
 
 import { getQuizAnswersForHash } from "./quiz"
@@ -20,28 +20,28 @@ import { getContentTree } from "./tree"
 console.info(`Backend = "files"`)
 
 export const backend: DataBackendBase = {
-  getInfo: () => {
-    return "<< FILES >>"
-  },
+    getInfo: () => {
+        return "<< FILES >>"
+    },
 
-  getPiece,
-  getPieceWithChildren,
-  pieceHasCover,
-  pieceHasDoc,
+    getPiece,
+    getPieceWithChildren,
+    pieceHasCover,
+    pieceHasDoc,
 
-  getPieceAttachmentTypes,
-  getAttachmentContent,
-  getPieceAttachmentList,
-  getPieceDocument,
-  getPieceFileData,
-  getPieceImageList,
-  getPieceSlideList,
+    getPieceAttachmentTypes,
+    getAttachmentContent,
+    getPieceAttachmentList,
+    getPieceDocument,
+    getPieceFileData,
+    getPieceImageList,
+    getPieceSlideList,
 
-  getQuizAnswersForHash,
+    getQuizAnswersForHash,
 
-  getAllIdpaths,
-  getContentTree,
+    getAllIdpaths,
+    getContentTree,
 
-  getMapPositionsExtended,
-  updateMapPositions,
+    getMapPositionsExtended,
+    updateMapPositions,
 }

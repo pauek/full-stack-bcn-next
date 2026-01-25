@@ -9,7 +9,7 @@ export const H5 = ({ children }: any) => <h6>{children}</h6>
 export const P = ({ children }: any) => <p>{children}</p>
 
 export const A = (props: React.ComponentProps<"a">) => (
-  <a {...props} className={cn(props.className, "text-accent-foreground")}>
-    {props.children}
-  </a>
+    <a {...props} className={cn(props.className, "text-accent-foreground")}>
+        {props.children}
+    </a>
 )

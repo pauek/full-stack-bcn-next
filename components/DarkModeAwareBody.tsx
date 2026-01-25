@@ -5,33 +5,33 @@ import { ComponentProps, PropsWithChildren, useState } from "react"
 import { DarkModeContext } from "./DarkMode"
 
 const loadDarkModeState = () => {
-  if (typeof window !== "undefined") {
-    return window.localStorage.getItem("darkMode") === "yes"
-  }
+    if (typeof window !== "undefined") {
+        return window.localStorage.getItem("darkMode") === "yes"
+    }
 }
 
 const saveDarkModeState = (value: boolean) => {
-  if (typeof window !== "undefined") {
-    return window.localStorage.setItem("darkMode", value ? "yes" : "no")
-  }
+    if (typeof window !== "undefined") {
+        return window.localStorage.setItem("darkMode", value ? "yes" : "no")
+    }
 }
 
 export default function DarkModeAwareBody({
-  className,
-  children,
+    className,
+    children,
 }: PropsWithChildren<ComponentProps<"body">>) {
-  const [dark, setDark] = useState(loadDarkModeState() || false)
+    const [dark, setDark] = useState(loadDarkModeState() || false)
 
-  const setDarkMode = (dark: boolean) => {
-    saveDarkModeState(dark)
-    setDark(dark)
-  }
+    const setDarkMode = (dark: boolean) => {
+        saveDarkModeState(dark)
+        setDark(dark)
+    }
 
-  return (
-    <body className={cn(className, dark ? "dark" : "")}>
-      <DarkModeContext.Provider value={{ dark, setDark: setDarkMode }}>
-        {children}
-      </DarkModeContext.Provider>
-    </body>
-  )
+    return (
+        <body className={cn(className, dark ? "dark" : "")}>
+            <DarkModeContext.Provider value={{ dark, setDark: setDarkMode }}>
+                {children}
+            </DarkModeContext.Provider>
+        </body>
+    )
 }
