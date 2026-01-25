@@ -11,11 +11,16 @@ interface Props {
 }
 export default async function SessionCard({ session }: Props) {
     const [cover] = await data.getPieceAttachmentList(session, FileType.cover)
+    
+    // Fetch session with children to get chapter counts
+    const sessionWithChildren = await data.getPieceWithChildren(session.idpath)
+    const children = sessionWithChildren?.children || []
+    
     const { idpath, name, metadata } = session
     const { index } = metadata
 
     const isDevMode = process.env.NODE_ENV === "development"
-    const numSlides = session.children?.reduce((a, b) => a + (b.metadata.numSlides || 0), 0)
+    const numSlides = children.reduce((a, b) => a + (b.metadata.numSlides || 0), 0)
 
     return (
         <Link href={pieceUrlPath(idpath)} className="w-1/4 aspect-[7/6]">
@@ -44,7 +49,7 @@ export default async function SessionCard({ session }: Props) {
                     </div>
                     {isDevMode && (
                         <div className="text-center text-xs text-gray-500">
-                            {session.children?.length || 0} chapters | {numSlides} slides
+                            {children.length} chapters{numSlides > 0 && ` | ${numSlides} slides`}
                         </div>
                     )}
                 </div>
