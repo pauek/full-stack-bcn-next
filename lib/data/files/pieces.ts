@@ -16,10 +16,16 @@ export const getPiece = async (idpath: string[]): Promise<ContentPiece | null> =
         return null
     }
     const parentIdpath = idpath.slice(0, -1)
-    return utils.readPieceAtDiskpath(diskpath, parentIdpath)
+    const piece = await utils.readPieceAtDiskpath(diskpath, parentIdpath)
+    piece.metadata.index = await utils.computeIndexFromSiblings(diskpath)
+    return piece
 }
 
 export const getPieceWithChildren = async (idpath: string[]): Promise<ContentPiece | null> => {
-    const piece = await utils.getPieceAndPathWithChildren(idpath)
-    return piece === null ? null : piece.piece
+    const result = await utils.getPieceAndPathWithChildren(idpath)
+    if (result === null) {
+        return null
+    }
+    result.piece.metadata.index = await utils.computeIndexFromSiblings(result.diskpath)
+    return result.piece
 }

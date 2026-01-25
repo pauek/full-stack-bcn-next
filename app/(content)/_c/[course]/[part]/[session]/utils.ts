@@ -4,15 +4,15 @@ import { unstable_cache } from "next/cache"
 import { notFound } from "next/navigation"
 
 export type SessionPageProps = {
-    params: {
+    params: Promise<{
         course: string
         part: string
         session: string
-    }
+    }>
 }
 
 export const getSessionWithChaptersOrNotFound = async ({ params }: SessionPageProps) => {
-    const { course, part, session } = params
+    const { course, part, session } = await params
     const idpath = [course, part, session]
     const piece = await unstable_cache(
         async () => await data.getPieceWithChildren(idpath),
@@ -25,7 +25,7 @@ export const getSessionWithChaptersOrNotFound = async ({ params }: SessionPagePr
 }
 
 export const getSessionOrNotFound = async ({ params }: SessionPageProps) => {
-    const { course, part, session } = params
+    const { course, part, session } = await params
     const idpath = [course, part, session]
     const piece = await unstable_cache(
         async () => await data.getPiece(idpath),
@@ -38,7 +38,7 @@ export const getSessionOrNotFound = async ({ params }: SessionPageProps) => {
 }
 
 export const getPieceWithChildrenOrNotFound = async ({ params }: SessionPageProps) => {
-    const { course, part, session } = params
+    const { course, part, session } = await params
     const idpath = [course, part, session]
     const piece = await unstable_cache(
         async () => await data.getPieceWithChildren(idpath),

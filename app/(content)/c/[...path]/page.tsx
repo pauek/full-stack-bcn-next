@@ -298,12 +298,12 @@ const piecePage = async (piece: ContentPiece) => {
 }
 
 interface Props {
-    params: {
+    params: Promise<{
         path: string[]
-    }
+    }>
 }
 export default async function Page({ params }: Props) {
-    const { idpath, attachment } = splitIdpath(params.path)
+    const { idpath, attachment } = splitIdpath((await params).path)
     const piece = await data.getPieceWithChildren(idpath)
     if (!piece) {
         return notFound()

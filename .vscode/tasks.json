@@ -1,0 +1,52 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Next.js: dev (BACKEND=files)",
+            "type": "shell",
+            "command": "BACKEND=files npm run dev",
+            "problemMatcher": [],
+            "isBackground": true,
+            "group": "build"
+        },
+        {
+            "label": "Next.js: dev (BACKEND=db)",
+            "type": "shell",
+            "command": "BACKEND=db npm run dev",
+            "problemMatcher": [],
+            "isBackground": true,
+            "group": "build"
+        },
+        {
+            "label": "Next.js: build",
+            "type": "shell",
+            "command": "npm run build",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Next.js: build (BACKEND=files)",
+            "type": "shell",
+            "command": "npm run files:build",
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "Next.js: lint",
+            "type": "shell",
+            "command": "npm run lint",
+            "problemMatcher": ["$eslint-stylish"],
+            "group": "test"
+        },
+        {
+            "label": "Sync",
+            "type": "shell",
+            "command": "npm run sync",
+            "problemMatcher": [],
+            "group": "none"
+        }
+    ]
+}

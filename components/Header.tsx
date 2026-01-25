@@ -26,12 +26,12 @@ export default async function Header() {
                 <Link href="/" className="font-bold overflow-ellipsis">
                     <Floating>{course.name}</Floating>
                 </Link>
-                <Link href="/m">
+                {/*                 <Link href="/m">
                     <Floating>
                         <MapIcon className="w-7 h-7 text-gray-600" />
                     </Floating>
                 </Link>
-            </div>
+ */}            </div>
 
             <Floating>
                 <DarkModeSwitch />

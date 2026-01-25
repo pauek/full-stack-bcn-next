@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: Props) {
             </head>
             <DarkModeAwareBody lang="en">
                 <Header />
-                <Map />
+                {/* <Map /> */}
                 {children}
             </DarkModeAwareBody>
         </html>

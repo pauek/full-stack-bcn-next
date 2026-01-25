@@ -168,6 +168,30 @@ type PieceAndPath = {
     diskpath: string
 }
 
+/**
+ * Compute the index of a piece by looking at its position among siblings.
+ * Returns 1-based index, or UNKNOWN if the piece is the root or cannot be found.
+ */
+export const computeIndexFromSiblings = async (diskpath: string): Promise<number> => {
+    const parentDiskpath = join(diskpath, "..")
+    const pieceBasename = basename(diskpath)
+
+    try {
+        const siblings: string[] = []
+        for (const ent of await readDirWithFileTypes(parentDiskpath)) {
+            if (isContentPiece(ent)) {
+                siblings.push(ent.name)
+            }
+        }
+        siblings.sort((a, b) => a.localeCompare(b))
+
+        const index = siblings.indexOf(pieceBasename)
+        return index === -1 ? UNKNOWN : index + 1
+    } catch {
+        return UNKNOWN
+    }
+}
+
 export const filesReadChildren = async (
     parent: ContentPiece,
     diskpath: string,
@@ -200,6 +224,11 @@ export const filesReadChildren = async (
         const fa = basename(a.diskpath)
         const fb = basename(b.diskpath)
         return fa.localeCompare(fb)
+    })
+
+    // Assign indices based on sorted order (1-based)
+    children.forEach(({ piece }, i) => {
+        piece.metadata.index = i + 1
     })
 
     return children
