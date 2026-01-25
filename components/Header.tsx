@@ -1,7 +1,7 @@
 import data from "@/lib/data"
 import { env } from "@/lib/env.mjs"
 import Link from "next/link"
-import DarkModeSwitch from "./DarkModeSwitch"
+// import DarkModeSwitch from "./DarkModeSwitch"  // TODO: Re-enable after Tailwind 4 upgrade
 import { MapIcon } from "./icons/MapIcon"
 
 export default async function Header() {
@@ -33,9 +33,9 @@ export default async function Header() {
                 </Link>
  */}            </div>
 
-            <Floating>
+{/*             <Floating>
                 <DarkModeSwitch />
-            </Floating>
+            </Floating> */}
         </header>
     )
 }
