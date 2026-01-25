@@ -346,3 +346,31 @@ pre:has(code.language-zsh):has(+ pre) > code {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
+
+/* Print styles: preserve black background for bash/shell commands */
+@media print {
+    pre:has(code.language-bash),
+    pre:has(code.language-sh),
+    pre:has(code.language-shell),
+    pre:has(code.language-zsh),
+    pre.bash-command {
+        background-color: #1c1b1b !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    pre:has(code.language-bash) code,
+    pre:has(code.language-bash) code.hljs,
+    pre:has(code.language-sh) code,
+    pre:has(code.language-sh) code.hljs,
+    pre:has(code.language-shell) code,
+    pre:has(code.language-shell) code.hljs,
+    pre:has(code.language-zsh) code,
+    pre:has(code.language-zsh) code.hljs,
+    pre.bash-command code,
+    pre.bash-command code.hljs {
+        background-color: #1c1b1b !important;
+        color: #ffee00 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
