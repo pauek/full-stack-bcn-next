@@ -37,4 +37,5 @@ next-env.d.ts
 
 # Pauek
 full-stack-bcn.db
+caixabank-tech.db
 dump.sql

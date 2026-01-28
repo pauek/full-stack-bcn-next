@@ -10,9 +10,7 @@
         "format": "bunx prettier --write .",
         "files:build": "BACKEND=files next build",
         "files:start": "BACKEND=files next start",
-        "sync": "bun run scripts/sync.ts",
-        "preview:sync": "bun -r ./lib/env-preview.ts scripts/sync.ts",
-        "prod:sync": "bun -r ./lib/env-production.ts scripts/sync.ts"
+        "sync": "bun run scripts/sync.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.975.0",
